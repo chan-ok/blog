@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm i:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm:*)",
+      "Bash(npm ls:*)",
+      "Bash(npx:*)",
+      "mcp__smithery-ai-server-sequential-thinking__sequentialthinking",
+      "mcp__upstash-context-7-mcp__resolve-library-id",
+      "mcp__upstash-context-7-mcp__get-library-docs",
+      "Bash(mv:*)",
+      "Bash(supabase start:*)",
+      "Bash(supabase functions deploy:*)",
+      "Bash(supabase functions serve:*)",
+      "mcp__microsoft-playwright-mcp__browser_navigate",
+      "mcp__microsoft-playwright-mcp__browser_fill_form",
+      "mcp__microsoft-playwright-mcp__browser_click",
+      "Bash(npm test)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
