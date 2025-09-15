@@ -80,5 +80,22 @@ src/
    - **절대 금지**: 한글 식별자 사용 (예: `사용자`, `로그인하기`, `이메일` 등)
 3. **타입 안전성**: TypeScript strict 모드 사용
 4. **컴포넌트**: shadcn/ui 기반 일관된 UI
+5. **커밋 규칙**: **[Git 커밋 가이드](./docs/commit-guide.md)** 준수 - Conventional Commits 스펙 적용
+
+## 📝 Git 커밋 시 필수 확인사항
+
+커밋하기 전에 **반드시** 다음 가이드를 확인하세요:
+
+- **[Git 커밋 가이드](./docs/commit-guide.md)** - Commitlint 규칙 및 메시지 작성법
+- **Type**: `feat`, `fix`, `docs`, `refactor` 등 올바른 타입 사용
+- **설명**: 한국어로 명확하게 작성
+- **형식**: `type: 설명` 또는 `type(scope): 설명` 형태
+
+**예시:**
+```bash
+feat: 사용자 인증 시스템 구현
+fix: 마크다운 렌더링 버그 수정
+docs: 신입 개발자 온보딩 가이드 추가
+```
 
 더 자세한 내용은 각 폴더의 CLAUDE.md 파일을 확인하세요.

@@ -237,4 +237,193 @@ export function use자동저장({
 - **즉시 피드백**: 문법 오류나 유효성 검증 실시간 표시
 - **반응형**: 모바일에서도 편리한 편집 경험
 
+## 🔄 데이터 플로우
+
+### 글 작성 프로세스
+```mermaid
+sequenceDiagram
+    participant User as 작성자
+    participant WritePost as WritePost 컴포넌트
+    participant Validation as 검증 로직
+    participant Storage as 로컬 스토리지
+    participant API as 백엔드 API
+
+    User->>WritePost: 글 내용 입력
+    WritePost->>Storage: 자동 저장 (임시)
+
+    User->>WritePost: 임시저장 클릭
+    WritePost->>Validation: 제목 검증
+
+    alt 검증 실패
+        Validation-->>WritePost: 에러 메시지
+    else 검증 성공
+        WritePost->>API: 임시저장 요청
+        API-->>WritePost: 저장 완료
+        WritePost-->>User: 저장 확인
+    end
+
+    User->>WritePost: 발행 클릭
+    WritePost->>Validation: 전체 콘텐츠 검증
+
+    alt 검증 성공
+        WritePost->>API: 발행 요청
+        API-->>WritePost: 발행 완료
+        WritePost-->>User: 발행 확인
+    end
+```
+
+## ⚠️ 잠재적 실패 지점 및 대응
+
+### 1. 자동 저장 실패
+**실패 시나리오:**
+- 네트워크 연결 불안정
+- 서버 용량 부족
+- 동시 편집 충돌
+
+**대응 방안:**
+```typescript
+// 로컬 스토리지 백업
+const useAutoSave = (content: string) => {
+  useEffect(() => {
+    // 로컬 스토리지에 백업
+    localStorage.setItem('draft-content', content);
+
+    // 서버 저장 시도
+    const saveToServer = async () => {
+      try {
+        await saveDraft(content);
+        // 성공 시 로컬 백업 제거
+        localStorage.removeItem('draft-content');
+      } catch (error) {
+        console.warn('자동 저장 실패, 로컬 백업 유지:', error);
+      }
+    };
+
+    const timeoutId = setTimeout(saveToServer, 3000);
+    return () => clearTimeout(timeoutId);
+  }, [content]);
+};
+```
+
+### 2. 이미지 업로드 실패
+**실패 시나리오:**
+- 파일 크기 초과
+- 지원하지 않는 형식
+- 업로드 서버 오류
+
+**대응 방안:**
+```typescript
+const handleImageUpload = async (file: File) => {
+  // 파일 크기 검증
+  if (file.size > 5 * 1024 * 1024) { // 5MB
+    throw new Error('이미지 크기는 5MB를 초과할 수 없습니다.');
+  }
+
+  // 파일 형식 검증
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('지원하지 않는 이미지 형식입니다.');
+  }
+
+  // 압축 후 업로드
+  const compressedFile = await compressImage(file);
+  return uploadToSupabase(compressedFile);
+};
+```
+
+### 3. 마크다운 렌더링 오류
+**실패 시나리오:**
+- 잘못된 마크다운 문법
+- XSS 공격 시도
+- 과도한 중첩 구조
+
+**대응 방안:**
+```typescript
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
+
+const safeMarkdownRender = (markdown: string): string => {
+  try {
+    // 마크다운을 HTML로 변환
+    const rawHtml = marked(markdown);
+
+    // XSS 방지를 위한 sanitize
+    const cleanHtml = DOMPurify.sanitize(rawHtml, {
+      ALLOWED_TAGS: [
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'p', 'br', 'strong', 'em', 'u', 's',
+        'ul', 'ol', 'li',
+        'blockquote', 'pre', 'code',
+        'a', 'img',
+        'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      ],
+      ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id'],
+    });
+
+    return cleanHtml;
+  } catch (error) {
+    console.error('마크다운 렌더링 오류:', error);
+    return '<p>마크다운 렌더링 중 오류가 발생했습니다.</p>';
+  }
+};
+```
+
+## 📊 성능 최적화
+
+### 1. 에디터 최적화
+```typescript
+// 대용량 텍스트 처리를 위한 가상화
+import { FixedSizeList as List } from 'react-window';
+
+const VirtualizedEditor = ({ content, onChange }: EditorProps) => {
+  const lines = content.split('\n');
+
+  const renderLine = ({ index, style }: any) => (
+    <div style={style}>
+      <input
+        value={lines[index]}
+        onChange={(e) => {
+          const newLines = [...lines];
+          newLines[index] = e.target.value;
+          onChange(newLines.join('\n'));
+        }}
+      />
+    </div>
+  );
+
+  return (
+    <List
+      height={600}
+      itemCount={lines.length}
+      itemSize={25}
+      itemData={lines}
+    >
+      {renderLine}
+    </List>
+  );
+};
+```
+
+### 2. 미리보기 최적화
+```typescript
+// 디바운스된 미리보기 렌더링
+import { useMemo } from 'react';
+import { useDebounce } from '@/shared/hooks/useDebounce';
+
+const OptimizedPreview = ({ content }: { content: string }) => {
+  const debouncedContent = useDebounce(content, 300);
+
+  const renderedHtml = useMemo(() => {
+    return safeMarkdownRender(debouncedContent);
+  }, [debouncedContent]);
+
+  return (
+    <div
+      className="markdown-preview"
+      dangerouslySetInnerHTML={{ __html: renderedHtml }}
+    />
+  );
+};
+```
+
 상세한 마크다운 처리와 에디터 구현은 `/features/마크다운뷰어/CLAUDE.md`를 참조하세요.
