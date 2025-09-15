@@ -21,7 +21,13 @@
       "Bash(npm run dev:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(git push:*)",
+      "mcp__microsoft-playwright-mcp__browser_type",
+      "mcp__microsoft-playwright-mcp__browser_snapshot",
+      "mcp__microsoft-playwright-mcp__browser_evaluate",
+      "mcp__microsoft-playwright-mcp__browser_hover",
+      "mcp__microsoft-playwright-mcp__browser_take_screenshot"
     ],
     "deny": [],
     "ask": []

@@ -57,13 +57,12 @@ pnpm format            # 코드 포맷팅
 pnpm check             # 타입 검사
 ```
 
-
-
 ## 📚 개발 가이드
 
 이 프로젝트는 **한국어 우선 개발**을 원칙으로 합니다. 상세한 개발 가이드는 다음 문서를 참조하세요:
 
 ### 주요 문서
+
 - **[CLAUDE.md](./CLAUDE.md)** - 프로젝트 전체 가이드
 - **[아키텍처 가이드](./docs/architecture.md)** - FSD 아키텍처 상세 설명
 - **[개발 프로세스](./docs/develop-process.md)** - TDD 개발 워크플로우
@@ -71,6 +70,7 @@ pnpm check             # 타입 검사
 - **[데이터 플로우](./docs/data-flow.md)** - Supabase 연동 가이드
 
 ### 레이어별 가이드
+
 - **[엔티티 레이어](./src/entities/CLAUDE.md)** - 도메인 모델 정의
 - **[기능 레이어](./src/features/CLAUDE.md)** - UI 및 비즈니스 로직
 

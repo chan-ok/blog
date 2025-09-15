@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Highlight.js GitHub Dark 테마 */
+@import "highlight.js/styles/github-dark.min.css";
+
 @custom-variant dark (&:is(.dark *));
 
 body {

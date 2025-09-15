@@ -4,14 +4,29 @@
 
 ## 🎯 주요 기능
 
-### 구현 예정 기능
-- 마크다운 에디터
-- 실시간 미리보기
-- 자동 저장 (임시저장)
-- 태그 입력 및 자동완성
-- 이미지 업로드
-- 발행/비공개 상태 관리
-- SEO 메타데이터 입력
+### ✅ 구현 완료된 기능
+- **마크다운 에디터**: 실시간 마크다운 편집 지원
+- **실시간 미리보기**: 모든 마크다운 요소 정상 렌더링
+  - 제목 (H1~H6) - 적절한 크기와 폰트 두께
+  - 목록 (순서 있는/없는, 중첩 목록 포함)
+  - 인용구 - 파란색 테두리와 배경색
+  - 코드 블록 - 문법 하이라이팅 (highlight.js)
+  - 텍스트 스타일링 (굵게, 기울임)
+  - 링크 - 새 탭에서 열기
+- **이미지 업로드**: 드래그 앤 드롭 및 버튼 클릭 지원
+  - 커서 위치에 정확한 삽입
+  - 다중 이미지 업로드
+  - 첫 번째 이미지 자동 썸네일 설정
+- **태그 입력**: 쉼표로 구분된 태그 시스템
+- **글 저장**: 임시저장 및 발행 기능
+- **SEO 메타데이터**: 제목, 요약, 썸네일 이미지 지원
+
+### 🚧 구현 예정 기능
+- 자동 저장 (백그라운드)
+- 태그 자동완성
+- 이미지 최적화 및 압축
+- 글 템플릿
+- 키보드 단축키
 
 ## 📁 컴포넌트 구조
 
@@ -427,3 +442,92 @@ const OptimizedPreview = ({ content }: { content: string }) => {
 ```
 
 상세한 마크다운 처리와 에디터 구현은 `/features/마크다운뷰어/CLAUDE.md`를 참조하세요.
+
+## 🔧 최신 구현 세부사항 (2025-09-15)
+
+### MarkdownEditor 컴포넌트 주요 개선사항
+
+#### 1. 미리보기 렌더링 완전 재구현
+```typescript
+// ReactMarkdown components에서 직접 스타일링 적용
+components={{
+  h1: ({ children, ...props }) => (
+    <h1 className="text-3xl font-bold text-gray-900 mt-8 mb-4 leading-tight" {...props}>
+      {children}
+    </h1>
+  ),
+  // ... H2~H6까지 모든 제목 레벨 구현
+  ul: ({ children, ...props }) => (
+    <ul className="list-disc list-outside ml-6 mb-4 space-y-1" {...props}>
+      {children}
+    </ul>
+  ),
+  blockquote: ({ children, ...props }) => (
+    <blockquote className="border-l-4 border-blue-500 bg-blue-50 pl-4 py-2 my-4 italic text-gray-800" {...props}>
+      {children}
+    </blockquote>
+  ),
+}}
+```
+
+#### 2. 이미지 드래그 앤 드롭 고도화
+```typescript
+// 커서 위치 정확한 삽입 구현
+const insertAtCursor = (text: string) => {
+  const textarea = 에디터Ref.current;
+  if (!textarea) return;
+
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const currentValue = textarea.value;
+
+  const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
+  set내용(newValue);
+
+  // 커서 위치를 삽입된 텍스트 뒤로 이동
+  setTimeout(() => {
+    textarea.focus();
+    textarea.setSelectionRange(start + text.length, start + text.length);
+  }, 0);
+};
+```
+
+#### 3. 썸네일 자동 설정 로직
+```typescript
+// 첫 번째 이미지를 자동으로 썸네일로 설정
+const processImage = (file: File): Promise<string> => {
+  return new Promise((resolve) => {
+    const imageUrl = URL.createObjectURL(file);
+
+    // 첫 번째 이미지를 썸네일로 설정
+    if (!썸네일URL) {
+      set썸네일URL(imageUrl);
+    }
+
+    resolve(imageUrl);
+  });
+};
+```
+
+### 해결된 문제들
+
+1. **제목이 렌더링되지 않던 문제**
+   - Tailwind prose 클래스 대신 ReactMarkdown components에서 직접 스타일링
+   - 모든 제목 레벨(H1~H6)에 적절한 크기와 여백 적용
+
+2. **목록이 표시되지 않던 문제**
+   - `list-disc`, `list-decimal` 클래스와 적절한 패딩 적용
+   - 중첩 목록 들여쓰기 정상화
+
+3. **인용구 스타일링 문제**
+   - 파란색 왼쪽 테두리와 배경색 적용
+   - 적절한 패딩과 이탤릭 스타일 추가
+
+### 의존성 추가
+- `highlight.js`: 코드 블록 문법 하이라이팅
+- `@tailwindcss/typography`: Tailwind Typography 플러그인 (기존)
+
+### 브라우저 테스트 결과
+✅ 모든 마크다운 요소가 정상적으로 렌더링됨
+✅ 이미지 드래그 앤 드롭이 커서 위치에 정확히 삽입됨
+✅ 첫 번째 이미지가 썸네일로 자동 설정됨
