@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { createMemoryHistory, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import PostCard from '../PostCard';
@@ -22,27 +21,11 @@ const samplePost: Post = {
 describe('PostCard 컴포넌트', () => {
   let queryClient: QueryClient;
 
-  const createWrapper = ({ children }: { children: ReactNode }) => {
-    const history = createMemoryHistory({
-      initialEntries: ['/'],
-    });
-
-    // 기본 라우트 구성
-    const router = createRouter({
-      history,
-      routeTree: {
-        id: '__root__',
-        path: '/',
-        component: () => children,
-      } as any,
-    });
-
-    return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    );
-  };
+  const createWrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
 
   beforeEach(() => {
     queryClient = new QueryClient({

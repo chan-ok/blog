@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { AuthError } from '@supabase/supabase-js';
 import type { LoginRequest, SignupRequest } from '../../model/types';
 import {
   login,
@@ -53,8 +54,28 @@ describe('사용자 API 함수', () => {
 
       const expectedResponse = {
         data: {
-          user: { id: 'user-id', email: 'test@example.com' },
-          session: { access_token: 'token' },
+          user: {
+            id: 'user-id',
+            email: 'test@example.com',
+            app_metadata: {},
+            user_metadata: {},
+            aud: 'authenticated',
+            created_at: '2023-01-01T00:00:00Z'
+          },
+          session: {
+            access_token: 'token',
+            refresh_token: 'refresh_token',
+            expires_in: 3600,
+            token_type: 'bearer',
+            user: {
+              id: 'user-id',
+              email: 'test@example.com',
+              app_metadata: {},
+              user_metadata: {},
+              aud: 'authenticated',
+              created_at: '2023-01-01T00:00:00Z'
+            }
+          },
         },
         error: null,
       };
@@ -80,7 +101,7 @@ describe('사용자 API 함수', () => {
 
       const errorResponse = {
         data: { user: null, session: null },
-        error: { message: '로그인 실패' },
+        error: new AuthError('로그인 실패', 400, 'invalid_credentials'),
       };
 
       const { supabase } = await import('@/shared/config/supabase');
@@ -100,7 +121,14 @@ describe('사용자 API 함수', () => {
 
       const expectedResponse = {
         data: {
-          user: { id: 'new-user-id', email: 'newuser@example.com' },
+          user: {
+            id: 'new-user-id',
+            email: 'newuser@example.com',
+            app_metadata: {},
+            user_metadata: {},
+            aud: 'authenticated',
+            created_at: '2023-01-01T00:00:00Z'
+          },
           session: null,
         },
         error: null,
@@ -144,7 +172,10 @@ describe('사용자 API 함수', () => {
           user: {
             id: 'current-user-id',
             email: 'current@example.com',
+            app_metadata: {},
             user_metadata: { name: '현재 사용자' },
+            aud: 'authenticated',
+            created_at: '2023-01-01T00:00:00Z'
           },
         },
         error: null,

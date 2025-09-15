@@ -5,17 +5,15 @@ import type { ReactNode } from 'react';
 import { Contact } from '../contact';
 
 // Supabase 모킹
-vi.mock('../../shared/config/supabase', () => {
-  const mockSupabaseFunctions = {
-    invoke: vi.fn(),
-  };
+const mockSupabaseFunctions = {
+  invoke: vi.fn(),
+};
 
-  return {
-    supabase: {
-      functions: mockSupabaseFunctions,
-    },
-  };
-});
+vi.mock('../../shared/config/supabase', () => ({
+  supabase: {
+    functions: mockSupabaseFunctions,
+  },
+}));
 
 describe('Contact 페이지', () => {
   let queryClient: QueryClient;
@@ -36,10 +34,7 @@ describe('Contact 페이지', () => {
 
     vi.clearAllMocks();
     // supabase 모킹 함수 설정
-    const { supabase } = vi.mocked(import('../../shared/config/supabase'));
-    if (supabase?.functions?.invoke) {
-      supabase.functions.invoke.mockResolvedValue({ error: null });
-    }
+    mockSupabaseFunctions.invoke.mockResolvedValue({ error: null });
   });
 
   it('연락처 페이지가 올바르게 렌더링되어야 한다', () => {

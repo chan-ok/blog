@@ -1,5 +1,8 @@
 import { corsHeaders } from '../_shared/cors.ts'
 
+/// <reference types="https://deno.land/x/xhr@0.3.0/mod.d.ts" />
+declare const Deno: any;
+
 interface ContactRequest {
   name: string
   email: string
@@ -7,7 +10,7 @@ interface ContactRequest {
   message: string
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   console.log('📧 Contact function called:', req.method, req.url)
 
   // CORS 처리
@@ -91,7 +94,7 @@ ${requestData.message}
     return new Response(
       JSON.stringify({
         error: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        details: error.message
+        details: error instanceof Error ? error.message : String(error)
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
