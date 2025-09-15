@@ -1,149 +1,183 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useLogin } from '@/entities/user/hooks/useAuth';
 import type { LoginRequest } from '@/entities/user/model/types';
+import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/components/ui/form';
+import { Alert, AlertDescription } from '@/shared/components/ui/alert';
+import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 interface LoginFormProps {
   onSuccess?: () => void;
+  onError?: (error: string) => void;
   className?: string;
 }
 
-interface FormErrors {
-  email?: string;
-  password?: string;
-}
+export function LoginForm({ onSuccess, onError, className = '' }: LoginFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState<string>('');
 
-export function LoginForm({ onSuccess, className = '' }: LoginFormProps) {
-  const [formData, setFormData] = useState<LoginRequest>({
-    email: '',
-    password: '',
+  const form = useForm<LoginRequest>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
-  const [errors, setErrors] = useState<FormErrors>({});
 
   const loginMutation = useLogin();
 
-  // 로그인 성공 시 콜백 호출
-  useEffect(() => {
-    if (loginMutation.isSuccess && onSuccess) {
-      onSuccess();
+  const validateForm = (data: LoginRequest) => {
+    if (!data.email.trim()) {
+      form.setError('email', { message: '이메일을 입력해주세요' });
+      return false;
     }
-  }, [loginMutation.isSuccess, onSuccess]);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      form.setError('email', { message: '올바른 이메일 형식을 입력해주세요' });
+      return false;
+    }
+    if (!data.password.trim()) {
+      form.setError('password', { message: '비밀번호를 입력해주세요' });
+      return false;
+    }
+    if (data.password.length < 6) {
+      form.setError('password', { message: '비밀번호는 최소 6자 이상이어야 합니다' });
+      return false;
+    }
+    return true;
+  };
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  const onSubmit = async (data: LoginRequest) => {
+    try {
+      setLoginError('');
 
-    // 이메일 검증
-    if (!formData.email.trim()) {
-      newErrors.email = '이메일을 입력해주세요';
-    } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        newErrors.email = '올바른 이메일 형식이 아닙니다';
+      if (!validateForm(data)) {
+        return;
       }
-    }
 
-    // 비밀번호 검증
-    if (!formData.password.trim()) {
-      newErrors.password = '비밀번호를 입력해주세요';
-    }
+      await loginMutation.mutateAsync(data);
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+      onSuccess?.();
+    } catch (error) {
+      const errorMessage = error instanceof Error
+        ? error.message
+        : '로그인 중 오류가 발생했습니다.';
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    loginMutation.mutate(formData);
-  };
-
-  const handleInputChange = (field: keyof LoginRequest) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: e.target.value,
-    }));
-
-    // 입력 시 해당 필드 에러 제거
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: undefined,
-      }));
+      setLoginError(errorMessage);
+      onError?.(errorMessage);
     }
   };
 
   return (
     <div className={`w-full max-w-md mx-auto ${className}`}>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              이메일
-            </label>
-            <input
-              id="email"
-              type="text"
-              value={formData.email}
-              onChange={handleInputChange('email')}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="이메일을 입력하세요"
-              disabled={loginMutation.isPending}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          관리자 로그인
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
+          블로그 관리를 위해 로그인해주세요
+        </p>
+      </div>
+
+      {loginError && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{loginError}</AlertDescription>
+        </Alert>
+      )}
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>이메일</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="admin@example.com"
+                    autoComplete="email"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              비밀번호
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={handleInputChange('password')}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.password ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="비밀번호를 입력하세요"
-              disabled={loginMutation.isPending}
-            />
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>비밀번호</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="비밀번호를 입력하세요"
+                      autoComplete="current-password"
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-400" />
+                      )}
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
-        </div>
+          />
 
-        {loginMutation.error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">
-              {loginMutation.error.message}
-            </p>
-          </div>
-        )}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loginMutation.isPending}
+          >
+            {loginMutation.isPending ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                로그인 중...
+              </>
+            ) : (
+              '로그인'
+            )}
+          </Button>
+        </form>
+      </Form>
 
-        <button
-          type="submit"
-          disabled={loginMutation.isPending}
-          className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {loginMutation.isPending ? '로그인 중...' : '로그인'}
-        </button>
-      </form>
+      <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p>관리자 계정으로만 로그인 가능합니다.</p>
+        <p className="mt-1">
+          계정이 없으시면{' '}
+          <a
+            href="mailto:admin@example.com"
+            className="text-blue-600 hover:text-blue-500 dark:text-blue-400"
+          >
+            관리자에게 문의
+          </a>
+          해주세요.
+        </p>
+      </div>
     </div>
   );
 }
