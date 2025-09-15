@@ -42,7 +42,7 @@ pnpm test         # 테스트 실행
 - **프레임워크**: React 19 + Vite + TypeScript
 - **라우팅**: TanStack Router (파일 기반, `src/pages/`)
 - **상태 관리**: TanStack Query
-- **스타일링**: Tailwind CSS v4 + shadcn/ui
+- **UI 컴포넌트**: **shadcn/ui 최우선 활용** + Tailwind CSS v4
 - **백엔드**: Supabase
 - **테스트**: Vitest (TDD 기반 개발)
 
@@ -79,8 +79,174 @@ src/
    - 주석, 문서, 커밋 메시지, UI 텍스트: 한국어
    - **절대 금지**: 한글 식별자 사용 (예: `사용자`, `로그인하기`, `이메일` 등)
 3. **타입 안전성**: TypeScript strict 모드 사용
-4. **컴포넌트**: shadcn/ui 기반 일관된 UI
+4. **🎨 UI 컴포넌트 개발 원칙**:
+   - **shadcn/ui 최우선**: 모든 UI 요소는 shadcn/ui 컴포넌트부터 검토
+   - **커스텀 스타일 최소화**: Tailwind 클래스보다 shadcn/ui 컴포넌트 활용
+   - **일관성 유지**: shadcn/ui 디자인 시스템 준수
+   - **접근성 보장**: shadcn/ui의 내장 접근성 기능 활용
 5. **커밋 규칙**: **[Git 커밋 가이드](./docs/commit-guide.md)** 준수 - Conventional Commits 스펙 적용
+6. **🌿 Git 브랜치 워크플로우**: 모든 기능 개발은 feature 브랜치에서 진행 후 PR을 통해 main 브랜치로 병합
+
+## 🌿 Git 브랜치 기반 개발 프로세스
+
+**⚠️ 중요: main 브랜치에서 직접 작업 금지!**
+
+모든 기능 개발, 버그 수정, 문서 작업은 반드시 별도 브랜치에서 진행해야 합니다.
+
+### 📋 브랜치 워크플로우
+
+#### 1. 새 기능 개발 시작
+```bash
+# 1. main 브랜치에서 최신 코드 받기
+git checkout main
+git pull origin main
+
+# 2. 새 기능 브랜치 생성
+git checkout -b feature/기능명-설명
+
+# 예시
+git checkout -b feature/user-authentication
+git checkout -b feature/blog-editor-preview
+git checkout -b fix/markdown-rendering-bug
+```
+
+#### 2. 브랜치 네이밍 규칙
+- **기능 추가**: `feature/기능명-설명`
+- **버그 수정**: `fix/버그명-설명`
+- **문서 작업**: `docs/문서명-설명`
+- **리팩토링**: `refactor/리팩토링대상-설명`
+- **테스트**: `test/테스트대상-설명`
+
+**브랜치명 예시:**
+```bash
+feature/post-editor-autosave     # 글 에디터 자동저장 기능
+feature/admin-dashboard          # 관리자 대시보드
+fix/header-mobile-responsive     # 헤더 모바일 반응형 버그
+docs/api-documentation           # API 문서화
+refactor/shared-components       # 공통 컴포넌트 리팩토링
+test/post-crud-operations        # 글 CRUD 테스트
+```
+
+#### 3. 개발 진행
+```bash
+# 브랜치에서 개발 진행
+git add .
+git commit -m "feat: 사용자 인증 폼 컴포넌트 구현"
+
+# 정기적으로 main 브랜치 변경사항 반영
+git checkout main
+git pull origin main
+git checkout feature/your-feature
+git merge main  # 또는 git rebase main
+```
+
+#### 4. Pull Request 생성
+```bash
+# 브랜치를 원격 저장소에 푸시
+git push origin feature/your-feature
+
+# GitHub에서 Pull Request 생성
+# - 제목: 명확하고 간결한 기능 설명
+# - 내용: 변경사항, 테스트 방법, 스크린샷 등
+```
+
+#### 5. 코드 리뷰 및 병합
+- **자체 검토**: PR 생성 후 본인이 먼저 코드 검토
+- **테스트 확인**: CI/CD 테스트 통과 확인
+- **병합**: Squash and merge 또는 Merge commit 사용
+- **브랜치 정리**: 병합 후 feature 브랜치 삭제
+
+### 🚨 금지사항
+
+```bash
+# ❌ 절대 금지: main 브랜치에서 직접 작업
+git checkout main
+git add .
+git commit -m "fix: 버그 수정"  # 금지!
+
+# ❌ 금지: main에 직접 푸시
+git push origin main  # 금지!
+```
+
+### ✅ 올바른 워크플로우 예시
+
+```bash
+# 1. 새 기능 시작
+git checkout main
+git pull origin main
+git checkout -b feature/blog-search
+
+# 2. 개발 진행
+git add src/features/search/
+git commit -m "feat: 블로그 검색 기능 기본 구조 구현"
+
+git add src/features/search/components/
+git commit -m "feat: 검색 입력 컴포넌트 구현"
+
+git add src/features/search/hooks/
+git commit -m "feat: 검색 결과 훅 구현"
+
+# 3. 테스트 추가
+git add src/features/search/__tests__/
+git commit -m "test: 검색 기능 단위 테스트 추가"
+
+# 4. 문서 업데이트
+git add src/features/search/CLAUDE.md
+git commit -m "docs: 검색 기능 구현 가이드 작성"
+
+# 5. 빌드 및 테스트 확인
+pnpm build  # 빌드 성공 확인
+pnpm test   # 테스트 통과 확인
+
+# 6. 원격 브랜치에 푸시
+git push origin feature/blog-search
+
+# 7. GitHub에서 Pull Request 생성
+# 8. 코드 리뷰 및 병합 대기
+```
+
+### 🔄 브랜치 동기화
+
+**정기적으로 main 브랜치 변경사항을 feature 브랜치에 반영:**
+
+```bash
+# 방법 1: Merge (권장)
+git checkout main
+git pull origin main
+git checkout feature/your-feature
+git merge main
+
+# 방법 2: Rebase (고급 사용자)
+git checkout feature/your-feature
+git rebase main
+```
+
+### 📋 브랜치 작업 체크리스트
+
+**새 기능 시작 전:**
+- [ ] main 브랜치에서 최신 코드 pull 받기
+- [ ] 명확한 브랜치명으로 feature 브랜치 생성
+- [ ] 브랜치가 올바르게 생성되었는지 확인
+
+**개발 진행 중:**
+- [ ] 작은 단위로 자주 커밋하기
+- [ ] Conventional Commits 규칙 준수
+- [ ] 정기적으로 main 브랜치와 동기화
+- [ ] 빌드 에러 없이 개발 진행
+
+**PR 생성 전:**
+- [ ] 최종 빌드 테스트 (`pnpm build`)
+- [ ] 단위 테스트 실행 (`pnpm test`)
+- [ ] 코드 자체 검토 완료
+- [ ] 관련 문서 업데이트 완료
+
+**PR 생성 시:**
+- [ ] 명확한 제목과 설명 작성
+- [ ] 변경사항 스크린샷 첨부 (UI 변경 시)
+- [ ] 테스트 방법 설명
+- [ ] 관련 이슈 링크 (있는 경우)
+
+이 워크플로우를 통해 코드 품질을 유지하고 팀 협업을 원활하게 진행할 수 있습니다.
 
 ## 📝 Git 커밋 시 필수 확인사항
 
@@ -97,5 +263,144 @@ feat: 사용자 인증 시스템 구현
 fix: 마크다운 렌더링 버그 수정
 docs: 신입 개발자 온보딩 가이드 추가
 ```
+
+## 🎨 shadcn/ui 활용 가이드
+
+### 📋 현재 프로젝트에서 shadcn/ui로 대체해야 할 컴포넌트들
+
+#### 1. 즉시 대체 가능한 컴포넌트
+- **Navigation Menu** → Header.tsx의 네비게이션
+- **Button** → 모든 버튼 요소 (저장, 발행, 로그인 등)
+- **Input/Textarea** → MarkdownEditor.tsx의 입력 필드들
+- **Card** → PostCard.tsx 컴포넌트
+- **Badge** → TagBadge.tsx 컴포넌트
+- **Toast (Sonner)** → 저장/발행 성공/실패 알림
+- **Scroll Area** → 마크다운 에디터의 미리보기 영역
+
+#### 2. 추가 활용 가능한 컴포넌트
+- **Form (React Hook Form)** → LoginForm.tsx 개선
+- **Dialog** → 모달창 (이미지 업로드, 확인창 등)
+- **Popover** → 사용자 메뉴, 태그 자동완성
+- **Skeleton** → 로딩 상태 개선
+- **Alert** → 에러/경고 메시지
+- **Separator** → 구분선
+- **Switch** → 다크모드 토글
+
+### 🚀 shadcn/ui 설치 및 설정
+
+```bash
+# shadcn/ui 초기화 (이미 완료된 상태)
+pnpm dlx shadcn@latest init
+
+# 자주 사용할 핵심 컴포넌트 설치
+pnpm dlx shadcn@latest add button input textarea card badge
+pnpm dlx shadcn@latest add navigation-menu toast form dialog
+pnpm dlx shadcn@latest add scroll-area skeleton alert separator
+
+# 또는 모든 컴포넌트 한번에 설치
+pnpm dlx shadcn@latest add -a
+```
+
+### 📝 컴포넌트 사용 예시
+
+#### Navigation Menu 적용 예시
+```typescript
+// Before: 기존 Header.tsx
+<nav className="hidden md:flex items-center space-x-8">
+  <Link className="text-gray-600 hover:text-gray-900">홈</Link>
+</nav>
+
+// After: shadcn/ui NavigationMenu 사용
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem } from "@/components/ui/navigation-menu"
+
+<NavigationMenu>
+  <NavigationMenuItem>
+    <Link className={navigationMenuTriggerStyle()}>홈</Link>
+  </NavigationMenuItem>
+</NavigationMenu>
+```
+
+#### Button 적용 예시
+```typescript
+// Before: 기존 버튼
+<button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+  저장
+</button>
+
+// After: shadcn/ui Button 사용
+import { Button } from "@/components/ui/button"
+
+<Button variant="default" size="default">저장</Button>
+<Button variant="outline">임시저장</Button>
+<Button variant="destructive">삭제</Button>
+```
+
+#### Form 적용 예시
+```typescript
+// shadcn/ui Form + React Hook Form 조합
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+
+<Form {...form}>
+  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+    <FormField
+      control={form.control}
+      name="email"
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>이메일</FormLabel>
+          <FormControl>
+            <Input placeholder="이메일을 입력하세요" {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+    <Button type="submit">로그인</Button>
+  </form>
+</Form>
+```
+
+#### Toast 알림 적용 예시
+```typescript
+import { toast } from "sonner"
+
+// 성공 알림
+const handleSave = async () => {
+  try {
+    await savePost(data);
+    toast.success("글이 저장되었습니다!");
+  } catch (error) {
+    toast.error("저장에 실패했습니다.");
+  }
+};
+```
+
+### 🎯 개발 우선순위
+
+1. **Phase 1 - 핵심 UI 개선 (우선)**
+   - [ ] Button 컴포넌트로 모든 버튼 통일
+   - [ ] Toast(Sonner) 알림 시스템 구축
+   - [ ] Card 컴포넌트로 PostCard 개선
+   - [ ] Input/Textarea 컴포넌트 적용
+
+2. **Phase 2 - 네비게이션 및 폼 개선**
+   - [ ] Navigation Menu로 Header 리팩토링
+   - [ ] Form 컴포넌트로 LoginForm 개선
+   - [ ] Badge 컴포넌트로 TagBadge 개선
+   - [ ] Dialog 컴포넌트로 모달 구현
+
+3. **Phase 3 - 고급 기능**
+   - [ ] Scroll Area로 에디터 미리보기 개선
+   - [ ] Skeleton으로 로딩 상태 개선
+   - [ ] Popover로 드롭다운 메뉴 구현
+
+### 💡 개발 팁
+
+- **컴포넌트 검색**: [ui.shadcn.com](https://ui.shadcn.com)에서 필요한 컴포넌트 찾기
+- **커스터마이징**: `src/components/ui/` 폴더의 컴포넌트 파일 직접 수정 가능
+- **테마 설정**: `tailwind.config.js`에서 색상 팔레트 커스터마이징
+- **접근성**: shadcn/ui는 기본적으로 WCAG 가이드라인 준수
 
 더 자세한 내용은 각 폴더의 CLAUDE.md 파일을 확인하세요.
