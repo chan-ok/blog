@@ -1,4 +1,6 @@
 // entities에서 타입을 가져와서 사용 (영어 네이밍 규칙 준수)
+import type { BlogPost } from '@/entities/post/model/types';
+
 export type {
   BlogPost,
   PostStatus,

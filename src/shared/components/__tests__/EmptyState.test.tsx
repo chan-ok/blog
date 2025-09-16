@@ -10,7 +10,7 @@ describe('EmptyState 컴포넌트', () => {
       initialEntries: ['/'],
     });
 
-    const router = createRouter({
+    createRouter({
       history,
       routeTree: {
         id: '__root__',

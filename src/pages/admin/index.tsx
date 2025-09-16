@@ -5,34 +5,34 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
-  const 통계데이터 = {
-    총글수: 25,
-    총조회수: 1840,
-    월간조회수: 420,
-    댓글수: 68,
+  const statsData = {
+    totalPosts: 25,
+    totalViews: 1840,
+    monthlyViews: 420,
+    totalComments: 68,
   };
 
-  const 최근글목록 = [
+  const recentPosts = [
     {
       id: 1,
-      제목: "React 기초 알아보기",
-      상태: "발행됨",
-      조회수: 145,
-      작성일: "2024-01-15",
+      title: "React 기초 알아보기",
+      status: "발행됨",
+      viewCount: 145,
+      createdAt: "2024-01-15",
     },
     {
       id: 2,
-      제목: "TypeScript로 시작하는 타입 안전 개발",
-      상태: "임시저장",
-      조회수: 0,
-      작성일: "2024-01-14",
+      title: "TypeScript로 시작하는 타입 안전 개발",
+      status: "임시저장",
+      viewCount: 0,
+      createdAt: "2024-01-14",
     },
     {
       id: 3,
-      제목: "Vite로 빠른 개발 환경 구축하기",
-      상태: "발행됨",
-      조회수: 98,
-      작성일: "2024-01-13",
+      title: "Vite로 빠른 개발 환경 구축하기",
+      status: "발행됨",
+      viewCount: 98,
+      createdAt: "2024-01-13",
     },
   ];
 
@@ -53,7 +53,7 @@ function AdminDashboard() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">총 글 수</p>
-              <p className="text-2xl font-bold text-gray-900">{통계데이터.총글수}</p>
+              <p className="text-2xl font-bold text-gray-900">{statsData.totalPosts}</p>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@ function AdminDashboard() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">총 조회수</p>
-              <p className="text-2xl font-bold text-gray-900">{통계데이터.총조회수.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">{statsData.totalViews.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -82,7 +82,7 @@ function AdminDashboard() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">월간 조회수</p>
-              <p className="text-2xl font-bold text-gray-900">{통계데이터.월간조회수}</p>
+              <p className="text-2xl font-bold text-gray-900">{statsData.monthlyViews}</p>
             </div>
           </div>
         </div>
@@ -96,7 +96,7 @@ function AdminDashboard() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">댓글</p>
-              <p className="text-2xl font-bold text-gray-900">{통계데이터.댓글수}</p>
+              <p className="text-2xl font-bold text-gray-900">{statsData.totalComments}</p>
             </div>
           </div>
         </div>
@@ -115,23 +115,23 @@ function AdminDashboard() {
               </Link>
             </div>
             <div className="divide-y divide-gray-200">
-              {최근글목록.map((글) => (
-                <div key={글.id} className="p-6">
+              {recentPosts.map((post) => (
+                <div key={post.id} className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="text-lg font-medium text-gray-900 mb-1">
-                        {글.제목}
+                        {post.title}
                       </h3>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>{글.작성일}</span>
+                        <span>{post.createdAt}</span>
                         <span className={`px-2 py-1 rounded text-xs ${
-                          글.상태 === "발행됨"
+                          post.status === "발행됨"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
                         }`}>
-                          {글.상태}
+                          {post.status}
                         </span>
-                        <span>조회수: {글.조회수}</span>
+                        <span>조회수: {post.viewCount}</span>
                       </div>
                     </div>
                     <div className="flex space-x-2">

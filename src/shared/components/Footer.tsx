@@ -115,12 +115,6 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center space-x-6 text-sm text-gray-500">
-            <Link to="/privacy" className="hover:text-gray-700 transition-colors">
-              개인정보처리방침
-            </Link>
-            <Link to="/terms" className="hover:text-gray-700 transition-colors">
-              이용약관
-            </Link>
             <span className="text-xs">
               Made with ❤️ by Claude Code
             </span>

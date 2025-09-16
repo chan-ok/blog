@@ -1,4 +1,4 @@
-import type { BlogPost, BlogPostListItem, PostStatus } from '@/entities/post/model/types';
+import type { BlogPost } from '@/entities/post/model/types';
 import type { User } from '@/entities/user/model/types';
 
 // 샘플 작성자 정보
@@ -154,6 +154,14 @@ export const getPopularTags = (count: number = 4): Tag[] => {
   return sampleTags
     .sort((a, b) => b.postCount - a.postCount)
     .slice(0, count);
+};
+
+export const getTags = (): string[] => {
+  return sampleTags.map(tag => tag.name);
+};
+
+export const getPostBySlug = (slug: string): BlogPost | null => {
+  return sampleBlogPosts.find(post => post.slug === slug) || null;
 };
 
 // 관리자용 통계 데이터

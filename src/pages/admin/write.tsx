@@ -1,22 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { MarkdownEditor } from '@/features/post-editor/components/MarkdownEditor';
+import { MarkdownEditor } from '@/features/post/editor/components/MarkdownEditor';
 
 export const Route = createFileRoute("/admin/write")({
   component: WritePost,
 });
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
-type PublishStatus = 'idle' | 'publishing' | 'published' | 'error';
 
 function WritePost() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
-  const [publishStatus, setPublishStatus] = useState<PublishStatus>('idle');
   const [errorMessage, setErrorMessage] = useState("");
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   const handleSave = async (data: any) => {
-    if (!data.제목?.trim()) {
+    if (!data.title?.trim()) {
       setErrorMessage("제목을 입력해주세요.");
       return;
     }
@@ -30,7 +27,6 @@ function WritePost() {
 
       console.log("글 저장:", data);
       setSaveStatus('saved');
-      setLastSaved(new Date());
 
       // 2초 후 상태 초기화
       setTimeout(() => setSaveStatus('idle'), 2000);

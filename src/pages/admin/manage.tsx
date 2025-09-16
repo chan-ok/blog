@@ -6,67 +6,67 @@ export const Route = createFileRoute("/admin/manage")({
 });
 
 function PostManagement() {
-  const [검색어, set검색어] = useState("");
-  const [상태필터, set상태필터] = useState("전체");
-  const [정렬, set정렬] = useState("최신순");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("전체");
+  const [sortOrder, setSortOrder] = useState("최신순");
 
-  const 글목록 = [
+  const postList = [
     {
       id: 1,
-      제목: "React 기초 알아보기",
-      상태: "발행됨",
-      조회수: 145,
-      댓글수: 5,
-      작성일: "2024-01-15",
-      수정일: "2024-01-15",
-      태그: ["React", "JavaScript"],
+      title: "React 기초 알아보기",
+      status: "발행됨",
+      viewCount: 145,
+      commentCount: 5,
+      createdAt: "2024-01-15",
+      updatedAt: "2024-01-15",
+      tags: ["React", "JavaScript"],
     },
     {
       id: 2,
-      제목: "TypeScript로 시작하는 타입 안전 개발",
-      상태: "임시저장",
-      조회수: 0,
-      댓글수: 0,
-      작성일: "2024-01-14",
-      수정일: "2024-01-14",
-      태그: ["TypeScript", "React"],
+      title: "TypeScript로 시작하는 타입 안전 개발",
+      status: "임시저장",
+      viewCount: 0,
+      commentCount: 0,
+      createdAt: "2024-01-14",
+      updatedAt: "2024-01-14",
+      tags: ["TypeScript", "React"],
     },
     {
       id: 3,
-      제목: "Vite로 빠른 개발 환경 구축하기",
-      상태: "발행됨",
-      조회수: 98,
-      댓글수: 3,
-      작성일: "2024-01-13",
-      수정일: "2024-01-13",
-      태그: ["Vite", "개발환경"],
+      title: "Vite로 빠른 개발 환경 구축하기",
+      status: "발행됨",
+      viewCount: 98,
+      commentCount: 3,
+      createdAt: "2024-01-13",
+      updatedAt: "2024-01-13",
+      tags: ["Vite", "개발환경"],
     },
     {
       id: 4,
-      제목: "모던 CSS 기법들",
-      상태: "예약발행",
-      조회수: 0,
-      댓글수: 0,
-      작성일: "2024-01-12",
-      수정일: "2024-01-12",
-      태그: ["CSS", "웹디자인"],
+      title: "모던 CSS 기법들",
+      status: "예약발행",
+      viewCount: 0,
+      commentCount: 0,
+      createdAt: "2024-01-12",
+      updatedAt: "2024-01-12",
+      tags: ["CSS", "웹디자인"],
     },
   ];
 
-  const 필터된글목록 = 글목록
-    .filter(글 =>
-      (상태필터 === "전체" || 글.상태 === 상태필터) &&
-      (검색어 === "" || 글.제목.toLowerCase().includes(검색어.toLowerCase()))
+  const filteredPostList = postList
+    .filter(post =>
+      (statusFilter === "전체" || post.status === statusFilter) &&
+      (searchTerm === "" || post.title.toLowerCase().includes(searchTerm.toLowerCase()))
     )
     .sort((a, b) => {
-      if (정렬 === "최신순") return new Date(b.작성일).getTime() - new Date(a.작성일).getTime();
-      if (정렬 === "오래된순") return new Date(a.작성일).getTime() - new Date(b.작성일).getTime();
-      if (정렬 === "조회수순") return b.조회수 - a.조회수;
+      if (sortOrder === "최신순") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (sortOrder === "오래된순") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      if (sortOrder === "조회수순") return b.viewCount - a.viewCount;
       return 0;
     });
 
-  const 상태아이콘 = (상태: string) => {
-    switch (상태) {
+  const getStatusIcon = (status: string) => {
+    switch (status) {
       case "발행됨":
         return <span className="w-2 h-2 bg-green-500 rounded-full"></span>;
       case "임시저장":
@@ -100,19 +100,19 @@ function PostManagement() {
               <input
                 type="text"
                 placeholder="글 제목으로 검색..."
-                value={검색어}
-                onChange={(e) => set검색어(e.target.value)}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div className="flex items-center space-x-4">
               <div>
-                <label htmlFor="상태필터" className="sr-only">상태 필터</label>
+                <label htmlFor="statusFilter" className="sr-only">상태 필터</label>
                 <select
-                  id="상태필터"
-                  value={상태필터}
-                  onChange={(e) => set상태필터(e.target.value)}
+                  id="statusFilter"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="전체">모든 상태</option>
@@ -123,11 +123,11 @@ function PostManagement() {
               </div>
 
               <div>
-                <label htmlFor="정렬" className="sr-only">정렬</label>
+                <label htmlFor="sortOrder" className="sr-only">정렬</label>
                 <select
-                  id="정렬"
-                  value={정렬}
-                  onChange={(e) => set정렬(e.target.value)}
+                  id="sortOrder"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="최신순">최신순</option>
@@ -140,7 +140,7 @@ function PostManagement() {
         </div>
 
         <div className="divide-y divide-gray-200">
-          {필터된글목록.length === 0 ? (
+          {filteredPostList.length === 0 ? (
             <div className="p-12 text-center">
               <div className="text-gray-400 text-6xl mb-4">📝</div>
               <h3 className="text-lg font-semibold text-gray-600 mb-2">
@@ -151,53 +151,53 @@ function PostManagement() {
               </p>
             </div>
           ) : (
-            필터된글목록.map((글) => (
-              <div key={글.id} className="p-6 hover:bg-gray-50 transition-colors">
+            filteredPostList.map((post) => (
+              <div key={post.id} className="p-6 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-3 mb-2">
-                      {상태아이콘(글.상태)}
+                      {getStatusIcon(post.status)}
                       <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {글.제목}
+                        {post.title}
                       </h3>
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        글.상태 === "발행됨"
+                        post.status === "발행됨"
                           ? "bg-green-100 text-green-800"
-                          : 글.상태 === "임시저장"
+                          : post.status === "임시저장"
                           ? "bg-yellow-100 text-yellow-800"
                           : "bg-blue-100 text-blue-800"
                       }`}>
-                        {글.상태}
+                        {post.status}
                       </span>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-3">
-                      <span>작성: {글.작성일}</span>
+                      <span>작성: {post.createdAt}</span>
                       <span>•</span>
-                      <span>수정: {글.수정일}</span>
+                      <span>수정: {post.updatedAt}</span>
                       <span>•</span>
-                      <span>조회수: {글.조회수}</span>
+                      <span>조회수: {post.viewCount}</span>
                       <span>•</span>
-                      <span>댓글: {글.댓글수}</span>
+                      <span>댓글: {post.commentCount}</span>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                      {글.태그.map((태그) => (
+                      {post.tags.map((tag) => (
                         <span
-                          key={태그}
+                          key={tag}
                           className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
                         >
-                          {태그}
+                          {tag}
                         </span>
                       ))}
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-2 ml-4">
-                    {글.상태 === "발행됨" && (
+                    {post.status === "발행됨" && (
                       <Link
                         to="/posts/$slug"
-                        params={{ slug: 글.제목 }}
+                        params={{ slug: post.title }}
                         className="px-3 py-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
                       >
                         보기
@@ -219,11 +219,11 @@ function PostManagement() {
           )}
         </div>
 
-        {필터된글목록.length > 0 && (
+        {filteredPostList.length > 0 && (
           <div className="p-6 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">
-                총 {필터된글목록.length}개의 글이 있습니다
+                총 {filteredPostList.length}개의 글이 있습니다
               </p>
               <div className="flex space-x-2">
                 <button className="px-3 py-2 border border-gray-300 rounded text-sm hover:bg-gray-50">
@@ -250,24 +250,24 @@ function PostManagement() {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">총 글 수</span>
-              <span className="font-semibold">{글목록.length}</span>
+              <span className="font-semibold">{postList.length}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">발행된 글</span>
               <span className="font-semibold text-green-600">
-                {글목록.filter(글 => 글.상태 === "발행됨").length}
+                {postList.filter(post => post.status === "발행됨").length}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">임시저장</span>
               <span className="font-semibold text-yellow-600">
-                {글목록.filter(글 => 글.상태 === "임시저장").length}
+                {postList.filter(post => post.status === "임시저장").length}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">예약발행</span>
               <span className="font-semibold text-blue-600">
-                {글목록.filter(글 => 글.상태 === "예약발행").length}
+                {postList.filter(post => post.status === "예약발행").length}
               </span>
             </div>
           </div>

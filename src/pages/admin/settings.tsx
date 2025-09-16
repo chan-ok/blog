@@ -6,23 +6,23 @@ export const Route = createFileRoute("/admin/settings")({
 });
 
 function Settings() {
-  const [블로그제목, set블로그제목] = useState("개발자 블로그");
-  const [블로그설명, set블로그설명] = useState("웹 개발 경험과 새로운 기술에 대한 학습 내용을 공유합니다.");
-  const [작성자이름, set작성자이름] = useState("관리자");
-  const [이메일, set이메일] = useState("admin@example.com");
-  const [알림설정, set알림설정] = useState({
-    새댓글: true,
-    새구독자: true,
-    시스템알림: false,
+  const [blogTitle, setBlogTitle] = useState("개발자 블로그");
+  const [blogDescription, setBlogDescription] = useState("웹 개발 경험과 새로운 기술에 대한 학습 내용을 공유합니다.");
+  const [authorName, setAuthorName] = useState("관리자");
+  const [email, setEmail] = useState("admin@example.com");
+  const [notificationSettings, setNotificationSettings] = useState({
+    newComments: true,
+    newSubscribers: true,
+    systemNotifications: false,
   });
 
-  const 설정저장 = () => {
+  const handleSaveSettings = () => {
     console.log("설정 저장:", {
-      블로그제목,
-      블로그설명,
-      작성자이름,
-      이메일,
-      알림설정,
+      blogTitle,
+      blogDescription,
+      authorName,
+      email,
+      notificationSettings,
     });
     alert("설정이 저장되었습니다!");
   };
@@ -40,27 +40,27 @@ function Settings() {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">기본 정보</h2>
             <div className="space-y-4">
               <div>
-                <label htmlFor="블로그제목" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="blogTitle" className="block text-sm font-medium text-gray-700 mb-2">
                   블로그 제목 *
                 </label>
                 <input
                   type="text"
-                  id="블로그제목"
-                  value={블로그제목}
-                  onChange={(e) => set블로그제목(e.target.value)}
+                  id="blogTitle"
+                  value={blogTitle}
+                  onChange={(e) => setBlogTitle(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="블로그 제목을 입력하세요"
                 />
               </div>
 
               <div>
-                <label htmlFor="블로그설명" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="blogDescription" className="block text-sm font-medium text-gray-700 mb-2">
                   블로그 설명
                 </label>
                 <textarea
-                  id="블로그설명"
-                  value={블로그설명}
-                  onChange={(e) => set블로그설명(e.target.value)}
+                  id="blogDescription"
+                  value={blogDescription}
+                  onChange={(e) => setBlogDescription(e.target.value)}
                   rows={3}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="블로그에 대한 간단한 설명을 입력하세요"
@@ -69,28 +69,28 @@ function Settings() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="작성자이름" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="authorName" className="block text-sm font-medium text-gray-700 mb-2">
                     작성자 이름 *
                   </label>
                   <input
                     type="text"
-                    id="작성자이름"
-                    value={작성자이름}
-                    onChange={(e) => set작성자이름(e.target.value)}
+                    id="authorName"
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="작성자 이름"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="이메일" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                     연락처 이메일 *
                   </label>
                   <input
                     type="email"
-                    id="이메일"
-                    value={이메일}
-                    onChange={(e) => set이메일(e.target.value)}
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="contact@example.com"
                   />
@@ -110,8 +110,8 @@ function Settings() {
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={알림설정.새댓글}
-                    onChange={(e) => set알림설정(prev => ({ ...prev, 새댓글: e.target.checked }))}
+                    checked={notificationSettings.newComments}
+                    onChange={(e) => setNotificationSettings(prev => ({ ...prev, newComments: e.target.checked }))}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -126,8 +126,8 @@ function Settings() {
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={알림설정.새구독자}
-                    onChange={(e) => set알림설정(prev => ({ ...prev, 새구독자: e.target.checked }))}
+                    checked={notificationSettings.newSubscribers}
+                    onChange={(e) => setNotificationSettings(prev => ({ ...prev, newSubscribers: e.target.checked }))}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -142,8 +142,8 @@ function Settings() {
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={알림설정.시스템알림}
-                    onChange={(e) => set알림설정(prev => ({ ...prev, 시스템알림: e.target.checked }))}
+                    checked={notificationSettings.systemNotifications}
+                    onChange={(e) => setNotificationSettings(prev => ({ ...prev, systemNotifications: e.target.checked }))}
                     className="sr-only peer"
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -156,12 +156,12 @@ function Settings() {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">SEO 설정</h2>
             <div className="space-y-4">
               <div>
-                <label htmlFor="메타키워드" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="metaKeywords" className="block text-sm font-medium text-gray-700 mb-2">
                   메타 키워드
                 </label>
                 <input
                   type="text"
-                  id="메타키워드"
+                  id="metaKeywords"
                   placeholder="React, TypeScript, 웹개발, 프론트엔드"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -169,12 +169,12 @@ function Settings() {
               </div>
 
               <div>
-                <label htmlFor="구글애널리틱스" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="googleAnalytics" className="block text-sm font-medium text-gray-700 mb-2">
                   Google Analytics 추적 ID
                 </label>
                 <input
                   type="text"
-                  id="구글애널리틱스"
+                  id="googleAnalytics"
                   placeholder="G-XXXXXXXXXX"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -186,11 +186,11 @@ function Settings() {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">디스플레이 설정</h2>
             <div className="space-y-4">
               <div>
-                <label htmlFor="페이지당글수" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="postsPerPage" className="block text-sm font-medium text-gray-700 mb-2">
                   페이지당 글 수
                 </label>
                 <select
-                  id="페이지당글수"
+                  id="postsPerPage"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="5">5개</option>
@@ -201,11 +201,11 @@ function Settings() {
               </div>
 
               <div>
-                <label htmlFor="댓글표시" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="commentDisplay" className="block text-sm font-medium text-gray-700 mb-2">
                   댓글 표시 방식
                 </label>
                 <select
-                  id="댓글표시"
+                  id="commentDisplay"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="newest">최신순</option>
@@ -248,7 +248,7 @@ function Settings() {
               취소
             </button>
             <button
-              onClick={설정저장}
+              onClick={handleSaveSettings}
               className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               설정 저장

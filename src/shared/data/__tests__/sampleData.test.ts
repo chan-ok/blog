@@ -4,8 +4,8 @@ import {
   getLatestPosts,
   getPopularTags,
   getPostsByTag,
-  getPostBySlug,
   getTags,
+  getPostBySlug,
 } from '../sampleData';
 
 describe('sampleData 유틸리티 함수들', () => {
@@ -23,7 +23,7 @@ describe('sampleData 유틸리티 함수들', () => {
       expect(firstPost).toHaveProperty('slug');
       expect(firstPost).toHaveProperty('title');
       expect(firstPost).toHaveProperty('summary');
-      expect(firstPost).toHaveProperty('publishedAt');
+      expect(firstPost).toHaveProperty('createdAt');
       expect(firstPost).toHaveProperty('status');
       expect(firstPost).toHaveProperty('tags');
       expect(Array.isArray(firstPost.tags)).toBe(true);
@@ -41,8 +41,8 @@ describe('sampleData 유틸리티 함수들', () => {
       const posts = getAllPosts();
 
       for (let i = 0; i < posts.length - 1; i++) {
-        const currentDate = new Date(posts[i].publishedAt);
-        const nextDate = new Date(posts[i + 1].publishedAt);
+        const currentDate = new Date(posts[i].createdAt);
+        const nextDate = new Date(posts[i + 1].createdAt);
         expect(currentDate.getTime()).toBeGreaterThanOrEqual(nextDate.getTime());
       }
     });
@@ -91,7 +91,7 @@ describe('sampleData 유틸리티 함수들', () => {
       expect(tags.length).toBeLessThanOrEqual(5);
 
       // 태그 구조 확인
-      tags.forEach(tag => {
+      tags.forEach((tag) => {
         expect(tag).toHaveProperty('name');
         expect(tag).toHaveProperty('postCount');
         expect(typeof tag.name).toBe('string');
@@ -193,7 +193,7 @@ describe('sampleData 유틸리티 함수들', () => {
       expect(tags.length).toBe(uniqueTags.length);
 
       // 모든 요소가 문자열이어야 함
-      tags.forEach(tag => {
+      tags.forEach((tag: string) => {
         expect(typeof tag).toBe('string');
         expect(tag.length).toBeGreaterThan(0);
       });
@@ -213,7 +213,7 @@ describe('sampleData 유틸리티 함수들', () => {
       const posts = getAllPosts();
 
       posts.forEach(post => {
-        const date = new Date(post.publishedAt);
+        const date = new Date(post.createdAt);
         expect(date.getTime()).not.toBeNaN();
         expect(date.getFullYear()).toBeGreaterThan(2000);
       });
@@ -243,7 +243,7 @@ describe('sampleData 유틸리티 함수들', () => {
         expect(post.slug).toBeDefined();
         expect(post.title).toBeDefined();
         expect(post.summary).toBeDefined();
-        expect(post.publishedAt).toBeDefined();
+        expect(post.createdAt).toBeDefined();
         expect(post.status).toBeDefined();
         expect(post.tags).toBeDefined();
 
@@ -251,7 +251,7 @@ describe('sampleData 유틸리티 함수들', () => {
         expect(typeof post.slug).toBe('string');
         expect(typeof post.title).toBe('string');
         expect(typeof post.summary).toBe('string');
-        expect(typeof post.publishedAt).toBe('string');
+        expect(typeof post.createdAt).toBe('string');
         expect(typeof post.status).toBe('string');
         expect(Array.isArray(post.tags)).toBe(true);
 

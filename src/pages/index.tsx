@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PostCard, TagBadge } from "@/shared/components";
+import { PostCard } from "@/shared/components";
 import { getLatestPosts, getPopularTags } from "@/shared/data/sampleData";
 
 export const Route = createFileRoute("/")({

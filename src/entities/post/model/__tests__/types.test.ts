@@ -91,9 +91,9 @@ describe('블로그글 타입 정의', () => {
     const 커스텀옵션: PostListOptions = {
       page: 2,
       size: 10,
-      sort: 'viewCount',
+      sort: 'views',
       tag: 'React',
-      search: 'TypeScript',
+      searchTerm: 'TypeScript',
       publishedOnly: true,
     };
 

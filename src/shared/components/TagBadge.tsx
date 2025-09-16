@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { TagBadgeProps, Tag } from '../types';
+import type { TagBadgeProps } from '../types';
 
 /**
  * 태그를 배지 형태로 표시하는 재사용 가능한 컴포넌트
@@ -11,9 +11,9 @@ export default function TagBadge({
   variant = 'default',
   className = ""
 }: TagBadgeProps) {
-  // tag가 문자열인지 Tag 객체인지 확인
-  const tagName = typeof tag === 'string' ? tag : tag.name;
-  const tagColor = typeof tag === 'string' ? 'gray' : (tag.color || 'gray');
+  // tag는 항상 문자열
+  const tagName = tag;
+  const tagColor = 'gray';
 
   // 크기에 따른 클래스
   const sizeClasses = {
@@ -69,12 +69,9 @@ export default function TagBadge({
       to="/tags/$tagName"
       params={{ tagName }}
       className={baseClasses}
-      title={typeof tag === 'object' && tag.description ? tag.description : `${tagName} 태그 글 보기`}
+      title={`${tagName} 태그 글 보기`}
     >
       {tagName}
-      {typeof tag === 'object' && tag.postCount !== undefined && (
-        <span className="ml-1 opacity-75">({tag.postCount})</span>
-      )}
     </Link>
   );
 }
