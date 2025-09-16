@@ -1,4 +1,4 @@
-# 글작성 기능 가이드
+# Post Editor Feature Guide
 
 블로그 글 작성, 편집, 미리보기 기능을 담당합니다.
 
@@ -31,103 +31,103 @@
 ## 📁 컴포넌트 구조
 
 ```
-src/features/글작성/
+src/features/post/editor/
 ├── components/
-│   ├── 글작성폼.tsx         # 메인 작성 폼
-│   ├── 마크다운에디터.tsx   # 마크다운 입력 에디터
-│   ├── 미리보기.tsx         # 실시간 미리보기
-│   ├── 태그입력.tsx         # 태그 입력 컴포넌트
-│   └── 이미지업로드.tsx     # 이미지 업로드
+│   ├── PostForm.tsx         # 메인 작성 폼
+│   ├── MarkdownEditor.tsx   # 마크다운 입력 에디터
+│   ├── Preview.tsx          # 실시간 미리보기
+│   ├── TagInput.tsx         # 태그 입력 컴포넌트
+│   └── ImageUpload.tsx      # 이미지 업로드
 ├── hooks/
-│   ├── use글작성.ts         # 글 작성 로직
-│   ├── use자동저장.ts       # 자동 저장 기능
-│   └── use태그자동완성.ts   # 태그 자동완성
+│   ├── usePostEditor.ts     # 글 작성 로직
+│   ├── useAutoSave.ts       # 자동 저장 기능
+│   └── useTagAutocomplete.ts # 태그 자동완성
 └── utils/
-    ├── 마크다운변환.ts      # 마크다운 처리
-    └── 이미지처리.ts        # 이미지 최적화
+    ├── markdownTransform.ts # 마크다운 처리
+    └── imageProcessing.ts   # 이미지 최적화
 ```
 
 ## 🔧 사용 예시
 
 ### 글작성 폼
 ```typescript
-// components/글작성폼.tsx
-import { use글작성 } from '../hooks/use글작성';
-import { 마크다운에디터 } from './마크다운에디터';
-import { 미리보기 } from './미리보기';
-import { 태그입력 } from './태그입력';
+// components/PostForm.tsx
+import { usePostEditor } from '../hooks/usePostEditor';
+import { MarkdownEditor } from './MarkdownEditor';
+import { Preview } from './Preview';
+import { TagInput } from './TagInput';
 
-interface 글작성폼Props {
-  초기글?: 블로그글;
-  편집모드?: boolean;
+interface PostFormProps {
+  initialPost?: Post;
+  editMode?: boolean;
 }
 
-export function 글작성폼({ 초기글, 편집모드 = false }: 글작성폼Props) {
+export function PostForm({ initialPost, editMode = false }: PostFormProps) {
   const {
-    폼데이터,
-    에러상태,
-    로딩중,
-    필드업데이트,
-    임시저장하기,
-    발행하기,
-  } = use글작성({ 초기글 });
+    formData,
+    errors,
+    loading,
+    updateField,
+    saveDraft,
+    publish,
+  } = usePostEditor({ initialPost });
 
   return (
-    <div className="글작성-폼">
-      <div className="폼-헤더">
+    <div className="post-form">
+      <div className="form-header">
         <input
           type="text"
           placeholder="글 제목을 입력하세요"
-          value={폼데이터.제목}
-          onChange={(e) => 필드업데이트('제목', e.target.value)}
-          className="제목-입력"
+          value={formData.title}
+          onChange={(e) => updateField('title', e.target.value)}
+          className="title-input"
         />
-        {에러상태.제목 && <div className="error">{에러상태.제목}</div>}
+        {errors.title && <div className="error">{errors.title}</div>}
       </div>
 
-      <div className="에디터-영역">
-        <div className="에디터-패널">
-          <마크다운에디터
-            내용={폼데이터.내용}
-            변경시={(내용) => 필드업데이트('내용', 내용)}
+      <div className="editor-area">
+        <div className="editor-panel">
+          <MarkdownEditor
+            content={formData.content}
+            onChange={(content) => updateField('content', content)}
           />
         </div>
 
-        <div className="미리보기-패널">
-          <미리보기 마크다운내용={폼데이터.내용} />
+        <div className="preview-panel">
+          <Preview markdownContent={formData.content} />
         </div>
       </div>
 
-      <div className="메타데이터-영역">
-        <태그입력
-          선택된태그={폼데이터.태그목록}
-          변경시={(태그목록) => 필드업데이트('태그목록', 태그목록)}
+      <div className="metadata-area">
+        <TagInput
+          selectedTags={formData.tagList}
+          onChange={(tagList) => updateField('tagList', tagList)}
         />
 
         <input
           type="text"
           placeholder="URL 슬러그 (선택사항)"
-          value={폼데이터.슬러그 || ''}
-          onChange={(e) => 필드업데이트('슬러그', e.target.value)}
+          value={formData.slug || ''}
+          onChange={(e) => updateField('slug', e.target.value)}
         />
       </div>
 
-      <div className="액션-버튼들">
+      <div className="action-buttons">
         <button
           type="button"
-          onClick={임시저장하기}
-          disabled={로딩중}
+          onClick={saveDraft}
+          disabled={loading}
         >
           임시저장
         </button>
 
         <button
           type="button"
-          onClick={발행하기}
-          disabled={로딩중}
+          onClick={publish}
+          disabled={loading}
           className="primary"
         >
-          {편집모드 ? '수정 완료' : '발행하기'}
+          {editMode ? '수정 완료' : '발행하기'}
         </button>
       </div>
     </div>
@@ -137,41 +137,41 @@ export function 글작성폼({ 초기글, 편집모드 = false }: 글작성폼Pr
 
 ### 마크다운 에디터
 ```typescript
-// components/마크다운에디터.tsx
+// components/MarkdownEditor.tsx
 import { useCallback } from 'react';
 
-interface 마크다운에디터Props {
-  내용: string;
-  변경시: (내용: string) => void;
+interface MarkdownEditorProps {
+  content: string;
+  onChange: (content: string) => void;
   placeholder?: string;
 }
 
-export function 마크다운에디터({ 내용, 변경시, placeholder }: 마크다운에디터Props) {
-  const 내용변경처리 = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    변경시(e.target.value);
-  }, [변경시]);
+export function MarkdownEditor({ content, onChange, placeholder }: MarkdownEditorProps) {
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onChange(e.target.value);
+  }, [onChange]);
 
-  const 툴바버튼클릭 = (마크다운문법: string) => {
+  const handleToolbarClick = (markdownSyntax: string) => {
     // 선택된 텍스트에 마크다운 문법 적용
     // 구현 예정
   };
 
   return (
-    <div className="마크다운-에디터">
-      <div className="에디터-툴바">
-        <button onClick={() => 툴바버튼클릭('**')}>굵게</button>
-        <button onClick={() => 툴바버튼클릭('*')}>기울임</button>
-        <button onClick={() => 툴바버튼클릭('`')}>코드</button>
-        <button onClick={() => 툴바버튼클릭('## ')}>제목</button>
-        <button onClick={() => 툴바버튼클릭('- ')}>목록</button>
-        <button onClick={() => 툴바버튼클릭('[]()')}>링크</button>
+    <div className="markdown-editor">
+      <div className="editor-toolbar">
+        <button onClick={() => handleToolbarClick('**')}>굵게</button>
+        <button onClick={() => handleToolbarClick('*')}>기울임</button>
+        <button onClick={() => handleToolbarClick('`')}>코드</button>
+        <button onClick={() => handleToolbarClick('## ')}>제목</button>
+        <button onClick={() => handleToolbarClick('- ')}>목록</button>
+        <button onClick={() => handleToolbarClick('[]()')}>링크</button>
       </div>
 
       <textarea
-        value={내용}
-        onChange={내용변경처리}
+        value={content}
+        onChange={handleContentChange}
         placeholder={placeholder || '마크다운으로 글을 작성하세요...'}
-        className="에디터-텍스트영역"
+        className="editor-textarea"
         spellCheck={false}
       />
     </div>
@@ -181,45 +181,45 @@ export function 마크다운에디터({ 내용, 변경시, placeholder }: 마크
 
 ### 자동 저장 훅
 ```typescript
-// hooks/use자동저장.ts
+// hooks/useAutoSave.ts
 import { useEffect, useRef } from 'react';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
-interface use자동저장옵션 {
-  데이터: any;
-  저장함수: (데이터: any) => Promise<void>;
-  지연시간?: number;
-  활성화?: boolean;
+interface UseAutoSaveOptions {
+  data: any;
+  saveFunction: (data: any) => Promise<void>;
+  delay?: number;
+  enabled?: boolean;
 }
 
-export function use자동저장({
-  데이터,
-  저장함수,
-  지연시간 = 3000,
-  활성화 = true,
-}: use자동저장옵션) {
-  const 디바운스된데이터 = useDebounce(데이터, 지연시간);
-  const 초기저장완료 = useRef(false);
+export function useAutoSave({
+  data,
+  saveFunction,
+  delay = 3000,
+  enabled = true,
+}: UseAutoSaveOptions) {
+  const debouncedData = useDebounce(data, delay);
+  const initialSaveCompleted = useRef(false);
 
   useEffect(() => {
-    if (!활성화) return;
+    if (!enabled) return;
 
     // 첫 번째 실행 스킵 (초기 데이터)
-    if (!초기저장완료.current) {
-      초기저장완료.current = true;
+    if (!initialSaveCompleted.current) {
+      initialSaveCompleted.current = true;
       return;
     }
 
     // 데이터가 비어있으면 저장하지 않음
-    if (!디바운스된데이터.제목 && !디바운스된데이터.내용) {
+    if (!debouncedData.title && !debouncedData.content) {
       return;
     }
 
-    저장함수({
-      ...디바운스된데이터,
-      발행상태: '임시저장',
+    saveFunction({
+      ...debouncedData,
+      status: 'draft',
     }).catch(console.error);
-  }, [디바운스된데이터, 저장함수, 활성화]);
+  }, [debouncedData, saveFunction, enabled]);
 }
 ```
 

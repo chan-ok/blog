@@ -1,25 +1,25 @@
 # CLAUDE.md
 
-이 파일은 Claude Code (claude.ai/code)가 이 저장소에서 작업할 때 필요한 가이드를 제공합니다.
+This file provides the guide needed when Claude Code (claude.ai/code) works in this repository.
 
-## 🚨 중요: 코딩 규칙
+## 🚨 Important: Coding Rules
 
-**⚠️ 코드 식별자는 반드시 영어로 작성해야 합니다!**
+**⚠️ Code identifiers must be written in English!**
 
-- ✅ **영어로 작성**: 함수명, 변수명, 클래스명, 인터페이스명, 타입명, 프로퍼티명
-- ✅ **한국어로 작성**: 주석, 문서, 커밋 메시지, UI 텍스트, 에러 메시지
-- ❌ **금지**: `사용자`, `로그인하기`, `이메일` 등 한글 식별자 사용
+- ✅ **Write in English**: Function names, variable names, class names, interface names, type names, property names
+- ✅ **Write in Korean**: Comments, documentation, commit messages, UI text, error messages
+- ❌ **Prohibited**: Using Korean identifiers like `사용자`, `로그인하기`, `이메일`
 
-**예시:**
+**Examples:**
 ```typescript
-// ❌ 잘못된 예
+// ❌ Wrong example
 interface 사용자 {
   이메일: string;
   비밀번호: string;
 }
 const 로그인하기 = (사용자정보: 사용자) => { ... }
 
-// ✅ 올바른 예
+// ✅ Correct example
 interface User {
   email: string;
   password: string;
@@ -27,290 +27,219 @@ interface User {
 const login = (userInfo: User) => { ... }
 ```
 
-## 📋 빠른 시작
+## 🚨 Absolute Principles for AI/Claude Code
 
-### 개발 명령어
+**⚠️ Critical: AI/Claude Code Documentation Reference Rules**
+
+Claude Code and other AI assistants **MUST ONLY** reference the following documents:
+- ✅ **CLAUDE.md** files (this file and all CLAUDE.md files in subdirectories)
+- ✅ **docs/claude/** directory (English documentation for AI reference)
+- ❌ **docs/korean/** directory (Korean documentation for humans - AI must NOT reference)
+- ❌ **docs/japanese/** directory (Japanese documentation for humans - AI must NOT reference)
+
+**Reasoning:**
+- `docs/korean/` and `docs/japanese/` are human-readable documents in native languages
+- AI should work with English-based technical documentation for consistency and accuracy
+- This separation ensures clean distinction between AI-reference and human-reference materials
+
+## 📋 Quick Start
+
+### Development Commands
 
 ```bash
-pnpm dev          # 개발 서버 시작 (포트 3000)
-pnpm build        # 프로덕션 빌드
-pnpm test         # 테스트 실행
+pnpm dev          # Start development server (port 3000)
+pnpm build        # Production build
+pnpm test         # Run tests
 ```
 
-### 기술 스택
+### Tech Stack
 
-- **프레임워크**: React 19 + Vite + TypeScript
-- **라우팅**: TanStack Router (파일 기반, `src/pages/`)
-- **상태 관리**: TanStack Query
-- **UI 컴포넌트**: **shadcn/ui 최우선 활용** + Tailwind CSS v4
-- **백엔드**: Supabase
-- **테스트**: Vitest (TDD 기반 개발)
+- **Framework**: React 19 + Vite + TypeScript
+- **Routing**: TanStack Router (file-based, `src/pages/`)
+- **State Management**: TanStack Query
+- **UI Components**: **shadcn/ui priority** + Tailwind CSS v4
+- **Backend**: Supabase
+- **Testing**: Vitest (TDD-based development)
 
-## 📚 상세 가이드
+## 📚 Detailed Guides
 
-모든 세부 사항은 다음 문서들을 참조하세요:
+**⚠️ Important: AI/Claude Code should ONLY reference the documents below**
 
-### 핵심 문서
-- **[아키텍처 가이드](./docs/architecture.md)** - Feature Slice Design, 폴더 구조
-- **[개발 할 일](./docs/todo.md)** - 구현 예정 기능들
-- **[인증 시스템](./docs/authentication.md)** - 로그인 및 권한 관리 ⭐
+All detailed documentation for AI reference is located in the `docs/claude/` directory:
 
-### 개발 가이드
-- **[코드 포맷 규칙](./docs/code-format.md)** - 네이밍 컨벤션
-- **[데이터 플로우](./docs/data-flow.md)** - Supabase 연동 패턴
-- **[개발 프로세스](./docs/develop-process.md)** - TDD 기반 개발 가이드
+### Core Documents
+- **[Architecture Overview](./docs/claude/architecture/overview.md)** - System architecture and design patterns
+- **[Performance Guide](./docs/claude/architecture/performance.md)** - Performance optimization strategies
+- **[Responsive Design](./docs/claude/architecture/responsive-design.md)** - Mobile-first responsive design patterns
+- **[UI/UX Guidelines](./docs/claude/architecture/ui-ux-guidelines.md)** - Design system and UI consistency
 
-## 🏗️ 프로젝트 구조
+### Development Guides
+- **[Development Process](./docs/claude/development/guides/develop-process.md)** - TDD-based development guide
+- **[Testing Strategy](./docs/claude/development/guides/testing-strategy.md)** - Testing patterns and tools
+- **[Code Format Rules](./docs/claude/development/guides/code-format.md)** - Naming conventions and coding standards
+- **[Branch Workflow](./docs/claude/development/guides/branch-workflow.md)** - Git branch management
+- **[Error Handling](./docs/claude/guides/error-handling-guide.md)** - Error handling patterns and UX
+- **[Troubleshooting](./docs/claude/guides/troubleshooting-guide.md)** - Problem diagnosis and resolution
+
+### Project Documentation
+- **[Feature Documentation](./docs/claude/project/feature-documentation.md)** - Complete feature overview
+- **[Component Documentation](./docs/claude/project/component-documentation.md)** - Shared component usage guide
+- **[Email System](./docs/claude/features/email-system.md)** - Contact form implementation
+
+### Layer-specific Guides
+- **[Entities Layer](./src/entities/CLAUDE.md)** - Domain model definitions
+- **[Features Layer](./src/features/CLAUDE.md)** - UI and business logic
+
+**Note**: `docs/korean/` and `docs/japanese/` directories contain human-readable documents in native languages and should NOT be referenced by AI assistants.
+
+## 🏗️ Project Structure
 
 ```
 src/
-├── app/           # 애플리케이션 설정
-├── pages/         # 라우팅 (파일 기반)
-├── shared/        # 공유 리소스
-├── entities/      # 데이터 엔티티 (앞으로 구현)
-└── features/      # 기능 단위 (앞으로 구현)
+├── app/           # Application settings
+├── pages/         # Routing (file-based)
+├── shared/        # Shared resources
+├── entities/      # Data entities
+└── features/      # Feature units
 ```
 
-## ⚡ 개발 시 유의사항
+## ⚡ Development Guidelines
 
-1. **TDD 기반 개발**: 실패 테스트 → 기능 개발 → 리팩토링
-2. **코딩 언어 규칙**:
-   - 함수명, 변수명, 클래스명, 인터페이스명, 타입명, 프로퍼티명: **반드시 영어** (camelCase, PascalCase)
-   - 주석, 문서, 커밋 메시지, UI 텍스트: 한국어
-   - **절대 금지**: 한글 식별자 사용 (예: `사용자`, `로그인하기`, `이메일` 등)
-3. **타입 안전성**: TypeScript strict 모드 사용
-4. **🎨 UI 컴포넌트 개발 원칙**:
-   - **shadcn/ui 최우선**: 모든 UI 요소는 shadcn/ui 컴포넌트부터 검토
-   - **커스텀 스타일 최소화**: Tailwind 클래스보다 shadcn/ui 컴포넌트 활용
-   - **일관성 유지**: shadcn/ui 디자인 시스템 준수
-   - **접근성 보장**: shadcn/ui의 내장 접근성 기능 활용
-5. **커밋 규칙**: **[Git 커밋 가이드](./docs/commit-guide.md)** 준수 - Conventional Commits 스펙 적용
-6. **🌿 Git 브랜치 워크플로우**: 모든 기능 개발은 feature 브랜치에서 진행 후 PR을 통해 main 브랜치로 병합
+1. **AI/Claude Code Documentation Reference Rules (Absolute)**:
+   - Claude Code **MUST ONLY** reference CLAUDE.md files and docs/claude/ directory
+   - **NEVER** reference docs/korean/ or docs/japanese/ (human-only documents)
+   - This ensures consistent AI-human collaboration and clear documentation separation
+2. **TDD-based development**: Failing test → Feature development → Refactoring
+3. **Coding language rules**:
+   - Function names, variable names, class names, interface names, type names, property names: **Must be in English** (camelCase, PascalCase)
+   - Comments, documentation, commit messages, UI text: Korean
+   - **Absolutely prohibited**: Using Korean identifiers (e.g., `사용자`, `로그인하기`, `이메일`)
+4. **Type safety**: Use TypeScript strict mode
+5. **🎨 UI Component Development Principles**:
+   - **shadcn/ui priority**: Review all UI elements starting with shadcn/ui components
+   - **Minimize custom styles**: Use shadcn/ui components rather than Tailwind classes
+   - **Maintain consistency**: Follow shadcn/ui design system
+   - **Ensure accessibility**: Utilize shadcn/ui's built-in accessibility features
+6. **Commit rules**: Follow **[Git Commit Guide](./docs/claude/development/guides/commit-guide.md)** - Apply Conventional Commits specification
+7. **🌿 Git branch workflow**: All feature development proceeds in feature branches and merges to main branch through PR
+8. **📋 Development History Management (Absolute Rule)**:
+   - **All development progress and major decisions must be documented**
+   - Development history document location: `docs/development/history/`
+   - Record daily development progress, technical decisions, issue resolution processes in detail
+   - Continuously document to track the project's development process
 
-## 🌿 Git 브랜치 기반 개발 프로세스
+## 🌿 Git Branch-based Development Process
 
-**⚠️ 중요: main 브랜치에서 직접 작업 금지!**
+**⚠️ Important: Direct work on main branch is prohibited!**
 
-모든 기능 개발, 버그 수정, 문서 작업은 반드시 별도 브랜치에서 진행해야 합니다.
+All feature development, bug fixes, and documentation work must be done in separate branches.
 
-### 📋 브랜치 워크플로우
+### 📋 Branch Workflow
 
-#### 1. 새 기능 개발 시작
+#### 1. Starting New Feature Development
 ```bash
-# 1. main 브랜치에서 최신 코드 받기
-git checkout main
-git pull origin main
-
-# 2. 새 기능 브랜치 생성
-git checkout -b feature/기능명-설명
-
-# 예시
+# Create and switch to new feature branch
 git checkout -b feature/user-authentication
-git checkout -b feature/blog-editor-preview
+# or
 git checkout -b fix/markdown-rendering-bug
+# or
+git checkout -b docs/api-documentation
 ```
 
-#### 2. 브랜치 네이밍 규칙
-- **기능 추가**: `feature/기능명-설명`
-- **버그 수정**: `fix/버그명-설명`
-- **문서 작업**: `docs/문서명-설명`
-- **리팩토링**: `refactor/리팩토링대상-설명`
-- **테스트**: `test/테스트대상-설명`
-
-**브랜치명 예시:**
+#### 2. Development and Commit
 ```bash
-feature/post-editor-autosave     # 글 에디터 자동저장 기능
-feature/admin-dashboard          # 관리자 대시보드
-fix/header-mobile-responsive     # 헤더 모바일 반응형 버그
-docs/api-documentation           # API 문서화
-refactor/shared-components       # 공통 컴포넌트 리팩토링
-test/post-crud-operations        # 글 CRUD 테스트
-```
-
-#### 3. 개발 진행
-```bash
-# 브랜치에서 개발 진행
+# Regular development work
 git add .
-git commit -m "feat: 사용자 인증 폼 컴포넌트 구현"
+git commit -m "feat: implement user login functionality"
 
-# 정기적으로 main 브랜치 변경사항 반영
-git checkout main
-git pull origin main
-git checkout feature/your-feature
-git merge main  # 또는 git rebase main
+# Push to remote repository
+git push origin feature/user-authentication
 ```
 
-#### 4. Pull Request 생성
+#### 3. Create Pull Request
 ```bash
-# 브랜치를 원격 저장소에 푸시
-git push origin feature/your-feature
+# Create PR using GitHub CLI
+gh pr create --title "feat: user authentication system" --body "Implements login/logout functionality with Supabase Auth"
 
-# GitHub에서 Pull Request 생성
-# - 제목: 명확하고 간결한 기능 설명
-# - 내용: 변경사항, 테스트 방법, 스크린샷 등
+# Or create through GitHub web interface
 ```
 
-#### 5. 코드 리뷰 및 병합
-- **자체 검토**: PR 생성 후 본인이 먼저 코드 검토
-- **테스트 확인**: CI/CD 테스트 통과 확인
-- **병합**: Squash and merge 또는 Merge commit 사용
-- **브랜치 정리**: 병합 후 feature 브랜치 삭제
+#### 4. Code Review and Merge
+- Wait for code review
+- Address review comments if any
+- Merge after approval
+- Delete feature branch after merge
 
-### 🚨 금지사항
+### 🎯 Branch Naming Rules
 
+- **Features**: `feature/description` (e.g., `feature/user-auth`, `feature/markdown-editor`)
+- **Bug fixes**: `fix/description` (e.g., `fix/login-error`, `fix/responsive-layout`)
+- **Documentation**: `docs/description` (e.g., `docs/api-guide`, `docs/setup-instructions`)
+- **Hotfixes**: `hotfix/description` (e.g., `hotfix/security-patch`)
+
+## 📝 Git Commit Guidelines
+
+Please check the following guide before committing:
+
+- **[Git Commit Guide](./docs/claude/development/guides/commit-guide.md)** - Commitlint rules and message writing
+- **Type**: Use correct types like `feat`, `fix`, `docs`, `refactor`
+- **Description**: Write clearly in Korean
+- **Format**: `type: description` or `type(scope): description`
+
+**Examples:**
 ```bash
-# ❌ 절대 금지: main 브랜치에서 직접 작업
-git checkout main
-git add .
-git commit -m "fix: 버그 수정"  # 금지!
-
-# ❌ 금지: main에 직접 푸시
-git push origin main  # 금지!
+feat: implement user authentication system
+fix: fix markdown rendering bug
+docs: add newcomer developer onboarding guide
 ```
 
-### ✅ 올바른 워크플로우 예시
+## 🎨 shadcn/ui Usage Guide
+
+### 📋 Components to Replace with shadcn/ui in Current Project
+
+#### 1. Immediately Replaceable Components
+- **Navigation Menu** → Header.tsx navigation
+- **Button** → All button elements (save, publish, login, etc.)
+- **Input/Textarea** → Input fields in MarkdownEditor.tsx
+- **Card** → PostCard.tsx component
+- **Badge** → TagBadge.tsx component
+- **Toast (Sonner)** → Save/publish success/failure notifications
+- **Scroll Area** → Markdown editor preview area
+
+#### 2. Additional Usable Components
+- **Form (React Hook Form)** → LoginForm.tsx improvement
+- **Dialog** → Modal windows (image upload, confirmation dialogs, etc.)
+- **Popover** → User menu, tag autocomplete
+- **Skeleton** → Loading state improvement
+- **Alert** → Error/warning messages
+- **Separator** → Dividers
+- **Switch** → Dark mode toggle
+
+### 🚀 shadcn/ui Installation and Setup
 
 ```bash
-# 1. 새 기능 시작
-git checkout main
-git pull origin main
-git checkout -b feature/blog-search
-
-# 2. 개발 진행
-git add src/features/search/
-git commit -m "feat: 블로그 검색 기능 기본 구조 구현"
-
-git add src/features/search/components/
-git commit -m "feat: 검색 입력 컴포넌트 구현"
-
-git add src/features/search/hooks/
-git commit -m "feat: 검색 결과 훅 구현"
-
-# 3. 테스트 추가
-git add src/features/search/__tests__/
-git commit -m "test: 검색 기능 단위 테스트 추가"
-
-# 4. 문서 업데이트
-git add src/features/search/CLAUDE.md
-git commit -m "docs: 검색 기능 구현 가이드 작성"
-
-# 5. 빌드 및 테스트 확인
-pnpm build  # 빌드 성공 확인
-pnpm test   # 테스트 통과 확인
-
-# 6. 원격 브랜치에 푸시
-git push origin feature/blog-search
-
-# 7. GitHub에서 Pull Request 생성
-# 8. 코드 리뷰 및 병합 대기
-```
-
-### 🔄 브랜치 동기화
-
-**정기적으로 main 브랜치 변경사항을 feature 브랜치에 반영:**
-
-```bash
-# 방법 1: Merge (권장)
-git checkout main
-git pull origin main
-git checkout feature/your-feature
-git merge main
-
-# 방법 2: Rebase (고급 사용자)
-git checkout feature/your-feature
-git rebase main
-```
-
-### 📋 브랜치 작업 체크리스트
-
-**새 기능 시작 전:**
-- [ ] main 브랜치에서 최신 코드 pull 받기
-- [ ] 명확한 브랜치명으로 feature 브랜치 생성
-- [ ] 브랜치가 올바르게 생성되었는지 확인
-
-**개발 진행 중:**
-- [ ] 작은 단위로 자주 커밋하기
-- [ ] Conventional Commits 규칙 준수
-- [ ] 정기적으로 main 브랜치와 동기화
-- [ ] 빌드 에러 없이 개발 진행
-
-**PR 생성 전:**
-- [ ] 최종 빌드 테스트 (`pnpm build`)
-- [ ] 단위 테스트 실행 (`pnpm test`)
-- [ ] 코드 자체 검토 완료
-- [ ] 관련 문서 업데이트 완료
-
-**PR 생성 시:**
-- [ ] 명확한 제목과 설명 작성
-- [ ] 변경사항 스크린샷 첨부 (UI 변경 시)
-- [ ] 테스트 방법 설명
-- [ ] 관련 이슈 링크 (있는 경우)
-
-이 워크플로우를 통해 코드 품질을 유지하고 팀 협업을 원활하게 진행할 수 있습니다.
-
-## 📝 Git 커밋 시 필수 확인사항
-
-커밋하기 전에 **반드시** 다음 가이드를 확인하세요:
-
-- **[Git 커밋 가이드](./docs/commit-guide.md)** - Commitlint 규칙 및 메시지 작성법
-- **Type**: `feat`, `fix`, `docs`, `refactor` 등 올바른 타입 사용
-- **설명**: 한국어로 명확하게 작성
-- **형식**: `type: 설명` 또는 `type(scope): 설명` 형태
-
-**예시:**
-```bash
-feat: 사용자 인증 시스템 구현
-fix: 마크다운 렌더링 버그 수정
-docs: 신입 개발자 온보딩 가이드 추가
-```
-
-## 🎨 shadcn/ui 활용 가이드
-
-### 📋 현재 프로젝트에서 shadcn/ui로 대체해야 할 컴포넌트들
-
-#### 1. 즉시 대체 가능한 컴포넌트
-- **Navigation Menu** → Header.tsx의 네비게이션
-- **Button** → 모든 버튼 요소 (저장, 발행, 로그인 등)
-- **Input/Textarea** → MarkdownEditor.tsx의 입력 필드들
-- **Card** → PostCard.tsx 컴포넌트
-- **Badge** → TagBadge.tsx 컴포넌트
-- **Toast (Sonner)** → 저장/발행 성공/실패 알림
-- **Scroll Area** → 마크다운 에디터의 미리보기 영역
-
-#### 2. 추가 활용 가능한 컴포넌트
-- **Form (React Hook Form)** → LoginForm.tsx 개선
-- **Dialog** → 모달창 (이미지 업로드, 확인창 등)
-- **Popover** → 사용자 메뉴, 태그 자동완성
-- **Skeleton** → 로딩 상태 개선
-- **Alert** → 에러/경고 메시지
-- **Separator** → 구분선
-- **Switch** → 다크모드 토글
-
-### 🚀 shadcn/ui 설치 및 설정
-
-```bash
-# shadcn/ui 초기화 (이미 완료된 상태)
+# Initialize shadcn/ui (already completed)
 pnpm dlx shadcn@latest init
 
-# 자주 사용할 핵심 컴포넌트 설치
+# Install frequently used core components
 pnpm dlx shadcn@latest add button input textarea card badge
 pnpm dlx shadcn@latest add navigation-menu toast form dialog
 pnpm dlx shadcn@latest add scroll-area skeleton alert separator
 
-# 또는 모든 컴포넌트 한번에 설치
+# Or install all components at once
 pnpm dlx shadcn@latest add -a
 ```
 
-### 📝 컴포넌트 사용 예시
+### 📝 Component Usage Examples
 
-#### Navigation Menu 적용 예시
+#### Navigation Menu Application Example
 ```typescript
-// Before: 기존 Header.tsx
+// Before: Existing Header.tsx
 <nav className="hidden md:flex items-center space-x-8">
   <Link className="text-gray-600 hover:text-gray-900">홈</Link>
 </nav>
 
-// After: shadcn/ui NavigationMenu 사용
+// After: Using shadcn/ui NavigationMenu
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem } from "@/components/ui/navigation-menu"
 
 <NavigationMenu>
@@ -320,14 +249,14 @@ import { NavigationMenu, NavigationMenuContent, NavigationMenuItem } from "@/com
 </NavigationMenu>
 ```
 
-#### Button 적용 예시
+#### Button Application Example
 ```typescript
-// Before: 기존 버튼
+// Before: Existing button
 <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
   저장
 </button>
 
-// After: shadcn/ui Button 사용
+// After: Using shadcn/ui Button
 import { Button } from "@/components/ui/button"
 
 <Button variant="default" size="default">저장</Button>
@@ -335,9 +264,9 @@ import { Button } from "@/components/ui/button"
 <Button variant="destructive">삭제</Button>
 ```
 
-#### Form 적용 예시
+#### Form Application Example
 ```typescript
-// shadcn/ui Form + React Hook Form 조합
+// shadcn/ui Form + React Hook Form combination
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -362,11 +291,11 @@ import { Input } from "@/components/ui/input"
 </Form>
 ```
 
-#### Toast 알림 적용 예시
+#### Toast Notification Application Example
 ```typescript
 import { toast } from "sonner"
 
-// 성공 알림
+// Success notification
 const handleSave = async () => {
   try {
     await savePost(data);
@@ -377,30 +306,30 @@ const handleSave = async () => {
 };
 ```
 
-### 🎯 개발 우선순위
+### 🎯 Development Priority
 
-1. **Phase 1 - 핵심 UI 개선 (우선)**
-   - [ ] Button 컴포넌트로 모든 버튼 통일
-   - [ ] Toast(Sonner) 알림 시스템 구축
-   - [ ] Card 컴포넌트로 PostCard 개선
-   - [ ] Input/Textarea 컴포넌트 적용
+1. **Phase 1 - Core UI Improvement (Priority)**
+   - [ ] Unify all buttons with Button component
+   - [ ] Build Toast(Sonner) notification system
+   - [ ] Improve PostCard with Card component
+   - [ ] Apply Input/Textarea components
 
-2. **Phase 2 - 네비게이션 및 폼 개선**
-   - [ ] Navigation Menu로 Header 리팩토링
-   - [ ] Form 컴포넌트로 LoginForm 개선
-   - [ ] Badge 컴포넌트로 TagBadge 개선
-   - [ ] Dialog 컴포넌트로 모달 구현
+2. **Phase 2 - Navigation and Form Improvement**
+   - [ ] Refactor Header with Navigation Menu
+   - [ ] Improve LoginForm with Form component
+   - [ ] Improve TagBadge with Badge component
+   - [ ] Implement modals with Dialog component
 
-3. **Phase 3 - 고급 기능**
-   - [ ] Scroll Area로 에디터 미리보기 개선
-   - [ ] Skeleton으로 로딩 상태 개선
-   - [ ] Popover로 드롭다운 메뉴 구현
+3. **Phase 3 - Advanced Features**
+   - [ ] Improve editor preview with Scroll Area
+   - [ ] Improve loading states with Skeleton
+   - [ ] Implement dropdown menus with Popover
 
-### 💡 개발 팁
+### 💡 Development Tips
 
-- **컴포넌트 검색**: [ui.shadcn.com](https://ui.shadcn.com)에서 필요한 컴포넌트 찾기
-- **커스터마이징**: `src/components/ui/` 폴더의 컴포넌트 파일 직접 수정 가능
-- **테마 설정**: `tailwind.config.js`에서 색상 팔레트 커스터마이징
-- **접근성**: shadcn/ui는 기본적으로 WCAG 가이드라인 준수
+- **Component Search**: Find needed components at [ui.shadcn.com](https://ui.shadcn.com)
+- **Customization**: Directly modify component files in `src/components/ui/` folder
+- **Theme Settings**: Customize color palette in `tailwind.config.js`
+- **Accessibility**: shadcn/ui follows WCAG guidelines by default
 
-더 자세한 내용은 각 폴더의 CLAUDE.md 파일을 확인하세요.
+For more details, check the CLAUDE.md files in each folder.

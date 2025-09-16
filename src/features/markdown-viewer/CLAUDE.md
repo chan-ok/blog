@@ -1,4 +1,4 @@
-# 마크다운뷰어 기능 가이드
+# Markdown Viewer Feature Guide
 
 마크다운을 HTML로 렌더링하고 표시하는 기능을 담당합니다.
 
@@ -16,61 +16,61 @@
 ## 📁 컴포넌트 구조
 
 ```
-src/features/마크다운뷰어/
+src/features/markdown-viewer/
 ├── components/
-│   ├── 마크다운렌더러.tsx   # 메인 렌더링 컴포넌트
-│   ├── 코드하이라이터.tsx   # 코드 블록 하이라이팅
-│   ├── 목차생성기.tsx       # TOC 생성
-│   └── 이미지뷰어.tsx       # 이미지 확대/축소
+│   ├── MarkdownRenderer.tsx   # 메인 렌더링 컴포넌트
+│   ├── CodeHighlighter.tsx    # 코드 블록 하이라이팅
+│   ├── TocGenerator.tsx        # TOC 생성
+│   └── ImageViewer.tsx         # 이미지 확대/축소
 ├── hooks/
-│   └── use마크다운.ts       # 마크다운 처리 훅
+│   └── useMarkdown.ts          # 마크다운 처리 훅
 └── utils/
-    ├── 마크다운파서.ts      # 마크다운 파싱
-    ├── 문법하이라이팅.ts    # 코드 하이라이팅
-    └── sanitize.ts         # XSS 방지
+    ├── markdownParser.ts       # 마크다운 파싱
+    ├── syntaxHighlighting.ts   # 코드 하이라이팅
+    └── sanitize.ts             # XSS 방지
 ```
 
 ## 🔧 사용 예시
 
 ### 마크다운 렌더러
 ```typescript
-// components/마크다운렌더러.tsx
-import { use마크다운 } from '../hooks/use마크다운';
-import { 목차생성기 } from './목차생성기';
+// components/MarkdownRenderer.tsx
+import { useMarkdown } from '../hooks/useMarkdown';
+import { TocGenerator } from './TocGenerator';
 
-interface 마크다운렌더러Props {
-  내용: string;
-  목차표시?: boolean;
-  문법하이라이팅?: boolean;
+interface MarkdownRendererProps {
+  content: string;
+  showToc?: boolean;
+  syntaxHighlighting?: boolean;
   className?: string;
 }
 
-export function 마크다운렌더러({
-  내용,
-  목차표시 = true,
-  문법하이라이팅 = true,
+export function MarkdownRenderer({
+  content,
+  showToc = true,
+  syntaxHighlighting = true,
   className,
-}: 마크다운렌더러Props) {
-  const { HTML내용, 목차목록, 로딩중 } = use마크다운({
-    마크다운내용: 내용,
-    문법하이라이팅,
+}: MarkdownRendererProps) {
+  const { htmlContent, tocList, loading } = useMarkdown({
+    markdownContent: content,
+    syntaxHighlighting,
   });
 
-  if (로딩중) {
+  if (loading) {
     return <div>마크다운을 렌더링하는 중...</div>;
   }
 
   return (
-    <div className={`마크다운-뷰어 ${className || ''}`}>
-      {목차표시 && 목차목록.length > 0 && (
-        <aside className="목차-사이드바">
-          <목차생성기 목차목록={목차목록} />
+    <div className={`markdown-viewer ${className || ''}`}>
+      {showToc && tocList.length > 0 && (
+        <aside className="toc-sidebar">
+          <TocGenerator tocList={tocList} />
         </aside>
       )}
 
       <div
-        className="마크다운-내용"
-        dangerouslySetInnerHTML={{ __html: HTML내용 }}
+        className="markdown-content"
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     </div>
   );
@@ -79,53 +79,53 @@ export function 마크다운렌더러({
 
 ### 마크다운 처리 훅
 ```typescript
-// hooks/use마크다운.ts
+// hooks/useMarkdown.ts
 import { useMemo } from 'react';
-import { 마크다운을HTML로변환, 목차추출 } from '../utils/마크다운파서';
+import { markdownToHtml, extractToc } from '../utils/markdownParser';
 
-interface use마크다운옵션 {
-  마크다운내용: string;
-  문법하이라이팅?: boolean;
-  목차생성?: boolean;
-  이미지지연로딩?: boolean;
+interface UseMarkdownOptions {
+  markdownContent: string;
+  syntaxHighlighting?: boolean;
+  generateToc?: boolean;
+  lazyLoadImages?: boolean;
 }
 
-export function use마크다운({
-  마크다운내용,
-  문법하이라이팅 = true,
-  목차생성 = true,
-  이미지지연로딩 = true,
-}: use마크다운옵션) {
-  const HTML내용 = useMemo(() => {
-    if (!마크다운내용) return '';
+export function useMarkdown({
+  markdownContent,
+  syntaxHighlighting = true,
+  generateToc = true,
+  lazyLoadImages = true,
+}: UseMarkdownOptions) {
+  const htmlContent = useMemo(() => {
+    if (!markdownContent) return '';
 
-    return 마크다운을HTML로변환(마크다운내용, {
-      문법하이라이팅,
-      이미지지연로딩,
+    return markdownToHtml(markdownContent, {
+      syntaxHighlighting,
+      lazyLoadImages,
     });
-  }, [마크다운내용, 문법하이라이팅, 이미지지연로딩]);
+  }, [markdownContent, syntaxHighlighting, lazyLoadImages]);
 
-  const 목차목록 = useMemo(() => {
-    if (!목차생성 || !마크다운내용) return [];
+  const tocList = useMemo(() => {
+    if (!generateToc || !markdownContent) return [];
 
-    return 목차추출(마크다운내용);
-  }, [마크다운내용, 목차생성]);
+    return extractToc(markdownContent);
+  }, [markdownContent, generateToc]);
 
   return {
-    HTML내용,
-    목차목록,
-    로딩중: false, // 동기 처리이므로 로딩 없음
+    htmlContent,
+    tocList,
+    loading: false, // 동기 처리이므로 로딩 없음
   };
 }
 ```
 
 ### 문법 하이라이팅 유틸리티
 ```typescript
-// utils/문법하이라이팅.ts
+// utils/syntaxHighlighting.ts
 import Prism from 'prismjs';
 
 // 지원하는 언어들 동적 로딩
-const 언어로더 = {
+const languageLoaders = {
   typescript: () => import('prismjs/components/prism-typescript'),
   python: () => import('prismjs/components/prism-python'),
   bash: () => import('prismjs/components/prism-bash'),
@@ -133,23 +133,23 @@ const 언어로더 = {
   // 필요한 언어들 추가
 };
 
-export async function 코드하이라이팅(코드: string, 언어: string): Promise<string> {
+export async function highlightCode(code: string, language: string): Promise<string> {
   // 언어가 로딩되지 않았으면 동적 로딩
-  if (언어 in 언어로더 && !Prism.languages[언어]) {
+  if (language in languageLoaders && !Prism.languages[language]) {
     try {
-      await 언어로더[언어 as keyof typeof 언어로더]();
+      await languageLoaders[language as keyof typeof languageLoaders]();
     } catch (error) {
-      console.warn(`언어 로딩 실패: ${언어}`, error);
-      return 코드; // 하이라이팅 없이 원본 반환
+      console.warn(`언어 로딩 실패: ${language}`, error);
+      return code; // 하이라이팅 없이 원본 반환
     }
   }
 
   // Prism으로 하이라이팅
-  if (Prism.languages[언어]) {
-    return Prism.highlight(코드, Prism.languages[언어], 언어);
+  if (Prism.languages[language]) {
+    return Prism.highlight(code, Prism.languages[language], language);
   }
 
-  return 코드; // 지원하지 않는 언어는 원본 반환
+  return code; // 지원하지 않는 언어는 원본 반환
 }
 ```
 
@@ -158,7 +158,7 @@ export async function 코드하이라이팅(코드: string, 언어: string): Pro
 // utils/sanitize.ts
 import DOMPurify from 'dompurify';
 
-const 허용된태그 = [
+const allowedTags = [
   'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
   'p', 'br', 'strong', 'em', 'u', 's', 'del',
   'ul', 'ol', 'li',
@@ -168,7 +168,7 @@ const 허용된태그 = [
   'hr', 'div', 'span',
 ];
 
-const 허용된속성 = [
+const allowedAttributes = [
   'href', 'src', 'alt', 'title',
   'class', 'id',
   'target', 'rel',
@@ -176,10 +176,10 @@ const 허용된속성 = [
   'loading', 'decoding',
 ];
 
-export function HTML보안처리(HTML내용: string): string {
-  return DOMPurify.sanitize(HTML내용, {
-    ALLOWED_TAGS: 허용된태그,
-    ALLOWED_ATTR: 허용된속성,
+export function sanitizeHtml(htmlContent: string): string {
+  return DOMPurify.sanitize(htmlContent, {
+    ALLOWED_TAGS: allowedTags,
+    ALLOWED_ATTR: allowedAttributes,
     ADD_ATTR: ['loading'], // 이미지 지연 로딩용
     FORCE_BODY: false,
   });

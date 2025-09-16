@@ -23,77 +23,78 @@
 
 ```
 src/features/
-├── CLAUDE.md                  # 이 파일
-├── 인증/                      # 로그인/로그아웃 기능
-│   ├── CLAUDE.md              # 인증 기능 가이드
-│   ├── components/            # 인증 관련 컴포넌트
-│   │   ├── 로그인폼.tsx       # 로그인 폼
-│   │   ├── 회원가입폼.tsx     # 회원가입 폼
-│   │   └── 사용자메뉴.tsx     # 사용자 드롭다운 메뉴
-│   ├── hooks/                 # 인증 관련 훅
-│   │   └── use인증폼.ts       # 인증 폼 로직
-│   └── utils/                 # 인증 유틸리티
-│       └── 인증가드.tsx       # 라우트 보호 컴포넌트
-├── 글작성/                    # 블로그 글 작성/편집
-│   ├── CLAUDE.md
-│   ├── components/
-│   │   ├── 마크다운에디터.tsx
-│   │   ├── 미리보기.tsx
-│   │   └── 글작성폼.tsx
-│   ├── hooks/
-│   │   └── use글작성.ts
-│   └── utils/
-│       └── 마크다운변환.ts
-├── 글목록/                    # 블로그 글 목록 조회
-│   ├── CLAUDE.md
-│   ├── components/
-│   │   ├── 글목록.tsx
-│   │   ├── 글카드.tsx
-│   │   ├── 페이지네이션.tsx
-│   │   └── 검색필터.tsx
-│   ├── hooks/
-│   │   └── use글목록.ts
-│   └── utils/
-│       └── 목록정렬.ts
-└── 마크다운뷰어/              # 마크다운 렌더링
+├── CLAUDE.md                     # 이 파일
+├── auth/                         # 로그인/로그아웃 기능
+│   ├── CLAUDE.md                 # 인증 기능 가이드
+│   ├── components/               # 인증 관련 컴포넌트
+│   │   ├── LoginForm.tsx         # 로그인 폼
+│   │   ├── SignupForm.tsx        # 회원가입 폼
+│   │   └── UserMenu.tsx          # 사용자 드롭다운 메뉴
+│   ├── hooks/                    # 인증 관련 훅
+│   │   └── useAuthForm.ts        # 인증 폼 로직
+│   └── utils/                    # 인증 유틸리티
+│       └── AuthGuard.tsx         # 라우트 보호 컴포넌트
+├── post/                         # 블로그 글 관련 기능
+│   ├── editor/                   # 글 작성/편집
+│   │   ├── CLAUDE.md
+│   │   ├── components/
+│   │   │   ├── MarkdownEditor.tsx
+│   │   │   ├── Preview.tsx
+│   │   │   └── PostForm.tsx
+│   │   ├── hooks/
+│   │   │   └── usePostEditor.ts
+│   │   └── utils/
+│   │       └── markdownTransform.ts
+│   └── list/                     # 글 목록 조회
+│       ├── CLAUDE.md
+│       ├── components/
+│       │   ├── PostList.tsx
+│       │   ├── PostCard.tsx
+│       │   ├── Pagination.tsx
+│       │   └── SearchFilter.tsx
+│       ├── hooks/
+│       │   └── usePostList.ts
+│       └── utils/
+│           └── listSorting.ts
+└── markdown-viewer/              # 마크다운 렌더링
     ├── CLAUDE.md
     ├── components/
-    │   ├── 마크다운렌더러.tsx
-    │   ├── 코드하이라이터.tsx
-    │   └── 목차생성기.tsx
+    │   ├── MarkdownRenderer.tsx
+    │   ├── CodeHighlighter.tsx
+    │   └── TocGenerator.tsx
     ├── hooks/
-    │   └── use마크다운.ts
+    │   └── useMarkdown.ts
     └── utils/
-        └── 마크다운파서.ts
+        └── markdownParser.ts
 ```
 
 ## 🔨 구현 패턴
 
 ### 1. 컴포넌트 구조
 ```typescript
-// features/글작성/components/글작성폼.tsx
-import { use글작성 } from '../hooks/use글작성';
-import { 블로그글작성입력 } from '@/entities/블로그글/model/types';
+// features/post/editor/components/PostForm.tsx
+import { usePostEditor } from '../hooks/usePostEditor';
+import { PostCreateInput } from '@/entities/post/model/types';
 
-interface 글작성폼Props {
-  초기데이터?: Partial<블로그글작성입력>;
-  완료후콜백?: (글아이디: string) => void;
+interface PostFormProps {
+  initialData?: Partial<PostCreateInput>;
+  onComplete?: (postId: string) => void;
 }
 
-export function 글작성폼({ 초기데이터, 완료후콜백 }: 글작성폼Props) {
+export function PostForm({ initialData, onComplete }: PostFormProps) {
   const {
-    폼데이터,
-    에러상태,
-    로딩중,
-    필드업데이트,
-    제출하기,
-  } = use글작성({
-    초기데이터,
-    완료후콜백,
+    formData,
+    errors,
+    loading,
+    updateField,
+    handleSubmit,
+  } = usePostEditor({
+    initialData,
+    onComplete,
   });
 
   return (
-    <form onSubmit={제출하기}>
+    <form onSubmit={handleSubmit}>
       {/* 폼 구현 */}
     </form>
   );
@@ -102,94 +103,94 @@ export function 글작성폼({ 초기데이터, 완료후콜백 }: 글작성폼P
 
 ### 2. 커스텀 훅 패턴
 ```typescript
-// features/글작성/hooks/use글작성.ts
+// features/post/editor/hooks/usePostEditor.ts
 import { useState } from 'react';
-import { use블로그글작성 } from '@/entities/블로그글/hooks/use블로그글';
-import { 블로그글데이터검증 } from '@/entities/블로그글/model/validation';
+import { useCreatePost } from '@/entities/post/hooks/usePost';
+import { validatePostData } from '@/entities/post/model/validation';
 
-interface use글작성옵션 {
-  초기데이터?: Partial<블로그글작성입력>;
-  완료후콜백?: (글아이디: string) => void;
+interface UsePostEditorOptions {
+  initialData?: Partial<PostCreateInput>;
+  onComplete?: (postId: string) => void;
 }
 
-export function use글작성(옵션: use글작성옵션 = {}) {
-  const [폼데이터, set폼데이터] = useState({
-    제목: '',
-    내용: '',
-    태그목록: [],
-    발행상태: '임시저장' as const,
-    ...옵션.초기데이터,
+export function usePostEditor(options: UsePostEditorOptions = {}) {
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    tagList: [],
+    status: 'draft' as const,
+    ...options.initialData,
   });
 
-  const [에러상태, set에러상태] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const 작성뮤테이션 = use블로그글작성();
+  const createMutation = useCreatePost();
 
-  const 필드업데이트 = (필드: string, 값: any) => {
-    set폼데이터(prev => ({ ...prev, [필드]: 값 }));
+  const updateField = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
 
     // 에러 상태 초기화
-    if (에러상태[필드]) {
-      set에러상태(prev => ({ ...prev, [필드]: '' }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
-  const 제출하기 = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // 유효성 검증
-    const 에러들 = 블로그글데이터검증(폼데이터);
-    if (Object.keys(에러들).length > 0) {
-      set에러상태(에러들);
+    const validationErrors = validatePostData(formData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     try {
-      const 새글 = await 작성뮤테이션.mutateAsync(폼데이터);
-      옵션.완료후콜백?.(새글.아이디);
+      const newPost = await createMutation.mutateAsync(formData);
+      options.onComplete?.(newPost.id);
     } catch (error) {
       console.error('글 작성 실패:', error);
     }
   };
 
   return {
-    폼데이터,
-    에러상태,
-    로딩중: 작성뮤테이션.isLoading,
-    필드업데이트,
-    제출하기,
+    formData,
+    errors,
+    loading: createMutation.isLoading,
+    updateField,
+    handleSubmit,
   };
 }
 ```
 
 ### 3. 유틸리티 함수
 ```typescript
-// features/마크다운뷰어/utils/마크다운파서.ts
+// features/markdown-viewer/utils/markdownParser.ts
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
-interface 마크다운옵션 {
-  문법하이라이팅?: boolean;
-  목차생성?: boolean;
-  이미지지연로딩?: boolean;
+interface MarkdownOptions {
+  syntaxHighlighting?: boolean;
+  generateToc?: boolean;
+  lazyLoadImages?: boolean;
 }
 
-export function 마크다운을HTML로변환(
-  마크다운내용: string,
-  옵션: 마크다운옵션 = {}
+export function markdownToHtml(
+  markdownContent: string,
+  options: MarkdownOptions = {}
 ): string {
   // Marked 설정
   marked.setOptions({
-    highlight: 옵션.문법하이라이팅 ? 코드하이라이팅 : undefined,
+    highlight: options.syntaxHighlighting ? highlightCode : undefined,
     breaks: true,
     gfm: true,
   });
 
   // 마크다운을 HTML로 변환
-  const HTML내용 = marked(마크다운내용);
+  const htmlContent = marked(markdownContent);
 
   // XSS 방지를 위한 sanitize
-  const 안전한HTML = DOMPurify.sanitize(HTML내용, {
+  const safeHtml = DOMPurify.sanitize(htmlContent, {
     ALLOWED_TAGS: [
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'p', 'br', 'strong', 'em', 'u', 's',
@@ -201,16 +202,16 @@ export function 마크다운을HTML로변환(
     ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id'],
   });
 
-  return 옵션.이미지지연로딩 ? 이미지지연로딩적용(안전한HTML) : 안전한HTML;
+  return options.lazyLoadImages ? applyLazyLoading(safeHtml) : safeHtml;
 }
 
-function 코드하이라이팅(코드: string, 언어: string): string {
+function highlightCode(code: string, language: string): string {
   // 문법 하이라이팅 라이브러리 (예: Prism.js) 적용
-  return 코드;
+  return code;
 }
 
-function 이미지지연로딩적용(HTML: string): string {
-  return HTML.replace(/<img/g, '<img loading="lazy"');
+function applyLazyLoading(html: string): string {
+  return html.replace(/<img/g, '<img loading="lazy"');
 }
 ```
 
@@ -219,16 +220,16 @@ function 이미지지연로딩적용(HTML: string): string {
 ### 허용되는 패턴
 ```typescript
 // ✅ 다른 feature의 컴포넌트 사용 (신중하게)
-import { 사용자메뉴 } from '@/features/인증/components/사용자메뉴';
+import { UserMenu } from '@/features/auth/components/UserMenu';
 
-export function 글작성페이지() {
+export function PostEditorPage() {
   return (
     <div>
       <header>
-        <사용자메뉴 />
+        <UserMenu />
       </header>
       <main>
-        <글작성폼 />
+        <PostForm />
       </main>
     </div>
   );
@@ -237,28 +238,28 @@ export function 글작성페이지() {
 
 ### 추천하는 패턴 (Shared를 통한 연결)
 ```typescript
-// shared/components/레이아웃/관리자레이아웃.tsx
-import { 사용자메뉴 } from '@/features/인증/components/사용자메뉴';
+// shared/components/layout/AdminLayout.tsx
+import { UserMenu } from '@/features/auth/components/UserMenu';
 
-export function 관리자레이아웃({ children }: { children: React.ReactNode }) {
+export function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <header>
-        <사용자메뉴 />
+        <UserMenu />
       </header>
       <main>{children}</main>
     </div>
   );
 }
 
-// features/글작성/components/글작성페이지.tsx
-import { 관리자레이아웃 } from '@/shared/components/레이아웃/관리자레이아웃';
+// features/post/editor/components/PostEditorPage.tsx
+import { AdminLayout } from '@/shared/components/layout/AdminLayout';
 
-export function 글작성페이지() {
+export function PostEditorPage() {
   return (
-    <관리자레이아웃>
-      <글작성폼 />
-    </관리자레이아웃>
+    <AdminLayout>
+      <PostForm />
+    </AdminLayout>
   );
 }
 ```
@@ -268,47 +269,47 @@ export function 글작성페이지() {
 ### 1. 로컬 상태 (useState)
 ```typescript
 // 단순한 폼 상태, UI 상태
-const [열림상태, set열림상태] = useState(false);
-const [선택된탭, set선택된탭] = useState('미리보기');
+const [isOpen, setIsOpen] = useState(false);
+const [selectedTab, setSelectedTab] = useState('preview');
 ```
 
 ### 2. 서버 상태 (TanStack Query)
 ```typescript
 // 서버에서 가져오는 데이터
-const { data: 글목록 } = use블로그글목록(검색조건);
-const 글생성 = use블로그글작성();
+const { data: postList } = usePostList(searchCondition);
+const createPost = useCreatePost();
 ```
 
 ### 3. 전역 상태 (React Context)
 ```typescript
-// features/인증/context/인증컨텍스트.tsx
+// features/auth/context/AuthContext.tsx
 import { createContext, useContext } from 'react';
-import { use현재사용자 } from '@/entities/사용자/hooks/use사용자';
+import { useCurrentUser } from '@/entities/user/hooks/useUser';
 
-interface 인증컨텍스트타입 {
-  현재사용자: 사용자 | null;
-  로그인중: boolean;
-  관리자여부: boolean;
+interface AuthContextType {
+  currentUser: User | null;
+  isLoading: boolean;
+  isAdmin: boolean;
 }
 
-const 인증컨텍스트 = createContext<인증컨텍스트타입 | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export function 인증프로바이더({ children }: { children: React.ReactNode }) {
-  const { data: 현재사용자, isLoading: 로그인중 } = use현재사용자();
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { data: currentUser, isLoading } = useCurrentUser();
 
-  const 관리자여부 = 현재사용자?.권한 === '관리자';
+  const isAdmin = currentUser?.role === 'admin';
 
   return (
-    <인증컨텍스트.Provider value={{ 현재사용자, 로그인중, 관리자여부 }}>
+    <AuthContext.Provider value={{ currentUser, isLoading, isAdmin }}>
       {children}
-    </인증컨텍스트.Provider>
+    </AuthContext.Provider>
   );
 }
 
-export function use인증() {
-  const context = useContext(인증컨텍스트);
+export function useAuth() {
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('use인증은 인증프로바이더 내부에서 사용해야 합니다');
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 }
@@ -318,19 +319,19 @@ export function use인증() {
 
 ### 1. 컴포넌트 테스트
 ```typescript
-// features/글작성/__tests__/글작성폼.test.tsx
+// features/post/editor/__tests__/PostForm.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import { 글작성폼 } from '../components/글작성폼';
+import { PostForm } from '../components/PostForm';
 
 // Mock entities
-vi.mock('@/entities/블로그글/hooks/use블로그글');
+vi.mock('@/entities/post/hooks/usePost');
 
-describe('글작성폼', () => {
+describe('PostForm', () => {
   it('제목과 내용을 입력하고 저장할 수 있다', async () => {
-    const 완료후콜백 = vi.fn();
+    const onComplete = vi.fn();
 
-    render(<글작성폼 완료후콜백={완료후콜백} />);
+    render(<PostForm onComplete={onComplete} />);
 
     fireEvent.change(screen.getByLabelText('제목'), {
       target: { value: '테스트 글 제목' }
@@ -341,7 +342,7 @@ describe('글작성폼', () => {
     fireEvent.click(screen.getByRole('button', { name: '저장' }));
 
     await waitFor(() => {
-      expect(완료후콜백).toHaveBeenCalledWith('new-post-id');
+      expect(onComplete).toHaveBeenCalledWith('new-post-id');
     });
   });
 });
@@ -349,20 +350,20 @@ describe('글작성폼', () => {
 
 ### 2. 훅 테스트
 ```typescript
-// features/글작성/__tests__/use글작성.test.ts
+// features/post/editor/__tests__/usePostEditor.test.ts
 import { renderHook, act } from '@testing-library/react';
 import { vi } from 'vitest';
-import { use글작성 } from '../hooks/use글작성';
+import { usePostEditor } from '../hooks/usePostEditor';
 
-describe('use글작성', () => {
+describe('usePostEditor', () => {
   it('필드 업데이트가 정상 작동한다', () => {
-    const { result } = renderHook(() => use글작성());
+    const { result } = renderHook(() => usePostEditor());
 
     act(() => {
-      result.current.필드업데이트('제목', '새 제목');
+      result.current.updateField('title', '새 제목');
     });
 
-    expect(result.current.폼데이터.제목).toBe('새 제목');
+    expect(result.current.formData.title).toBe('새 제목');
   });
 });
 ```
@@ -372,17 +373,17 @@ describe('use글작성', () => {
 ### 1. 컴포넌트 분할
 ```typescript
 // 큰 컴포넌트를 작은 단위로 분할
-const 마크다운에디터 = lazy(() => import('./마크다운에디터'));
-const 미리보기 = lazy(() => import('./미리보기'));
+const MarkdownEditor = lazy(() => import('./MarkdownEditor'));
+const Preview = lazy(() => import('./Preview'));
 
-export function 글작성폼() {
+export function PostForm() {
   return (
     <div>
       <Suspense fallback={<div>에디터 로딩 중...</div>}>
-        <마크다운에디터 />
+        <MarkdownEditor />
       </Suspense>
       <Suspense fallback={<div>미리보기 로딩 중...</div>}>
-        <미리보기 />
+        <Preview />
       </Suspense>
     </div>
   );
@@ -392,20 +393,20 @@ export function 글작성폼() {
 ### 2. 메모이제이션
 ```typescript
 // 불필요한 리렌더링 방지
-const 최적화된글카드 = memo(function 글카드({ 글정보 }: { 글정보: 블로그글 }) {
+const OptimizedPostCard = memo(function PostCard({ postInfo }: { postInfo: Post }) {
   return (
     <article>
-      <h2>{글정보.제목}</h2>
-      <p>{글정보.요약}</p>
+      <h2>{postInfo.title}</h2>
+      <p>{postInfo.summary}</p>
     </article>
   );
 });
 
 // 비싼 계산 캐싱
-function use마크다운미리보기(마크다운내용: string) {
+function useMarkdownPreview(markdownContent: string) {
   return useMemo(() => {
-    return 마크다운을HTML로변환(마크다운내용);
-  }, [마크다운내용]);
+    return markdownToHtml(markdownContent);
+  }, [markdownContent]);
 }
 ```
 

@@ -1,4 +1,4 @@
-# 글목록 기능 가이드
+# Post List Feature Guide
 
 블로그 글 목록 조회, 필터링, 검색 기능을 담당합니다.
 
@@ -15,59 +15,59 @@
 ## 📁 컴포넌트 구조
 
 ```
-src/features/글목록/
+src/features/post/list/
 ├── components/
-│   ├── 글목록.tsx           # 메인 목록 컴포넌트
-│   ├── 글카드.tsx           # 개별 글 카드
-│   ├── 페이지네이션.tsx     # 페이지 내비게이션
-│   ├── 검색필터.tsx         # 검색 및 필터
-│   └── 빈상태.tsx           # 글이 없을 때 표시
+│   ├── PostList.tsx         # 메인 목록 컴포넌트
+│   ├── PostCard.tsx         # 개별 글 카드
+│   ├── Pagination.tsx       # 페이지 내비게이션
+│   ├── SearchFilter.tsx     # 검색 및 필터
+│   └── EmptyState.tsx       # 글이 없을 때 표시
 ├── hooks/
-│   ├── use글목록.ts         # 목록 조회 로직
-│   └── use검색필터.ts       # 검색/필터 로직
+│   ├── usePostList.ts       # 목록 조회 로직
+│   └── useSearchFilter.ts   # 검색/필터 로직
 └── utils/
-    └── 목록정렬.ts          # 정렬 유틸리티
+    └── listSorting.ts       # 정렬 유틸리티
 ```
 
 ## 🔧 사용 예시
 
 ### 글목록 컴포넌트
 ```typescript
-// components/글목록.tsx
-import { use글목록 } from '../hooks/use글목록';
-import { 글카드 } from './글카드';
-import { 페이지네이션 } from './페이지네이션';
-import { 검색필터 } from './검색필터';
+// components/PostList.tsx
+import { usePostList } from '../hooks/usePostList';
+import { PostCard } from './PostCard';
+import { Pagination } from './Pagination';
+import { SearchFilter } from './SearchFilter';
 
-export function 글목록() {
+export function PostList() {
   const {
-    목록데이터,
-    로딩중,
-    검색조건,
-    검색조건업데이트,
-    페이지변경,
-  } = use글목록();
+    listData,
+    loading,
+    searchCondition,
+    updateSearchCondition,
+    changePage,
+  } = usePostList();
 
-  if (로딩중) return <div>글 목록을 불러오는 중...</div>;
+  if (loading) return <div>글 목록을 불러오는 중...</div>;
 
   return (
-    <div className="글목록-컨테이너">
-      <검색필터
-        현재조건={검색조건}
-        변경시={검색조건업데이트}
+    <div className="post-list-container">
+      <SearchFilter
+        currentCondition={searchCondition}
+        onChange={updateSearchCondition}
       />
 
-      <div className="글카드-그리드">
-        {목록데이터?.글목록.map((글) => (
-          <글카드 key={글.아이디} 글정보={글} />
+      <div className="post-card-grid">
+        {listData?.postList.map((post) => (
+          <PostCard key={post.id} postInfo={post} />
         ))}
       </div>
 
-      {목록데이터 && (
-        <페이지네이션
-          현재페이지={목록데이터.현재페이지}
-          총페이지수={목록데이터.총페이지수}
-          페이지변경시={페이지변경}
+      {listData && (
+        <Pagination
+          currentPage={listData.currentPage}
+          totalPages={listData.totalPages}
+          onPageChange={changePage}
         />
       )}
     </div>
@@ -77,50 +77,50 @@ export function 글목록() {
 
 ### 글카드 컴포넌트
 ```typescript
-// components/글카드.tsx
+// components/PostCard.tsx
 import { Link } from '@tanstack/react-router';
-import { 블로그글목록항목 } from '@/entities/블로그글/model/types';
+import { PostListItem } from '@/entities/post/model/types';
 
-interface 글카드Props {
-  글정보: 블로그글목록항목;
+interface PostCardProps {
+  postInfo: PostListItem;
 }
 
-export function 글카드({ 글정보 }: 글카드Props) {
+export function PostCard({ postInfo }: PostCardProps) {
   return (
-    <article className="글카드">
-      {글정보.추천이미지URL && (
+    <article className="post-card">
+      {postInfo.featuredImageUrl && (
         <img
-          src={글정보.추천이미지URL}
-          alt={글정보.제목}
-          className="글카드-이미지"
+          src={postInfo.featuredImageUrl}
+          alt={postInfo.title}
+          className="post-card-image"
           loading="lazy"
         />
       )}
 
-      <div className="글카드-내용">
-        <h2 className="글카드-제목">
-          <Link to={`/posts/${글정보.슬러그}`}>
-            {글정보.제목}
+      <div className="post-card-content">
+        <h2 className="post-card-title">
+          <Link to={`/posts/${postInfo.slug}`}>
+            {postInfo.title}
           </Link>
         </h2>
 
-        <p className="글카드-요약">{글정보.요약}</p>
+        <p className="post-card-summary">{postInfo.summary}</p>
 
-        <div className="글카드-메타">
-          <time dateTime={글정보.발행일자.toISOString()}>
-            {글정보.발행일자.toLocaleDateString()}
+        <div className="post-card-meta">
+          <time dateTime={postInfo.publishedAt.toISOString()}>
+            {postInfo.publishedAt.toLocaleDateString()}
           </time>
-          <span className="조회수">조회 {글정보.조회수}회</span>
+          <span className="view-count">조회 {postInfo.viewCount}회</span>
         </div>
 
-        <div className="글카드-태그들">
-          {글정보.태그목록.map((태그) => (
+        <div className="post-card-tags">
+          {postInfo.tagList.map((tag) => (
             <Link
-              key={태그}
-              to={`/tags/${태그}`}
-              className="태그-링크"
+              key={tag}
+              to={`/tags/${tag}`}
+              className="tag-link"
             >
-              #{태그}
+              #{tag}
             </Link>
           ))}
         </div>

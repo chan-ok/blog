@@ -1,4 +1,4 @@
-# 인증 기능 가이드
+# Auth Feature Guide
 
 사용자 로그인, 로그아웃, 회원가입 기능을 담당합니다.
 
@@ -14,56 +14,56 @@
 ## 📁 컴포넌트 구조
 
 ```
-src/features/인증/
+src/features/auth/
 ├── components/
-│   ├── 로그인폼.tsx         # 로그인 폼 컴포넌트
-│   ├── 회원가입폼.tsx       # 회원가입 폼 (관리자용)
-│   └── 사용자메뉴.tsx       # 헤더의 사용자 드롭다운
+│   ├── LoginForm.tsx         # 로그인 폼 컴포넌트
+│   ├── SignupForm.tsx        # 회원가입 폼 (관리자용)
+│   └── UserMenu.tsx          # 헤더의 사용자 드롭다운
 ├── hooks/
-│   ├── use로그인폼.ts       # 로그인 폼 로직
-│   └── use회원가입폼.ts     # 회원가입 폼 로직
+│   ├── useLoginForm.ts       # 로그인 폼 로직
+│   └── useSignupForm.ts      # 회원가입 폼 로직
 ├── utils/
-│   └── 인증가드.tsx         # 라우트 보호 컴포넌트
+│   └── AuthGuard.tsx         # 라우트 보호 컴포넌트
 └── context/
-    └── 인증컨텍스트.tsx     # 인증 상태 전역 관리
+    └── AuthContext.tsx       # 인증 상태 전역 관리
 ```
 
 ## 🔧 사용 예시
 
 ### 로그인 폼
 ```typescript
-// components/로그인폼.tsx
-import { use로그인폼 } from '../hooks/use로그인폼';
+// components/LoginForm.tsx
+import { useLoginForm } from '../hooks/useLoginForm';
 
-export function 로그인폼() {
+export function LoginForm() {
   const {
-    폼데이터,
-    에러상태,
-    로딩중,
-    필드업데이트,
-    제출하기,
-  } = use로그인폼();
+    formData,
+    errors,
+    loading,
+    updateField,
+    handleSubmit,
+  } = useLoginForm();
 
   return (
-    <form onSubmit={제출하기}>
+    <form onSubmit={handleSubmit}>
       <input
         type="email"
         placeholder="이메일"
-        value={폼데이터.이메일}
-        onChange={(e) => 필드업데이트('이메일', e.target.value)}
+        value={formData.email}
+        onChange={(e) => updateField('email', e.target.value)}
       />
-      {에러상태.이메일 && <div className="error">{에러상태.이메일}</div>}
+      {errors.email && <div className="error">{errors.email}</div>}
 
       <input
         type="password"
         placeholder="비밀번호"
-        value={폼데이터.비밀번호}
-        onChange={(e) => 필드업데이트('비밀번호', e.target.value)}
+        value={formData.password}
+        onChange={(e) => updateField('password', e.target.value)}
       />
-      {에러상태.비밀번호 && <div className="error">{에러상태.비밀번호}</div>}
+      {errors.password && <div className="error">{errors.password}</div>}
 
-      <button type="submit" disabled={로딩중}>
-        {로딩중 ? '로그인 중...' : '로그인'}
+      <button type="submit" disabled={loading}>
+        {loading ? '로그인 중...' : '로그인'}
       </button>
     </form>
   );
@@ -72,28 +72,28 @@ export function 로그인폼() {
 
 ### 인증 가드
 ```typescript
-// utils/인증가드.tsx
-import { use인증 } from '../context/인증컨텍스트';
+// utils/AuthGuard.tsx
+import { useAuth } from '../context/AuthContext';
 
-interface 인증가드Props {
+interface AuthGuardProps {
   children: React.ReactNode;
-  관리자전용?: boolean;
-  대체UI?: React.ReactNode;
+  adminOnly?: boolean;
+  fallbackUI?: React.ReactNode;
 }
 
-export function 인증가드({ children, 관리자전용 = false, 대체UI }: 인증가드Props) {
-  const { 현재사용자, 로그인중, 관리자여부 } = use인증();
+export function AuthGuard({ children, adminOnly = false, fallbackUI }: AuthGuardProps) {
+  const { currentUser, loading, isAdmin } = useAuth();
 
-  if (로그인중) {
+  if (loading) {
     return <div>인증 확인 중...</div>;
   }
 
-  if (!현재사용자) {
-    return 대체UI || <div>로그인이 필요합니다</div>;
+  if (!currentUser) {
+    return fallbackUI || <div>로그인이 필요합니다</div>;
   }
 
-  if (관리자전용 && !관리자여부) {
-    return 대체UI || <div>관리자 권한이 필요합니다</div>;
+  if (adminOnly && !isAdmin) {
+    return fallbackUI || <div>관리자 권한이 필요합니다</div>;
   }
 
   return <>{children}</>;

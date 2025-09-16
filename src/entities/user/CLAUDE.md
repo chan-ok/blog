@@ -1,176 +1,176 @@
-# 사용자 엔티티 가이드
+# User Entity Guide
 
-이 폴더는 사용자 관련 도메인 모델과 비즈니스 로직을 담당합니다.
+This folder handles user-related domain models and business logic.
 
-## 🎯 사용자 엔티티 개요
+## 🎯 User Entity Overview
 
-### 비즈니스 규칙
-- **인증**: Supabase Auth를 통한 이메일/비밀번호 로그인
-- **권한**: 관리자와 일반사용자 구분
-- **프로필**: 이름, 이메일 등 기본 정보 관리
-- **보안**: 비밀번호 정책 및 세션 관리
+### Business Rules
+- **Authentication**: Email/password login through Supabase Auth
+- **Authorization**: Distinction between admin and regular users
+- **Profile**: Basic information management like name, email
+- **Security**: Password policy and session management
 
-### 주요 시나리오
-1. 사용자 회원가입
-2. 로그인/로그아웃
-3. 프로필 정보 수정
-4. 비밀번호 변경
-5. 관리자 권한 확인
+### Main Scenarios
+1. User registration
+2. Login/logout
+3. Profile information updates
+4. Password changes
+5. Admin permission verification
 
-## 📊 데이터 모델
+## 📊 Data Model
 
-### 핵심 타입
+### Core Types
 ```typescript
 // model/types.ts
-export interface 사용자 {
-  아이디: string;                    // UUID (Supabase auth.users.id)
-  이메일: string;                    // 로그인용 이메일
-  이름: string;                      // 표시명
-  권한: 사용자권한;                  // 시스템 권한
-  가입일자: Date;                    // 계정 생성 시점
-  최종로그인일자?: Date;             // 마지막 로그인 시간
-  프로필이미지URL?: string;          // 프로필 사진 (선택사항)
+export interface User {
+  id: string;                        // UUID (Supabase auth.users.id)
+  email: string;                     // Login email
+  name: string;                      // Display name
+  role: UserRole;                    // System permissions
+  createdAt: Date;                   // Account creation time
+  lastLoginAt?: Date;                // Last login time
+  profileImageUrl?: string;          // Profile picture (optional)
 }
 
-export type 사용자권한 = '관리자' | '일반사용자';
+export type UserRole = 'admin' | 'user';
 
-export interface 사용자프로필 {
-  아이디: string;
-  이름: string;
-  이메일: string;
-  프로필이미지URL?: string;
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  profileImageUrl?: string;
 }
 
-export interface 로그인입력 {
-  이메일: string;
-  비밀번호: string;
+export interface LoginInput {
+  email: string;
+  password: string;
 }
 
-export interface 회원가입입력 {
-  이메일: string;
-  비밀번호: string;
-  이름: string;
+export interface SignupInput {
+  email: string;
+  password: string;
+  name: string;
 }
 
-export interface 프로필수정입력 {
-  이름?: string;
-  프로필이미지URL?: string;
+export interface ProfileUpdateInput {
+  name?: string;
+  profileImageUrl?: string;
 }
 
-export interface 비밀번호변경입력 {
-  현재비밀번호: string;
-  새비밀번호: string;
+export interface PasswordChangeInput {
+  currentPassword: string;
+  newPassword: string;
 }
 ```
 
-## 🔧 구현 예시
+## 🔧 Implementation Examples
 
-### 1. 유효성 검증 (model/validation.ts)
+### 1. Validation (model/validation.ts)
 ```typescript
-export interface 검증결과 {
-  유효함: boolean;
-  에러메시지?: string;
+export interface ValidationResult {
+  isValid: boolean;
+  errorMessage?: string;
 }
 
-export function 이메일검증(이메일: string): 검증결과 {
-  if (!이메일.trim()) {
-    return { 유효함: false, 에러메시지: '이메일을 입력해주세요' };
+export function validateEmail(email: string): ValidationResult {
+  if (!email.trim()) {
+    return { isValid: false, errorMessage: 'Please enter email' };
   }
 
-  const 이메일정규식 = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!이메일정규식.test(이메일)) {
-    return { 유효함: false, 에러메시지: '올바른 이메일 형식이 아닙니다' };
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { isValid: false, errorMessage: 'Invalid email format' };
   }
 
-  return { 유효함: true };
+  return { isValid: true };
 }
 
-export function 비밀번호검증(비밀번호: string): 검증결과 {
-  if (!비밀번호) {
-    return { 유효함: false, 에러메시지: '비밀번호를 입력해주세요' };
+export function validatePassword(password: string): ValidationResult {
+  if (!password) {
+    return { isValid: false, errorMessage: 'Please enter password' };
   }
 
-  if (비밀번호.length < 8) {
-    return { 유효함: false, 에러메시지: '비밀번호는 8자 이상이어야 합니다' };
+  if (password.length < 8) {
+    return { isValid: false, errorMessage: 'Password must be at least 8 characters' };
   }
 
-  const 숫자포함 = /\d/.test(비밀번호);
-  const 특수문자포함 = /[!@#$%^&*(),.?":{}|<>]/.test(비밀번호);
+  const hasNumber = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-  if (!숫자포함) {
-    return { 유효함: false, 에러메시지: '비밀번호에 숫자를 포함해주세요' };
+  if (!hasNumber) {
+    return { isValid: false, errorMessage: 'Password must include numbers' };
   }
 
-  if (!특수문자포함) {
-    return { 유효함: false, 에러메시지: '비밀번호에 특수문자를 포함해주세요' };
+  if (!hasSpecialChar) {
+    return { isValid: false, errorMessage: 'Password must include special characters' };
   }
 
-  return { 유효함: true };
+  return { isValid: true };
 }
 
-export function 이름검증(이름: string): 검증결과 {
-  if (!이름.trim()) {
-    return { 유효함: false, 에러메시지: '이름을 입력해주세요' };
+export function validateName(name: string): ValidationResult {
+  if (!name.trim()) {
+    return { isValid: false, errorMessage: 'Please enter name' };
   }
 
-  if (이름.length < 2 || 이름.length > 50) {
-    return { 유효함: false, 에러메시지: '이름은 2자 이상 50자 이하로 입력해주세요' };
+  if (name.length < 2 || name.length > 50) {
+    return { isValid: false, errorMessage: 'Name must be between 2 and 50 characters' };
   }
 
-  return { 유효함: true };
+  return { isValid: true };
 }
 
-export function 회원가입데이터검증(데이터: 회원가입입력): Record<string, string> {
-  const 에러들: Record<string, string> = {};
+export function validateSignupData(data: SignupInput): Record<string, string> {
+  const errors: Record<string, string> = {};
 
-  const 이메일검증결과 = 이메일검증(데이터.이메일);
-  if (!이메일검증결과.유효함) {
-    에러들.이메일 = 이메일검증결과.에러메시지!;
+  const emailResult = validateEmail(data.email);
+  if (!emailResult.isValid) {
+    errors.email = emailResult.errorMessage!;
   }
 
-  const 비밀번호검증결과 = 비밀번호검증(데이터.비밀번호);
-  if (!비밀번호검증결과.유효함) {
-    에러들.비밀번호 = 비밀번호검증결과.에러메시지!;
+  const passwordResult = validatePassword(data.password);
+  if (!passwordResult.isValid) {
+    errors.password = passwordResult.errorMessage!;
   }
 
-  const 이름검증결과 = 이름검증(데이터.이름);
-  if (!이름검증결과.유효함) {
-    에러들.이름 = 이름검증결과.에러메시지!;
+  const nameResult = validateName(data.name);
+  if (!nameResult.isValid) {
+    errors.name = nameResult.errorMessage!;
   }
 
-  return 에러들;
+  return errors;
 }
 ```
 
-### 2. API 함수 (api/사용자API.ts)
+### 2. API Functions (api/userAPI.ts)
 ```typescript
 import { supabase } from '@/shared/config/supabase';
 import type {
-  사용자,
-  로그인입력,
-  회원가입입력,
-  프로필수정입력,
-  비밀번호변경입력
+  User,
+  LoginInput,
+  SignupInput,
+  ProfileUpdateInput,
+  PasswordChangeInput
 } from '../model/types';
 
-export async function 회원가입하기(입력데이터: 회원가입입력): Promise<사용자> {
-  // 1. Supabase Auth에 사용자 생성
+export async function signup(inputData: SignupInput): Promise<User> {
+  // 1. Create user in Supabase Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
-    email: 입력데이터.이메일,
-    password: 입력데이터.비밀번호,
+    email: inputData.email,
+    password: inputData.password,
   });
 
   if (authError) throw authError;
-  if (!authData.user) throw new Error('사용자 생성에 실패했습니다');
+  if (!authData.user) throw new Error('Failed to create user');
 
-  // 2. 프로필 정보를 public.사용자 테이블에 저장
+  // 2. Save profile information to public.users table
   const { data: userData, error: userError } = await supabase
-    .from('사용자')
+    .from('users')
     .insert({
-      아이디: authData.user.id,
-      이메일: 입력데이터.이메일,
-      이름: 입력데이터.이름,
-      권한: '일반사용자',
+      id: authData.user.id,
+      email: inputData.email,
+      name: inputData.name,
+      role: 'user',
     })
     .select()
     .single();
@@ -179,67 +179,67 @@ export async function 회원가입하기(입력데이터: 회원가입입력): P
   return userData;
 }
 
-export async function 로그인하기(입력데이터: 로그인입력): Promise<사용자> {
+export async function login(inputData: LoginInput): Promise<User> {
   const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email: 입력데이터.이메일,
-    password: 입력데이터.비밀번호,
+    email: inputData.email,
+    password: inputData.password,
   });
 
   if (authError) throw authError;
-  if (!authData.user) throw new Error('로그인에 실패했습니다');
+  if (!authData.user) throw new Error('Login failed');
 
-  // 사용자 프로필 정보 가져오기
+  // Get user profile information
   const { data: userData, error: userError } = await supabase
-    .from('사용자')
+    .from('users')
     .select('*')
-    .eq('아이디', authData.user.id)
+    .eq('id', authData.user.id)
     .single();
 
   if (userError) throw userError;
 
-  // 최종 로그인 시간 업데이트
+  // Update last login time
   await supabase
-    .from('사용자')
-    .update({ 최종로그인일자: new Date().toISOString() })
-    .eq('아이디', authData.user.id);
+    .from('users')
+    .update({ lastLoginAt: new Date().toISOString() })
+    .eq('id', authData.user.id);
 
   return userData;
 }
 
-export async function 로그아웃하기(): Promise<void> {
+export async function logout(): Promise<void> {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }
 
-export async function 현재사용자가져오기(): Promise<사용자 | null> {
+export async function getCurrentUser(): Promise<User | null> {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError) throw authError;
   if (!user) return null;
 
   const { data: userData, error: userError } = await supabase
-    .from('사용자')
+    .from('users')
     .select('*')
-    .eq('아이디', user.id)
+    .eq('id', user.id)
     .single();
 
   if (userError) {
-    // 인증은 되어있지만 프로필이 없는 경우 (데이터 불일치)
-    console.error('사용자 프로필을 찾을 수 없습니다:', userError);
+    // User is authenticated but profile doesn't exist (data inconsistency)
+    console.error('User profile not found:', userError);
     return null;
   }
 
   return userData;
 }
 
-export async function 프로필수정하기(
-  사용자아이디: string,
-  수정데이터: 프로필수정입력
-): Promise<사용자> {
+export async function updateProfile(
+  userId: string,
+  updateData: ProfileUpdateInput
+): Promise<User> {
   const { data, error } = await supabase
-    .from('사용자')
-    .update(수정데이터)
-    .eq('아이디', 사용자아이디)
+    .from('users')
+    .update(updateData)
+    .eq('id', userId)
     .select()
     .single();
 
@@ -247,177 +247,177 @@ export async function 프로필수정하기(
   return data;
 }
 
-export async function 비밀번호변경하기(변경데이터: 비밀번호변경입력): Promise<void> {
-  // 현재 비밀번호로 재인증
+export async function changePassword(changeData: PasswordChangeInput): Promise<void> {
+  // Re-authenticate with current password
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('로그인이 필요합니다');
+  if (!user) throw new Error('Login required');
 
-  // Supabase Auth에서 비밀번호 변경
+  // Change password in Supabase Auth
   const { error } = await supabase.auth.updateUser({
-    password: 변경데이터.새비밀번호,
+    password: changeData.newPassword,
   });
 
   if (error) throw error;
 }
 
-export async function 사용자권한확인(사용자아이디: string): Promise<boolean> {
+export async function checkAdminRole(userId: string): Promise<boolean> {
   const { data, error } = await supabase
-    .from('사용자')
-    .select('권한')
-    .eq('아이디', 사용자아이디)
+    .from('users')
+    .select('role')
+    .eq('id', userId)
     .single();
 
   if (error) throw error;
-  return data.권한 === '관리자';
+  return data.role === 'admin';
 }
 ```
 
-### 3. 리액트 훅 (hooks/use사용자.ts)
+### 3. React Hooks (hooks/useUser.ts)
 ```typescript
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  현재사용자가져오기,
-  로그인하기,
-  로그아웃하기,
-  회원가입하기,
-  프로필수정하기,
-  비밀번호변경하기,
-  사용자권한확인,
-} from '../api/사용자API';
+  getCurrentUser,
+  login,
+  logout,
+  signup,
+  updateProfile,
+  changePassword,
+  checkAdminRole,
+} from '../api/userAPI';
 
-export function use현재사용자() {
+export function useCurrentUser() {
   return useQuery({
-    queryKey: ['현재사용자'],
-    queryFn: 현재사용자가져오기,
-    staleTime: 5 * 60 * 1000, // 5분
+    queryKey: ['currentUser'],
+    queryFn: getCurrentUser,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
   });
 }
 
-export function use로그인() {
+export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: 로그인하기,
-    onSuccess: (사용자) => {
-      queryClient.setQueryData(['현재사용자'], 사용자);
+    mutationFn: login,
+    onSuccess: (user) => {
+      queryClient.setQueryData(['currentUser'], user);
     },
   });
 }
 
-export function use로그아웃() {
+export function useLogout() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: 로그아웃하기,
+    mutationFn: logout,
     onSuccess: () => {
-      queryClient.setQueryData(['현재사용자'], null);
-      queryClient.removeQueries(); // 모든 쿼리 캐시 정리
+      queryClient.setQueryData(['currentUser'], null);
+      queryClient.removeQueries(); // Clear all query cache
     },
   });
 }
 
-export function use회원가입() {
+export function useSignup() {
   return useMutation({
-    mutationFn: 회원가입하기,
+    mutationFn: signup,
   });
 }
 
-export function use프로필수정() {
+export function useUpdateProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ 사용자아이디, 수정데이터 }: {
-      사용자아이디: string;
-      수정데이터: 프로필수정입력;
-    }) => 프로필수정하기(사용자아이디, 수정데이터),
-    onSuccess: (수정된사용자) => {
-      queryClient.setQueryData(['현재사용자'], 수정된사용자);
+    mutationFn: ({ userId, updateData }: {
+      userId: string;
+      updateData: ProfileUpdateInput;
+    }) => updateProfile(userId, updateData),
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(['currentUser'], updatedUser);
     },
   });
 }
 
-export function use비밀번호변경() {
+export function useChangePassword() {
   return useMutation({
-    mutationFn: 비밀번호변경하기,
+    mutationFn: changePassword,
   });
 }
 
-export function use관리자권한확인(사용자아이디?: string) {
+export function useCheckAdminRole(userId?: string) {
   return useQuery({
-    queryKey: ['관리자권한', 사용자아이디],
-    queryFn: () => 사용자권한확인(사용자아이디!),
-    enabled: !!사용자아이디,
+    queryKey: ['adminRole', userId],
+    queryFn: () => checkAdminRole(userId!),
+    enabled: !!userId,
   });
 }
 ```
 
-## 🧪 테스트 예시
+## 🧪 Test Examples
 
-### 유효성 검증 테스트
+### Validation Tests
 ```typescript
 // model/__tests__/validation.test.ts
 import { describe, it, expect } from 'vitest';
 import {
-  이메일검증,
-  비밀번호검증,
-  이름검증,
-  회원가입데이터검증
+  validateEmail,
+  validatePassword,
+  validateName,
+  validateSignupData
 } from '../validation';
 
-describe('사용자 데이터 유효성 검증', () => {
-  describe('이메일 검증', () => {
-    it('유효한 이메일은 통과해야 한다', () => {
-      const 결과 = 이메일검증('test@example.com');
-      expect(결과.유효함).toBe(true);
+describe('User data validation', () => {
+  describe('Email validation', () => {
+    it('should pass with valid email', () => {
+      const result = validateEmail('test@example.com');
+      expect(result.isValid).toBe(true);
     });
 
-    it('빈 이메일은 실패해야 한다', () => {
-      const 결과 = 이메일검증('');
-      expect(결과.유효함).toBe(false);
-      expect(결과.에러메시지).toBe('이메일을 입력해주세요');
+    it('should fail with empty email', () => {
+      const result = validateEmail('');
+      expect(result.isValid).toBe(false);
+      expect(result.errorMessage).toBe('Please enter email');
     });
 
-    it('잘못된 형식의 이메일은 실패해야 한다', () => {
-      const 결과 = 이메일검증('invalid-email');
-      expect(결과.유효함).toBe(false);
-      expect(결과.에러메시지).toBe('올바른 이메일 형식이 아닙니다');
+    it('should fail with invalid email format', () => {
+      const result = validateEmail('invalid-email');
+      expect(result.isValid).toBe(false);
+      expect(result.errorMessage).toBe('Invalid email format');
     });
   });
 
-  describe('비밀번호 검증', () => {
-    it('유효한 비밀번호는 통과해야 한다', () => {
-      const 결과 = 비밀번호검증('password123!');
-      expect(결과.유효함).toBe(true);
+  describe('Password validation', () => {
+    it('should pass with valid password', () => {
+      const result = validatePassword('password123!');
+      expect(result.isValid).toBe(true);
     });
 
-    it('8자 미만은 실패해야 한다', () => {
-      const 결과 = 비밀번호검증('pass1!');
-      expect(결과.유효함).toBe(false);
-      expect(결과.에러메시지).toContain('8자 이상');
+    it('should fail with less than 8 characters', () => {
+      const result = validatePassword('pass1!');
+      expect(result.isValid).toBe(false);
+      expect(result.errorMessage).toContain('at least 8 characters');
     });
   });
 });
 ```
 
-## 📋 개발 체크리스트
+## 📋 Development Checklist
 
-새로운 사용자 관련 기능 추가 시:
+When adding new user-related features:
 
-- [ ] 타입 정의가 완전한가?
-- [ ] 유효성 검증 로직이 포함되어 있는가?
-- [ ] API 에러 처리가 적절한가?
-- [ ] TanStack Query 캐싱 전략이 올바른가?
-- [ ] 테스트 커버리지가 충분한가?
-- [ ] 보안 고려사항이 반영되어 있는가?
-- [ ] Supabase RLS 정책과 일치하는가?
+- [ ] Are type definitions complete?
+- [ ] Is validation logic included?
+- [ ] Is API error handling appropriate?
+- [ ] Is TanStack Query caching strategy correct?
+- [ ] Is test coverage sufficient?
+- [ ] Are security considerations reflected?
+- [ ] Does it match Supabase RLS policies?
 
-## 🔐 보안 고려사항
+## 🔐 Security Considerations
 
-- **인증 토큰**: Supabase가 자동 관리
-- **비밀번호**: 클라이언트에 저장하지 않음
-- **세션 관리**: Supabase Auth 세션 사용
-- **권한 확인**: 서버 사이드에서 재검증 필요
-- **개인정보**: 최소한의 정보만 수집
+- **Authentication Tokens**: Automatically managed by Supabase
+- **Passwords**: Not stored on client-side
+- **Session Management**: Use Supabase Auth sessions
+- **Permission Verification**: Re-validation needed on server-side
+- **Personal Information**: Collect only minimum necessary information
 
-이 가이드를 따라 안전하고 확장 가능한 사용자 관리 시스템을 구축하세요.
+Follow this guide to build a secure and scalable user management system.
