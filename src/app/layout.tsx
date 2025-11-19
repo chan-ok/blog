@@ -1,6 +1,7 @@
 import { notoSans, notoSansJP, notoSansKR } from '@/shared/config/font';
+import Footer from '@/widgets/footer';
+import Header from '@/widgets/header';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -13,46 +14,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const bodyClasses = `${notoSans.variable} ${notoSansKR.variable} ${notoSansJP.variable} antialiased`;
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${notoSans.variable} ${notoSansKR.variable} ${notoSansJP.variable} antialiased`}
-      >
+      <body className={bodyClasses}>
         <div className="min-h-screen text-gray-900">
-          <header className="bg-white shadow">
-            <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-              <Link href="/" className="text-2xl font-bold">
-                My Blog
-              </Link>
-              <nav className="space-x-1">
-                <Link
-                  href="/about"
-                  className="rounded-lg px-4 py-2 text-gray-700 transition delay-100 hover:bg-zinc-100 hover:text-black"
-                >
-                  About
-                </Link>
-                <Link
-                  href="/posts"
-                  className="rounded-lg px-4 py-2 text-gray-700 transition delay-100 hover:bg-zinc-100 hover:text-black"
-                >
-                  Post
-                </Link>
-                <Link
-                  href="/contact"
-                  className="rounded-lg px-4 py-2 text-gray-700 transition delay-100 hover:bg-zinc-100 hover:text-black"
-                >
-                  Contact
-                </Link>
-              </nav>
-            </div>
-          </header>
-
+          <Header />
           <main className="mx-auto max-w-4xl px-6 py-10">{children}</main>
-
-          {/* Footer */}
-          <footer className="mt-10 py-6 text-center text-gray-600">
-            © 2025 My Blog. All rights reserved.
-          </footer>
+          <Footer />
         </div>
       </body>
     </html>
