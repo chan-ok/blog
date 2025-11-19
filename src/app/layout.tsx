@@ -24,16 +24,22 @@ export default function RootLayout({
               <Link href="/" className="text-2xl font-bold">
                 My Blog
               </Link>
-              <nav className="space-x-4">
-                <Link href="/about" className="text-gray-700 hover:text-black">
+              <nav className="space-x-1">
+                <Link
+                  href="/about"
+                  className="rounded-lg px-4 py-2 text-gray-700 transition delay-100 hover:bg-zinc-100 hover:text-black"
+                >
                   About
                 </Link>
-                <Link href="/posts" className="text-gray-700 hover:text-black">
+                <Link
+                  href="/posts"
+                  className="rounded-lg px-4 py-2 text-gray-700 transition delay-100 hover:bg-zinc-100 hover:text-black"
+                >
                   Post
                 </Link>
                 <Link
                   href="/contact"
-                  className="text-gray-700 hover:text-black"
+                  className="rounded-lg px-4 py-2 text-gray-700 transition delay-100 hover:bg-zinc-100 hover:text-black"
                 >
                   Contact
                 </Link>
