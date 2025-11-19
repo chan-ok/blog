@@ -1,5 +1,6 @@
 import { notoSans, notoSansJP, notoSansKR } from '@/shared/config/font';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,7 +18,36 @@ export default function RootLayout({
       <body
         className={`${notoSans.variable} ${notoSansKR.variable} ${notoSansJP.variable} antialiased`}
       >
-        {children}
+        <div className="min-h-screen text-gray-900">
+          <header className="bg-white shadow">
+            <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
+              <Link href="/" className="text-2xl font-bold">
+                My Blog
+              </Link>
+              <nav className="space-x-4">
+                <Link href="/about" className="text-gray-700 hover:text-black">
+                  About
+                </Link>
+                <Link href="/posts" className="text-gray-700 hover:text-black">
+                  Post
+                </Link>
+                <Link
+                  href="/contact"
+                  className="text-gray-700 hover:text-black"
+                >
+                  Contact
+                </Link>
+              </nav>
+            </div>
+          </header>
+
+          <main className="mx-auto max-w-4xl px-6 py-10">{children}</main>
+
+          {/* Footer */}
+          <footer className="mt-10 py-6 text-center text-gray-600">
+            © 2025 My Blog. All rights reserved.
+          </footer>
+        </div>
       </body>
     </html>
   );

@@ -1,5 +1,5 @@
 import PostCardList from '@/features/post-card-list';
 
-export default function Home() {
+export default function PostsPage() {
   return <PostCardList />;
 }
