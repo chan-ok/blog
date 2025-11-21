@@ -14,7 +14,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const bodyClasses = `${notoSans.variable} ${notoSansKR.variable} ${notoSansJP.variable} antialiased`;
+  const bodyClasses = `${notoSans.variable} ${notoSansKR.variable} ${notoSansJP.variable} antialiased root`;
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={bodyClasses}>

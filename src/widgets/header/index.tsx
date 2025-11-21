@@ -1,5 +1,5 @@
+import NavigationBar from '@/shared/ui/navigation-bar';
 import Link from 'next/link';
-import styles from './styles.module.css';
 
 export default function Header() {
   return (
@@ -8,7 +8,7 @@ export default function Header() {
         <Link href="/" className="text-2xl font-bold">
           My Blog
         </Link>
-        <nav className="space-x-1">
+        {/* <nav className="space-x-1">
           <Link href="/about" className={styles.navLink}>
             About
           </Link>
@@ -18,7 +18,8 @@ export default function Header() {
           <Link href="/contact" className={styles.navLink}>
             Contact
           </Link>
-        </nav>
+        </nav> */}
+        <NavigationBar />
       </div>
     </header>
   );
