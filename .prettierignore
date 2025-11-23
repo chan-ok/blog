@@ -1,0 +1,10 @@
+build/
+coverage/
+node_modules
+.storybook
+.next
+.husky
+playwright-report
+test-results
+build-storybook.log
+pnpm-lock.yaml
