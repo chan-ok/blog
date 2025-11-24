@@ -47,6 +47,10 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+e2e-report
 
 *storybook.log
 storybook-static
+
+# Local Netlify folder
+.netlify

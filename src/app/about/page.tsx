@@ -1,7 +1,7 @@
 'use client';
 
-import AboutMD from '#/page.md';
+import AboutEnglishMarkdown from '#/page.md';
 
 export default function AboutPage() {
-  return <AboutMD />;
+  return <AboutEnglishMarkdown />;
 }

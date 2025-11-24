@@ -1,5 +1,5 @@
-import PostCardList from '@/features/post-card-list';
+import AboutEnglishMarkdown from '#/page.md';
 
 export default function Home() {
-  return <PostCardList />;
+  return <AboutEnglishMarkdown />;
 }

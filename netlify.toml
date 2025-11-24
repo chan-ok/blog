@@ -1,0 +1,11 @@
+[dev]
+  port = 8888
+  targetPort = 3000
+  functions = "netlify/functions"
+  
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
