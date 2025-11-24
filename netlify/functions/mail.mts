@@ -43,14 +43,7 @@ export const handler = async (
 
     // 클라이언트에서 보낸 body
     const body = JSON.parse(event.body || '{}');
-    const { from, subject, message } = body;
-
-    if (!from || !subject || !message) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Missing fields in request body' }),
-      };
-    }
+    const { from, subject, message } = body.data;
 
     // Resend 이메일 발송
     const response = await resend.emails.send({

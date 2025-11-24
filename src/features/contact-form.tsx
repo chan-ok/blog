@@ -1,18 +1,15 @@
 'use client';
-import { Button, Field, Form, Toast } from '@base-ui-components/react';
+import { Button, Field, Form } from '@base-ui-components/react';
 import { useActionState } from 'react';
 import { ContactFormInputsSchema } from './contact-form.schema';
-import PromiseToast from './toast';
 
 interface FormState {
   serverErrors?: Form.Props['errors'];
 }
 
 export default function ContactForm() {
-  const toastManager = Toast.useToastManager();
-
   const [state, formAction, loading] = useActionState<FormState, FormData>(
-    submitForm(toastManager),
+    submitForm,
     {}
   );
 
@@ -66,47 +63,53 @@ export default function ContactForm() {
       >
         {loading ? 'Sending...' : 'Submit'}
       </Button>
-      <PromiseToast />
     </Form>
   );
 }
-function submitForm(toastManager: ReturnType<typeof Toast.useToastManager>) {
-  return async (_previousState: FormState, formData: FormData) => {
-    const raw = {
-      from: formData.get('from'),
-      subject: formData.get('subject'),
-      message: formData.get('message'),
+
+async function submitForm(_previousState: FormState, formData: FormData) {
+  const raw: Record<string, unknown> = {
+    from: formData.get('from'),
+    subject: formData.get('subject'),
+    message: formData.get('message'),
+  };
+
+  // 2. zod validation
+  const parsed = ContactFormInputsSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    return {
+      serverErrors: parsed.error.flatten((issue) => issue.message).fieldErrors,
     };
+  }
 
-    // 1. Zod validation
-    const parsed = ContactFormInputsSchema.safeParse(raw);
-
-    if (!parsed.success) {
-      return {
-        serverErrors: parsed.error.flatten((issue) => issue.message)
-          .fieldErrors,
-      };
-    }
-
-    // 2. Promise Toast
-    const promise = fetch('/api/mail', {
+  try {
+    // 3. API 요청
+    const res = await fetch(`/api/mail`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(parsed.data),
-    }).then(async (res) => {
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => null);
-        const msg = errJson?.error || 'Failed to send message';
-        throw new Error(msg);
+      body: JSON.stringify(parsed),
+    });
+
+    if (!res.ok) {
+      let errorMsg = 'Failed to send message';
+
+      try {
+        const errJson = await res.json();
+        if (errJson?.error) errorMsg = errJson.error;
+      } catch {
+        // ignore parse errors
       }
-    });
 
-    await toastManager.promise(promise, {
-      loading: 'Sending your mail...',
-      success: 'Your mail has been sent successfully.',
-      error: (err: Error) => err.message || 'Network error occurred',
-    });
+      return {
+        serverErrors: { subject: errorMsg },
+      };
+    }
+  } catch {
+    return {
+      serverErrors: { subject: 'Network error occurred' },
+    };
+  }
 
-    return {};
-  };
+  return {};
 }
