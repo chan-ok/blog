@@ -1,0 +1,21 @@
+{
+  "exclude": [
+    "node_modules",
+    ".husky",
+    ".netlify",
+    ".storybook",
+    ".next",
+    "dist",
+    "e2e-report"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": true
+  }
+}

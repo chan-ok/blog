@@ -10,8 +10,8 @@ export default function Header() {
     const handler = () => {
       setScrolled(window.scrollY > 0);
     };
+    handler();
     window.addEventListener('scroll', handler);
-    handler(); // 초기 실행
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
@@ -19,15 +19,23 @@ export default function Header() {
     <header className="mx-auto flex h-20 max-w-4xl items-center justify-center p-6">
       <div
         className={
-          `fixed m-4 flex max-w-4xl items-center justify-between rounded-2xl px-6 py-4 transition-all duration-300 ` +
+          `fixed m-4 flex max-w-4xl items-center justify-between rounded-3xl px-2 py-4 transition-all duration-200 ` +
           (scrolled
             ? 'h-12 w-xl bg-white/50 shadow-xl backdrop-blur-sm'
             : 'h-16 w-4xl bg-white')
         }
       >
-        <Link href="/" className="text-2xl font-bold">
-          My Blog
-        </Link>
+        <div className="ms-4">
+          <Link
+            href="/"
+            className={
+              `font-bold transition-all duration-200 ` +
+              (scrolled ? 'text-xl' : 'text-3xl')
+            }
+          >
+            My Blog
+          </Link>
+        </div>
         <NavigationBar />
       </div>
     </header>

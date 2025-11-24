@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["netlify/**/*.mts"],
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "lib": ["ES2020"],
+    "types": ["node"],
+    "plugins": [{ "name": "next" }],
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  }
+}
