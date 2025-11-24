@@ -83,33 +83,28 @@ async function submitForm(_previousState: FormState, formData: FormData) {
     };
   }
 
-  try {
-    // 3. API 요청
-    const res = await fetch(`/api/mail`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(parsed),
-    });
+  // try {
+  //   // 3. API 요청
+  //   const res = await fetch(`/api/mail`, {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(parsed),
+  //   });
 
-    if (!res.ok) {
-      let errorMsg = 'Failed to send message';
+  //   if (!res.ok) {
+  //     let errorMsg = 'Failed to send message';
+  //     const errJson = await res.json();
+  //     if (errJson?.error) errorMsg = errJson.error;
 
-      try {
-        const errJson = await res.json();
-        if (errJson?.error) errorMsg = errJson.error;
-      } catch {
-        // ignore parse errors
-      }
-
-      return {
-        serverErrors: { subject: errorMsg },
-      };
-    }
-  } catch {
-    return {
-      serverErrors: { subject: 'Network error occurred' },
-    };
-  }
+  //     return {
+  //       serverErrors: { subject: errorMsg },
+  //     };
+  //   }
+  // } catch {
+  //   return {
+  //     serverErrors: { subject: 'Network error occurred' },
+  //   };
+  // }
 
   return {};
 }
