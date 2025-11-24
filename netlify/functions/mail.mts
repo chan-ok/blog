@@ -43,7 +43,7 @@ export const handler = async (
 
     // 클라이언트에서 보낸 body
     const body = JSON.parse(event.body || '{}');
-    const { from, subject, message } = body;
+    const { from, subject, message } = body.data;
 
     if (!from || !subject || !message) {
       return {
