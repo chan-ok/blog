@@ -47,10 +47,10 @@ export const handler = async (
 
     // Resend 이메일 발송
     const response = await resend.emails.send({
-      from,
+      from: 'dev.blog@chanho.dev',
       to: 'kiss.yagni.dry@gmail.com',
       subject,
-      text: message,
+      text: from + '\n' + message,
     });
 
     if (response.error?.statusCode !== 200) {
