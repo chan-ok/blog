@@ -57,6 +57,8 @@ export const handler = async (
       `,
     });
 
+    console.log(`resend response: `, JSON.stringify(response));
+
     if (response.error?.statusCode !== 200) {
       return {
         statusCode: response.error?.statusCode as number,
