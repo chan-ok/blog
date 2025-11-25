@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   description: 'Posts 페이지 설명입니다.',
 };
 
-export default function PostsPage() {
+export default async function PostsPage() {
   return <PostCardList />;
 }

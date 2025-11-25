@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: '블로그에 대한 문의사항을 남길 수 있습니다.',
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
   return (
     <div className="flex justify-center">
       <div className="w-xl">
