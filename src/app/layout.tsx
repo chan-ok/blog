@@ -2,6 +2,7 @@ import { notoSans, notoSansJP, notoSansKR } from '@/shared/config/font';
 import Footer from '@/widgets/footer';
 import Header from '@/widgets/header';
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,6 +18,13 @@ export default function RootLayout({
   const bodyClasses = `${notoSans.variable} ${notoSansKR.variable} ${notoSansJP.variable} antialiased root`;
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+          strategy="beforeInteractive"
+          defer
+        />
+      </head>
       <body className={bodyClasses}>
         <div className="min-h-screen text-gray-900">
           <Header />

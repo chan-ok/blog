@@ -38,6 +38,11 @@ const eslintConfig = defineConfig([
       'storybook/no-uninstalled-addons': 'error',
     },
   },
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
 ]);
 
 export default eslintConfig;
