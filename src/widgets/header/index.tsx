@@ -33,7 +33,7 @@ export default function Header() {
               (scrolled ? 'text-xl' : 'text-3xl')
             }
           >
-            My Blog
+            Chanho&apos;s dev blog
           </Link>
         </div>
         <NavigationBar />
