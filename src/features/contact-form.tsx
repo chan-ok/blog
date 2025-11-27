@@ -1,5 +1,5 @@
 'use client';
-import { TurnstileWidget } from '@/widgets/turnstile/TurnstileWidget';
+import { TurnstileWidget } from '@/widgets/turnstile';
 import { Button, Field, Form } from '@base-ui-components/react';
 import { useActionState, useState } from 'react';
 import { ContactFormInputsSchema } from './contact-form.schema';
