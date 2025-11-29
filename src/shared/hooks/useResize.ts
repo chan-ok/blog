@@ -8,14 +8,18 @@ export function useResize() {
 
   useEffect(() => {
     const handler = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
+      if (typeof window !== 'undefined') {
+        setSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      }
     };
 
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handler);
+      return () => window.removeEventListener('resize', handler);
+    }
   }, []);
 
   return size;

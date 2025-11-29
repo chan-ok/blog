@@ -5,11 +5,16 @@ export function useDetectScrolled() {
 
   useEffect(() => {
     const handler = () => {
-      setScrolled(window.scrollY > 0);
+      if (typeof window !== 'undefined') {
+        setScrolled(window.scrollY > 0);
+      }
     };
     handler();
-    window.addEventListener('scroll', handler);
-    return () => window.removeEventListener('scroll', handler);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', handler);
+      return () => window.removeEventListener('scroll', handler);
+    }
   }, []);
 
   return scrolled;

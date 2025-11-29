@@ -14,7 +14,7 @@ export default function NavigationBar() {
         <Menu.Trigger className="h-8 rounded-2xl px-2 text-sm font-medium text-gray-600 outline-none select-none hover:bg-gray-100 focus-visible:bg-gray-100">
           <Link href="/about" className="flex items-center gap-1">
             <User size={16} />
-            {isMd ? 'About' : undefined}
+            {isMd ? 'About' : null}
           </Link>
         </Menu.Trigger>
       </Menu.Root>
@@ -22,7 +22,7 @@ export default function NavigationBar() {
         <Menu.Trigger className="h-8 rounded-2xl px-2 text-sm font-medium text-gray-600 outline-none select-none hover:bg-gray-100 focus-visible:bg-gray-100">
           <Link href="/posts" className="flex items-center gap-1">
             <Book size={16} />
-            {isMd ? 'Posts' : undefined}
+            {isMd ? 'Posts' : null}
           </Link>
         </Menu.Trigger>
       </Menu.Root>
@@ -30,7 +30,7 @@ export default function NavigationBar() {
         <Menu.Trigger className="h-8 rounded-2xl px-2 text-sm font-medium text-gray-600 outline-none select-none hover:bg-gray-100 focus-visible:bg-gray-100">
           <Link href="/contact" className="flex items-center gap-1">
             <Mail size={16} />
-            {isMd ? 'Contact' : undefined}
+            {isMd ? 'Contact' : null}
           </Link>
         </Menu.Trigger>
       </Menu.Root>
