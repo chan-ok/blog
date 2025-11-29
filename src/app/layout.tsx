@@ -31,7 +31,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const bodyClasses = `${notoSans.variable} ${notoSansKR.variable} ${notoSansJP.variable} antialiased root`;
+  const bodyClasses = `${notoSans.variable} ${notoSansKR.variable} ${notoSansJP.variable}`;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -41,7 +41,9 @@ export default function RootLayout({
           defer
         />
       </head>
-      <body className={bodyClasses}>{children}</body>
+      <body className={`relative isolate antialiased ${bodyClasses}`}>
+        {children}
+      </body>
     </html>
   );
 }

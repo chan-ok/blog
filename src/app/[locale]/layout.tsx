@@ -13,7 +13,7 @@ export default async function LocaleLayout({
   return (
     <div className="min-h-screen text-gray-900">
       <Header />
-      <main className="mx-auto max-w-4xl px-6 py-10">{children}</main>
+      <main className="mx-auto max-w-4xl px-6 pt-10">{children}</main>
       <Footer />
     </div>
   );

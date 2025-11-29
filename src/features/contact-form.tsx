@@ -56,8 +56,8 @@ export default function ContactForm() {
         />
         <Field.Error className="text-sm text-red-800" />
       </Field.Root>
-      <Field.Root name="submit">
-        <div className="flex justify-between">
+      <Field.Root name="submit" className="container">
+        <div className="flex justify-between max-md:flex-col-reverse max-md:gap-4">
           <TurnstileWidget onSuccess={setToken} />
           <Button
             focusableWhenDisabled

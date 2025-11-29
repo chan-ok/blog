@@ -54,3 +54,7 @@ storybook-static
 
 # Local Netlify folder
 .netlify
+
+# mcp
+.gemini
+.serena
