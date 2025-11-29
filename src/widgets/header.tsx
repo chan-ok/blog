@@ -17,13 +17,14 @@ export default function Header() {
         className={
           `fixed flex w-full items-center justify-between p-4 transition-all duration-200 ` +
           (scrolled
-            ? 'bg-white/50 shadow-xl backdrop-blur-sm md:w-xl md:rounded-3xl lg:w-xl'
-            : 'bg-white md:w-3xl lg:w-4xl')
+            ? 'bg-white/50 shadow-xl backdrop-blur-sm md:max-w-xl md:rounded-3xl lg:max-w-xl'
+            : 'bg-white md:max-w-3xl lg:max-w-4xl')
         }
       >
         <div className="ms-4">
           <Link
             href="/"
+            aria-label="Home"
             className={
               `font-bold transition-all duration-200 sm:text-base ` +
               (scrolled ? 'md:text-xl' : 'md:text-3xl')
@@ -33,15 +34,19 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex space-x-1 sm:space-x-1">
-          <Link href="/about" className={navButtonClasses}>
+          <Link href="/about" aria-label="About" className={navButtonClasses}>
             <User size={16} />
             {isMd ? 'About' : null}
           </Link>
-          <Link href="/posts" className={navButtonClasses}>
+          <Link href="/posts" aria-label="Posts" className={navButtonClasses}>
             <Book size={16} />
             {isMd ? 'Posts' : null}
           </Link>
-          <Link href="/contact" className={navButtonClasses}>
+          <Link
+            href="/contact"
+            aria-label="Contact"
+            className={navButtonClasses}
+          >
             <Mail size={16} />
             {isMd ? 'Contact' : null}
           </Link>
