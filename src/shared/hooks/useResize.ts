@@ -1,25 +1,28 @@
 import { useEffect, useState } from 'react';
 
 export function useResize() {
-  const [size, setSize] = useState(() => ({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
-  }));
+  // 초기 상태를 0으로 설정하여 서버와 클라이언트의 렌더링 결과를 일치시킴
+  const [size, setSize] = useState({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
-    const handler = () => {
-      if (typeof window !== 'undefined') {
-        setSize({
-          width: window.innerWidth,
-          height: window.innerHeight,
-        });
-      }
+    // 첫 마운트 시 실제 window 크기를 설정
+    const updateSize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', handler);
-      return () => window.removeEventListener('resize', handler);
-    }
+    // 즉시 크기 업데이트
+    updateSize();
+
+    // resize 이벤트 리스너 등록
+    window.addEventListener('resize', updateSize);
+
+    return () => window.removeEventListener('resize', updateSize);
   }, []);
 
   return size;

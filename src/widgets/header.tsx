@@ -1,10 +1,15 @@
 'use client';
+import { useBreakpoint } from '@/shared/hooks/useBreakpoint';
 import { useDetectScrolled } from '@/shared/hooks/useDetectScrolled';
-import NavigationBar from '@/shared/ui/navigation-bar';
+import { Book, Mail, User } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
   const scrolled = useDetectScrolled();
+  const { isMd } = useBreakpoint();
+
+  const navButtonClasses =
+    'flex h-8 items-center gap-1 rounded-2xl p-4 text-sm font-medium text-gray-600 outline-none select-none hover:bg-gray-100 focus-visible:bg-gray-100';
 
   return (
     <header className="mx-auto flex h-16 max-w-4xl items-center justify-center md:h-24">
@@ -27,7 +32,20 @@ export default function Header() {
             Chanho&apos;s dev blog
           </Link>
         </div>
-        <NavigationBar />
+        <div className="flex space-x-1 sm:space-x-1">
+          <Link href="/about" className={navButtonClasses}>
+            <User size={16} />
+            {isMd ? 'About' : null}
+          </Link>
+          <Link href="/posts" className={navButtonClasses}>
+            <Book size={16} />
+            {isMd ? 'Posts' : null}
+          </Link>
+          <Link href="/contact" className={navButtonClasses}>
+            <Mail size={16} />
+            {isMd ? 'Contact' : null}
+          </Link>
+        </div>
       </div>
     </header>
   );
