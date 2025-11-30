@@ -58,3 +58,6 @@ storybook-static
 # mcp
 .gemini
 .serena
+
+# obsidian
+contents/.obsidian

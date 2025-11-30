@@ -14,14 +14,14 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
   useEffect(() => {
     if (!containerRef.current) return;
     const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!;
-    const widgetId = (window as any).turnstile.render(containerRef.current, {
+    const widgetId = window.turnstile.render(containerRef.current, {
       sitekey,
       callback: (token: string) => {
         onSuccess(token);
       },
     });
     return () => {
-      (window as any).turnstile.remove(widgetId);
+      window.turnstile.remove(widgetId);
     };
   }, [onSuccess]);
 
