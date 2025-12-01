@@ -4,7 +4,7 @@
   functions = "netlify/functions"
   
 [build]
-  command = "pnpm prebuild && pnpm build"
+  command = "pnpm build"
   publish = ".next"
 
 [[redirects]]
