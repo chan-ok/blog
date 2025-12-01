@@ -16,7 +16,7 @@ export default async function PostDetailPage(props: PostDetailPageProps) {
     return notFound();
   }
 
-  const path = `#/posts/${locale}/${slug.join('/')}.mdx`;
+  const path = `#/posts/${locale}/${slug.join('/')}`;
   console.log(path);
 
   const MarkdownModule = await import(path);

@@ -1,4 +1,4 @@
-import { Post } from './post.schema';
+import { Post } from '../model/post.schema';
 
 interface PostCardProps {
   post: Post;

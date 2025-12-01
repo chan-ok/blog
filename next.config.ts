@@ -9,7 +9,12 @@ const nextConfig: NextConfig = {
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
-    rehypePlugins: [['rehype-highlight', {}]],
+    rehypePlugins: [['rehype-highlight']],
+    remarkPlugins: [
+      ['remark-frontmatter'],
+      ['remark-mdx-frontmatter'],
+      ['remark-gfm'],
+    ],
   },
 });
 
