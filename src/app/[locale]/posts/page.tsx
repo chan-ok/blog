@@ -1,4 +1,4 @@
-import PostCardList from '@/features/post-card-list';
+import PostCardList from '@/features/post/post-card-list';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
