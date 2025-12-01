@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   description: 'Posts 페이지 설명입니다.',
 };
 
-export default async function PostsPage() {
-  return <PostCardList />;
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function PostsPage(props: Props) {
+  const { locale } = await props.params;
+  return <PostCardList locale={locale} />;
 }

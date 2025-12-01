@@ -21,27 +21,20 @@ function getAllMdxFiles(dir: string): string[] {
   return results;
 }
 
-export default function generateIndexJson() {
-  console.log('Generating index.json...');
-  const postsPath = path.join(process.cwd(), 'contents', 'posts');
+export default function generateIndexJson(locale: 'ko' | 'en' | 'ja') {
+  console.log('Generating posts-index/' + locale + '.json...');
+  const postsPath = path.join(process.cwd(), 'contents', 'posts', locale);
 
-  console.log('target path: ', postsPath);
   const mdxFiles = getAllMdxFiles(postsPath);
-  console.log('found mdx files: ', mdxFiles);
+  console.log('Found mdx files: ', mdxFiles.length);
 
   const posts = mdxFiles.map((filePath) => {
-    console.log('processing: ', filePath);
     const content = fs.readFileSync(filePath, 'utf-8');
     const frontmatter = matter(content).data;
 
     // contents/posts 기준 상대 경로 추출
-    const localeRemovedPath = path
-      .relative(postsPath, filePath)
-      // remove first path block
-      .split('/')
-      .slice(1);
-    const relativePath = localeRemovedPath.join('/');
-    const id = localeRemovedPath.join('-').replace(/\.mdx?$/, '');
+    const relativePath = path.relative(postsPath, filePath);
+    const id = relativePath.replace(/\.mdx?$/, '');
 
     return {
       id,
@@ -53,12 +46,20 @@ export default function generateIndexJson() {
   console.log('Generated posts:', posts);
 
   // save posts-index.json
+  // if folder not exists, create it
+
+  const folderPath = path.join(process.cwd(), 'public', 'posts-index');
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath);
+  }
   fs.writeFileSync(
-    path.join(process.cwd(), 'public', 'posts-index.json'),
+    path.join(folderPath, locale + '.json'),
     JSON.stringify(posts, null, 2)
   );
 
-  console.log('✅ posts-index.json created successfully!');
+  console.log('✅ posts-index/' + locale + '.json created successfully!\n');
 }
 
-generateIndexJson();
+generateIndexJson('ko');
+generateIndexJson('en');
+generateIndexJson('ja');

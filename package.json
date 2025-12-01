@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:server": "netlify dev",
     "prebuild": "ts-node src/features/post/util/generate-index.ts",
     "build": "next build",
     "start": "next start",
