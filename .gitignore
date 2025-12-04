@@ -61,3 +61,6 @@ storybook-static
 
 # obsidian
 contents/.obsidian
+
+# deno
+deno.lock
