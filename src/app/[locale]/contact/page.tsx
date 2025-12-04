@@ -1,4 +1,4 @@
-import ContactForm from '@/features/contact/contact-form';
+import ContactForm from '@/features/contact/ui/contact-form';
 import type { Metadata } from 'next';
 
 export const revalidate = 60;

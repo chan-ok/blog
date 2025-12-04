@@ -2,7 +2,7 @@
 import { TurnstileWidget } from '@/widgets/turnstile';
 import { Button, Field, Form } from '@base-ui-components/react';
 import { useActionState, useState } from 'react';
-import { ContactFormInputsSchema } from './contact-form.schema';
+import { ContactFormInputsSchema } from '../model/contact-form.schema';
 
 interface FormState {
   serverErrors?: Form.Props['errors'];
