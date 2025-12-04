@@ -1,4 +1,5 @@
 import PostCardList from '@/features/post/ui/post-card-list';
+import { LocaleType } from '@/shared/types/common.schema';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: LocaleType }>;
 }
 
 export default async function PostsPage(props: Props) {

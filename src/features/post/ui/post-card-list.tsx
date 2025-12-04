@@ -1,10 +1,11 @@
 import PostCard from '@/features/post/ui/post-card';
+import { LocaleType } from '@/shared/types/common.schema';
 import fs from 'node:fs';
 import path from 'node:path';
 import { Post } from '../model/post.schema';
 
 interface PostCardListProps {
-  locale: string;
+  locale: LocaleType;
 }
 
 export default async function PostCardList({ locale }: PostCardListProps) {

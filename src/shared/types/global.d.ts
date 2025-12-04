@@ -22,10 +22,6 @@ declare global {
   interface Window {
     turnstile: TurnstileWidget;
   }
-
-  // locale
-  const LOCALES = ['ko', 'en', 'ja'] as const;
-  type Locale = (typeof LOCALES)[number];
 }
 
 export {};

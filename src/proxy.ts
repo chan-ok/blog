@@ -1,6 +1,7 @@
+import { LocaleSchema } from '@/shared/types/common.schema';
 import { NextRequest, NextResponse } from 'next/server';
 
-const SUPPORTED = ['ko', 'ja', 'en'];
+const SUPPORTED = LocaleSchema.enum;
 const DEFAULT = 'ko';
 
 export function proxy(request: NextRequest) {
@@ -17,7 +18,7 @@ export function proxy(request: NextRequest) {
   }
 
   // 2) 이미 locale prefix가 존재
-  const hasLocale = SUPPORTED.some(
+  const hasLocale = Object.values(SUPPORTED).some(
     (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
   );
 
@@ -28,7 +29,7 @@ export function proxy(request: NextRequest) {
   // 3) Accept-Language 기반 locale 감지
   const accept = request.headers.get('accept-language') || '';
   const detected = accept.split(',')[0].split('-')[0];
-  const locale = SUPPORTED.includes(detected) ? detected : DEFAULT;
+  const locale = LocaleSchema.safeParse(detected).success ? detected : DEFAULT;
 
   // 4) locale prefix 자동 추가
   return NextResponse.redirect(new URL(`/${locale}${pathname}`, request.url));
