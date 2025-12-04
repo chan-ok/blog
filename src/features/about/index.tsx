@@ -7,9 +7,9 @@ interface AboutProps {
 }
 
 const LOCALE_MD_MAP = {
-  ko: () => import('#/about.ko.md'),
-  ja: () => import('#/about.ja.md'),
-  en: () => import('#/about.en.md'),
+  ko: () => import('#/ko/about.md'),
+  ja: () => import('#/ja/about.md'),
+  en: () => import('#/en/about.md'),
 };
 
 export default async function About({ params }: AboutProps) {

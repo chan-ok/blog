@@ -10,9 +10,11 @@ interface PostCardListProps {
 export default async function PostCardList({ locale }: PostCardListProps) {
   const filePath = path.join(
     process.cwd(),
-    'public',
-    'posts-index',
-    locale + '.json'
+    'src',
+    'features',
+    'post',
+    'model',
+    locale + '.index.json'
   );
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   const posts: Post[] = JSON.parse(fileContent);
