@@ -1,6 +1,8 @@
 import ContactForm from '@/features/contact/contact-form';
 import type { Metadata } from 'next';
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: 'Contact',
   description: '블로그에 대한 문의사항을 남길 수 있습니다.',

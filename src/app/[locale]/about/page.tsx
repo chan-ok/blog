@@ -1,6 +1,8 @@
 import About from '@/features/about';
 import type { Metadata } from 'next';
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: 'About',
   description: 'About 페이지 설명입니다.',

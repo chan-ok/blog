@@ -4,7 +4,7 @@ interface PostCardProps {
   post: Post;
 }
 
-export default function PostCard({ post }: PostCardProps) {
+export default async function PostCard({ post }: PostCardProps) {
   return (
     <article className="mb-6 rounded-lg bg-white p-6 shadow">
       <h2 className="mb-2 text-xl font-semibold">{post.title}</h2>

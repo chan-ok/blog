@@ -1,24 +1,14 @@
 import PostCard from '@/features/post/ui/post-card';
 import { LocaleType } from '@/shared/types/common.schema';
-import fs from 'node:fs';
-import path from 'node:path';
-import { Post } from '../model/post.schema';
+import { getPosts } from '../util/get-posts';
 
 interface PostCardListProps {
   locale: LocaleType;
 }
 
 export default async function PostCardList({ locale }: PostCardListProps) {
-  const filePath = path.join(
-    process.cwd(),
-    'src',
-    'features',
-    'post',
-    'model',
-    locale + '.index.json'
-  );
-  const fileContent = fs.readFileSync(filePath, 'utf-8');
-  const posts: Post[] = JSON.parse(fileContent);
+  const pagingPosts = await getPosts({ locale });
+  const posts = pagingPosts.posts;
 
   return (
     <>
