@@ -1,5 +1,6 @@
 import { api } from '@/shared/config/api';
 import { LocaleType } from '@/shared/types/common.schema';
+import { compareDesc } from 'date-fns';
 import { Post } from '../model/post.schema';
 
 interface GetPostsProps {
@@ -20,9 +21,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   'use server';
   const { locale, page = 0, size = 10, tags = [] } = props;
 
-  const baseURL =
-    process.env.NEXT_PUBLIC_GIT_RAW_URL +
-    process.env.NEXT_PUBLIC_CONTENT_REPO_URL;
+  const baseURL = process.env.NEXT_PUBLIC_GIT_RAW_URL;
   const response = await api.get<Post[]>(`/${locale}/index.json`, { baseURL });
 
   if (response.axios.status !== 200) {
@@ -35,8 +34,9 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
     };
   }
   const posts: Post[] = response.data;
+
   const filteredPosts = posts
-    .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))
     .filter((post) => post.published)
     .filter(
       (post) => tags.length === 0 || tags.some((tag) => post.tags.includes(tag))
