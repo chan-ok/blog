@@ -1,4 +1,6 @@
 declare global {
+  type LocaleType = import('@/shared/types/common.schema').LocaleType;
+
   // reference: https://github.com/vnphanquang/svelte-put
   interface TurnstileConfig {
     sitekey: string;

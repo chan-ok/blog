@@ -1,5 +1,4 @@
 import PostCard from '@/features/post/ui/post-card';
-import { LocaleType } from '@/shared/types/common.schema';
 import { getPosts } from '../util/get-posts';
 
 interface PostCardListProps {

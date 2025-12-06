@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import Link from 'next/link';
-import { Post } from '../model/post.schema';
+import { Post } from '../../../entities/mdx/model/mdx.schema';
 interface PostCardProps {
   post: Post;
 }

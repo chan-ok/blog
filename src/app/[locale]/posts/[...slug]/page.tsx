@@ -1,7 +1,6 @@
 'use server';
 
-import Post from '@/features/post/ui/post';
-import { LocaleType } from '@/shared/types/common.schema';
+import MDXComponent from '@/entities/mdx';
 
 interface PostDetailPageProps {
   params: Promise<{ locale: LocaleType; slug: string[] }>;
@@ -10,5 +9,7 @@ interface PostDetailPageProps {
 export default async function PostDetailPage(props: PostDetailPageProps) {
   const { locale, slug } = await props.params;
 
-  return <Post locale={locale} slug={['posts', ...slug]} extension="mdx" />;
+  return (
+    <MDXComponent locale={locale} slug={['posts', ...slug]} extension="mdx" />
+  );
 }

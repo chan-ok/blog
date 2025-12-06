@@ -69,8 +69,6 @@ class ApiClient {
   ): Promise<ApiResult<T>> {
     const { schema, ...rest } = options ?? {};
 
-    console.log(rest.baseURL);
-    console.log(url);
     const res = await this.instance.request<T>({
       method,
       url,
@@ -79,7 +77,6 @@ class ApiClient {
     });
 
     let parsed: T = res.data;
-    console.log(parsed);
 
     if (schema) {
       const result = schema.safeParse(parsed);

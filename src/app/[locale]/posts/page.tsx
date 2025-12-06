@@ -1,5 +1,4 @@
 import PostCardList from '@/features/post/ui/post-card-list';
-import { LocaleType } from '@/shared/types/common.schema';
 import type { Metadata } from 'next';
 
 export const revalidate = 60; // ISR

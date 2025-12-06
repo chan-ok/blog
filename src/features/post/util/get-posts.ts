@@ -1,7 +1,6 @@
+import { Frontmatter as PostInfo } from '@/entities/mdx/model/mdx.schema';
 import { api } from '@/shared/config/api';
-import { LocaleType } from '@/shared/types/common.schema';
 import { compareDesc } from 'date-fns';
-import { Post } from '../model/post.schema';
 
 interface GetPostsProps {
   locale: LocaleType;
@@ -11,7 +10,7 @@ interface GetPostsProps {
 }
 
 interface PagingPosts {
-  posts: Post[];
+  posts: PostInfo[];
   total: number;
   page: number;
   size: number;
@@ -22,7 +21,9 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   const { locale, page = 0, size = 10, tags = [] } = props;
 
   const baseURL = process.env.NEXT_PUBLIC_GIT_RAW_URL;
-  const response = await api.get<Post[]>(`/${locale}/index.json`, { baseURL });
+  const response = await api.get<PostInfo[]>(`/${locale}/index.json`, {
+    baseURL,
+  });
 
   if (response.axios.status !== 200) {
     console.error('Failed to fetch posts');
@@ -33,7 +34,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       size,
     };
   }
-  const posts: Post[] = response.data;
+  const posts: PostInfo[] = response.data;
 
   const filteredPosts = posts
     .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))

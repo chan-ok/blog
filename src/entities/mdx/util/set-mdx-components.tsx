@@ -1,6 +1,8 @@
 import type { MDXComponents } from 'mdx/types';
 
-export function addStyle(components: MDXComponents): MDXComponents {
+export default function setMdxComponents(
+  components?: MDXComponents
+): MDXComponents {
   return {
     h1: ({ children }) => (
       <h1 className="mb-4 text-4xl font-bold">{children}</h1>

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const PostSchema = z.object({
+export const FrontmatterSchema = z.object({
   id: z.number(),
   title: z.string(),
   summary: z.string().optional(),
@@ -10,4 +10,4 @@ export const PostSchema = z.object({
   path: z.array(z.string()),
   published: z.boolean().default(false),
 });
-export type Post = z.infer<typeof PostSchema>;
+export type Frontmatter = z.infer<typeof FrontmatterSchema>;
