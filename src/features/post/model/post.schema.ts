@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const PostSchema = z.object({
   id: z.number(),
   title: z.string(),
-  summary: z.string().default(''),
+  summary: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string().optional(),
   tags: z.array(z.string()).default([]),

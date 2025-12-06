@@ -1,18 +1,27 @@
-import About from '@/features/about';
-import type { Metadata } from 'next';
+'use server';
 
-export const revalidate = 60;
+import { getPost } from '@/features/post/util/get-post';
+import { LocaleSchema, LocaleType } from '@/shared/types/common.schema';
+import { notFound, redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'About',
-  description: 'About 페이지 설명입니다.',
-};
-
-interface AboutPageProps {
-  params: Promise<{ locale: string }>;
+interface AboutProps {
+  params: Promise<{ locale: LocaleType }>;
 }
 
-export default async function AboutPage(props: AboutPageProps) {
-  const params = await props.params;
-  return <About params={params} />;
+export default async function AboutPage({ params }: AboutProps) {
+  const { locale } = await params;
+
+  if (!LocaleSchema.safeParse(locale).success) {
+    redirect('/ko/about');
+  }
+
+  try {
+    const MdContent = await getPost(locale, 'about', 'md');
+    if (!MdContent) throw notFound();
+
+    return <MdContent />;
+  } catch (e: unknown) {
+    console.error('Failed to fetch post', e);
+    throw notFound();
+  }
 }

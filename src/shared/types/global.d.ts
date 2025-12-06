@@ -22,6 +22,14 @@ declare global {
   interface Window {
     turnstile: TurnstileWidget;
   }
+
+  namespace NodeJS {
+    interface ProcessEnv {
+      // Git repository configuration
+      NEXT_PUBLIC_GIT_RAW_URL: string;
+      NEXT_PUBLIC_CONTENT_REPO_URL: string;
+    }
+  }
 }
 
 export {};

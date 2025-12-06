@@ -1,3 +1,4 @@
+import { api } from '@/shared/config/api';
 import { LocaleType } from '@/shared/types/common.schema';
 import { Post } from '../model/post.schema';
 
@@ -19,17 +20,25 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   'use server';
   const { locale, page = 0, size = 10, tags = [] } = props;
 
-  // load from src/features/post/model/{locale}.index.json
-  const filePath = `src/features/post/model/${locale}.index.json`;
-  const fileContent = await import(filePath);
-  const posts = fileContent.default as Post[];
+  const baseURL =
+    process.env.NEXT_PUBLIC_GIT_RAW_URL +
+    process.env.NEXT_PUBLIC_CONTENT_REPO_URL;
+  const response = await api.get<Post[]>(`/${locale}/index.json`, { baseURL });
 
+  if (response.axios.status !== 200) {
+    console.error('Failed to fetch posts');
+    return {
+      posts: [],
+      total: 0,
+      page,
+      size,
+    };
+  }
+  const posts: Post[] = response.data;
   const filteredPosts = posts
     .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))
     .filter((post) => post.published)
-    .filter(
-      (post) => tags.length === 0 || tags.some((tag) => post.tags.includes(tag))
-    );
+    .filter((post) => tags.some((tag) => post.tags.includes(tag)));
 
   const startIndex = page * size;
   const endIndex = Math.min(startIndex + size, filteredPosts.length);
