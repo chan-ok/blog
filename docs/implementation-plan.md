@@ -5,14 +5,14 @@
 ### Framework
 
 - Next.js 16
-- React 19 (+react-compiler)
+- React 19 (+ React Compiler)
 
-### Styling & HeadlessUI
+### Styling & UI
 
 - Tailwind CSS v4
 - Base UI Components (@base-ui-components/react)
 
-### Type Check
+### Type Check & Validation
 
 - Zod v4
 - TypeScript 5
@@ -29,145 +29,177 @@
 - Vitest
 - testing-library/react
 - Playwright
-- Storybook (+Chromatic)
+- Storybook (+ Chromatic)
+
+### Content & Data
+
+- MDX (@next/mdx, @mdx-js/react)
+- next-mdx-remote-client (원격 MDX 렌더링)
+- rehype-highlight (코드 하이라이팅)
+- remark-gfm (GitHub Flavored Markdown)
+- axios (콘텐츠 fetching)
 
 ### Others
 
-- MDX (@next/mdx, @mdx-js/react)
-- rehype-highlight (코드 하이라이팅)
 - Resend (이메일 발송)
+- Cloudflare Turnstile (봇 방지)
+- Netlify (배포 및 Functions)
+
+## 아키텍처 개요
+
+### 리포지터리 분리 구조
+
+프로젝트는 두 개의 독립적인 리포지터리로 구성됩니다:
+
+1. **blog (현재)** - Next.js 애플리케이션
+2. **blog-content** - MDX 포스트 저장소
+
+### 배포 및 콘텐츠 파이프라인
+
+```
+blog-content (main push)
+  → GitHub Actions
+  → generate-index.ts 실행
+  → {locale}/index.json 생성 및 커밋
+
+blog (main push)
+  → Netlify 자동 배포
+  → blog-content의 index.json 참조
+  → GitHub Raw URL로 MDX 렌더링
+```
 
 ## 진행 상황
 
 ### ✅ 완료된 작업
 
-1. **개발 환경 세팅** (100%)
-   - Next.js 16, React 19, TypeScript, Tailwind v4 설치 완료
-   - ESLint, Prettier, Husky, lint-staged 설정 완료
-   - Vitest, Playwright, Storybook + Chromatic 설정 완료
+#### 1. 개발 환경 세팅
 
-2. **국제화 라우팅 기본 구조** (80%)
-   - `src/app/[locale]/layout.tsx` 구현
-   - 3개 언어 지원 (`ko`, `ja`, `en`)
-   - `src/proxy.ts`에서 브라우저 언어 감지 및 리다이렉션
-   - 기본 locale 폴백 (ko)
-   - Header, Footer, Navigation 컴포넌트 구성
+- Next.js 16, React 19, TypeScript, Tailwind v4 설치 및 설정
+- ESLint, Prettier, Husky, lint-staged 설정
+- Vitest, Playwright, Storybook + Chromatic 설정
 
-3. **Home & About 페이지**
-   - `contents/about.{locale}.md` 마크다운 파일 생성 (ko, ja, en)
-   - About 컴포넌트 구현
-   - Home 페이지에서 About 재사용
+#### 2. 국제화 라우팅
 
-4. **Contact 폼 기본 구현**
-   - Zod 스키마 기반 검증 (`ContactFormInputsSchema`)
-   - Base UI Form 컴포넌트로 UI 구현
-   - Cloudflare Turnstile 연동 (봇 방지)
-   - 클라이언트 검증 로직 완료
+- `src/app/[locale]/layout.tsx` 구현
+- 3개 언어 지원 (ko, ja, en)
+- `src/proxy.ts`에서 브라우저 언어 감지 및 리다이렉션
+- 기본 locale 폴백 (ko)
 
-5. **Posts 기본 구조**
-   - MDX 렌더링 설정 (`@next/mdx`, `@mdx-js/react`)
-   - rehype-highlight로 코드 하이라이팅
-   - Post Card, Post Card List 컴포넌트 (mock 데이터)
+#### 3. 레이아웃 및 위젯
 
-6. **배포**
-   - Netlify 배포 설정 완료 (`netlify.toml`)
-   - 언어 폴백 로직 구현
+- Header 위젯 (반응형 디자인)
+- Footer 위젯
+- Navigation 컴포넌트
 
-### 🚧 진행 중인 작업
+#### 4. About 페이지
 
-1. **Post 상세 페이지**
-   - `/[locale]/posts/[slug]/page.tsx` 생성 중
-   - SSG + revalidate 전략 필요
-   - SEO 메타 설정 필요
+- 원격 마크다운 파일 렌더링 (blog-content 리포지터리)
+- MDX 렌더링 기능
 
-2. **테스트**
-   - E2E, Unit 테스트 일부 작성 중
+#### 5. Contact 페이지
 
-### 📋 남은 작업
+- Zod 스키마 기반 검증
+- Base UI Form 컴포넌트로 UI 구현
+- Cloudflare Turnstile 연동 (봇 방지)
+- Netlify Functions + Resend로 이메일 발송
 
-## 기능 개발
+#### 6. Posts 기능
 
-### 1. 국제화 완성
+- **콘텐츠 파이프라인**: blog-content 리포지터리와 분리
+- **인덱싱**: blog-content의 GitHub Actions로 index.json 자동 생성
+- **목록 페이지**: index.json 기반 포스트 목록 표시
+- **상세 페이지**: GitHub Raw URL로 원격 MDX 렌더링
+- **MDX 렌더링**: rehype-highlight로 코드 하이라이팅
+- **태그 필터**: 태그 기반 필터링 기능
 
-- [ ] 언어 스위처 컴포넌트 구현 (Navigation에 통합)
-- [ ] `messages/{locale}.ts` 파일 구조 생성
-- [ ] 모든 UI 텍스트 locale별로 분리
+#### 7. 배포
 
-### 2. 홈페이지 개선
+- Netlify 배포 설정
+- Netlify Functions (이메일 전송)
 
-현재 Home은 About을 재사용하는 단순 구조. 블로그 홈페이지로서 다음 섹션 추가:
+### 📋 예정 작업
 
-- [ ] 블로그 소개 섹션 (Hero Section)
-- [ ] 최신 포스트 섹션 (Latest Posts)
-- [ ] 인기 포스트 섹션 (Popular Posts)
-- [ ] 이메일 구독 신청 폼 (Newsletter Subscription)
+#### 1. 다크 모드
 
-### 3. Posts 목록 페이지
+- [ ] Tailwind `data-theme` 설정
+- [ ] Zustand 상태 관리
+- [ ] SessionStorage 연동 (시스템 설정 우선 → 사용자 선택 보존)
+- [ ] 다크 모드 토글 UI
 
-- [ ] `contents/posts/{locale}/{slug}.md` 디렉토리 구조 생성
-- [ ] Frontmatter 파서 유틸리티 구현
-- [ ] 빌드 시 JSON 캐시 생성 (`scripts/generate-post-index.ts`)
-- [ ] 실제 데이터 기반 Post Card List 렌더링
-- [ ] 무한 스크롤 기능 구현
+#### 2. 마크다운 고급화
 
-### 4. Post 상세 페이지
+- [ ] 코드 블록 개선 (복사 버튼, 라인 넘버 등)
+- [ ] TOC (Table of Contents) 구현
+  - 마크다운 AST에서 헤딩 추출
+  - TOC 컴포넌트 구현
+- [ ] Reading Time 표시
+  - 단어 수 기반 ETA 계산
+  - UI 표시
 
-- [ ] Frontmatter 기반 SEO 메타 설정
-- [ ] SSG + revalidate 전략 구현
-- [ ] Published된 문서의 메타데이터를 JSON으로 저장
-- [ ] AI 기능 (Gemini API 활용 예정):
-  - [ ] AI 썸네일 자동 생성
-  - [ ] AI 요약 생성
-  - [ ] AI 추천 포스트 생성
-  - [ ] AI 태그 자동 생성
+#### 3. 언어 선택기
 
-### 5. Contact 폼 완성
+- [ ] 언어 선택 UI 컴포넌트
+- [ ] Zustand 상태 관리
+- [ ] LocalStorage 연동 (브라우저 설정 우선 → 사용자 선택 보존)
+- [ ] Navigation에 통합
 
-- [ ] `/api/mail/route.ts` API 엔드포인트 구현 (Resend 활용)
-- [ ] XSS 공격 방지 (이메일 데이터 sanitization)
-- [ ] locale별 오류/성공 메시지 사전
+#### 4. 홈페이지 개선
 
-### 6. 데이터 및 콘텐츠 파이프라인
+현재 Home은 About을 재사용하는 단순 구조. 블로그 홈페이지로서 기능 강화:
 
-1. `contents/posts/{locale}/{slug}.md` 구조 채택
-2. 빌드 시 `scripts/generate-post-index.ts`로 frontmatter 파싱 → `.cache/posts.json`
-3. Frontmatter `locale` 필드로 언어별 콘텐츠 동기화
-4. Frontmatter `published` 필드로 게시 상태 제어
+- [ ] Hero Section (블로그 소개)
+- [ ] 최신 포스트 섹션
+- [ ] 인기 포스트 섹션 (조회수 기반)
+- [ ] 이메일 구독 신청 폼
 
-### 7. 에러 처리
+#### 5. Posts 기능 강화
 
-- [ ] 404, 500 에러 페이지 구현
-- [ ] 메인테넌스 페이지 구현
+- [ ] 무한 스크롤 또는 페이지네이션
+- [ ] SEO 메타데이터 최적화
+- [ ] SSG + ISR 전략 구현
+- [ ] 관련 포스트 추천
 
-### 8. 차후 확장 로드맵
+#### 6. AI 기능 (선택)
 
-#### 댓글 시스템
+- [ ] AI 썸네일 자동 생성
+- [ ] AI 요약 생성
+- [ ] AI 태그 자동 생성
 
-- 비회원/회원 여부 결정
-- 저장소 선택 (예: utterances, giscus)
+#### 7. 에러 처리
 
-#### 다크 모드
+- [ ] 404, 500 에러 페이지
+- [ ] 메인테넌스 페이지
 
-- Tailwind `data-theme` 설정
-- Base UI theming 구현
-- 다크 모드 토글 UI
+#### 8. 추가 기능
 
-#### 반응형 레이아웃
+- [ ] 검색 기능
+- [ ] RSS/Atom 피드
+- [ ] Analytics 연동 (Google Analytics 또는 Plausible)
+- [ ] PWA 설정
+- [ ] 댓글 시스템 (utterances 또는 giscus)
 
-- Tailwind breakpoints 최적화
-- 모바일/태블릿/데스크톱 레이아웃 테스트
+## 기술적 고려사항
 
-#### TOC & 읽는 시간
+### FSD 아키텍처
 
-- 마크다운 AST에서 헤딩 추출
-- TOC (Table of Contents) 컴포넌트
-- 단어 수 기반 ETA 계산
-- 읽는 시간 표시 UI
+현재 프로젝트는 Feature-Sliced Design 아키텍처를 따르고 있습니다:
 
-#### 추가 기능
+- `src/app`: Next.js App Router 페이지
+- `src/features`: 도메인 기능 (about, contact, post)
+- `src/entities`: 비즈니스 엔티티 (mdx 등)
+- `src/widgets`: 복합 UI 컴포넌트 (header, footer)
+- `src/shared`: 공통 유틸리티 및 설정
 
-- 검색 기능
-- 태그 필터
-- RSS/Atom 피드
-- Analytics 연동
-- PWA 설정
+### 콘텐츠 관리 전략
+
+- **분리된 리포지터리**: 코드와 콘텐츠를 분리하여 독립적으로 관리
+- **자동화**: GitHub Actions로 인덱싱 자동화
+- **원격 렌더링**: next-mdx-remote-client로 GitHub Raw URL의 MDX를 직접 렌더링
+- **캐싱**: index.json으로 빌드 시간 최적화
+
+### 성능 최적화
+
+- React Compiler 활용
+- 폰트 preload
+- 이미지 최적화 (next/image)
+- Code splitting

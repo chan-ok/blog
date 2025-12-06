@@ -1,155 +1,192 @@
 # 블로그 개발 TODO
 
-## 1. 개발 환경 세팅
+## 완료된 작업 ✅
 
-### 기본 스택 설치
+### 개발 환경
 
-- [x] Next.js 16 설치
-- [x] React 19 + React Compiler 설정
+- [x] Next.js 16 + React 19 설치
 - [x] TypeScript 설정
-
-### Styling & HeadlessUI
-
 - [x] Tailwind CSS v4 설치 및 설정
 - [x] Base UI Components 설치
-
-### 타입 체크 & 검증
-
 - [x] Zod v4 설치
-
-### Lint & Formatter
-
-- [x] ESLint 설정
+- [x] ESLint 9 설정
 - [x] Prettier 설정
-- [x] Husky 설정
-- [x] lint-staged 설정
-
-### 테스트 환경
-
-- [x] Vitest 설치 및 설정
-- [x] testing-library/react 설치
+- [x] Husky + lint-staged 설정
+- [x] Vitest + testing-library/react 설치
 - [x] Playwright 설치 및 설정
 - [x] Storybook + Chromatic 설정
 
----
-
-## 2. 국제화 라우팅 및 레이아웃
+### 국제화 및 레이아웃
 
 - [x] `src/app/[locale]/layout.tsx` 생성
-- [x] 지원 언어 배열 정의 (`['ko', 'ja', 'en']`)
-- [x] 미들웨어에서 브라우저 언어 감지 로직 구현
-- [x] ko/ja/en 언어 매핑 및 기본 ko 폴백 처리
-- [x] 공통 Header 컴포넌트 구성
-- [x] 공통 Footer 컴포넌트 구성
-- [x] Navigation 컴포넌트 구성
-- [ ] 언어 스위처 컴포넌트 구현
-- [ ] `messages/{locale}.ts` 파일 구조 생성
-- [ ] 언어별 텍스트/컨텐츠 분리
+- [x] 지원 언어 설정 (ko, ja, en)
+- [x] 브라우저 언어 감지 (proxy.ts)
+- [x] 언어 폴백 로직
+- [x] Header 위젯 (반응형)
+- [x] Footer 위젯
+- [x] Navigation 컴포넌트
+
+### 페이지 구현
+
+- [x] Home 페이지 (About 재사용)
+- [x] About 페이지 (원격 마크다운)
+- [x] Contact 페이지 (Zod + Turnstile + Resend)
+- [x] Posts 목록 페이지 (index.json 기반)
+- [x] Post 상세 페이지 (원격 MDX 렌더링)
+
+### 콘텐츠 파이프라인
+
+- [x] blog-content 리포지터리 분리
+- [x] blog-content의 GitHub Actions로 index.json 자동 생성
+- [x] GitHub Raw URL 기반 MDX 렌더링
+- [x] 태그 필터링
+- [x] MDX 렌더링 (rehype-highlight)
+
+### 배포
+
+- [x] Netlify 배포 설정
+- [x] Netlify Functions (이메일 전송)
 
 ---
 
-## 3. 페이지별 구현
+## 진행 예정 작업 📋
 
-### Home & About 페이지
-
-- [x] `contents/about.{locale}.md` 고정 마크다운 파일 생성
-- [x] About 컴포넌트 구현
-- [x] Home 페이지에서 About 컴포넌트 재사용 설정
-- [ ] 홈 전용 페이지 컴포넌트 구현
-  - [ ] 블로그 소개 섹션 구현
-  - [ ] 최신 포스트 섹션 구현
-  - [ ] 인기 포스트 섹션 구현
-  - [ ] 이메일 구독 신청 폼 구현
-
-### Posts 목록 페이지
-
-- [x] `contents/posts/{locale}/{slug}.md` 디렉토리 구조 생성
-- [x] Posts 목록 페이지 UI 구현 (post-card, post-card-list) (mock)
-- [x] Posts 목록 페이지 UI 구현 (post-card, post-card-list) (real)
-- [x] 빌드 시 JSON 캐시 생성 로직 구현
-- [x] Frontmatter 파서 유틸리티 구현
-- [ ] 무한 스크롤 기능 구현
-
-### Post 상세 페이지
-
-- [/] `/[locale]/posts/[slug]/page.tsx` 생성
-- [x] MDX 렌더링 설정
-- [x] rehype-highlight로 코드블록 스타일 적용
-- [ ] Frontmatter 기반 SEO 메타 설정
-- [ ] SSG + revalidate 전략 구현
-- [x] published된 문서의 메타데이터를 JSON으로 저장
-- [ ] published된 문서의 메타데이터 기반으로 AI 썸네일 생성
-- [ ] published된 문서의 메타데이터 기반으로 AI 요약 생성
-- [ ] published된 문서의 메타데이터 기반으로 AI 추천 포스트 생성
-- [ ] published된 문서의 메타데이터 기반으로 AI 태그 생성
-
-### Contact 페이지
-
-- [x] Zod 스키마 정의
-- [x] Contact Form UI 구현
-- [x] 입력 검증 로직 구현
-- [ ] 이메일 데이터 XSS공격 방지
-
----
-
-## 4. 데이터 및 콘텐츠 파이프라인
-
-- [x] `contents/posts/{locale}/{slug}.md` 구조 구현
-- [x] `scripts/generate-post-index.ts` 스크립트 작성
-- [x] Frontmatter 파싱 로직 구현
-- [ ] Frontmatter `locale` 필드로 언어별 콘텐츠 동기화
-
----
-
-## 5. 에러 처리 및 배포
-
-- [x] 언어 폴백 로직 구현
-- [/] 기본 테스트 작성
-- [x] 배포 스크립트 작성 (netlify.toml)
-- [ ] 에러 페이지 구현 (404, 500 등)
-- [ ] 메인테넌스 페이지 구현
-
----
-
-## 6. 차후 확장 로드맵
-
-### 댓글 시스템
-
-- [ ] 댓글 시스템 요구사항 정의 (비회원/회원 여부)
-- [ ] 저장소 선택 및 구현
-
-### 다크 모드
+### 1. 다크 모드
 
 - [ ] Tailwind `data-theme` 설정
-- [ ] Base Web theming 구현
-- [ ] 다크 모드 토글 UI 구현
+- [ ] Zustand로 상태 관리
+  - [ ] 최초 시스템 설정 감지
+  - [ ] SessionStorage에 사용자 선택 보존
+  - [ ] 스토리지 값 우선 적용
+- [ ] 다크 모드 토글 버튼 UI
+- [ ] Header에 토글 버튼 통합
 
-### 반응형 레이아웃
+### 2. 마크다운 고급화
 
-- [x] Tailwind breakpoints 최적화
-- [ ] 모바일/태블릿/데스크톱 레이아웃 테스트
+#### 코드 블록 개선
 
-### TOC & 읽는 시간
+- [ ] 코드 복사 버튼
+- [ ] 라인 넘버 표시
+- [ ] 언어 레이블 표시
 
-- [ ] 마크다운 AST에서 헤딩 추출
-- [ ] TOC (Table of Contents) 컴포넌트 구현
-- [ ] 단어 수 기반 ETA 계산 로직
-- [ ] 읽는 시간 표시 UI
+#### TOC (Table of Contents)
 
-### 게시 상태 제어
+- [ ] 마크다운 AST에서 헤딩(h2, h3) 추출
+- [ ] TOC 컴포넌트 구현
+- [ ] 현재 위치 하이라이트
+- [ ] 스크롤 애니메이션
 
-- [x] Frontmatter `published` 필드 추가
-- [x] 게시/비게시 상태 제어 로직 구현
+#### Reading Time
 
-### AI 기능
+- [ ] 단어 수 기반 계산 로직
+- [ ] Post 상세 페이지에 표시 UI
+- [ ] 메타데이터에 포함 (index.json)
 
-- [ ] 게시 후 AI 요약 기능
-- [ ] 썸네일 자동화 (서버 액션/웹훅)
+### 3. 언어 선택기
 
-### 추가 기능
+- [ ] 언어 선택 드롭다운 UI
+- [ ] Zustand로 상태 관리
+  - [ ] 최초 브라우저 언어 감지
+  - [ ] LocalStorage에 사용자 선택 보존
+  - [ ] 스토리지 값 우선 적용
+- [ ] Navigation에 통합
+- [ ] 언어 변경 시 라우팅 처리
 
-- [ ] 검색 기능 구현
-- [x] 태그 필터 기능
-- [ ] RSS/Atom 피드 생성
-- [ ] Analytics 연동
-- [ ] PWA 설정
+### 4. 홈페이지 개선
+
+- [ ] Hero Section 디자인 및 구현
+- [ ] 최신 포스트 섹션 (최근 3-5개)
+- [ ] 인기 포스트 섹션 (조회수 기반)
+- [ ] 이메일 구독 신청 폼
+  - [ ] Zod 검증
+  - [ ] Netlify Function 연동
+  - [ ] Resend로 환영 이메일 발송
+
+### 5. Posts 기능 강화
+
+#### 페이지네이션/무한 스크롤
+
+- [ ] 페이지네이션 컴포넌트
+- [ ] 또는 무한 스크롤 구현
+- [ ] 로딩 상태 UI
+
+#### SEO 최적화
+
+- [ ] Post 메타데이터 구조화
+- [ ] Open Graph 태그
+- [ ] Twitter Card 태그
+- [ ] Sitemap 자동 생성
+
+#### 렌더링 전략
+
+- [ ] SSG + ISR 구현
+- [ ] 빌드 시간 최적화
+
+#### 추가 기능
+
+- [ ] 관련 포스트 추천 (태그 기반)
+- [ ] 조회수 카운터 (선택)
+- [ ] 공유 버튼 (SNS)
+
+### 6. 에러 처리
+
+- [ ] 404 에러 페이지 디자인 및 구현
+- [ ] 500 에러 페이지 디자인 및 구현
+- [ ] 에러 바운더리 설정
+- [ ] 메인테넌스 페이지 (선택)
+
+### 7. 추가 기능
+
+#### 검색
+
+- [ ] 검색 UI
+- [ ] 클라이언트 사이드 검색 (index.json 활용)
+- [ ] 또는 Algolia 연동 (선택)
+
+#### RSS/Atom 피드
+
+- [ ] RSS 피드 생성
+- [ ] Atom 피드 생성
+
+#### Analytics
+
+- [ ] Google Analytics 연동
+- [ ] 또는 Plausible/Umami 같은 프라이버시 친화적 도구
+
+#### PWA
+
+- [ ] Service Worker 설정
+- [ ] Manifest 파일
+- [ ] 오프라인 지원
+
+#### 댓글 시스템
+
+- [ ] 댓글 시스템 선택 (utterances vs giscus)
+- [ ] 설정 및 통합
+
+### 8. AI 기능 (선택)
+
+- [ ] Gemini API 연동
+- [ ] AI 썸네일 자동 생성
+- [ ] AI 요약 생성
+- [ ] AI 태그 자동 생성
+- [ ] AI 추천 포스트 생성
+
+---
+
+## 테스트 작성
+
+- [ ] Contact Form E2E 테스트
+- [ ] Posts 페이지 E2E 테스트
+- [ ] 언어 전환 E2E 테스트
+- [ ] 주요 컴포넌트 유닛 테스트
+- [ ] Storybook 스토리 추가
+
+---
+
+## 성능 최적화
+
+- [ ] 이미지 최적화 (next/image)
+- [ ] 번들 사이즈 분석 및 최적화
+- [ ] Core Web Vitals 측정 및 개선
+- [ ] 폰트 로딩 최적화 (완료: preload 설정됨)
