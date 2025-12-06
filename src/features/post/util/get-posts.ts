@@ -42,7 +42,6 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       (post) => tags.length === 0 || tags.some((tag) => post.tags.includes(tag))
     );
 
-  console.log(filteredPosts);
   const startIndex = page * size;
   const endIndex = Math.min(startIndex + size, filteredPosts.length);
   const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
