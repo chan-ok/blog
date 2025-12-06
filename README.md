@@ -157,9 +157,10 @@ pnpm build-storybook  # Storybook 빌드
 ### 개발 문서
 
 - [절대 규칙](./docs/ABSOLUTE-RULE.md)
-- [변경 이력](./docs/CHANGELOG.md)
 - [기술 스택 및 구현 계획](./docs/IMPLEMENTATION-PLAN.md)
+- [AI 에이전트 체크리스트](./docs/AI-VALIDATION-CHECKLIST.md)
 - [개발 TODO](./docs/TODO.md)
+- [변경 이력](./docs/CHANGELOG.md)
 
 ## 📄 License
 
