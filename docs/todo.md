@@ -63,11 +63,11 @@
 
 ### Posts 목록 페이지
 
-- [ ] `contents/posts/{locale}/{slug}.md` 디렉토리 구조 생성
+- [x] `contents/posts/{locale}/{slug}.md` 디렉토리 구조 생성
 - [x] Posts 목록 페이지 UI 구현 (post-card, post-card-list) (mock)
-- [ ] Posts 목록 페이지 UI 구현 (post-card, post-card-list) (real)
-- [ ] 빌드 시 JSON 캐시 생성 로직 구현
-- [ ] Frontmatter 파서 유틸리티 구현
+- [x] Posts 목록 페이지 UI 구현 (post-card, post-card-list) (real)
+- [x] 빌드 시 JSON 캐시 생성 로직 구현
+- [x] Frontmatter 파서 유틸리티 구현
 - [ ] 무한 스크롤 기능 구현
 
 ### Post 상세 페이지
@@ -77,7 +77,7 @@
 - [x] rehype-highlight로 코드블록 스타일 적용
 - [ ] Frontmatter 기반 SEO 메타 설정
 - [ ] SSG + revalidate 전략 구현
-- [ ] published된 문서의 메타데이터를 JSON으로 저장
+- [x] published된 문서의 메타데이터를 JSON으로 저장
 - [ ] published된 문서의 메타데이터 기반으로 AI 썸네일 생성
 - [ ] published된 문서의 메타데이터 기반으로 AI 요약 생성
 - [ ] published된 문서의 메타데이터 기반으로 AI 추천 포스트 생성
@@ -94,10 +94,9 @@
 
 ## 4. 데이터 및 콘텐츠 파이프라인
 
-- [ ] `contents/posts/{locale}/{slug}.md` 구조 구현
-- [ ] `scripts/generate-post-index.ts` 스크립트 작성
-- [ ] Frontmatter 파싱 로직 구현
-- [ ] `.cache/posts.json` 생성 로직 구현
+- [x] `contents/posts/{locale}/{slug}.md` 구조 구현
+- [x] `scripts/generate-post-index.ts` 스크립트 작성
+- [x] Frontmatter 파싱 로직 구현
 - [ ] Frontmatter `locale` 필드로 언어별 콘텐츠 동기화
 
 ---
@@ -127,8 +126,7 @@
 
 ### 반응형 레이아웃
 
-- [ ] Tailwind breakpoints 최적화
-- [ ] Base Web responsive props 적용
+- [x] Tailwind breakpoints 최적화
 - [ ] 모바일/태블릿/데스크톱 레이아웃 테스트
 
 ### TOC & 읽는 시간
@@ -140,8 +138,8 @@
 
 ### 게시 상태 제어
 
-- [ ] Frontmatter `published` 필드 추가
-- [ ] 게시/비게시 상태 제어 로직 구현
+- [x] Frontmatter `published` 필드 추가
+- [x] 게시/비게시 상태 제어 로직 구현
 
 ### AI 기능
 
@@ -151,7 +149,7 @@
 ### 추가 기능
 
 - [ ] 검색 기능 구현
-- [ ] 태그 필터 기능
+- [x] 태그 필터 기능
 - [ ] RSS/Atom 피드 생성
 - [ ] Analytics 연동
 - [ ] PWA 설정
