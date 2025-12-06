@@ -12,7 +12,7 @@ export default async function PostCardList({ locale }: PostCardListProps) {
   return (
     <>
       {posts.length > 0 ? (
-        posts.map((post) => <PostCard key={post.id} post={post} />)
+        posts.map((post) => <PostCard key={post.id} {...post} />)
       ) : (
         <p>No posts found</p>
       )}

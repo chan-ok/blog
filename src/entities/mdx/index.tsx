@@ -6,9 +6,10 @@ import {
   type MDXRemoteOptions,
 } from 'next-mdx-remote-client/rsc';
 import { notFound } from 'next/navigation';
-import { getMarkdown, setMdxComponents } from './util';
+import getMarkdown from './util/get-markdown';
+import setMdxComponents from './util/set-mdx-components';
 
-interface MDXProps {
+interface MDXComponentProps {
   locale: LocaleType;
   slug: string[];
   extension?: 'md' | 'mdx';
@@ -18,7 +19,7 @@ export default async function MDXComponent({
   locale,
   slug,
   extension = 'md',
-}: MDXProps) {
+}: MDXComponentProps) {
   try {
     const path = slug.join('/');
     const { source, frontmatter } = await getMarkdown(locale, path, extension);
