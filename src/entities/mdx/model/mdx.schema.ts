@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const FrontmatterSchema = z.object({
   id: z.number(),
   title: z.string(),
+  thumbnail: z.string().optional(),
   summary: z.string().optional(),
   createdAt: z.date(),
   updatedAt: z.date().optional(),

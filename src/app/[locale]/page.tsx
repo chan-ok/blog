@@ -1,6 +1,7 @@
 'use server';
 
-import MDXComponent from '@/entities/mdx';
+import AboutBlock from '@/features/about/ui/about-block';
+import RecentPostBlock from '@/features/post/ui/recent-post-block';
 
 interface AboutProps {
   params: Promise<{ locale: LocaleType }>;
@@ -9,5 +10,10 @@ interface AboutProps {
 export default async function AboutPage({ params }: AboutProps) {
   const { locale } = await params;
 
-  return <MDXComponent locale={locale} slug={['about']} />;
+  return (
+    <div className="flex flex-col gap-8">
+      <AboutBlock locale={locale} />
+      <RecentPostBlock locale={locale} />
+    </div>
+  );
 }
