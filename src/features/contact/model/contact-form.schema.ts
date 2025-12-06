@@ -1,3 +1,4 @@
+import { Form } from '@base-ui-components/react';
 import z from 'zod';
 
 export const ContactFormInputsSchema = z.object({
@@ -10,3 +11,7 @@ export const ContactFormInputsSchema = z.object({
 });
 
 export type ContactFormInputs = z.infer<typeof ContactFormInputsSchema>;
+
+export interface FormState {
+  serverErrors?: Form.Props['errors'];
+}

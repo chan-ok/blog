@@ -2,11 +2,8 @@
 import { TurnstileWidget } from '@/widgets/turnstile';
 import { Button, Field, Form } from '@base-ui-components/react';
 import { useActionState, useState } from 'react';
-import { ContactFormInputsSchema } from '../model/contact-form.schema';
-
-interface FormState {
-  serverErrors?: Form.Props['errors'];
-}
+import { type FormState } from '../model/contact-form.schema';
+import { submitFormWithToken } from '../util/submit-form-with-token';
 
 export default function ContactForm() {
   const [token, setToken] = useState<string>('');
@@ -72,50 +69,4 @@ export default function ContactForm() {
       </Field.Root>
     </Form>
   );
-}
-
-function submitFormWithToken(token: string) {
-  return async (_previousState: FormState, formData: FormData) => {
-    if (!token) {
-      return {
-        serverErrors: {
-          submit: '로봇이 아닙니다 확인이 필요합니다.',
-        },
-      };
-    }
-    // 2. zod validation
-    const raw = Object.fromEntries(formData.entries());
-    const parsed = ContactFormInputsSchema.safeParse(raw);
-
-    if (!parsed.success) {
-      return {
-        serverErrors: parsed.error.flatten((issue) => issue.message)
-          .fieldErrors,
-      };
-    }
-
-    try {
-      // 3. API 요청
-      const res = await fetch(`/api/mail`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...parsed.data, turnstileToken: token }),
-      });
-
-      if (!res.ok) {
-        let errorMsg = 'Failed to send message';
-        const errJson = await res.json();
-        if (errJson?.error) errorMsg = errJson.error;
-
-        return {
-          serverErrors: { submit: errorMsg },
-        };
-      }
-    } catch {
-      return {
-        serverErrors: { submit: 'Network error occurred' },
-      };
-    }
-    return {};
-  };
 }
