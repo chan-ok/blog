@@ -3,11 +3,15 @@
 import { useLocaleStore } from '@/shared/stores/locale-store';
 import { Menu } from '@base-ui-components/react';
 import clsx from 'clsx';
+import { setCookie } from 'cookies-next/client';
 import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
 import styles from './index.module.css';
 
 export default function LocaleToggle() {
   const { locale, setLocale } = useLocaleStore();
+  const pathname = usePathname();
+  const router = useRouter();
 
   const getLocaleIcon = (locale: LocaleType, w = 24, h = 24) => {
     return (
@@ -40,6 +44,17 @@ export default function LocaleToggle() {
     'transition-colors duration-200'
   );
 
+  function changeLocale(locale: LocaleType) {
+    const newPath = pathname.replace(/^\/(ko|en|ja)/, `/${locale}`);
+    setLocale(locale);
+    setCookie('NEXT_LOCALE', locale, {
+      path: '/',
+      maxAge: 31536000,
+      sameSite: 'lax',
+    });
+    router.push(newPath);
+  }
+
   return (
     <Menu.Root>
       <Menu.Trigger
@@ -64,19 +79,28 @@ export default function LocaleToggle() {
             <Menu.Arrow className={styles.Arrow}>
               <ArrowSvg />
             </Menu.Arrow>
-            <Menu.Item className={styles.Item} onClick={() => setLocale('ko')}>
+            <Menu.Item
+              className={styles.Item}
+              onClick={() => changeLocale('ko')}
+            >
               <div className="h-4 w-6 border bg-white border-zinc-200 ">
                 {getLocaleIcon('ko')}
               </div>
               <div>한국어</div>
             </Menu.Item>
-            <Menu.Item className={styles.Item} onClick={() => setLocale('ja')}>
+            <Menu.Item
+              className={styles.Item}
+              onClick={() => changeLocale('ja')}
+            >
               <div className="h-4 w-6 border bg-white border-zinc-200">
                 {getLocaleIcon('ja')}
               </div>
               <div>日本語</div>
             </Menu.Item>
-            <Menu.Item className={styles.Item} onClick={() => setLocale('en')}>
+            <Menu.Item
+              className={styles.Item}
+              onClick={() => changeLocale('en')}
+            >
               <div className="h-4 w-6 border bg-white border-zinc-200">
                 {getLocaleIcon('en')}
               </div>
