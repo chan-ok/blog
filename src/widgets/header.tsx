@@ -1,7 +1,7 @@
 'use client';
+import LocaleToggle from '@/shared/components/toggle/locale-toggle';
+import ThemeToggle from '@/shared/components/toggle/theme-toggle';
 import { useDetectScrolled } from '@/shared/hooks/useDetectScrolled';
-import LocaleToggle from '@/shared/ui/locale-toggle';
-import ThemeToggle from '@/shared/ui/theme-toggle';
 import clsx from 'clsx';
 import { Book, Mail, User } from 'lucide-react';
 import Link from 'next/link';
