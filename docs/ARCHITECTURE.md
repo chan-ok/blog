@@ -31,7 +31,7 @@
 #### blog (현재 리포지터리)
 
 - **역할**: 블로그 애플리케이션 (UI, 렌더링, 비즈니스 로직)
-- **기술**: Next.js 16, React 19, TypeScript, Tailwind CSS
+- **기술**: Next.js 16.0.7, React 19.2.1, TypeScript, Tailwind CSS
 - **배포**: Netlify (main 브랜치 자동 배포)
 
 #### blog-content (콘텐츠 리포지터리)
@@ -174,8 +174,9 @@ graph TD
     A[사용자 접속] --> B{경로에 locale 있음?}
     B -->|Yes| C[해당 locale 페이지]
     B -->|No| D[proxy.ts]
-    D --> E{브라우저 언어 확인}
-    E --> F{지원 언어?}
+    D --> E{NEXT_LOCALE 쿠키 확인}
+    E -->|Yes| G[쿠키 언어로 리다이렉트]
+    E -->|No| F{브라우저 언어 확인}
     F -->|Yes| G[감지된 언어로 리다이렉트]
     F -->|No| H[기본 언어 ko로 리다이렉트]
 ```
@@ -241,6 +242,7 @@ blog-content/
 - 링크 공유 시 언어 유지
 - CDN 캐싱 효율적
 - 명확한 언어 컨텍스트
+- `NEXT_LOCALE` 쿠키를 통한 언어 설정 영속성 (proxy.ts에서 처리)
 
 ## 성능 최적화 전략
 
@@ -291,7 +293,7 @@ blog-content/
 
 ### 향후 확장 가능 영역
 
-1. **다크 모드**: Tailwind의 `data-theme` + Zustand
+1. **다크 모드**: Tailwind 전략 (완료)
 2. **검색 기능**: 클라이언트 사이드 검색 또는 Algolia 연동
 3. **댓글 시스템**: utterances/giscus 통합
 4. **Analytics**: Google Analytics 또는 Plausible

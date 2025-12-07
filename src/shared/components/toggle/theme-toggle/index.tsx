@@ -30,11 +30,12 @@ export default function ThemeToggle() {
   };
 
   const buttonClassName = clsx(
-    'flex h-8 items-center gap-1 rounded-2xl p-4 text-sm font-medium',
-    'text-gray-600 outline-none select-none cursor-pointer',
-    'hover:bg-gray-100 focus-visible:bg-gray-100',
-    'dark:text-gray-300 dark:hover:bg-gray-800 dark:focus-visible:bg-gray-800',
-    'transition-colors duration-200'
+    'flex items-center',
+    'h-8',
+    'px-3 py-4 gap-1',
+    'text-sm font-medium text-gray-600 dark:text-gray-300',
+    'rounded-2xl outline-none select-none cursor-pointer transition-colors duration-200',
+    'hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:bg-gray-100 dark:focus-visible:bg-gray-800'
   );
 
   return (

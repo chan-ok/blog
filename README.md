@@ -150,17 +150,17 @@ pnpm build-storybook  # Storybook 빌드
 
 ### 핵심 문서
 
-- [아키텍처 가이드](./docs/ARCHITECTURE.md) - 프로젝트 구조와 설계 결정
-- [배포 가이드](./docs/DEPLOYMENT.md) - 배포 프로세스 및 환경 설정
-- [테스팅 가이드](./docs/TESTING.md) - 테스트 전략 및 베스트 프랙티스
+- [아키텍처 가이드](./docs/architecture.md) - 프로젝트 구조와 설계 결정
+- [배포 가이드](./docs/deployment.md) - 배포 프로세스 및 환경 설정
+- [테스팅 가이드](./docs/testing.md) - 테스트 전략 및 베스트 프랙티스
 
 ### 개발 문서
 
-- [절대 규칙](./docs/ABSOLUTE-RULE.md)
-- [기술 스택 및 구현 계획](./docs/IMPLEMENTATION-PLAN.md)
-- [AI 에이전트 체크리스트](./docs/AI-VALIDATION-CHECKLIST.md)
-- [개발 TODO](./docs/TODO.md)
-- [변경 이력](./docs/CHANGELOG.md)
+- [절대 규칙](./docs/rule.md)
+- [기술 스택 및 구현 계획](./docs/implementation-plan.md)
+- [AI 에이전트 체크리스트](./docs/ai-checklist.md)
+- [개발 TODO](./docs/todo.md)
+- [변경 이력](./docs/changelog.md)
 
 ## 📄 License
 

@@ -2,7 +2,7 @@ import { LocaleSchema } from '@/shared/types/common.schema';
 import { NextRequest, NextResponse } from 'next/server';
 
 const SUPPORTED = LocaleSchema.enum;
-const DEFAULT = 'ko';
+const DEFAULT: LocaleType = 'ko';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -17,21 +17,30 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2) 이미 locale prefix가 존재
-  const hasLocale = Object.values(SUPPORTED).some(
+  // 2) path에 locale prefix가 이미 존재
+  const hasLocaleInPathname = Object.values(SUPPORTED).some(
     (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
   );
-
-  if (hasLocale) {
+  if (hasLocaleInPathname) {
     return NextResponse.next();
   }
 
-  // 3) Accept-Language 기반 locale 감지
+  // 4) Cookie or Accept-Language 기반 locale 감지
+  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
   const accept = request.headers.get('accept-language') || '';
   const detected = accept.split(',')[0].split('-')[0];
-  const locale = LocaleSchema.safeParse(detected).success ? detected : DEFAULT;
 
-  // 4) locale prefix 자동 추가
+  const validCookie = LocaleSchema.safeParse(cookieLocale).success
+    ? (cookieLocale as LocaleType)
+    : undefined;
+
+  const validDetected = LocaleSchema.safeParse(detected).success
+    ? (detected as LocaleType)
+    : undefined;
+
+  const locale = validCookie || validDetected || DEFAULT;
+
+  // 5) locale prefix 자동 추가
   return NextResponse.redirect(new URL(`/${locale}${pathname}`, request.url));
 }
 
