@@ -22,7 +22,10 @@ export default function setMdxComponents(
     ),
     li: ({ children }) => <li className="mb-1">{children}</li>,
     a: ({ href, children }) => (
-      <a href={href} className="text-blue-600 hover:underline">
+      <a
+        href={href}
+        className="text-blue-600 hover:underline dark:text-blue-400"
+      >
         {children}
       </a>
     ),
@@ -34,7 +37,7 @@ export default function setMdxComponents(
     code: ({ children, className }) => {
       const isInline = !className;
       return isInline ? (
-        <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-gray-800">
+        <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-gray-800 dark:bg-gray-700 dark:text-gray-200">
           {children}
         </code>
       ) : (
