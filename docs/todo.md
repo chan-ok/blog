@@ -47,21 +47,19 @@
 - [x] Netlify 배포 설정
 - [x] Netlify Functions (이메일 전송)
 
----
+### 다크 모드 \([tailwind dark mode](https://tailwindcss.com/docs/dark-mode)\)
+
+- [x] Zustand로 상태 관리
+  - [x] 최초 시스템 설정 감지
+  - [x] LocalStorage에 사용자 선택 보존
+  - [x] 스토리지 값 우선 적용
+- [x] 다크 모드 토글 버튼 UI
+- [x] Header에 토글 버튼 통합
+- [x] Tailwind `dark:` 클래스 활용
 
 ## 진행 예정 작업 📋
 
-### 1. 다크 모드
-
-- [ ] Tailwind `data-theme` 설정
-- [ ] Zustand로 상태 관리
-  - [ ] 최초 시스템 설정 감지
-  - [ ] SessionStorage에 사용자 선택 보존
-  - [ ] 스토리지 값 우선 적용
-- [ ] 다크 모드 토글 버튼 UI
-- [ ] Header에 토글 버튼 통합
-
-### 2. 마크다운 고급화
+### 1. 마크다운 고급화
 
 #### 코드 블록 개선
 
