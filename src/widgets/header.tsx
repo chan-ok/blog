@@ -1,13 +1,11 @@
 'use client';
-import { useBreakpoint } from '@/shared/hooks/useBreakpoint';
 import { useDetectScrolled } from '@/shared/hooks/useDetectScrolled';
-import { ThemeToggle } from '@/shared/ui/theme-toggle';
+import ThemeToggle from '@/shared/ui/theme-toggle';
 import { Book, Mail, User } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
   const scrolled = useDetectScrolled();
-  const { isMd } = useBreakpoint();
 
   const navButtonClasses =
     'flex h-8 items-center gap-1 rounded-2xl px-3 py-4 text-sm font-medium text-gray-600 outline-none select-none hover:bg-gray-100 focus-visible:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus-visible:bg-gray-800';
@@ -37,11 +35,11 @@ export default function Header() {
         <div className="flex space-x-0.5">
           <Link href="/about" aria-label="About" className={navButtonClasses}>
             <User size={16} />
-            {isMd ? 'About' : null}
+            <span className="hidden md:inline">About</span>
           </Link>
           <Link href="/posts" aria-label="Posts" className={navButtonClasses}>
             <Book size={16} />
-            {isMd ? 'Posts' : null}
+            <span className="hidden md:inline">Posts</span>
           </Link>
           <Link
             href="/contact"
@@ -49,7 +47,7 @@ export default function Header() {
             className={navButtonClasses}
           >
             <Mail size={16} />
-            {isMd ? 'Contact' : null}
+            <span className="hidden md:inline">Contact</span>
           </Link>
           <ThemeToggle />
         </div>
