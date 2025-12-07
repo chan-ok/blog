@@ -127,7 +127,7 @@ blog (main push)
 
 - [x] 언어 선택 UI 컴포넌트
 - [x] Zustand 상태 관리
-- [x] localStorage 연동 (브라우저 설정 우선 → 사용자 선택 보존)
+- [x] 쿠키 및 localStorage 연동 (NEXT_LOCALE 및 zustand으로 상태 관리 및 보존)
 - [x] Navigation에 통합
 
 ### 📋 예정 작업
