@@ -14,7 +14,7 @@ export default function PostBasicCard({
 }: Frontmatter) {
   return (
     <article className="grid grid-cols-12 gap-y-4 gap-4 p-6 rounded-lg border border-zinc-100 bg-white shadow dark:border-zinc-800 dark:bg-gray-800">
-      <div className="col-span-6">
+      <div className="col-span-full md:col-span-6">
         <Image
           src={thumbnail || '/image/context.png'}
           alt={title}
@@ -24,7 +24,7 @@ export default function PostBasicCard({
           preload
         />
       </div>
-      <div className="col-span-6 flex flex-col gap-0.5">
+      <div className="col-span-full md:col-span-6 flex flex-col gap-0.5">
         <div className="text-lg font-bold">{title}</div>
         <div className="mb-2 text-sm text-gray-500 dark:text-gray-400">
           {format(createdAt, 'yyyy-MM-dd')}

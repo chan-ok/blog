@@ -20,8 +20,8 @@ export default function Header() {
 
   const dynamicHeaderClasses = clsx(
     'fixed flex items-center justify-between',
-    'w-full',
-    'p-2',
+    'w-full h-16 sm:h-12',
+    'px-4 py-2',
     'transition-all duration-200',
     scrolled
       ? 'bg-white/50 shadow-xl backdrop-blur-sm md:max-w-xl md:rounded-3xl lg:max-w-xl dark:bg-gray-900/50'
@@ -35,11 +35,11 @@ export default function Header() {
   );
 
   return (
-    <header className="flex items-center justify-center md:h-24 max-w-4xl h-16 mx-auto">
+    <header className="flex items-center justify-center max-w-4xl h-16 sm:h-20 mx-auto">
       <div className={dynamicHeaderClasses}>
         <div className="ms-2">
           <Link href="/" aria-label="Home" className={titleClasses}>
-            Chanho&apos;s dev blog
+            Chanho.dev
           </Link>
         </div>
         <div className="flex space-x-1">
