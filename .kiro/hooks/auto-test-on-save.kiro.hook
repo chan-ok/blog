@@ -1,0 +1,17 @@
+{
+  "enabled": false,
+  "name": "파일 저장 시 자동 테스트",
+  "description": "파일 저장 시 관련 테스트를 자동으로 실행합니다",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "blog/src/**/*.ts",
+      "blog/src/**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "파일이 저장되었습니다. 다음 작업을 수행해주세요:\n\n## 제외 조건 확인\n먼저 저장된 파일이 다음 패턴에 해당하는지 확인하고, 해당하면 테스트 실행을 건너뜁니다:\n- `*.test.tsx` / `*.test.ts` - 테스트 파일\n- `*.spec.tsx` / `*.spec.ts` - 스펙 파일\n- `*.stories.tsx` - 스토리 파일\n\n## 1단계: 관련 테스트 파일 찾기\n저장된 파일과 관련된 테스트 파일을 찾습니다:\n\n```bash\n# 같은 디렉토리의 테스트 파일\n{파일명}.test.tsx\n{파일명}.test.ts\n{파일명}.spec.tsx\n{파일명}.spec.ts\n\n# 또는 __tests__ 디렉토리\n__tests__/{파일명}.test.tsx\n__tests__/{파일명}.test.ts\n```\n\n## 2단계: 테스트 실행\n관련 테스트 파일이 있으면 실행:\n\n```bash\npnpm test {테스트파일경로} --run\n```\n\n**테스트 파일이 없는 경우**:\n```\nℹ️  테스트 파일이 없습니다.\n   테스트를 작성하시겠습니까? (y/n)\n```\n\n## 3단계: 결과 출력\n\n**테스트 통과 시**:\n```\n✅ 테스트 통과\n\n📊 결과:\n  - 실행: 5개\n  - 통과: 5개\n  - 실패: 0개\n  - 시간: 1.2s\n```\n\n**테스트 실패 시**:\n```\n❌ 테스트 실패\n\n📊 결과:\n  - 실행: 5개\n  - 통과: 3개\n  - 실패: 2개\n\n실패한 테스트:\n  ❌ should render correctly\n     Expected: \"Hello\"\n     Received: \"Hi\"\n\n  ❌ should handle click event\n     TypeError: onClick is not a function\n```\n\n## 4단계: 타입 체크 (선택적)\nTypeScript 파일인 경우 타입 체크도 수행:\n\n```bash\npnpm tsc --noEmit\n```\n\n## 실행 규칙\n1. **빠른 피드백**: 저장 즉시 테스트 실행\n2. **관련 테스트만**: 변경된 파일과 관련된 테스트만 실행\n3. **비차단**: 테스트 실행 중에도 계속 작업 가능\n4. **명확한 결과**: 성공/실패를 명확하게 표시\n\n## 참고\n- 이 훅은 기본적으로 **비활성화**되어 있습니다\n- TDD 워크플로우에 최적화\n- 빠른 피드백 루프 제공\n- 회귀 버그 조기 발견"
+  }
+}

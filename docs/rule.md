@@ -508,12 +508,58 @@ changes
 
 ---
 
+## Kiro Agent Hooks
+
+프로젝트에는 개발 워크플로우를 자동화하는 Agent Hooks가 설정되어 있습니다.
+
+### 사용 가능한 훅
+
+1. **🎨 Auto Storybook Story Generator**
+   - 새 컴포넌트 생성 시 자동으로 Storybook 스토리 생성
+   - 트리거: `src/**/*.tsx` 파일 생성 시
+
+2. **✅ Code Quality Check Hook**
+   - 포맷팅, 린트, 타입 체크 자동 실행
+   - 트리거: 수동 실행 (커밋 전 권장)
+
+3. **📝 Auto Documentation Update Hook**
+   - Git 변경사항 기반 문서 자동 업데이트
+   - 트리거: 수동 실행 (기능 완성 후 권장)
+
+### 권장 워크플로우
+
+```bash
+# 1. 컴포넌트 생성
+touch src/shared/ui/new-component.tsx
+# → 🎨 Storybook 훅 자동 실행
+
+# 2. 기능 구현
+# ... 코드 작성 ...
+
+# 3. 코드 품질 검증
+# Kiro → Agent Hooks → Code Quality Check
+# → ✅ 모든 검증 통과 확인
+
+# 4. 문서 업데이트
+# Kiro → Agent Hooks → Auto Documentation Update
+# → 📝 changelog, todo, architecture 자동 업데이트
+
+# 5. 커밋
+git add .
+git commit -m "feat: add new component"
+```
+
+**자세한 사용법**: [Agent Hooks 가이드](./hooks-guide.md)
+
+---
+
 ## 참고 문서
 
 - [아키텍처 문서](./architecture.md)
 - [AI 검증 체크리스트](./ai-checklist.md)
 - [테스팅 가이드](./testing.md)
 - [배포 가이드](./deployment.md)
+- [Agent Hooks 가이드](./hooks-guide.md)
 - [구현 계획](./implementation-plan.md)
 - [변경 로그](./changelog.md)
 - [할 일 목록](./todo.md)
