@@ -146,6 +146,58 @@ pnpm build-storybook  # Storybook 빌드
   - 인기 포스트
   - 구독 폼
 
+## 🤖 Kiro Agent Hooks
+
+프로젝트에는 개발 워크플로우를 자동화하는 **스마트 트리거 기반** Agent Hooks가 설정되어 있습니다.
+
+### 자동 트리거 훅
+
+#### 🎨 Auto Storybook Story Generator
+
+새 컴포넌트 생성 시 자동으로 Storybook 스토리 파일을 생성합니다.
+
+- **트리거**: `src/**/*.tsx` 파일 생성 시 자동 실행
+- **제외**: `*.test.tsx`, `*.stories.tsx`, `page.tsx`, `layout.tsx`
+
+#### 🧪 Auto Test on Save (선택적)
+
+파일 저장 시 관련 테스트를 자동으로 실행합니다.
+
+- **트리거**: `src/**/*.{ts,tsx}` 파일 저장 시
+- **상태**: 기본 비활성화 (`.kiro/hooks.json`에서 활성화 가능)
+
+### 수동 실행 훅
+
+#### ✅ 코드 품질 검증
+
+포맷팅, 린트, 타입 체크를 순차적으로 실행합니다.
+
+- **사용법**: Kiro 패널 → Agent Hooks → "코드 품질 검증"
+- **권장**: 커밋 전 실행
+
+#### 📝 문서 자동 업데이트
+
+Git 변경사항을 분석하여 관련 문서를 자동으로 업데이트합니다.
+
+- **사용법**: Kiro 패널 → Agent Hooks → "문서 자동 업데이트"
+- **권장**: 기능 완성 후 실행
+
+#### 🔍 커밋 전 검증
+
+커밋 전 코드 품질과 테스트를 자동으로 검증합니다.
+
+- **사용법**: Kiro 패널 → Agent Hooks → "커밋 전 검증"
+- **실행**: Prettier + ESLint + TypeScript 체크
+
+### 설정 파일
+
+- **훅 설정**: `.kiro/hooks.json` - 트리거 조건 및 활성화 설정
+- **훅 프롬프트**: `.kiro/hooks/*.md` - 각 훅의 실행 로직
+
+**자세한 사용법**: [Agent Hooks 가이드](./docs/hooks-guide.md) 참고
+
+---
+
 ## 📚 Documentation
 
 ### 핵심 문서
@@ -153,6 +205,7 @@ pnpm build-storybook  # Storybook 빌드
 - [아키텍처 가이드](./docs/architecture.md) - 프로젝트 구조와 설계 결정
 - [배포 가이드](./docs/deployment.md) - 배포 프로세스 및 환경 설정
 - [테스팅 가이드](./docs/testing.md) - 테스트 전략 및 베스트 프랙티스
+- [Agent Hooks 가이드](./docs/hooks-guide.md) - 개발 자동화 훅 사용법
 
 ### 개발 문서
 

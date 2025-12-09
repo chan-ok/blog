@@ -2,6 +2,26 @@
 
 모든 주요 변경사항이 이 파일에 문서화됩니다.
 
+## [2025-12-09]
+
+### 추가
+
+- Kiro hooks JSON 설정 파일 및 문서화 추가 (`.kiro/hooks.json`, `.kiro/hooks/README.md`)
+- 자동화 hooks 구현:
+  - `auto-doc-update.kiro.hook` - 문서 자동 업데이트
+  - `auto-storybook.kiro.hook` - Storybook 스토리 자동 생성
+  - `auto-test-on-save.kiro.hook` - 저장 시 테스트 자동 실행
+  - `code-quality-check.kiro.hook` - 코드 품질 검사
+- Kiro steering 규칙 추가:
+  - `product.md` - 제품 개요 및 아키텍처
+  - `structure.md` - 프로젝트 구조 가이드
+  - `tech.md` - 기술 스택 정보
+- 마크다운 고급화 스펙 문서 추가 (`.kiro/specs/markdown-enhancement/`)
+
+### 수정
+
+- README.md 업데이트
+
 ## [2025-12-08]
 
 ### 추가

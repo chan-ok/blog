@@ -15,6 +15,8 @@
 - [x] Vitest + testing-library/react 설치
 - [x] Playwright 설치 및 설정
 - [x] Storybook + Chromatic 설정
+- [x] Kiro hooks 설정 (자동 문서화, 테스트, Storybook, 코드 품질)
+- [x] Kiro steering 규칙 설정 (product, structure, tech)
 
 ### 국제화 및 레이아웃
 
@@ -80,17 +82,7 @@
 - [ ] Post 상세 페이지에 표시 UI
 - [ ] 메타데이터에 포함 (index.json)
 
-### 3. 언어 선택기
-
-- [x] 언어 선택 드롭다운 UI
-- [x] Cookie (`NEXT_LOCALE`)로 상태 관리
-  - [x] 최초 브라우저 언어 감지
-  - [x] Cookie에 사용자 선택 보존
-  - [x] Cookie 값 우선 적용
-- [x] Navigation에 통합
-- [x] 언어 변경 시 라우팅 처리
-
-### 4. 홈페이지 개선
+### 2. 홈페이지 개선
 
 - [ ] Hero Section 디자인 및 구현
 - [ ] 최신 포스트 섹션 (최근 3-5개)
@@ -100,7 +92,7 @@
   - [ ] Netlify Function 연동
   - [ ] Resend로 환영 이메일 발송
 
-### 5. Posts 기능 강화
+### 3. Posts 기능 강화
 
 #### 페이지네이션/무한 스크롤
 
@@ -126,14 +118,14 @@
 - [ ] 조회수 카운터 (선택)
 - [ ] 공유 버튼 (SNS)
 
-### 6. 에러 처리
+### 4. 에러 처리
 
 - [ ] 404 에러 페이지 디자인 및 구현
 - [ ] 500 에러 페이지 디자인 및 구현
 - [ ] 에러 바운더리 설정
 - [ ] 메인테넌스 페이지 (선택)
 
-### 7. 추가 기능
+### 5. 추가 기능
 
 #### 검색
 
@@ -162,7 +154,7 @@
 - [ ] 댓글 시스템 선택 (utterances vs giscus)
 - [ ] 설정 및 통합
 
-### 8. AI 기능 (선택)
+### 6. AI 기능 (선택)
 
 - [ ] Gemini API 연동
 - [ ] AI 썸네일 자동 생성

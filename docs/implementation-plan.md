@@ -119,63 +119,29 @@ blog (main push)
 
 #### 8. 다크 모드
 
-- [x] Zustand 상태 관리
-- [x] localStorage 연동 (시스템 설정 우선 → 사용자 선택 보존)
-- [x] 다크 모드 토글 UI
+- Zustand 상태 관리
+- localStorage 연동 (시스템 설정 우선 → 사용자 선택 보존)
+- 다크 모드 토글 UI
 
 #### 9. 언어 선택기
 
-- [x] 언어 선택 UI 컴포넌트
-- [x] Zustand 상태 관리
-- [x] 쿠키 및 localStorage 연동 (NEXT_LOCALE 및 zustand으로 상태 관리 및 보존)
-- [x] Navigation에 통합
+- 언어 선택 UI 컴포넌트
+- Zustand 상태 관리
+- 쿠키 및 localStorage 연동 (NEXT_LOCALE 및 zustand으로 상태 관리 및 보존)
+- Navigation에 통합
 
-### 📋 예정 작업
+#### 10. Kiro AI 설정
 
-#### 1. 마크다운 고급화
-
-- [ ] 코드 블록 개선 (복사 버튼, 라인 넘버 등)
-- [ ] TOC (Table of Contents) 구현
-  - 마크다운 AST에서 헤딩 추출
-  - TOC 컴포넌트 구현
-- [ ] Reading Time 표시
-  - 단어 수 기반 ETA 계산
-  - UI 표시
-
-#### 2. 홈페이지 개선
-
-현재 Home은 About을 재사용하는 단순 구조. 블로그 홈페이지로서 기능 강화:
-
-- [ ] Hero Section (블로그 소개)
-- [ ] 최신 포스트 섹션
-- [ ] 인기 포스트 섹션 (조회수 기반)
-- [ ] 이메일 구독 신청 폼
-
-#### 3. Posts 기능 강화
-
-- [ ] 무한 스크롤 또는 페이지네이션
-- [ ] SEO 메타데이터 최적화
-- [ ] SSG + ISR 전략 구현
-- [ ] 관련 포스트 추천
-
-#### 4. AI 기능 (선택)
-
-- [ ] AI 썸네일 자동 생성
-- [ ] AI 요약 생성
-- [ ] AI 태그 자동 생성
-
-#### 5. 에러 처리
-
-- [ ] 404, 500 에러 페이지
-- [ ] 메인테넌스 페이지
-
-#### 6. 추가 기능
-
-- [ ] 검색 기능
-- [ ] RSS/Atom 피드
-- [ ] Analytics 연동 (Google Analytics 또는 Plausible)
-- [ ] PWA 설정
-- [ ] 댓글 시스템 (utterances 또는 giscus)
+- Kiro hooks 설정 (`.kiro/hooks.json`)
+  - 문서 자동 업데이트 훅
+  - Storybook 스토리 자동 생성 훅
+  - 저장 시 테스트 자동 실행 훅
+  - 코드 품질 검사 훅
+- Kiro steering 규칙 (`.kiro/steering/`)
+  - `product.md` - 제품 개요
+  - `structure.md` - 프로젝트 구조
+  - `tech.md` - 기술 스택
+- 마크다운 고급화 스펙 (`.kiro/specs/markdown-enhancement/`)
 
 ## 기술적 고려사항
 

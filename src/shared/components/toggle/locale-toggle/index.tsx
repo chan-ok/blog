@@ -1,15 +1,14 @@
 'use client';
 
-import { useLocaleStore } from '@/shared/stores/locale-store';
 import { Menu } from '@base-ui-components/react';
 import clsx from 'clsx';
-import { setCookie } from 'cookies-next/client';
+import { getCookie, setCookie } from 'cookies-next/client';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import styles from './index.module.css';
 
 export default function LocaleToggle() {
-  const { locale, setLocale } = useLocaleStore();
+  const locale = (getCookie('NEXT_LOCALE') || 'ko') as LocaleType;
   const pathname = usePathname();
   const router = useRouter();
 
@@ -46,11 +45,13 @@ export default function LocaleToggle() {
 
   function changeLocale(locale: LocaleType) {
     const newPath = pathname.replace(/^\/(ko|en|ja)/, `/${locale}`);
-    setLocale(locale);
+    const isSecure = window.location.protocol === 'https:';
+
     setCookie('NEXT_LOCALE', locale, {
       path: '/',
-      maxAge: 31536000,
+      maxAge: 60 * 60 * 24 * 30, // 30 days
       sameSite: 'lax',
+      secure: isSecure,
     });
     router.push(newPath);
   }
