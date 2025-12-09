@@ -15,6 +15,8 @@
 - [x] Vitest + testing-library/react 설치
 - [x] Playwright 설치 및 설정
 - [x] Storybook + Chromatic 설정
+- [x] Kiro hooks 설정 (자동 문서화, 테스트, Storybook, 코드 품질)
+- [x] Kiro steering 규칙 설정 (product, structure, tech)
 
 ### 국제화 및 레이아웃
 

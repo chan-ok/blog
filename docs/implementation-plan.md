@@ -130,6 +130,19 @@ blog (main push)
 - 쿠키 및 localStorage 연동 (NEXT_LOCALE 및 zustand으로 상태 관리 및 보존)
 - Navigation에 통합
 
+#### 10. Kiro AI 설정
+
+- Kiro hooks 설정 (`.kiro/hooks.json`)
+  - 문서 자동 업데이트 훅
+  - Storybook 스토리 자동 생성 훅
+  - 저장 시 테스트 자동 실행 훅
+  - 코드 품질 검사 훅
+- Kiro steering 규칙 (`.kiro/steering/`)
+  - `product.md` - 제품 개요
+  - `structure.md` - 프로젝트 구조
+  - `tech.md` - 기술 스택
+- 마크다운 고급화 스펙 (`.kiro/specs/markdown-enhancement/`)
+
 ## 기술적 고려사항
 
 ### FSD 아키텍처

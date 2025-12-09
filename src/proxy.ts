@@ -41,7 +41,20 @@ export function proxy(request: NextRequest) {
   const locale = validCookie || validDetected || DEFAULT;
 
   // 5) locale prefix 자동 추가
-  return NextResponse.redirect(new URL(`/${locale}${pathname}`, request.url));
+  const response = NextResponse.redirect(
+    new URL(`/${locale}${pathname}`, request.url)
+  );
+
+  const isSecure = request.nextUrl.protocol === 'https:';
+
+  response.cookies.set('NEXT_LOCALE', locale, {
+    path: '/',
+    secure: isSecure,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  return response;
 }
 
 export const config = {
