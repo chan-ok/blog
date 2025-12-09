@@ -20,7 +20,7 @@
       },
       "action": {
         "type": "agent-message",
-        "promptFile": ".kiro/hooks/auto-storybook.md"
+        "promptFile": ".kiro/hooks/auto-storybook.kiro.hook"
       },
       "enabled": true
     },
@@ -33,7 +33,7 @@
       },
       "action": {
         "type": "agent-message",
-        "promptFile": ".kiro/hooks/code-quality-check.md"
+        "promptFile": ".kiro/hooks/code-quality-check.kiro.hook"
       },
       "enabled": true,
       "icon": "✅"
@@ -47,7 +47,7 @@
       },
       "action": {
         "type": "agent-message",
-        "promptFile": ".kiro/hooks/auto-doc-update.md"
+        "promptFile": ".kiro/hooks/auto-doc-update.kiro.hook"
       },
       "enabled": true,
       "icon": "📝"
@@ -96,7 +96,7 @@
       },
       "action": {
         "type": "agent-message",
-        "promptFile": ".kiro/hooks/auto-test-on-save.md"
+        "promptFile": ".kiro/hooks/auto-test-on-save.kiro.hook"
       },
       "enabled": true,
       "icon": "🧪"

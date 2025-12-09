@@ -6,10 +6,16 @@
 
 ### 추가
 
-- 언어 선택기 UI 컴포넌트 (`src/shared/components/toggle/locale-toggle/`)
-- 테마 토글 컴포넌트 (`src/shared/components/toggle/theme-toggle/`)
+- 테마 토글 컴포넌트 (`src/shared/ui/toggle/theme-toggle/`)
 - 테마 Provider 및 Zustand store (`theme-provider.tsx`, `theme-store.ts`)
 - 언어별 아이콘 추가 (`public/icon/en.svg`, `ja.svg`, `ko.svg`)
+- 프로젝트 문서 추가:
+  - `docs/code-style.md` - 코드 스타일 가이드
+  - `docs/getting-started.md` - 시작 가이드
+  - `docs/git-guide.md` - Git 워크플로우 가이드
+  - `docs/hooks-guide.md` - Kiro Hooks 사용 가이드
+  - `docs/rule.md` - 개발 규칙
+  - `docs/security.md` - 보안 가이드
 
 ### 수정
 
@@ -17,15 +23,24 @@
 - MDX 컴포넌트 렌더링 개선 (`set-mdx-components.tsx`)
 - Contact form 및 Post 카드 컴포넌트 스타일 개선
 - 글로벌 CSS 업데이트
+- 프로젝트 문서 업데이트:
+  - `README.md` - 프로젝트 개요 개선
+  - `docs/ARCHITECTURE.md` - 아키텍처 문서 보완
+  - `docs/DEPLOYMENT.md` - 배포 가이드 업데이트
+  - `docs/TESTING.md` - 테스팅 가이드 업데이트
+  - `docs/ai-checklist.md` - AI 검증 체크리스트 (이름 변경)
 
 ### 리팩토링
 
-- Turnstile 컴포넌트를 `widgets/`에서 `shared/components/turnstile/`로 이동
+- UI 컴포넌트 디렉토리 재구성 (`shared/components/` → `shared/ui/`)
+  - `theme-toggle` → `shared/ui/toggle/theme-toggle/`
+  - `turnstile` → `shared/ui/turnstile/`
 - 불필요한 Storybook assets 및 Configure.mdx 제거
 
 ### 제거
 
 - 사용하지 않는 이미지 assets 정리 (accessibility, addon-library, docs 등 16개 파일)
+- `docs/absolute-rule.md` 삭제 (rule.md로 통합)
 
 ## [2025-12-09]
 

@@ -130,12 +130,6 @@ blog (main push)
 - 쿠키 기반 언어 설정 영속성 (NEXT_LOCALE)
 - Header에 통합
 
-#### 11. 코드 정리 및 리팩토링
-
-- Turnstile 컴포넌트를 `shared/components/`로 이동
-- 불필요한 Storybook assets 제거 (16개 파일)
-- Configure.mdx 제거
-
 #### 10. Kiro AI 설정
 
 - Kiro hooks 설정 (`.kiro/hooks.json`)
@@ -148,6 +142,26 @@ blog (main push)
   - `structure.md` - 프로젝트 구조
   - `tech.md` - 기술 스택
 - 마크다운 고급화 스펙 (`.kiro/specs/markdown-enhancement/`)
+
+#### 11. 코드 정리 및 리팩토링
+
+- UI 컴포넌트 디렉토리 재구성 (`shared/components/` → `shared/ui/`)
+  - `theme-toggle` → `shared/ui/toggle/theme-toggle/`
+  - `turnstile` → `shared/ui/turnstile/`
+- 불필요한 Storybook assets 제거 (16개 파일)
+- Configure.mdx 제거
+
+#### 12. 프로젝트 문서화
+
+- 개발 가이드 문서 작성:
+  - `docs/code-style.md` - 코드 스타일 가이드
+  - `docs/getting-started.md` - 프로젝트 시작 가이드
+  - `docs/git-guide.md` - Git 워크플로우 가이드
+  - `docs/hooks-guide.md` - Kiro Hooks 사용 가이드
+  - `docs/rule.md` - 핵심 개발 규칙
+  - `docs/security.md` - 보안 가이드라인
+- 기존 문서 업데이트 및 개선
+- AI 체크리스트 이름 변경 (`AI-VALIDATION-CHECKLIST.md` → `ai-checklist.md`)
 
 ## 기술적 고려사항
 
