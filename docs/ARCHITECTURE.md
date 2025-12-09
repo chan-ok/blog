@@ -53,9 +53,14 @@ src/
 │
 ├── features/              # 🎯 비즈니스 기능 (Feature Layer)
 │   ├── about/            # About 페이지 관련 로직
+│   │   ├── model/        # 데이터 모델
+│   │   ├── ui/           # UI 컴포넌트
+│   │   └── util/         # 유틸리티
 │   ├── contact/          # Contact 폼 기능
+│   │   ├── model/        # 데이터 모델
+│   │   ├── ui/           # UI 컴포넌트
+│   │   └── util/         # 유틸리티
 │   └── post/             # 포스트 관련 기능
-│       ├── api/          # 포스트 데이터 fetching
 │       ├── ui/           # 포스트 UI 컴포넌트
 │       └── util/         # 포스트 유틸리티
 │
@@ -64,17 +69,19 @@ src/
 │
 ├── widgets/               # 🧩 복합 UI 컴포넌트 (Widget Layer)
 │   ├── footer.tsx        # 푸터
-│   ├── header.tsx        # 헤더
-│   └── turnstile.tsx     # Cloudflare Turnstile
+│   └── header.tsx        # 헤더
 │
 ├── shared/                # 🛠️ 공유 리소스 (Shared Layer)
 │   ├── config/           # 설정 (폰트, API 등)
-│   ├── hooks/            # 커스텀 훅
-│   ├── lib/              # 유틸리티 라이브러리
+│   │   └── api/          # API 설정
+│   ├── hooks/            # 커스텀 훅 (useBreakpoint, useResize 등)
+│   ├── providers/        # Context providers (theme-provider)
+│   ├── stores/           # Zustand stores (theme-store)
 │   ├── types/            # 공통 타입 정의
 │   └── ui/               # 기본 UI 컴포넌트
+│       ├── toggle/       # 토글 컴포넌트
+│       └── turnstile/    # Cloudflare Turnstile
 │
-├── stories/               # 📖 Storybook 스토리
 └── proxy.ts              # 언어 감지 프록시
 ```
 
@@ -304,3 +311,13 @@ blog-content/
 - **CDN**: Netlify의 글로벌 CDN 활용
 - **ISR**: 필요 시 Incremental Static Regeneration 도입
 - **DB**: 필요 시 조회수, 좋아요 등을 위한 경량 DB 추가 (Supabase, PlanetScale)
+
+## 관련 문서
+
+- [개발 규칙](./rule.md) - 핵심 개발 원칙
+- [코드 스타일 가이드](./code-style.md) - 코드 작성 규칙
+- [배포 가이드](./deployment.md) - Netlify 배포 설정
+
+---
+
+> 📖 전체 문서 목록은 [문서 홈](../README.md)을 참고하세요.

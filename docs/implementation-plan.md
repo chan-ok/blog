@@ -125,10 +125,16 @@ blog (main push)
 
 #### 9. 언어 선택기
 
-- 언어 선택 UI 컴포넌트
-- Zustand 상태 관리
-- 쿠키 및 localStorage 연동 (NEXT_LOCALE 및 zustand으로 상태 관리 및 보존)
-- Navigation에 통합
+- 언어 선택 UI 컴포넌트 (`src/shared/components/toggle/locale-toggle/`)
+- 언어별 아이콘 (en.svg, ja.svg, ko.svg)
+- 쿠키 기반 언어 설정 영속성 (NEXT_LOCALE)
+- Header에 통합
+
+#### 11. 코드 정리 및 리팩토링
+
+- Turnstile 컴포넌트를 `shared/components/`로 이동
+- 불필요한 Storybook assets 제거 (16개 파일)
+- Configure.mdx 제거
 
 #### 10. Kiro AI 설정
 
@@ -168,3 +174,14 @@ blog (main push)
 - 폰트 preload
 - 이미지 최적화 (next/image)
 - Code splitting
+
+## 관련 문서
+
+- [개발 규칙](./rule.md) - 핵심 개발 원칙
+- [아키텍처](./architecture.md) - FSD 구조 상세
+- [변경 로그](./changelog.md) - 버전별 변경 내역
+- [할 일 목록](./todo.md) - 남은 작업
+
+---
+
+> 📖 전체 문서 목록은 [문서 홈](../README.md)을 참고하세요.

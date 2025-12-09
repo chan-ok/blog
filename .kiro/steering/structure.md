@@ -17,16 +17,25 @@ blog/
 │   │   └── mdx/              # MDX 관련 엔티티
 │   ├── features/              # 기능 모듈
 │   │   ├── about/            # About 페이지 기능
+│   │   │   ├── model/        # 데이터 모델
+│   │   │   ├── ui/           # UI 컴포넌트
+│   │   │   └── util/         # 유틸리티
 │   │   ├── contact/          # Contact 폼 기능
+│   │   │   ├── model/        # 데이터 모델
+│   │   │   ├── ui/           # UI 컴포넌트
+│   │   │   └── util/         # 유틸리티
 │   │   └── post/             # 포스트 표시 기능
+│   │       ├── ui/           # UI 컴포넌트
+│   │       └── util/         # 유틸리티
 │   ├── shared/                # 공유 유틸리티
-│   │   ├── components/       # 재사용 가능한 UI 컴포넌트
-│   │   ├── config/           # 설정 파일
+│   │   ├── config/           # 설정 파일 (폰트, API)
 │   │   ├── hooks/            # 커스텀 React hooks
 │   │   ├── providers/        # Context providers
 │   │   ├── stores/           # Zustand stores
-│   │   └── types/            # TypeScript 타입 정의
-│   ├── stories/               # Storybook stories
+│   │   ├── types/            # TypeScript 타입 정의
+│   │   └── ui/               # 기본 UI 컴포넌트
+│   │       ├── toggle/       # 토글 컴포넌트
+│   │       └── turnstile/    # Cloudflare Turnstile
 │   ├── widgets/               # 복합 UI 컴포넌트
 │   │   ├── footer.tsx
 │   │   └── header.tsx
@@ -59,20 +68,18 @@ Next.js App Router 페이지와 레이아웃. 다국어 지원을 위해 `[local
 
 기능 전반에 걸쳐 사용되는 공통 관심사와 유틸리티:
 
-- **components/**: 재사용 가능한 UI 컴포넌트
-- **config/**: 앱 설정 및 상수
-- **hooks/**: 커스텀 React hooks
-- **providers/**: React context providers
-- **stores/**: Zustand 상태 관리 stores
+- **config/**: 앱 설정 및 상수 (폰트, API 설정)
+- **hooks/**: 커스텀 React hooks (useBreakpoint, useResize 등)
+- **providers/**: React context providers (theme-provider)
+- **stores/**: Zustand 상태 관리 stores (theme-store)
 - **types/**: 공유 TypeScript 타입
+- **ui/**: 기본 UI 컴포넌트 (toggle, turnstile 등)
 
 ### widgets/
 
 여러 기능이나 공유 컴포넌트를 결합한 복합 컴포넌트 (예: Header, Footer).
 
-### stories/
-
-컴포넌트 문서화 및 비주얼 테스팅을 위한 Storybook stories.
+> **Note**: Storybook stories는 각 컴포넌트와 함께 배치하거나 필요 시 `src/stories/` 디렉토리를 생성하여 관리합니다.
 
 ## 파일 명명 규칙
 

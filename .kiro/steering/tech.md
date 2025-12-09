@@ -2,8 +2,8 @@
 
 ## 코어 프레임워크
 
-- **Next.js 16** - App Router를 사용하는 React 프레임워크
-- **React 19** - React Compiler 활성화
+- **Next.js 16.0.7** - App Router를 사용하는 React 프레임워크
+- **React 19.2.1** - React Compiler 활성화
 - **TypeScript 5** - 엄격한 타입 체킹
 
 ## 스타일링 & UI
@@ -82,7 +82,6 @@ pnpm build-storybook  # 배포용 Storybook 빌드
 ## 경로 별칭
 
 - `@/*` - `./src/*`로 매핑
-- `#/*` - `./contents/*`로 매핑
 
 ## 모듈 시스템
 

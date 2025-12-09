@@ -59,6 +59,13 @@
 - [x] Header에 토글 버튼 통합
 - [x] Tailwind `dark:` 클래스 활용
 
+### 언어 선택기
+
+- [x] 언어 선택 UI 컴포넌트 (`locale-toggle`)
+- [x] 언어별 아이콘 (en, ja, ko)
+- [x] Header에 언어 선택기 통합
+- [x] 쿠키 기반 언어 설정 영속성 (NEXT_LOCALE)
+
 ## 진행 예정 작업 📋
 
 ### 1. 마크다운 고급화
@@ -180,3 +187,12 @@
 - [ ] 번들 사이즈 분석 및 최적화
 - [ ] Core Web Vitals 측정 및 개선
 - [ ] 폰트 로딩 최적화 (완료: preload 설정됨)
+
+---
+
+## 관련 문서
+
+- [구현 계획](./implementation-plan.md) - 기술 스택 및 진행 상황
+- [변경 로그](./changelog.md) - 버전별 변경 내역
+
+> 📖 전체 문서 목록은 [문서 홈](../README.md)을 참고하세요.

@@ -2,6 +2,31 @@
 
 모든 주요 변경사항이 이 파일에 문서화됩니다.
 
+## [2025-12-10]
+
+### 추가
+
+- 언어 선택기 UI 컴포넌트 (`src/shared/components/toggle/locale-toggle/`)
+- 테마 토글 컴포넌트 (`src/shared/components/toggle/theme-toggle/`)
+- 테마 Provider 및 Zustand store (`theme-provider.tsx`, `theme-store.ts`)
+- 언어별 아이콘 추가 (`public/icon/en.svg`, `ja.svg`, `ko.svg`)
+
+### 수정
+
+- Header/Footer 위젯에 언어 선택기 및 테마 토글 통합
+- MDX 컴포넌트 렌더링 개선 (`set-mdx-components.tsx`)
+- Contact form 및 Post 카드 컴포넌트 스타일 개선
+- 글로벌 CSS 업데이트
+
+### 리팩토링
+
+- Turnstile 컴포넌트를 `widgets/`에서 `shared/components/turnstile/`로 이동
+- 불필요한 Storybook assets 및 Configure.mdx 제거
+
+### 제거
+
+- 사용하지 않는 이미지 assets 정리 (accessibility, addon-library, docs 등 16개 파일)
+
 ## [2025-12-09]
 
 ### 추가
@@ -247,3 +272,12 @@
 ### 추가
 
 - Create Next App에서 초기 프로젝트 구조 생성
+
+---
+
+## 관련 문서
+
+- [구현 계획](./implementation-plan.md) - 기술 스택 및 진행 상황
+- [할 일 목록](./todo.md) - 남은 작업
+
+> 📖 전체 문서 목록은 [문서 홈](../README.md)을 참고하세요.
