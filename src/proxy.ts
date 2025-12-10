@@ -24,14 +24,17 @@ export function proxy(request: NextRequest) {
   if (hasLocaleInPathname) {
     return NextResponse.next();
   }
+
   // 3) path에 locale prefix가 없고 쿠키에 locale이 존재
-  if (request.cookies.has('NEXT_LOCALE')) {
-    const { data: validCookie, success: isCookieValid } =
-      LocaleSchema.safeParse(request.cookies.get('NEXT_LOCALE')?.value);
-    if (isCookieValid) {
-      return NextResponse.redirect(
-        new URL(`/${validCookie}${pathname}`, request.url)
-      );
+  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
+  if (cookieLocale) {
+    const { data: validCookieLocale, success: isCookieLocaleValid } =
+      LocaleSchema.safeParse(cookieLocale);
+    if (isCookieLocaleValid) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${validCookieLocale}${pathname}`;
+      url.locale = validCookieLocale;
+      return NextResponse.redirect(url);
     }
   }
 
@@ -43,16 +46,18 @@ export function proxy(request: NextRequest) {
     LocaleSchema.safeParse(detected);
   const defaultLocale = isBrowserLocaleValid ? browserLocale : DEFAULT;
 
-  // 5) locale prefix 자동 추가
-  const response = NextResponse.redirect(
-    new URL(`/${defaultLocale}${pathname}`, request.url)
-  );
+  // 5) locale prefix 자동 추가 및 쿠키 설정
+  const url = request.nextUrl.clone();
+  url.pathname = `/${defaultLocale}${pathname}`;
+
+  const response = NextResponse.redirect(url);
   response.cookies.set('NEXT_LOCALE', defaultLocale, {
     path: '/',
-    maxAge: 60 * 60 * 24 * 30,
+    maxAge: 60 * 60 * 24 * 30, // 30일
     sameSite: 'lax',
-    secure: request.nextUrl.protocol === 'https:',
+    secure: true, // Netlify는 항상 HTTPS
   });
+
   return response;
 }
 
