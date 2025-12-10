@@ -33,7 +33,11 @@ export function proxy(request: NextRequest) {
     if (isCookieLocaleValid) {
       const url = request.nextUrl.clone();
       url.pathname = `/${validCookieLocale}${pathname}`;
-      return NextResponse.redirect(url);
+      const response = NextResponse.redirect(url);
+      // CDN 캐싱 방지: 쿠키 기반 리다이렉트는 사용자마다 다름
+      response.headers.set('Cache-Control', 'private, no-store');
+      response.headers.set('Vary', 'Cookie');
+      return response;
     }
   }
 
@@ -56,6 +60,9 @@ export function proxy(request: NextRequest) {
     sameSite: 'lax',
     secure: true, // Netlify는 항상 HTTPS
   });
+  // CDN 캐싱 방지: Accept-Language 기반 리다이렉트는 사용자마다 다름
+  response.headers.set('Cache-Control', 'private, no-store');
+  response.headers.set('Vary', 'Cookie, Accept-Language');
 
   return response;
 }
