@@ -24,36 +24,35 @@ export function proxy(request: NextRequest) {
   if (hasLocaleInPathname) {
     return NextResponse.next();
   }
+  // 3) path에 locale prefix가 없고 쿠키에 locale이 존재
+  if (request.cookies.has('NEXT_LOCALE')) {
+    const { data: validCookie, success: isCookieValid } =
+      LocaleSchema.safeParse(request.cookies.get('NEXT_LOCALE')?.value);
+    if (isCookieValid) {
+      return NextResponse.redirect(
+        new URL(`/${validCookie}${pathname}`, request.url)
+      );
+    }
+  }
 
-  // 4) Cookie or Accept-Language 기반 locale 감지
-  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
+  // 4) Accept-Language 기반 locale 감지
   const accept = request.headers.get('accept-language') || '';
   const detected = accept.split(',')[0].split('-')[0];
 
-  const validCookie = LocaleSchema.safeParse(cookieLocale).success
-    ? (cookieLocale as LocaleType)
-    : undefined;
-
-  const validDetected = LocaleSchema.safeParse(detected).success
-    ? (detected as LocaleType)
-    : undefined;
-
-  const locale = validCookie || validDetected || DEFAULT;
+  const { data: browserLocale, success: isBrowserLocaleValid } =
+    LocaleSchema.safeParse(detected);
+  const defaultLocale = isBrowserLocaleValid ? browserLocale : DEFAULT;
 
   // 5) locale prefix 자동 추가
   const response = NextResponse.redirect(
-    new URL(`/${locale}${pathname}`, request.url)
+    new URL(`/${defaultLocale}${pathname}`, request.url)
   );
-
-  const isSecure = request.nextUrl.protocol === 'https:';
-
-  response.cookies.set('NEXT_LOCALE', locale, {
+  response.cookies.set('NEXT_LOCALE', defaultLocale, {
     path: '/',
-    secure: isSecure,
-    sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 30,
+    sameSite: 'lax',
+    secure: request.nextUrl.protocol === 'https:',
   });
-
   return response;
 }
 
