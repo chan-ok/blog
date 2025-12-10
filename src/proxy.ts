@@ -33,7 +33,6 @@ export function proxy(request: NextRequest) {
     if (isCookieLocaleValid) {
       const url = request.nextUrl.clone();
       url.pathname = `/${validCookieLocale}${pathname}`;
-      url.locale = validCookieLocale;
       return NextResponse.redirect(url);
     }
   }
