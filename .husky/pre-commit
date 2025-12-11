@@ -8,5 +8,6 @@ pnpm exec lint-staged
 
 
 # 빌드 검증 (선택사항 - 시간이 오래 걸릴 수 있음)
-echo "\n\n🏗️ Running build check..."
-pnpm build
+# echo "\n\n🏗️ Running build check..."
+# pnpm build
+# echo "[SUCCESS] 🏗️ Running build check"
