@@ -3,7 +3,7 @@ import { Github, Mail } from 'lucide-react';
 
 export default function AboutBlock() {
   return (
-    <div className="w-full flex items-center justify-around gap-8">
+    <div className="w-full flex items-center justify-start gap-8">
       <div>
         <Image
           src="/image/git-profile.png"
@@ -14,7 +14,7 @@ export default function AboutBlock() {
           priority
         />
       </div>
-      <div className="text-left sm:text-center">
+      <div className="text-left">
         <h2 className="mb-2 text-2xl font-bold">Hi, There! 👋</h2>
         <p className="text-gray-600 dark:text-gray-300">
           사용자 경험에 집중하는 프론트엔드 개발자입니다.
