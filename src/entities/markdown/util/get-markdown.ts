@@ -13,9 +13,6 @@ export default async function getMarkdown(
   baseUrl?: string
 ): Promise<MarkdownElement> {
   const baseURL = baseUrl || process.env.NEXT_PUBLIC_GIT_RAW_URL;
-
-  console.log(baseURL);
-  console.log(path);
   const response = await api.get<string>(path, { baseURL });
 
   if (response.axios.status !== 200) {
