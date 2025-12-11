@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "dev:server": "netlify dev",
+    "dev": "rm -rf .next && next dev",
+    "dev:server": "rm -rf .next && netlify dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

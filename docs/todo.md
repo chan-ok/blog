@@ -64,7 +64,7 @@
 - [x] 언어 선택 UI 컴포넌트 (`locale-toggle`)
 - [x] 언어별 아이콘 (en, ja, ko)
 - [x] Header에 언어 선택기 통합
-- [x] 쿠키 기반 언어 설정 영속성 (NEXT_LOCALE)
+- [x] 컨텍스트 기반 로케일 관리 (locale-provider, locale-store) (2025-12-12 완료)
 
 ## 진행 예정 작업 📋
 
