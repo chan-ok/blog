@@ -11,7 +11,7 @@ export default async function AboutPage({ params }: AboutProps) {
   const { locale } = await params;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col min-h-screen gap-8">
       <AboutBlock />
       <RecentPostBlock locale={locale} />
     </div>
