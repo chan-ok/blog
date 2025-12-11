@@ -1,13 +1,13 @@
 import { LocaleSchema } from '@/shared/types/common.schema';
 import { NextRequest, NextResponse } from 'next/server';
 
-const SUPPORTED = LocaleSchema.enum;
-const DEFAULT: LocaleType = 'ko';
+const SUPPORTED_LOCALES = Object.keys(LocaleSchema.enum);
+const DEFAULT_LOCALE: LocaleType = 'ko';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1) 정적 파일 및 내부 리소스는 무시
+  // 정적 파일 및 내부 리소스는 무시
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
@@ -17,54 +17,26 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2) path에 locale prefix가 이미 존재
-  const hasLocaleInPathname = Object.values(SUPPORTED).some(
+  // locale prefix가 이미 존재하면 통과
+  const hasLocalePrefix = SUPPORTED_LOCALES.some(
     (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
   );
-  if (hasLocaleInPathname) {
+  if (hasLocalePrefix) {
     return NextResponse.next();
   }
 
-  // 3) path에 locale prefix가 없고 쿠키에 locale이 존재
-  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
-  if (cookieLocale) {
-    const { data: validCookieLocale, success: isCookieLocaleValid } =
-      LocaleSchema.safeParse(cookieLocale);
-    if (isCookieLocaleValid) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/${validCookieLocale}${pathname}`;
-      const response = NextResponse.redirect(url);
-      // CDN 캐싱 방지: 쿠키 기반 리다이렉트는 사용자마다 다름
-      response.headers.set('Cache-Control', 'private, no-store');
-      response.headers.set('Vary', 'Cookie');
-      return response;
-    }
-  }
-
-  // 4) Accept-Language 기반 locale 감지
-  const accept = request.headers.get('accept-language') || '';
-  const detected = accept.split(',')[0].split('-')[0];
-
+  // 브라우저 Accept-Language 헤더에서 locale 감지
+  const acceptLanguage = request.headers.get('accept-language') || '';
+  const detectedLang = acceptLanguage.split(',')[0].split('-')[0];
   const { data: browserLocale, success: isBrowserLocaleValid } =
-    LocaleSchema.safeParse(detected);
-  const defaultLocale = isBrowserLocaleValid ? browserLocale : DEFAULT;
+    LocaleSchema.safeParse(detectedLang);
 
-  // 5) locale prefix 자동 추가 및 쿠키 설정
-  const url = request.nextUrl.clone();
-  url.pathname = `/${defaultLocale}${pathname}`;
+  const targetLocale = isBrowserLocaleValid ? browserLocale : DEFAULT_LOCALE;
 
-  const response = NextResponse.redirect(url);
-  response.cookies.set('NEXT_LOCALE', defaultLocale, {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 30, // 30일
-    sameSite: 'lax',
-    secure: true, // Netlify는 항상 HTTPS
-  });
-  // CDN 캐싱 방지: Accept-Language 기반 리다이렉트는 사용자마다 다름
-  response.headers.set('Cache-Control', 'private, no-store');
-  response.headers.set('Vary', 'Cookie, Accept-Language');
-
-  return response;
+  // locale prefix 추가하여 리다이렉트
+  return NextResponse.redirect(
+    new URL(`/${targetLocale}${pathname}`, request.nextUrl)
+  );
 }
 
 export const config = {
