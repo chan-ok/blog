@@ -33,8 +33,7 @@
 
 ### Content & Data
 
-- MDX (@next/mdx, @mdx-js/react)
-- next-mdx-remote-client (원격 MDX 렌더링)
+- next-mdx-remote-client (원격 마크다운 렌더링)
 - rehype-highlight (코드 하이라이팅)
 - remark-gfm (GitHub Flavored Markdown)
 - axios (콘텐츠 fetching)
@@ -125,9 +124,10 @@ blog (main push)
 
 #### 9. 언어 선택기
 
-- 언어 선택 UI 컴포넌트 (`src/shared/components/toggle/locale-toggle/`)
+- 언어 선택 UI 컴포넌트 (`src/shared/ui/toggle/locale-toggle/`)
 - 언어별 아이콘 (en.svg, ja.svg, ko.svg)
 - 쿠키 기반 언어 설정 영속성 (NEXT_LOCALE)
+- 컨텍스트 기반 로케일 관리 (locale-provider, locale-store)
 - Header에 통합
 
 #### 10. Kiro AI 설정
@@ -151,7 +151,19 @@ blog (main push)
 - 불필요한 Storybook assets 제거 (16개 파일)
 - Configure.mdx 제거
 
-#### 12. 프로젝트 문서화
+#### 12. 마크다운 엔티티 리팩토링
+
+- MDX 엔티티를 통합 마크다운 엔티티로 마이그레이션 (`entities/mdx/` → `entities/markdown/`)
+- MDX 의존성 제거 및 마크다운 처리 단순화
+- CSS 모듈을 Tailwind 유틸리티 클래스로 마이그레이션 (locale-toggle)
+- 폰트 설정 인라인화 (font.ts 삭제)
+
+#### 13. About 페이지 개선
+
+- 프로필 섹션 및 소셜 링크 추가
+- 프로필 이미지 추가 (`public/image/git-profile.png`)
+
+#### 14. 프로젝트 문서화
 
 - 개발 가이드 문서 작성:
   - `docs/code-style.md` - 코드 스타일 가이드
@@ -171,7 +183,7 @@ blog (main push)
 
 - `src/app`: Next.js App Router 페이지
 - `src/features`: 도메인 기능 (about, contact, post)
-- `src/entities`: 비즈니스 엔티티 (mdx 등)
+- `src/entities`: 비즈니스 엔티티 (markdown 등)
 - `src/widgets`: 복합 UI 컴포넌트 (header, footer)
 - `src/shared`: 공통 유틸리티 및 설정
 

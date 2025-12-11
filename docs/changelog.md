@@ -2,6 +2,31 @@
 
 모든 주요 변경사항이 이 파일에 문서화됩니다.
 
+## [2025-12-12]
+
+### 추가
+
+- 프로필 섹션 및 소셜 링크 추가 (`src/features/about/ui/about-block.tsx`)
+- 프로필 이미지 추가 (`public/image/git-profile.png`)
+- 컨텍스트 기반 로케일 관리 구현:
+  - `src/shared/providers/locale-provider.tsx` - 로케일 Provider
+  - `src/shared/stores/locale-store.ts` - Zustand 로케일 store
+
+### 리팩토링
+
+- MDX 엔티티를 통합 마크다운 엔티티로 마이그레이션:
+  - `src/entities/mdx/` → `src/entities/markdown/`
+  - MDX 의존성 제거 및 마크다운 처리 단순화
+- 언어 선택기 CSS 모듈을 Tailwind 유틸리티 클래스로 마이그레이션
+  - `src/shared/ui/toggle/locale-toggle/index.module.css` 삭제
+- 폰트 설정 인라인화 (`src/shared/config/font.ts` 삭제)
+
+### 수정
+
+- 개발 워크플로우 개선 및 ESLint 설정 최적화
+- `@types/mdx` 타입 정의 추가
+- 빌드 검증 개선 (husky)
+
 ## [2025-12-10]
 
 ### 추가

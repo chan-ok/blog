@@ -65,18 +65,18 @@ src/
 │       └── util/         # 포스트 유틸리티
 │
 ├── entities/              # 📦 비즈니스 엔티티 (Entity Layer)
-│   └── mdx/              # MDX 렌더링 엔티티
+│   └── markdown/         # 마크다운 렌더링 엔티티
 │
 ├── widgets/               # 🧩 복합 UI 컴포넌트 (Widget Layer)
 │   ├── footer.tsx        # 푸터
 │   └── header.tsx        # 헤더
 │
 ├── shared/                # 🛠️ 공유 리소스 (Shared Layer)
-│   ├── config/           # 설정 (폰트, API 등)
+│   ├── config/           # 설정 (API 등)
 │   │   └── api/          # API 설정
 │   ├── hooks/            # 커스텀 훅 (useBreakpoint, useResize 등)
-│   ├── providers/        # Context providers (theme-provider)
-│   ├── stores/           # Zustand stores (theme-store)
+│   ├── providers/        # Context providers (theme-provider, locale-provider)
+│   ├── stores/           # Zustand stores (theme-store, locale-store)
 │   ├── types/            # 공통 타입 정의
 │   └── ui/               # 기본 UI 컴포넌트
 │       ├── toggle/       # 토글 컴포넌트
@@ -302,7 +302,7 @@ blog-content/
 
 1. **다크 모드**: Tailwind 전략 (완료)
 2. **검색 기능**: 클라이언트 사이드 검색 또는 Algolia 연동
-3. **댓글 시스템**: utterances/giscus 통합
+3. **댓글 시스템**: giscus 통합
 4. **Analytics**: Google Analytics 또는 Plausible
 5. **AI 기능**: Gemini API 연동 (썸네일, 요약, 태그 생성)
 
