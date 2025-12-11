@@ -1,1 +1,12 @@
+# TypeScript 타입 체크
+echo "\n\n🔍 Running TypeScript type check..."
+pnpm tsc --noEmit
+
+# 스테이징 파일 검사 (format, lint)
+echo "\n\n🔍 Running pre-commit..."
 pnpm exec lint-staged
+
+
+# 빌드 검증 (선택사항 - 시간이 오래 걸릴 수 있음)
+echo "\n\n🏗️ Running build check..."
+pnpm build

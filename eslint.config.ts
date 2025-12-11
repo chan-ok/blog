@@ -7,7 +7,19 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  globalIgnores([
+    '.node_modules',
+    '.husky/**',
+    '.kiro/**',
+    '.netlify/**',
+    '.pnpm-store/**',
+    '.serena/**',
+    '.vscode/**',
+    '.next/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+  ]),
   {
     files: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     plugins: {

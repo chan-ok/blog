@@ -1,8 +1,4 @@
-interface AboutBlockProps {
-  locale: LocaleType;
-}
-
-export default function AboutBlock({ locale }: AboutBlockProps) {
+export default function AboutBlock() {
   return (
     <div>
       <h2 className="mb-2 text-2xl font-bold">Welcome to my blog!</h2>

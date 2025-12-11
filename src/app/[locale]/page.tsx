@@ -12,7 +12,7 @@ export default async function AboutPage({ params }: AboutProps) {
 
   return (
     <div className="flex flex-col gap-8">
-      <AboutBlock locale={locale} />
+      <AboutBlock />
       <RecentPostBlock locale={locale} />
     </div>
   );
