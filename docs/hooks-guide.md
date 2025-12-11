@@ -467,10 +467,11 @@ blog/.kiro/hooks/
 ## 참고 자료
 
 - [Kiro Hooks 공식 문서](https://docs.kiro.ai/hooks)
-- [개발 룰](./rule.md)
-- [아키텍처 문서](./architecture.md)
+- [개발 규칙](./rule.md)
+- [아키텍처](./architecture.md)
 - [테스팅 가이드](./testing.md)
 - [배포 가이드](./deployment.md)
+- [AI 검증 체크리스트](./ai-checklist.md)
 
 ---
 
@@ -481,3 +482,7 @@ blog/.kiro/hooks/
 1. `.kiro/hooks/` 디렉토리의 해당 파일 수정
 2. 팀과 공유하여 워크플로우 개선
 3. 문서 업데이트
+
+---
+
+> 📖 전체 문서 목록은 [문서 홈](../README.md)을 참고하세요.

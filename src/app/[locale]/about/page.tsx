@@ -1,6 +1,6 @@
 'use server';
 
-import MDXComponent from '@/entities/mdx';
+import MDComponent from '@/entities/markdown';
 
 interface AboutPageProps {
   params: Promise<{ locale: LocaleType }>;
@@ -9,5 +9,7 @@ interface AboutPageProps {
 export default async function AboutPage(props: AboutPageProps) {
   const { locale } = await props.params;
 
-  return <MDXComponent locale={locale} slug={['about']} />;
+  const path = `README.${locale}.md`;
+  const baseUrl = 'https://raw.githubusercontent.com/chan-ok/chan-ok/main';
+  return <MDComponent path={path} baseUrl={baseUrl} />;
 }

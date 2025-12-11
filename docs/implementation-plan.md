@@ -125,10 +125,10 @@ blog (main push)
 
 #### 9. 언어 선택기
 
-- 언어 선택 UI 컴포넌트
-- Zustand 상태 관리
-- 쿠키 및 localStorage 연동 (NEXT_LOCALE 및 zustand으로 상태 관리 및 보존)
-- Navigation에 통합
+- 언어 선택 UI 컴포넌트 (`src/shared/components/toggle/locale-toggle/`)
+- 언어별 아이콘 (en.svg, ja.svg, ko.svg)
+- 쿠키 기반 언어 설정 영속성 (NEXT_LOCALE)
+- Header에 통합
 
 #### 10. Kiro AI 설정
 
@@ -142,6 +142,26 @@ blog (main push)
   - `structure.md` - 프로젝트 구조
   - `tech.md` - 기술 스택
 - 마크다운 고급화 스펙 (`.kiro/specs/markdown-enhancement/`)
+
+#### 11. 코드 정리 및 리팩토링
+
+- UI 컴포넌트 디렉토리 재구성 (`shared/components/` → `shared/ui/`)
+  - `theme-toggle` → `shared/ui/toggle/theme-toggle/`
+  - `turnstile` → `shared/ui/turnstile/`
+- 불필요한 Storybook assets 제거 (16개 파일)
+- Configure.mdx 제거
+
+#### 12. 프로젝트 문서화
+
+- 개발 가이드 문서 작성:
+  - `docs/code-style.md` - 코드 스타일 가이드
+  - `docs/getting-started.md` - 프로젝트 시작 가이드
+  - `docs/git-guide.md` - Git 워크플로우 가이드
+  - `docs/hooks-guide.md` - Kiro Hooks 사용 가이드
+  - `docs/rule.md` - 핵심 개발 규칙
+  - `docs/security.md` - 보안 가이드라인
+- 기존 문서 업데이트 및 개선
+- AI 체크리스트 이름 변경 (`AI-VALIDATION-CHECKLIST.md` → `ai-checklist.md`)
 
 ## 기술적 고려사항
 
@@ -168,3 +188,14 @@ blog (main push)
 - 폰트 preload
 - 이미지 최적화 (next/image)
 - Code splitting
+
+## 관련 문서
+
+- [개발 규칙](./rule.md) - 핵심 개발 원칙
+- [아키텍처](./architecture.md) - FSD 구조 상세
+- [변경 로그](./changelog.md) - 버전별 변경 내역
+- [할 일 목록](./todo.md) - 남은 작업
+
+---
+
+> 📖 전체 문서 목록은 [문서 홈](../README.md)을 참고하세요.

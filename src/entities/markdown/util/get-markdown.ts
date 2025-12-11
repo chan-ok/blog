@@ -1,6 +1,6 @@
 import { api } from '@/shared/config/api';
 import matter from 'gray-matter';
-import { Frontmatter } from '../model/mdx.schema';
+import { Frontmatter } from '../model/markdown.schema';
 
 interface MarkdownElement {
   frontmatter: Frontmatter;
@@ -9,13 +9,11 @@ interface MarkdownElement {
 }
 
 export default async function getMarkdown(
-  locale: LocaleType,
   path: string,
-  extension: string = 'mdx'
+  baseUrl?: string
 ): Promise<MarkdownElement> {
-  const baseURL = process.env.NEXT_PUBLIC_GIT_RAW_URL;
-  const url = `/${locale}/${path}.${extension}`;
-  const response = await api.get<string>(url, { baseURL });
+  const baseURL = baseUrl || process.env.NEXT_PUBLIC_GIT_RAW_URL;
+  const response = await api.get<string>(path, { baseURL });
 
   if (response.axios.status !== 200) {
     throw new Error('Failed to fetch posts');

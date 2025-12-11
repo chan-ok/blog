@@ -5,7 +5,10 @@
   "version": "1",
   "when": {
     "type": "fileEdited",
-    "patterns": []
+    "patterns": [
+      "blog/src/**/*.tsx",
+      "blog/src/**/*.ts"
+    ]
   },
   "then": {
     "type": "askAgent",

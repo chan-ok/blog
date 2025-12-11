@@ -32,10 +32,12 @@ Next.js 16으로 구축된 개인 개발 블로그로, 콘텐츠 관리를 위�
 - About 페이지 (마크다운 기반)
 - Posts 페이지 (blog-content 리포지터리 연동)
 - 검증 기능이 있는 Contact 폼 (Zod + Cloudflare Turnstile + Resend)
+- 시스템 감지 및 LocalStorage 지속성을 갖춘 다크 모드 (Zustand + Tailwind dark:)
+- 쿠키 기반 언어 선택기 (NEXT_LOCALE 쿠키)
 
 ### 예정 기능
 
-- 시스템 감지 및 SessionStorage 지속성을 갖춘 다크 모드
 - 향상된 마크다운 기능 (개선된 코드 블록, TOC, 읽기 시간)
-- 브라우저 감지 및 LocalStorage 지속성을 갖춘 언어 선택기
 - 최신/인기 포스트 및 구독 폼이 있는 개선된 홈페이지 디자인
+- 검색 기능 (클라이언트 사이드 또는 Algolia)
+- 댓글 시스템 (utterances/giscus)

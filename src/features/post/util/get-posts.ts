@@ -1,4 +1,4 @@
-import { Frontmatter as PostInfo } from '@/entities/mdx/model/mdx.schema';
+import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.schema';
 import { api } from '@/shared/config/api';
 import { compareDesc } from 'date-fns';
 

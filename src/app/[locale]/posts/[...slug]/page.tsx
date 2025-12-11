@@ -1,6 +1,6 @@
 'use server';
 
-import MDXComponent from '@/entities/mdx';
+import MDComponent from '@/entities/markdown';
 
 interface PostDetailPageProps {
   params: Promise<{ locale: LocaleType; slug: string[] }>;
@@ -9,7 +9,6 @@ interface PostDetailPageProps {
 export default async function PostDetailPage(props: PostDetailPageProps) {
   const { locale, slug } = await props.params;
 
-  return (
-    <MDXComponent locale={locale} slug={['posts', ...slug]} extension="mdx" />
-  );
+  const path = [locale, 'posts', ...slug].join('/') + '.mdx';
+  return <MDComponent path={path} />;
 }

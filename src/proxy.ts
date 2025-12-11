@@ -1,13 +1,13 @@
 import { LocaleSchema } from '@/shared/types/common.schema';
 import { NextRequest, NextResponse } from 'next/server';
 
-const SUPPORTED = LocaleSchema.enum;
-const DEFAULT: LocaleType = 'ko';
+const SUPPORTED_LOCALES = Object.keys(LocaleSchema.enum);
+const DEFAULT_LOCALE: LocaleType = 'ko';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1) 정적 파일 및 내부 리소스는 무시
+  // 정적 파일 및 내부 리소스는 무시
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
@@ -17,44 +17,26 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2) path에 locale prefix가 이미 존재
-  const hasLocaleInPathname = Object.values(SUPPORTED).some(
+  // locale prefix가 이미 존재하면 통과
+  const hasLocalePrefix = SUPPORTED_LOCALES.some(
     (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
   );
-  if (hasLocaleInPathname) {
+  if (hasLocalePrefix) {
     return NextResponse.next();
   }
 
-  // 4) Cookie or Accept-Language 기반 locale 감지
-  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
-  const accept = request.headers.get('accept-language') || '';
-  const detected = accept.split(',')[0].split('-')[0];
+  // 브라우저 Accept-Language 헤더에서 locale 감지
+  const acceptLanguage = request.headers.get('accept-language') || '';
+  const detectedLang = acceptLanguage.split(',')[0].split('-')[0];
+  const { data: browserLocale, success: isBrowserLocaleValid } =
+    LocaleSchema.safeParse(detectedLang);
 
-  const validCookie = LocaleSchema.safeParse(cookieLocale).success
-    ? (cookieLocale as LocaleType)
-    : undefined;
+  const targetLocale = isBrowserLocaleValid ? browserLocale : DEFAULT_LOCALE;
 
-  const validDetected = LocaleSchema.safeParse(detected).success
-    ? (detected as LocaleType)
-    : undefined;
-
-  const locale = validCookie || validDetected || DEFAULT;
-
-  // 5) locale prefix 자동 추가
-  const response = NextResponse.redirect(
-    new URL(`/${locale}${pathname}`, request.url)
+  // locale prefix 추가하여 리다이렉트
+  return NextResponse.redirect(
+    new URL(`/${targetLocale}${pathname}`, request.nextUrl)
   );
-
-  const isSecure = request.nextUrl.protocol === 'https:';
-
-  response.cookies.set('NEXT_LOCALE', locale, {
-    path: '/',
-    secure: isSecure,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 30,
-  });
-
-  return response;
 }
 
 export const config = {
