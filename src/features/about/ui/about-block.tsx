@@ -11,6 +11,7 @@ export default function AboutBlock() {
           width={120}
           height={120}
           className="rounded-full"
+          priority
         />
       </div>
       <div className="text-left sm:text-center">
@@ -24,6 +25,7 @@ export default function AboutBlock() {
           <a
             href="mailto:kiss.yagni.dry@gmail.com"
             className="flex items-center hover:text-gray-700 dark:hover:text-gray-200"
+            aria-label="이메일 보내기"
           >
             <Mail size={16} />
           </a>
@@ -32,6 +34,7 @@ export default function AboutBlock() {
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-gray-700 dark:hover:text-gray-200"
+            aria-label="GitHub 프로필 보기"
           >
             <Github size={16} />
           </a>
