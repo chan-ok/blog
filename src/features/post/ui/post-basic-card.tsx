@@ -1,4 +1,7 @@
-import { Frontmatter } from '@/entities/mdx/model/mdx.schema';
+'use client';
+
+import { Frontmatter } from '@/entities/markdown/model/markdown.schema';
+import { useLocaleStore } from '@/shared/stores/locale-store';
 import { Button } from '@base-ui-components/react';
 import { format } from 'date-fns';
 import { Link2 } from 'lucide-react';
@@ -12,6 +15,8 @@ export default function PostBasicCard({
   path,
   summary,
 }: Frontmatter) {
+  const locale = useLocaleStore((state) => state.locale);
+
   return (
     <article className="grid grid-cols-12 gap-y-4 gap-4 p-6 rounded-lg border border-zinc-100 bg-white shadow dark:border-zinc-800 dark:bg-gray-800">
       <div className="col-span-full md:col-span-6">
@@ -31,7 +36,7 @@ export default function PostBasicCard({
         </div>
         <div className="flex-1">{summary}</div>
         <div className="">
-          <Link href={['/posts', ...path].join('/')}>
+          <Link href={[locale, 'posts', ...path].join('/')}>
             <Button className="flex items-center place-self-end gap-2 px-4 py-2 text-sm text-white rounded bg-zinc-600 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600">
               <Link2 size={16} />
               Read More

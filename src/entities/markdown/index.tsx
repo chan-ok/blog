@@ -7,26 +7,27 @@ import {
 } from 'next-mdx-remote-client/rsc';
 import { notFound } from 'next/navigation';
 import getMarkdown from './util/get-markdown';
-import setMdxComponents from './util/set-mdx-components';
+import setMdxComponents from './util/set-md-components';
 
-interface MDXComponentProps {
-  locale: LocaleType;
-  slug: string[];
-  extension?: 'md' | 'mdx';
+import remarkGfm from 'remark-gfm';
+import remarkFrontmatter from 'remark-frontmatter';
+import rehypeHighlight from 'rehype-highlight';
+
+interface MDComponentProps {
+  path: string;
+  baseUrl?: string;
 }
 
-export default async function MDXComponent({
-  locale,
-  slug,
-  extension = 'md',
-}: MDXComponentProps) {
+export default async function MDComponent({ path, baseUrl }: MDComponentProps) {
   try {
-    const path = slug.join('/');
-    const { source, frontmatter } = await getMarkdown(locale, path, extension);
+    const { source, frontmatter } = await getMarkdown(path, baseUrl);
     if (!source) throw notFound();
 
     const options: MDXRemoteOptions = {
-      mdxOptions: {},
+      mdxOptions: {
+        remarkPlugins: [remarkGfm, remarkFrontmatter],
+        rehypePlugins: [rehypeHighlight],
+      },
       parseFrontmatter: true,
       scope: {
         title: frontmatter.title,
