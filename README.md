@@ -51,7 +51,7 @@ graph LR
 # 의존성 설치
 pnpm install
 
-# 개발 서버 시작 (http://localhost:3000)
+# 개발 서버 시작 (http://localhost:3001)
 pnpm dev
 
 # Netlify Functions와 함께 시작 (http://localhost:8888)

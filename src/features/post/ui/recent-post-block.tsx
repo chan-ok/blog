@@ -1,12 +1,12 @@
 'use client';
 
 import { use } from 'react';
-import { getPosts } from '../util/get-posts';
+import { PagingPosts } from '../model/post.schema';
 import PostBasicCard from './post-basic-card';
 import PostSimpleCard from './post-simple-card';
 
 interface RecentPostBlockProps {
-  postsPromise: ReturnType<typeof getPosts>;
+  postsPromise: Promise<PagingPosts>;
 }
 
 export default function RecentPostBlock({

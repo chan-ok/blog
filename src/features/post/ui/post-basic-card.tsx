@@ -33,12 +33,13 @@ export default function PostBasicCard({
         </div>
         <div className="flex-1">{summary}</div>
         <div className="">
-          <Link href={['posts', ...path].join('/')}>
-            <Button className="flex items-center place-self-end gap-2 px-4 py-2 text-sm text-white rounded bg-zinc-600 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600">
-              <Link2 size={16} />
-              Read More
-            </Button>
-          </Link>
+          <Button
+            render={<Link href={['/posts', ...path].join('/')} />}
+            className="flex items-center place-self-end gap-2 px-4 py-2 text-sm text-white rounded bg-zinc-600 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+          >
+            <Link2 size={16} />
+            Read More
+          </Button>
         </div>
       </div>
     </article>

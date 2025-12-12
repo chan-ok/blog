@@ -126,7 +126,7 @@ NEXT_PUBLIC_GIT_RAW_URL=https://raw.githubusercontent.com/사용자명/blog-cont
 ```toml
 [dev]
   port = 8888
-  targetPort = 3000
+  targetPort = 3001
   functions = "netlify/functions"
 
 [build]
@@ -147,7 +147,7 @@ NEXT_PUBLIC_GIT_RAW_URL=https://raw.githubusercontent.com/사용자명/blog-cont
 #### [dev]
 
 - **port**: Netlify Dev 로컬 서버 포트 (8888)
-- **targetPort**: Next.js 개발 서버 포트 (3000)
+- **targetPort**: Next.js 개발 서버 포트 (3001)
 - **functions**: Netlify Functions 디렉토리
 
 #### [build]

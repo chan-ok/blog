@@ -1,20 +1,8 @@
-import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.schema';
 import { api } from '@/shared/config/api';
 import { compareDesc } from 'date-fns';
 
-interface GetPostsProps {
-  locale: LocaleType;
-  page?: number;
-  size?: number;
-  tags?: string[];
-}
-
-interface PagingPosts {
-  posts: PostInfo[];
-  total: number;
-  page: number;
-  size: number;
-}
+import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.schema';
+import { GetPostsProps, PagingPosts } from '../model/post.schema';
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   'use server';
