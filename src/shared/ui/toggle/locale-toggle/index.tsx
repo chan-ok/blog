@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocaleStore } from '@/shared/stores/locale-store';
-import { Menu } from '@base-ui-components/react';
+import { Menu } from '@base-ui/react';
 import clsx from 'clsx';
 
 export default function LocaleToggle() {

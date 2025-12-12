@@ -1,6 +1,6 @@
 'use client';
 import { TurnstileWidget } from '@/shared/ui/turnstile';
-import { Button, Field, Form } from '@base-ui-components/react';
+import { Button, Field, Form } from '@base-ui/react';
 import { useActionState, useState } from 'react';
 import { type FormState } from '../model/contact-form.schema';
 import { submitFormWithToken } from '../util/submit-form-with-token';

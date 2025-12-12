@@ -1,7 +1,7 @@
 'use client';
 
 import { Frontmatter } from '@/entities/markdown/model/markdown.schema';
-import { Button } from '@base-ui-components/react';
+import { Button } from '@base-ui/react';
 import { format } from 'date-fns';
 import { Link2 } from 'lucide-react';
 import Link from 'next/link';

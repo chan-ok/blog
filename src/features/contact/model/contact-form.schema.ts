@@ -1,4 +1,4 @@
-import { Form } from '@base-ui-components/react';
+import { Form } from '@base-ui/react';
 import z from 'zod';
 
 export const ContactFormInputsSchema = z.object({
