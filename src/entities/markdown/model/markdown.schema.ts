@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const FrontmatterSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   title: z.string(),
   thumbnail: z.string().optional(),
   summary: z.string().optional(),
