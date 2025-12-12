@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import LocaleToggle from '@/shared/ui/toggle/locale-toggle';
 import ThemeToggle from '@/shared/ui/toggle/theme-toggle';
@@ -10,17 +11,22 @@ import { Book, Mail, User } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function Header() {
+  const pathname = usePathname();
   const scrolled = useDetectScrolled();
   const locale = useLocaleStore((state) => state.locale);
 
-  const navButtonClasses = clsx(
-    'flex items-center',
-    'h-8',
-    'px-2 py-4 gap-1',
-    'text-sm font-medium text-gray-600 dark:text-gray-300',
-    'rounded-2xl outline-none select-none',
-    'hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:bg-gray-100 dark:focus-visible:bg-gray-800'
-  );
+  const getNavButtonClasses = (path: string) =>
+    clsx(
+      'flex items-center',
+      'h-8',
+      'px-2 py-4 gap-1',
+      'text-sm font-medium',
+      'rounded-2xl outline-none select-none',
+      'hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:bg-gray-100 dark:focus-visible:bg-gray-800',
+      pathname.startsWith(path)
+        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30'
+        : 'text-gray-600 dark:text-gray-300'
+    );
 
   const dynamicHeaderClasses = clsx(
     'fixed flex items-center justify-between',
@@ -50,7 +56,7 @@ export default function Header() {
           <Link
             href={`/${locale}/about`}
             aria-label="About"
-            className={navButtonClasses}
+            className={getNavButtonClasses(`/${locale}/about`)}
           >
             <User size={16} />
             <span className="hidden md:inline">About</span>
@@ -58,7 +64,7 @@ export default function Header() {
           <Link
             href={`/${locale}/posts`}
             aria-label="Posts"
-            className={navButtonClasses}
+            className={getNavButtonClasses(`/${locale}/posts`)}
           >
             <Book size={16} />
             <span className="hidden md:inline">Posts</span>
@@ -66,7 +72,7 @@ export default function Header() {
           <Link
             href={`/${locale}/contact`}
             aria-label="Contact"
-            className={navButtonClasses}
+            className={getNavButtonClasses(`/${locale}/contact`)}
           >
             <Mail size={16} />
             <span className="hidden md:inline">Contact</span>
