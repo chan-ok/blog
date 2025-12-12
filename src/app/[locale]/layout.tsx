@@ -1,7 +1,14 @@
 import { LocaleProvider } from '@/shared/providers/locale-provider';
 import { ThemeProvider } from '@/shared/providers/theme-provider';
+import { LocaleSchema } from '@/shared/types/common.schema';
 import Footer from '@/widgets/footer';
 import Header from '@/widgets/header';
+
+const SUPPORTED_LOCALES = Object.keys(LocaleSchema.enum);
+
+export async function generateStaticParams() {
+  return SUPPORTED_LOCALES.map((locale) => ({ locale }));
+}
 
 export default async function LocaleLayout({
   children,

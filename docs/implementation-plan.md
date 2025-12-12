@@ -10,7 +10,7 @@
 ### Styling & UI
 
 - Tailwind CSS v4
-- Base UI Components (@base-ui-components/react)
+- Base UI Components (@base-ui/react)
 
 ### Type Check & Validation
 

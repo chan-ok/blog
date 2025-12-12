@@ -1,2 +1,5 @@
 onlyBuiltDependencies:
   - netlify-cli
+
+overrides:
+  next@>=16.0.0-beta.0 <16.0.9: '>=16.0.9'
