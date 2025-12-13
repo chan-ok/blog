@@ -2,8 +2,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import LocaleToggle from '@/shared/ui/toggle/locale-toggle';
-import ThemeToggle from '@/shared/ui/toggle/theme-toggle';
+import LocaleToggle from '@/shared/components/toggle/locale-toggle';
+import ThemeToggle from '@/shared/components/toggle/theme-toggle';
 import { useDetectScrolled } from '@/shared/hooks/useDetectScrolled';
 import { useLocaleStore } from '@/shared/stores/locale-store';
 

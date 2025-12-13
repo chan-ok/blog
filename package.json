@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "dev:server": "rm -rf .next && netlify dev",
-    "build": "rm -rf .next && next build",
+    "dev": "next dev --webpack",
+    "dev:server": "netlify dev",
+    "build": "rm -rf .next && next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "fmt": "prettier . --write",

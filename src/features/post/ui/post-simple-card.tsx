@@ -1,7 +1,6 @@
 'use client';
 
 import { Frontmatter } from '@/entities/markdown/model/markdown.schema';
-import { Button } from '@base-ui/react';
 import { format } from 'date-fns';
 import { Link2 } from 'lucide-react';
 import Link from 'next/link';
@@ -22,13 +21,13 @@ export default function PostSimpleCard({
       </div>
       <div className="col-span-9 flex flex-col gap-0.5">{summary}</div>
       <div className="col-span-3 flex-1 place-self-end">
-        <Button
-          render={<Link href={['/posts', ...path].join('/')} />}
+        <Link
+          href={['/posts', ...path].join('/')}
           className="flex items-center place-self-end gap-2 px-4 py-2 text-sm text-white rounded bg-zinc-600 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
         >
           <Link2 size={16} />
           Read More
-        </Button>
+        </Link>
       </div>
     </article>
   );
