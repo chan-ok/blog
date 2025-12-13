@@ -8,147 +8,7 @@ Agent Hooks는 개발 워크플로우를 자동화하여 생산성을 높이고 
 
 ## 설치된 훅
 
-### 1. 🎨 Auto Storybook Story Generator
-
-**목적**: 컴포넌트 문서화 자동화
-
-**작동 방식**:
-
-- 새 컴포넌트 파일 생성 감지
-- Props 인터페이스 자동 분석
-- Storybook 스토리 파일 자동 생성
-- FSD 레이어에 맞는 경로 설정
-
-**사용 예시**:
-
-```typescript
-// 1. 새 컴포넌트 생성
-// src/shared/ui/badge.tsx
-
-interface BadgeProps {
-  variant?: 'default' | 'success' | 'warning' | 'error';
-  children: React.ReactNode;
-}
-
-export function Badge({ variant = 'default', children }: BadgeProps) {
-  return <span className={`badge badge-${variant}`}>{children}</span>;
-}
-```
-
-```typescript
-// 2. 자동 생성되는 스토리 파일
-// src/shared/ui/badge.stories.tsx
-
-import type { Meta, StoryObj } from '@storybook/react';
-import { Badge } from './badge';
-
-const meta = {
-  title: 'UI/Badge',
-  component: Badge,
-  tags: ['autodocs'],
-  argTypes: {
-    variant: {
-      control: 'select',
-      options: ['default', 'success', 'warning', 'error'],
-    },
-  },
-} satisfies Meta<typeof Badge>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
-  args: {
-    children: 'Default Badge',
-    variant: 'default',
-  },
-};
-
-export const Success: Story = {
-  args: {
-    children: 'Success Badge',
-    variant: 'success',
-  },
-};
-
-// ... 추가 스토리
-```
-
-**장점**:
-
-- 컴포넌트 문서화 누락 방지
-- 일관된 스토리 구조
-- 개발 시간 단축
-
----
-
-### 2. ✅ Code Quality Check Hook
-
-**목적**: 커밋 전 코드 품질 보장
-
-**실행 단계**:
-
-1. **Prettier 포맷팅**
-
-   ```bash
-   pnpm fmt
-   ```
-
-   - 코드 스타일 통일
-   - 자동 포맷팅 적용
-
-2. **ESLint 검증**
-
-   ```bash
-   pnpm lint
-   ```
-
-   - 코드 품질 규칙 검증
-   - 잠재적 버그 탐지
-   - 베스트 프랙티스 준수 확인
-
-3. **TypeScript 타입 체크**
-
-   ```bash
-   pnpm tsc --noEmit
-   ```
-
-   - 타입 안정성 검증
-   - 타입 에러 탐지
-
-4. **테스트 실행** (선택적)
-
-   ```bash
-   pnpm test:run
-   ```
-
-   - 유닛 테스트 실행
-   - 회귀 버그 방지
-
-**출력 예시**:
-
-```
-✅ 코드 품질 검증 완료
-
-📊 검증 결과:
-  ✅ Prettier: 통과 (3개 파일 포맷팅됨)
-  ✅ ESLint: 통과 (0 에러, 2 경고)
-  ✅ TypeScript: 통과 (0 에러)
-  ✅ Tests: 통과 (24/24 테스트)
-
-🎉 모든 검증을 통과했습니다! 커밋 준비가 완료되었습니다.
-```
-
-**권장 사용 시점**:
-
-- 커밋 전 (필수)
-- Pull Request 생성 전
-- 코드 리뷰 요청 전
-- 배포 전
-
----
-
-### 3. 📝 Auto Documentation Update Hook
+### 📝 Auto Documentation Update Hook
 
 **목적**: 문서 일관성 유지 및 자동화
 
@@ -239,14 +99,13 @@ git commit -m "docs: update documentation for dark mode"
 graph TD
     A[기능 요구사항 분석] --> B[컴포넌트 설계]
     B --> C[컴포넌트 파일 생성]
-    C --> D[🎨 Storybook 훅 자동 실행]
-    D --> E[기능 구현]
-    E --> F[✅ 코드 품질 검증 훅 실행]
-    F --> G{검증 통과?}
-    G -->|No| E
-    G -->|Yes| H[📝 문서 업데이트 훅 실행]
-    H --> I[문서 검토 및 수정]
-    I --> J[커밋 및 푸시]
+    C --> D[기능 구현]
+    D --> E[코드 품질 검증]
+    E --> F{검증 통과?}
+    F -->|No| D
+    F -->|Yes| G[📝 문서 업데이트 훅 실행]
+    G --> H[문서 검토 및 수정]
+    H --> I[커밋 및 푸시]
 ```
 
 ### 단계별 상세 가이드
@@ -258,12 +117,7 @@ graph TD
 touch src/features/search/ui/search-input.tsx
 ```
 
-#### Step 2: Storybook 자동 생성
-
-- Kiro가 자동으로 감지하여 스토리 생성 프롬프트 표시
-- 또는 수동 실행: Agent Hooks → Auto Storybook
-
-#### Step 3: 기능 구현
+#### Step 2: 기능 구현
 
 ```typescript
 // src/features/search/ui/search-input.tsx
@@ -272,18 +126,17 @@ export function SearchInput({ onSearch }: SearchInputProps) {
 }
 ```
 
-#### Step 4: 코드 품질 검증
+#### Step 3: 코드 품질 검증
 
 ```bash
-# Kiro Agent Hooks → Code Quality Check
-# 또는 수동 실행:
+# 수동 실행:
 pnpm fmt
 pnpm lint
 pnpm tsc --noEmit
 pnpm test:run
 ```
 
-#### Step 5: 문서 업데이트
+#### Step 4: 문서 업데이트
 
 ```bash
 # Kiro Agent Hooks → Auto Documentation Update
@@ -293,7 +146,7 @@ pnpm test:run
 # - docs/architecture.md
 ```
 
-#### Step 6: 커밋
+#### Step 5: 커밋
 
 ```bash
 git add .
@@ -305,21 +158,7 @@ git push
 
 ## 베스트 프랙티스
 
-### 1. 컴포넌트 생성 시
-
-✅ **DO**:
-
-- Props 인터페이스를 명확하게 정의
-- 컴포넌트 이름을 명확하게 작성
-- Export 방식 일관성 유지 (named export 권장)
-
-❌ **DON'T**:
-
-- Props 없이 컴포넌트 생성 (스토리 생성 어려움)
-- 너무 복잡한 컴포넌트 (분리 권장)
-- page.tsx, layout.tsx에 훅 사용
-
-### 2. 코드 품질 검증 시
+### 1. 코드 품질 검증 시
 
 ✅ **DO**:
 
@@ -333,7 +172,7 @@ git push
 - 에러를 무시하고 진행
 - 테스트 건너뛰기
 
-### 3. 문서 업데이트 시
+### 2. 문서 업데이트 시
 
 ✅ **DO**:
 
@@ -350,20 +189,6 @@ git push
 ---
 
 ## 트러블슈팅
-
-### 문제: Storybook 훅이 실행되지 않음
-
-**원인**:
-
-- 파일 패턴 불일치
-- 제외 조건에 해당
-- Kiro 설정 문제
-
-**해결**:
-
-1. 파일 경로 확인: `src/**/*.tsx`
-2. 파일명 확인: `*.test.tsx`, `*.stories.tsx` 제외
-3. Kiro 재시작
 
 ### 문제: 코드 품질 검증 실패
 

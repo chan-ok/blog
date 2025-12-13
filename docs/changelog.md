@@ -35,6 +35,9 @@
 ### 제거
 
 - E2E 예제 테스트 파일 삭제 (`e2e/example.spec.ts`)
+- Kiro hooks 정리:
+  - `auto-storybook.kiro.hook` 삭제
+  - `code-quality-check.kiro.hook` 삭제
 
 ## [2025-12-12]
 
