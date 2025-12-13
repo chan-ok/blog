@@ -2,7 +2,7 @@
 
 ## 개요
 
-이 문서는 프로젝트의 테스트 전략, 도구, 그리고 베스트 프랙티스를 다룹니다. 현재 테스트 코드가 완전히 작성되지 않은 상태이므로, 이 문서는 향후 테스트 작성 시 참고할 가이드라인으로 활용됩니다.
+이 문서는 프로젝트의 테스트 전략, 도구, 그리고 베스트 프랙티스를 다룹니다.
 
 ## 테스트 스택
 
@@ -24,6 +24,10 @@
 │  ├─ 유틸리티 함수                            │
 │  ├─ 커스텀 훅                                │
 │  └─ 비즈니스 로직                            │
+├─────────────────────────────────────────────┤
+│  Property-Based Tests (fast-check)          │
+│  ├─ 무작위 입력값 기반 속성 검증              │
+│  └─ 엣지 케이스 자동 탐색                    │
 ├─────────────────────────────────────────────┤
 │  Component Tests                             │
 │  ├─ Storybook (시각적 테스트)                │
@@ -50,7 +54,13 @@
 - **역할**: 컴포넌트 테스트
 - **패키지**: `@testing-library/react`, `@testing-library/dom`, `@testing-library/user-event`
 
-#### 4. Storybook
+#### 4. fast-check
+
+- **역할**: Property-Based Testing (속성 기반 테스트)
+- **패키지**: `fast-check`
+- **용도**: 무작위 입력값으로 "모든 경우에 대해 참이어야 하는 규칙" 검증
+
+#### 5. Storybook
 
 - **역할**: 컴포넌트 시각적 테스트 및 문서화
 - **실행**: `pnpm storybook`
@@ -74,6 +84,11 @@
 ```
 src/
 ├── shared/
+│   ├── components/
+│   │   └── ui/
+│   │       ├── button.tsx
+│   │       ├── button.test.tsx      # Unit + Property-Based 테스트
+│   │       └── button.stories.tsx   # Storybook 스토리
 │   ├── lib/
 │   │   ├── date-utils.ts
 │   │   └── date-utils.test.ts
@@ -102,7 +117,175 @@ describe('formatDate', () => {
 });
 ```
 
-### 2. 컴포넌트 테스트 (Component Tests)
+### 2. Property-Based 테스트 (Property-Based Tests)
+
+**개념**: 특정 예시가 아닌 "모든 경우에 대해 참이어야 하는 규칙(속성)"을 검증하는 테스트 방식
+
+**대상**:
+
+- 다양한 입력 조합이 있는 컴포넌트 (variant, shape 등)
+- 엣지 케이스가 많은 유틸리티 함수
+- 일관성이 보장되어야 하는 스타일/동작
+
+**도구**: fast-check + Vitest
+
+**작성 위치**: 테스트 대상과 같은 디렉토리에 `.test.tsx`
+
+**핵심 개념**:
+
+```typescript
+// Arbitrary: 무작위 값을 생성하는 생성기
+const variantArb = fc.constantFrom<ButtonVariant>('primary', 'default', 'danger', 'link');
+const shapeArb = fc.constantFrom<ButtonShape>('fill', 'outline');
+
+// Property: 모든 입력에 대해 참이어야 하는 규칙
+fc.assert(
+  fc.property(variantArb, shapeArb, (variant, shape) => {
+    // 이 블록은 무작위 variant, shape 조합으로 여러 번 실행됨
+    render(<Button variant={variant} shape={shape}>Test</Button>);
+    const button = screen.getByRole('button');
+
+    // 검증: 모든 조합에서 다크 모드 클래스가 포함되어야 함
+    expect(button.className).toMatch(/dark:/);
+  }),
+  { numRuns: 50 } // 50회 반복 테스트
+);
+```
+
+**작성 예시** (실제 Button 컴포넌트 테스트):
+
+```typescript
+// src/shared/components/ui/button.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import fc from 'fast-check';
+import { Button, type ButtonVariant, type ButtonShape } from './button';
+
+// ============================================================================
+// Arbitraries (무작위 값 생성기)
+// ============================================================================
+
+const variantArb = fc.constantFrom<ButtonVariant>('primary', 'default', 'danger', 'link');
+const shapeArb = fc.constantFrom<ButtonShape>('fill', 'outline');
+const nonLinkVariantArb = fc.constantFrom<ButtonVariant>('primary', 'default', 'danger');
+
+// ============================================================================
+// Property-Based 테스트
+// ============================================================================
+
+describe('Property: Props 전달', () => {
+  /**
+   * aria-label 속성이 button 요소에 올바르게 전달되는지 검증
+   */
+  it('should pass aria attributes to the button element', () => {
+    fc.assert(
+      fc.property(fc.string({ minLength: 1, maxLength: 50 }), (label) => {
+        render(<Button aria-label={label}>Click me</Button>);
+        const button = screen.getByRole('button');
+        expect(button).toHaveAttribute('aria-label', label);
+      }),
+      { numRuns: 50 }
+    );
+  });
+
+  /**
+   * className이 기존 스타일과 병합되어 전달되는지 검증
+   */
+  it('should pass className to the button element', () => {
+    fc.assert(
+      fc.property(
+        fc.stringMatching(/^[a-z][a-z0-9-]*$/), // 유효한 CSS 클래스명
+        variantArb,
+        shapeArb,
+        (customClass, variant, shape) => {
+          render(
+            <Button variant={variant} shape={shape} className={customClass}>
+              Click me
+            </Button>
+          );
+          const button = screen.getByRole('button');
+          expect(button.className).toContain(customClass);
+        }
+      ),
+      { numRuns: 50 }
+    );
+  });
+});
+
+describe('Property: 일관된 기본 스타일 적용', () => {
+  /**
+   * link를 제외한 모든 variant/shape 조합에서 기본 스타일이 적용되는지 검증
+   */
+  it('should apply consistent base styles for non-link variants', () => {
+    fc.assert(
+      fc.property(nonLinkVariantArb, shapeArb, (variant, shape) => {
+        render(<Button variant={variant} shape={shape}>Test Button</Button>);
+        const button = screen.getByRole('button');
+        const className = button.className;
+
+        expect(className).toContain('rounded-lg');  // 둥근 모서리
+        expect(className).toContain('px-4');        // 수평 패딩
+        expect(className).toContain('py-2');        // 수직 패딩
+        expect(className).toContain('font-medium'); // 폰트 굵기
+      }),
+      { numRuns: 50 }
+    );
+  });
+});
+
+describe('Property: Link variant는 shape을 무시함', () => {
+  /**
+   * link variant는 어떤 shape을 전달해도 동일한 스타일이 적용되는지 검증
+   */
+  it('should apply identical styles for link variant regardless of shape', () => {
+    fc.assert(
+      fc.property(shapeArb, (shape) => {
+        render(<Button variant="link" shape={shape}>Link Button 1</Button>);
+        const button1 = screen.getByRole('button', { name: 'Link Button 1' });
+        const className1 = button1.className;
+
+        render(<Button variant="link" shape="fill">Link Button 2</Button>);
+        const button2 = screen.getByRole('button', { name: 'Link Button 2' });
+        const className2 = button2.className;
+
+        // shape이 무시되므로 className이 동일해야 함
+        expect(className1).toBe(className2);
+        expect(className1).not.toContain('rounded-lg');
+        expect(className1).toContain('bg-transparent');
+      }),
+      { numRuns: 50 }
+    );
+  });
+});
+
+describe('Property: 다크 모드 클래스 포함', () => {
+  /**
+   * 모든 variant/shape 조합에서 다크 모드 클래스가 포함되는지 검증
+   */
+  it('should include dark mode classes for all variant/shape combinations', () => {
+    fc.assert(
+      fc.property(variantArb, shapeArb, (variant, shape) => {
+        render(<Button variant={variant} shape={shape}>Test Button</Button>);
+        const button = screen.getByRole('button');
+        expect(button.className).toMatch(/dark:/);
+      }),
+      { numRuns: 50 }
+    );
+  });
+});
+```
+
+**Property-Based vs Unit 테스트 비교**:
+
+| 구분        | Unit 테스트        | Property-Based 테스트 |
+| ----------- | ------------------ | --------------------- |
+| 입력값      | 개발자가 직접 지정 | 무작위 자동 생성      |
+| 검증 대상   | 특정 시나리오      | 모든 경우에 대한 규칙 |
+| 엣지 케이스 | 수동으로 추가      | 자동 탐색             |
+| 적합한 경우 | 구체적 동작 검증   | 일관성/불변성 검증    |
+
+### 3. 컴포넌트 테스트 (Component Tests)
 
 **대상**:
 
@@ -117,29 +300,40 @@ describe('formatDate', () => {
 **작성 예시**:
 
 ```typescript
-// src/shared/ui/button.test.tsx
+// src/shared/components/ui/button.test.tsx (Unit 테스트 부분)
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Button } from './button';
 
-describe('Button', () => {
-  it('should render children', () => {
+describe('Button Component - Unit Tests', () => {
+  it('renders children correctly', () => {
     render(<Button>Click me</Button>);
-    expect(screen.getByText('Click me')).toBeInTheDocument();
+    expect(screen.getByRole('button')).toHaveTextContent('Click me');
   });
 
-  it('should call onClick when clicked', async () => {
-    const handleClick = vi.fn();
-    render(<Button onClick={handleClick}>Click me</Button>);
-
-    await userEvent.click(screen.getByText('Click me'));
-    expect(handleClick).toHaveBeenCalledTimes(1);
+  it('applies default variant and shape when not specified', () => {
+    render(<Button>Default Button</Button>);
+    const button = screen.getByRole('button');
+    expect(button.className).toContain('bg-gray-100');
+    expect(button.className).toContain('text-gray-900');
   });
 
-  it('should be disabled when disabled prop is true', () => {
+  it('applies disabled styles when disabled', () => {
     render(<Button disabled>Disabled</Button>);
-    expect(screen.getByText('Disabled')).toBeDisabled();
+    const button = screen.getByRole('button');
+    expect(button.className).toContain('disabled:opacity-50');
+    expect(button.className).toContain('disabled:cursor-not-allowed');
+  });
+
+  it('does not call onClick when disabled', async () => {
+    const handleClick = vi.fn();
+    const user = userEvent.setup();
+
+    render(<Button disabled onClick={handleClick}>Disabled</Button>);
+    await user.click(screen.getByRole('button'));
+
+    expect(handleClick).not.toHaveBeenCalled();
   });
 });
 ```
@@ -493,8 +687,11 @@ describe('Feature', () => {
 // ❌ Bad
 it('works', () => { ... });
 
-// ✅ Good
+// ✅ Good - Unit 테스트
 it('should return formatted date in ko locale', () => { ... });
+
+// ✅ Good - Property-Based 테스트
+it('should apply consistent base styles for non-link variants', () => { ... });
 ```
 
 ### 4. 사용자 관점에서 테스트
@@ -528,6 +725,56 @@ screen.getByTestId('submit-button');
 
 // ✅ Good
 screen.getByRole('button', { name: /submit/i });
+```
+
+### 7. Property-Based 테스트 작성 가이드
+
+```typescript
+// Arbitrary 정의: 테스트할 값의 범위를 명확히 지정
+const variantArb = fc.constantFrom<ButtonVariant>(
+  'primary',
+  'default',
+  'danger',
+  'link'
+);
+
+// numRuns 설정: 테스트 목적에 맞게 반복 횟수 조정
+fc.assert(
+  fc.property(variantArb, (variant) => {
+    // 검증 로직
+  }),
+  { numRuns: 50 } // 기본값 100, 빠른 피드백을 위해 50 권장
+);
+
+// 특수 케이스 분리: link variant처럼 다른 규칙을 따르는 경우 별도 테스트
+const nonLinkVariantArb = fc.constantFrom<ButtonVariant>(
+  'primary',
+  'default',
+  'danger'
+);
+```
+
+### 8. 테스트 문서화
+
+테스트 파일 상단에 테스트 종류와 목적을 명시:
+
+```typescript
+/**
+ * ============================================================================
+ * Button 컴포넌트 테스트
+ * ============================================================================
+ *
+ * ## 테스트 종류
+ *
+ * 1. **Property-Based 테스트**: fast-check로 무작위 입력값 검증
+ * 2. **Unit 테스트**: 특정 시나리오에 대한 구체적인 동작 검증
+ *
+ * ## 사용된 라이브러리
+ *
+ * - vitest: 테스트 러너
+ * - @testing-library/react: 컴포넌트 렌더링 및 DOM 쿼리
+ * - fast-check: Property-Based 테스트용 무작위 데이터 생성
+ */
 ```
 
 ## 테스트하기 어려운 경우
@@ -623,9 +870,11 @@ await page.pause();
 - [Playwright Best Practices](https://playwright.dev/docs/best-practices)
 - [Testing Trophy](https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications)
 
-## 우선순위 테스트 작성 계획
+## 테스트 작성 현황 및 계획
 
-향후 테스트 작성 시 다음 순서로 진행 권장:
+### 작성 완료
+
+- [x] `src/shared/components/ui/button.test.tsx` - Button 컴포넌트 (Property-Based + Unit)
 
 ### Phase 1: 유틸리티 & 비즈니스 로직
 
@@ -635,7 +884,7 @@ await page.pause();
 
 ### Phase 2: 컴포넌트
 
-- [ ] `src/shared/ui/` 기본 UI 컴포넌트
+- [ ] `src/shared/components/ui/` 기본 UI 컴포넌트 (Button 완료)
 - [ ] `src/features/*/ui/` Feature 컴포넌트
 - [ ] `src/widgets/` Widget 컴포넌트
 
