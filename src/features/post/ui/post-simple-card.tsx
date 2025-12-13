@@ -6,12 +6,16 @@ import { format } from 'date-fns';
 import { Link2 } from 'lucide-react';
 import Link from 'next/link';
 
+interface Props extends Frontmatter {
+  locale: string;
+}
 export default function PostSimpleCard({
+  locale,
   title,
   createdAt,
   path,
   summary,
-}: Frontmatter) {
+}: Props) {
   return (
     <article className="grid grid-cols-12 gap-y-4 gap-4 p-6 rounded-lg border border-zinc-100 bg-white shadow dark:border-zinc-800 dark:bg-gray-800">
       <div className="col-span-full flex items-baseline gap-2">
@@ -25,7 +29,8 @@ export default function PostSimpleCard({
         <Button
           variant="primary"
           className="place-self-end text-sm"
-          render={<Link href={['/posts', ...path].join('/')} />}
+          nativeButton={false}
+          render={<Link href={'/' + [locale, 'posts', ...path].join('/')} />}
         >
           <Link2 size={16} />
           Read More

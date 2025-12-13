@@ -12,7 +12,9 @@ export default async function PostCardList({ locale }: PostCardListProps) {
   return (
     <div className="flex flex-col gap-4">
       {posts.length > 0 ? (
-        posts.map((post) => <PostBasicCard key={post.id} {...post} />)
+        posts.map((post) => (
+          <PostBasicCard key={post.title} locale={locale} {...post} />
+        ))
       ) : (
         <p>No posts found</p>
       )}

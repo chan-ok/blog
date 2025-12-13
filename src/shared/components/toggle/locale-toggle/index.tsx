@@ -91,7 +91,6 @@ export default function LocaleToggle() {
       <Menu.Trigger
         className={buttonClassName}
         aria-label={getAriaLabel()}
-        nativeButton={false}
         openOnHover
       >
         <div className="h-6 w-6 bg-white rounded-full overflow-hidden">

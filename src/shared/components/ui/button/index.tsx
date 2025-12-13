@@ -115,7 +115,7 @@ export function Button({
   );
 
   return (
-    <BaseButton className={buttonClassName} {...props}>
+    <BaseButton className={buttonClassName} nativeButton {...props}>
       {children}
     </BaseButton>
   );

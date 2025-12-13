@@ -13,7 +13,11 @@ export default async function getMarkdown(
   baseUrl?: string
 ): Promise<MarkdownElement> {
   const baseURL = baseUrl || process.env.NEXT_PUBLIC_GIT_RAW_URL;
-  const response = await api.get<string>(path, { baseURL });
+  const realPath = decodeURIComponent(path).replace(/[^/]+$/, (s) =>
+    s.replaceAll('-', ' ')
+  );
+
+  const response = await api.get<string>(realPath, { baseURL });
 
   if (response.axios.status !== 200) {
     throw new Error('Failed to fetch posts');
