@@ -6,22 +6,22 @@ Base UI를 기반으로 한 재사용 가능한 Button 컴포넌트를 구현합
 
 ## 아키텍처
 
-```
+```plaintext
 ┌─────────────────────────────────────────────────────────┐
-│                    Button Component                      │
+│                    Button Component                     │
 ├─────────────────────────────────────────────────────────┤
-│  Props                                                   │
+│  Props                                                  │
 │  ├── variant: 'primary' | 'default' | 'danger' | 'link' │
 │  ├── shape: 'fill' | 'outline'                          │
-│  ├── asChild: boolean                                    │
-│  ├── className: string                                   │
-│  └── ...HTMLButtonAttributes                             │
+│  ├── asChild: boolean                                   │
+│  ├── className: string                                  │
+│  └── ...HTMLButtonAttributes                            │
 ├─────────────────────────────────────────────────────────┤
-│  Base UI Button                                          │
-│  └── 접근성, 키보드 네비게이션, 시맨틱 HTML 제공         │
+│  Base UI Button                                         │
+│  └── 접근성, 키보드 네비게이션, 시맨틱 HTML 제공                 │
 ├─────────────────────────────────────────────────────────┤
-│  Tailwind CSS v4 Styles                                  │
-│  └── variant × shape 조합별 스타일 클래스               │
+│  Tailwind CSS v4 Styles                                 │
+│  └── variant × shape 조합별 스타일 클래스                    │
 └─────────────────────────────────────────────────────────┘
 ```
 

@@ -142,11 +142,14 @@ const shapeArb = fc.constantFrom<ButtonShape>('fill', 'outline');
 fc.assert(
   fc.property(variantArb, shapeArb, (variant, shape) => {
     // 이 블록은 무작위 variant, shape 조합으로 여러 번 실행됨
-    render(<Button variant={variant} shape={shape}>Test</Button>);
+    const { unmount } = render(<Button variant={variant} shape={shape}>Test</Button>);
     const button = screen.getByRole('button');
 
     // 검증: 모든 조합에서 다크 모드 클래스가 포함되어야 함
     expect(button.className).toMatch(/dark:/);
+
+    // 중요: 각 반복 후 unmount 호출하여 DOM 정리
+    unmount();
   }),
   { numRuns: 50 } // 50회 반복 테스트
 );
@@ -181,9 +184,10 @@ describe('Property: Props 전달', () => {
   it('should pass aria attributes to the button element', () => {
     fc.assert(
       fc.property(fc.string({ minLength: 1, maxLength: 50 }), (label) => {
-        render(<Button aria-label={label}>Click me</Button>);
+        const { unmount } = render(<Button aria-label={label}>Click me</Button>);
         const button = screen.getByRole('button');
         expect(button).toHaveAttribute('aria-label', label);
+        unmount(); // Property-Based 테스트에서는 각 반복 후 unmount 필수
       }),
       { numRuns: 50 }
     );
@@ -199,13 +203,14 @@ describe('Property: Props 전달', () => {
         variantArb,
         shapeArb,
         (customClass, variant, shape) => {
-          render(
+          const { unmount } = render(
             <Button variant={variant} shape={shape} className={customClass}>
               Click me
             </Button>
           );
           const button = screen.getByRole('button');
           expect(button.className).toContain(customClass);
+          unmount();
         }
       ),
       { numRuns: 50 }
@@ -220,7 +225,9 @@ describe('Property: 일관된 기본 스타일 적용', () => {
   it('should apply consistent base styles for non-link variants', () => {
     fc.assert(
       fc.property(nonLinkVariantArb, shapeArb, (variant, shape) => {
-        render(<Button variant={variant} shape={shape}>Test Button</Button>);
+        const { unmount } = render(
+          <Button variant={variant} shape={shape}>Test Button</Button>
+        );
         const button = screen.getByRole('button');
         const className = button.className;
 
@@ -228,6 +235,7 @@ describe('Property: 일관된 기본 스타일 적용', () => {
         expect(className).toContain('px-4');        // 수평 패딩
         expect(className).toContain('py-2');        // 수직 패딩
         expect(className).toContain('font-medium'); // 폰트 굵기
+        unmount();
       }),
       { numRuns: 50 }
     );
@@ -241,11 +249,15 @@ describe('Property: Link variant는 shape을 무시함', () => {
   it('should apply identical styles for link variant regardless of shape', () => {
     fc.assert(
       fc.property(shapeArb, (shape) => {
-        render(<Button variant="link" shape={shape}>Link Button 1</Button>);
+        const { unmount: unmount1 } = render(
+          <Button variant="link" shape={shape}>Link Button 1</Button>
+        );
         const button1 = screen.getByRole('button', { name: 'Link Button 1' });
         const className1 = button1.className;
 
-        render(<Button variant="link" shape="fill">Link Button 2</Button>);
+        const { unmount: unmount2 } = render(
+          <Button variant="link" shape="fill">Link Button 2</Button>
+        );
         const button2 = screen.getByRole('button', { name: 'Link Button 2' });
         const className2 = button2.className;
 
@@ -253,6 +265,9 @@ describe('Property: Link variant는 shape을 무시함', () => {
         expect(className1).toBe(className2);
         expect(className1).not.toContain('rounded-lg');
         expect(className1).toContain('bg-transparent');
+
+        unmount1();
+        unmount2();
       }),
       { numRuns: 50 }
     );
@@ -266,9 +281,12 @@ describe('Property: 다크 모드 클래스 포함', () => {
   it('should include dark mode classes for all variant/shape combinations', () => {
     fc.assert(
       fc.property(variantArb, shapeArb, (variant, shape) => {
-        render(<Button variant={variant} shape={shape}>Test Button</Button>);
+        const { unmount } = render(
+          <Button variant={variant} shape={shape}>Test Button</Button>
+        );
         const button = screen.getByRole('button');
         expect(button.className).toMatch(/dark:/);
+        unmount();
       }),
       { numRuns: 50 }
     );
@@ -754,7 +772,71 @@ const nonLinkVariantArb = fc.constantFrom<ButtonVariant>(
 );
 ```
 
-### 8. 테스트 문서화
+### 8. Property-Based 테스트에서 unmount 호출
+
+Property-Based 테스트는 동일한 테스트 케이스 내에서 여러 번 렌더링을 수행합니다. 이때 각 반복(iteration)이 끝날 때마다 `unmount()`를 명시적으로 호출하여 DOM을 정리해야 합니다.
+
+**왜 필요한가?**
+
+- `fc.assert`는 하나의 `it` 블록 내에서 여러 번 실행됨
+- Testing Library의 자동 cleanup은 `it` 블록이 끝날 때만 동작
+- 명시적 `unmount()` 없이는 이전 렌더링의 요소가 DOM에 남아 테스트 간섭 발생
+
+```typescript
+// ❌ Bad - unmount 없이 Property-Based 테스트
+it('should apply styles', () => {
+  fc.assert(
+    fc.property(variantArb, (variant) => {
+      render(<Button variant={variant}>Test</Button>);
+      const button = screen.getByRole('button');
+      expect(button.className).toMatch(/dark:/);
+      // 다음 반복에서 이전 버튼이 DOM에 남아있음!
+    }),
+    { numRuns: 50 }
+  );
+});
+
+// ✅ Good - 각 반복 후 unmount 호출
+it('should apply styles', () => {
+  fc.assert(
+    fc.property(variantArb, (variant) => {
+      const { unmount } = render(<Button variant={variant}>Test</Button>);
+      const button = screen.getByRole('button');
+      expect(button.className).toMatch(/dark:/);
+      unmount(); // 각 반복이 끝날 때 DOM 정리
+    }),
+    { numRuns: 50 }
+  );
+});
+```
+
+**여러 컴포넌트를 렌더링하는 경우:**
+
+```typescript
+it('should apply identical styles for link variant regardless of shape', () => {
+  fc.assert(
+    fc.property(shapeArb, (shape) => {
+      const { unmount: unmount1 } = render(
+        <Button variant="link" shape={shape}>Link Button 1</Button>
+      );
+      const { unmount: unmount2 } = render(
+        <Button variant="link" shape="fill">Link Button 2</Button>
+      );
+
+      // 검증 로직...
+
+      // 모든 렌더링된 컴포넌트 정리
+      unmount1();
+      unmount2();
+    }),
+    { numRuns: 50 }
+  );
+});
+```
+
+> **참고**: 일반 Unit 테스트에서는 Testing Library가 각 `it` 블록 후 자동으로 cleanup하므로 `unmount()`를 명시적으로 호출할 필요가 없습니다. Property-Based 테스트에서만 이 패턴이 필요합니다.
+
+### 9. 테스트 문서화
 
 테스트 파일 상단에 테스트 종류와 목적을 명시:
 

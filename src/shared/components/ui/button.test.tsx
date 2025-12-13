@@ -106,11 +106,14 @@ describe('Property 4: Props 전달', () => {
     fc.assert(
       fc.property(fc.string({ minLength: 1, maxLength: 50 }), (label) => {
         // 무작위 label 값으로 Button 렌더링
-        render(<Button aria-label={label}>Click me</Button>);
+        const { unmount } = render(
+          <Button aria-label={label}>Click me</Button>
+        );
         const button = screen.getByRole('button');
 
         // aria-label 속성이 전달된 값과 동일한지 확인
         expect(button).toHaveAttribute('aria-label', label);
+        unmount();
       }),
       { numRuns: 50 }
     );
@@ -136,7 +139,7 @@ describe('Property 4: Props 전달', () => {
         variantArb,
         shapeArb,
         (customClass, variant, shape) => {
-          render(
+          const { unmount } = render(
             <Button variant={variant} shape={shape} className={customClass}>
               Click me
             </Button>
@@ -145,6 +148,7 @@ describe('Property 4: Props 전달', () => {
 
           // 전달한 className이 button의 className에 포함되어 있는지 확인
           expect(button.className).toContain(customClass);
+          unmount();
         }
       ),
       { numRuns: 50 }
@@ -173,7 +177,7 @@ describe('Property 4: Props 전달', () => {
         // 무작위 name 값
         fc.string({ minLength: 1, maxLength: 20 }),
         (type, name) => {
-          render(
+          const { unmount } = render(
             <Button type={type} name={name}>
               Click me
             </Button>
@@ -183,6 +187,7 @@ describe('Property 4: Props 전달', () => {
           // type과 name 속성이 올바르게 전달되었는지 확인
           expect(button).toHaveAttribute('type', type);
           expect(button).toHaveAttribute('name', name);
+          unmount();
         }
       ),
       { numRuns: 50 }
@@ -226,7 +231,7 @@ describe('Property 2: 일관된 기본 스타일 적용', () => {
   it('should apply consistent base styles for non-link variants', () => {
     fc.assert(
       fc.property(nonLinkVariantArb, shapeArb, (variant, shape) => {
-        render(
+        const { unmount } = render(
           <Button variant={variant} shape={shape}>
             Test Button
           </Button>
@@ -243,6 +248,7 @@ describe('Property 2: 일관된 기본 스타일 적용', () => {
 
         // Requirements 3.4: 일관된 폰트 굵기
         expect(className).toContain('font-medium');
+        unmount();
       }),
       { numRuns: 50 }
     );
@@ -286,7 +292,7 @@ describe('Property 1: Link variant는 shape을 무시함', () => {
     fc.assert(
       fc.property(shapeArb, (shape) => {
         // 테스트할 shape으로 link variant 버튼 렌더링
-        render(
+        const { unmount: unmountLinkVariantButton } = render(
           <Button variant="link" shape={shape}>
             Link Button 1
           </Button>
@@ -295,7 +301,7 @@ describe('Property 1: Link variant는 shape을 무시함', () => {
         const className1 = button1.className;
 
         // 비교 대상: fill shape의 link variant 버튼
-        render(
+        const { unmount: unmountLinkFillButton } = render(
           <Button variant="link" shape="fill">
             Link Button 2
           </Button>
@@ -316,6 +322,8 @@ describe('Property 1: Link variant는 shape을 무시함', () => {
 
         // link variant는 투명 배경이어야 함
         expect(className1).toContain('bg-transparent');
+        unmountLinkVariantButton();
+        unmountLinkFillButton();
       }),
       { numRuns: 50 }
     );
@@ -357,7 +365,7 @@ describe('Property 3: 다크 모드 클래스 포함', () => {
   it('should include dark mode classes for all variant/shape combinations', () => {
     fc.assert(
       fc.property(variantArb, shapeArb, (variant, shape) => {
-        render(
+        const { unmount } = render(
           <Button variant={variant} shape={shape}>
             Test Button
           </Button>
@@ -368,6 +376,7 @@ describe('Property 3: 다크 모드 클래스 포함', () => {
         // dark: 접두사가 붙은 클래스가 최소 1개 이상 존재하는지 확인
         // 정규식 /dark:/는 "dark:"라는 문자열이 포함되어 있는지 검사
         expect(className).toMatch(/dark:/);
+        unmount();
       }),
       { numRuns: 50 }
     );
@@ -394,11 +403,12 @@ describe('Button Component - Unit Tests', () => {
    * 이 테스트는 가장 기본적인 기능인 "버튼에 내용이 표시되는가"를 검증합니다.
    */
   it('renders children correctly', () => {
-    render(<Button>Click me</Button>);
+    const { unmount } = render(<Button>Click me</Button>);
 
     // screen.getByRole('button')은 접근성 역할로 요소를 찾습니다
     // 이 방식은 실제 사용자가 스크린 리더로 페이지를 탐색하는 것과 유사합니다
     expect(screen.getByRole('button')).toHaveTextContent('Click me');
+    unmount();
   });
 
   /**
@@ -411,7 +421,7 @@ describe('Button Component - Unit Tests', () => {
    * (Requirements 1.5, 2.3)
    */
   it('applies default variant and shape when not specified', () => {
-    render(<Button>Default Button</Button>);
+    const { unmount } = render(<Button>Default Button</Button>);
     const button = screen.getByRole('button');
 
     // default variant + fill shape의 스타일 확인
@@ -419,6 +429,7 @@ describe('Button Component - Unit Tests', () => {
     // text-gray-900: 어두운 텍스트 색상
     expect(button.className).toContain('bg-gray-100');
     expect(button.className).toContain('text-gray-900');
+    unmount();
   });
 
   /**
@@ -431,7 +442,7 @@ describe('Button Component - Unit Tests', () => {
    * (Requirements 5.3)
    */
   it('applies disabled styles when disabled', () => {
-    render(<Button disabled>Disabled</Button>);
+    const { unmount } = render(<Button disabled>Disabled</Button>);
     const button = screen.getByRole('button');
 
     // disabled 상태 스타일 확인
@@ -439,6 +450,7 @@ describe('Button Component - Unit Tests', () => {
     // disabled:cursor-not-allowed: 마우스 커서가 금지 아이콘으로 변경
     expect(button.className).toContain('disabled:opacity-50');
     expect(button.className).toContain('disabled:cursor-not-allowed');
+    unmount();
   });
 
   /**
@@ -451,7 +463,7 @@ describe('Button Component - Unit Tests', () => {
     const handleClick = vi.fn();
     const user = userEvent.setup();
 
-    render(
+    const { unmount } = render(
       <Button disabled onClick={handleClick}>
         Disabled
       </Button>
@@ -460,5 +472,6 @@ describe('Button Component - Unit Tests', () => {
     await user.click(screen.getByRole('button'));
 
     expect(handleClick).not.toHaveBeenCalled();
+    unmount();
   });
 });

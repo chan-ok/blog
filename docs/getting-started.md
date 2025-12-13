@@ -65,8 +65,8 @@ pnpm dev
 pnpm dev:server
 ```
 
-- Next.js: http://localhost:3000
-- Netlify Dev: http://localhost:8888
+- Next.js: <http://localhost:3000>
+- Netlify Dev: <http://localhost:8888>
 
 ## 주요 명령어
 
