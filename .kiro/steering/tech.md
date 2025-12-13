@@ -88,3 +88,37 @@ pnpm build-storybook  # 배포용 Storybook 빌드
 - **Type**: ESM (ES Modules)
 - **Target**: ES2017
 - **Module Resolution**: bundler
+
+## 기술 선택 시 주의사항 (과거 시행착오)
+
+### MDX 렌더링
+
+> next/mdx는 내부 폴더 import 방식에서만 `set-mdx-components.ts`가 적용됨
+
+- 원격 파일(GitHub Raw URL) 로딩 시 **next-mdx-remote-client** 사용 필수
+- next/mdx는 원격 방식에서 동작하지 않음
+
+### 상태 관리 & 영속성
+
+> proxy.ts를 거치는 과정에서 쿠키를 읽지 못하는 문제 발생
+
+| 용도            | 권장 방식              | 비권장                |
+| --------------- | ---------------------- | --------------------- |
+| 테마 (다크모드) | Zustand + localStorage | 쿠키                  |
+| 언어 설정       | URL 경로 + Zustand     | NEXT_LOCALE 쿠키 단독 |
+
+- SSR 환경에서 쿠키 접근이 필요하면 proxy.ts 로직 확인 필수
+
+### 보안
+
+> Cloudflare Turnstile 없이 배포 시 AI 봇 스팸 발생 경험
+
+- Contact 폼 등 외부 입력이 있는 기능은 **봇 방지를 초기부터 적용**
+- Resend 요금 폭탄 방지를 위해 rate limiting 고려
+
+### 초기 설정
+
+> 앞으로 사용할 예정인 라이브러리 환경설정에 과도한 시간 투자 경험
+
+- 초반에는 필요한 환경설정만 빠르게 구축
+- 실행 및 배포 가능한 구조를 먼저 만들고, 이후 점진적으로 추가

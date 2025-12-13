@@ -324,8 +324,21 @@ blog-content/
 - **ISR**: 필요 시 Incremental Static Regeneration 도입
 - **DB**: 필요 시 조회수, 좋아요 등을 위한 경량 DB 추가 (Supabase, PlanetScale)
 
+## Kiro Steering 규칙
+
+프로젝트의 AI 협업을 위한 steering 규칙이 `.kiro/steering/` 디렉토리에 정의되어 있습니다.
+
+| 파일           | 역할                                          |
+| -------------- | --------------------------------------------- |
+| `product.md`   | 제품 개요, 아키텍처, 주요 기능, 과거 시행착오 |
+| `structure.md` | FSD 아키텍처, 디렉토리 구조, 파일 명명 규칙   |
+| `tech.md`      | 기술 스택, 주요 명령어, 기술 선택 시 주의사항 |
+
+각 steering 파일에는 **과거 시행착오** 섹션이 포함되어 있어, AI가 동일한 실수를 반복하지 않도록 가이드합니다.
+
 ## 관련 문서
 
+- [의사결정 로그](./decision-log.md) - 인간-AI 협업 의사결정 추적
 - [개발 규칙](./rule.md) - 핵심 개발 원칙
 - [코드 스타일 가이드](./code-style.md) - 코드 작성 규칙
 - [배포 가이드](./deployment.md) - Netlify 배포 설정
