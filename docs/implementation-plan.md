@@ -175,6 +175,25 @@ blog (main push)
 - 기존 문서 업데이트 및 개선
 - AI 체크리스트 이름 변경 (`AI-VALIDATION-CHECKLIST.md` → `ai-checklist.md`)
 
+#### 15. Button 컴포넌트
+
+- Button 컴포넌트 구현 (`src/shared/components/ui/button.tsx`)
+  - 4가지 variant: primary, default, danger, link
+  - 2가지 shape: fill, outline
+  - 다크 모드 지원
+  - 접근성 고려 (focus-visible, disabled 상태)
+- Property-Based 테스트 도입 (fast-check)
+- Storybook 스토리 작성
+- Kiro Spec 문서화
+
+#### 16. UI 컴포넌트 디렉토리 재구성
+
+- `shared/ui/` → `shared/components/`로 마이그레이션
+  - `toggle/locale-toggle/` 이동
+  - `toggle/theme-toggle/` 이동
+  - `turnstile/` 이동
+- 새로운 `ui/` 디렉토리에 공통 UI 컴포넌트 배치
+
 ## 기술적 고려사항
 
 ### FSD 아키텍처

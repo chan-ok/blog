@@ -874,7 +874,9 @@ await page.pause();
 
 ### 작성 완료
 
-- [x] `src/shared/components/ui/button.test.tsx` - Button 컴포넌트 (Property-Based + Unit)
+- [x] `src/shared/components/ui/button.test.tsx` - Button 컴포넌트 (Property-Based + Unit) (2025-12-13 완료)
+  - Property-Based 테스트: Props 전달, 기본 스타일, Link variant 규칙, 다크 모드
+  - Unit 테스트: children 렌더링, 기본값 적용, disabled 상태
 
 ### Phase 1: 유틸리티 & 비즈니스 로직
 

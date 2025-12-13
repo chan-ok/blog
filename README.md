@@ -8,7 +8,7 @@ Next.js 16 기반의 개인 개발 블로그로, **Feature-Sliced Design(FSD)** 
 
 | 항목       | 내용                            |
 | ---------- | ------------------------------- |
-| 프레임워크 | Next.js 16.0.7 + React 19.2.1   |
+| 프레임워크 | Next.js 16.0.10 + React 19.2.3  |
 | 스타일링   | Tailwind CSS v4                 |
 | 상태 관리  | Zustand                         |
 | 테스팅     | Vitest + Playwright + Storybook |
@@ -42,8 +42,8 @@ graph LR
 
 | 도구    | 버전      | 확인 명령어 |
 | ------- | --------- | ----------- |
-| Node.js | 20.x 이상 | `node -v`   |
-| pnpm    | 9.x 이상  | `pnpm -v`   |
+| Node.js | 22.x 이상 | `node -v`   |
+| pnpm    | 10.x 이상 | `pnpm -v`   |
 
 ### 설치 및 실행
 
@@ -106,9 +106,18 @@ blog/
 ├── src/
 │   ├── app/           # Next.js App Router (라우팅)
 │   ├── features/      # 비즈니스 기능 (about, contact, post)
-│   ├── entities/      # 비즈니스 엔티티 (mdx)
+│   ├── entities/      # 비즈니스 엔티티 (markdown)
 │   ├── widgets/       # 복합 UI (header, footer)
-│   └── shared/        # 공유 리소스 (hooks, components, config)
+│   └── shared/        # 공유 리소스
+│       ├── components/  # 복합 컴포넌트 (유기체 이상)
+│       │   ├── toggle/    # 토글 (locale, theme)
+│       │   ├── turnstile/ # Cloudflare Turnstile
+│       │   └── ui/        # 순수 UI (원자, 분자)
+│       ├── config/      # 설정 (API 등)
+│       ├── hooks/       # 커스텀 훅
+│       ├── providers/   # Context providers
+│       ├── stores/      # Zustand stores
+│       └── types/       # TypeScript 타입
 ├── netlify/functions/ # 서버리스 함수
 ├── e2e/               # E2E 테스트
 └── docs/              # 📚 개발 문서
