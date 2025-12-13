@@ -1,18 +1,16 @@
 # PATH 설정 (IDE에서 커밋 시 node/pnpm을 찾을 수 있도록)
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 export PATH="$HOME/Library/pnpm:$PATH"
 
 # TypeScript 타입 체크
-echo "\n\n🔍 Running TypeScript type check..."
+echo "🔍 Running TypeScript type check..."
 pnpm tsc --noEmit
 
 # 스테이징 파일 검사 (format, lint)
-echo "\n\n🔍 Running pre-commit..."
+echo "Running lint-staged..."
 pnpm exec lint-staged
 
-
 # 빌드 검증 (선택사항 - 시간이 오래 걸릴 수 있음)
-# echo "\n\n🏗️ Running build check..."
-# pnpm build
-# echo "[SUCCESS] 🏗️ Running build check"
+echo "Running build check..."
+pnpm build
