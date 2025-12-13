@@ -36,23 +36,23 @@
 - [x] 6. Checkpoint - Storybook 확인
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 7. Storybook 통합 테스트 (선택적)
-  - [ ] 7.1 Storybook Vitest 통합 테스트
+- [x] 7. Storybook 통합 테스트 (선택적)
+  - [x] 7.1 Storybook Vitest 통합 테스트
     - @storybook/addon-vitest를 활용한 컴포넌트 테스트
     - 접근성(a11y) 테스트 (@storybook/addon-a11y)
     - _Requirements: 5.1, 5.2_
-  - [ ] 7.2 Property 테스트: Props 전달 검증
+  - [x] 7.2 Property 테스트: Props 전달 검증
     - **Property 4: Props 전달**
     - **Validates: Requirements 5.2, 6.2, 6.3**
-  - [ ] 7.3 Property 테스트: 일관된 기본 스타일 적용
+  - [x] 7.3 Property 테스트: 일관된 기본 스타일 적용
     - **Property 2: 일관된 기본 스타일 적용**
     - **Validates: Requirements 3.1, 3.2, 3.4**
-  - [ ] 7.4 Property 테스트: Link variant는 shape을 무시함
+  - [x] 7.4 Property 테스트: Link variant는 shape을 무시함
     - **Property 1: Link variant는 shape을 무시함**
     - **Validates: Requirements 2.4**
-  - [ ] 7.5 Property 테스트: 다크 모드 클래스 포함
+  - [x] 7.5 Property 테스트: 다크 모드 클래스 포함
     - **Property 3: 다크 모드 클래스 포함**
     - **Validates: Requirements 4.1**
 
-- [ ] 8. Final Checkpoint - 모든 테스트 통과 확인
+- [x] 8. Final Checkpoint - 모든 테스트 통과 확인
   - Ensure all tests pass, ask the user if questions arise.
