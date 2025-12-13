@@ -170,7 +170,7 @@ blog/
 - 📰 **Posts 페이지** - blog-content 리포지터리 연동
 - 💬 **Contact 폼** - Zod 검증 + Turnstile + Resend
 - 🌙 **다크 모드** - Zustand + LocalStorage 지속성
-- 🔍 **언어 선택기** - 쿠키 기반 (NEXT_LOCALE)
+- 🔍 **언어 선택기** - URL 경로 기반 + Zustand
 
 ### 📋 예정 기능
 
