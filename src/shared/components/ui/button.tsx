@@ -19,7 +19,7 @@ const baseStyles = [
   'font-medium',
   'transition-colors duration-200',
   'outline-none select-none cursor-pointer',
-  'focus-visible:ring-2 focus-visible:ring-offset-2',
+  'focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900',
   'disabled:opacity-50 disabled:cursor-not-allowed',
 ];
 
