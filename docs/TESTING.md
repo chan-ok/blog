@@ -474,7 +474,7 @@ test.describe('Contact Form', () => {
 
 **도구**: Storybook + Chromatic
 
-**작성 위치**: `src/stories/` 또는 컴포넌트와 같은 디렉토리에 `.stories.tsx`
+**작성 위치**: 컴포넌트와 같은 디렉토리에 `.stories.tsx`
 
 **작성 예시**:
 

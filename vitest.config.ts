@@ -16,7 +16,6 @@ export default defineConfig({
     },
   },
   test: {
-    include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     exclude: ['**/node_modules/**', '**/.git/**'],
     projects: [
       // Unit tests project
@@ -24,13 +23,13 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'unit',
-          environment: 'jsdom',
           include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
-          exclude: ['**/node_modules/**', '**/.git/**'],
+          environment: 'jsdom',
           setupFiles: ['./vitest.setup.ts'],
         },
       },
       // Storybook tests project
+      // Note: Storybook 8.5+ handles test.include internally via the stories field in .storybook/main.ts
       {
         extends: true,
         plugins: [

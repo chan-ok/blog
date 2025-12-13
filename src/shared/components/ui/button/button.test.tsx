@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fc from 'fast-check';
 
-import { Button, type ButtonVariant, type ButtonShape } from './button';
+import { Button, type ButtonVariant, type ButtonShape } from '.';
 
 /**
  * ============================================================================
