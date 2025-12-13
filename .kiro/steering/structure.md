@@ -79,7 +79,7 @@ Next.js App Router 페이지와 레이아웃. 다국어 지원을 위해 `[local
 
 여러 기능이나 공유 컴포넌트를 결합한 복합 컴포넌트 (예: Header, Footer).
 
-> **Note**: Storybook stories는 각 컴포넌트와 함께 배치하거나 필요 시 `src/stories/` 디렉토리를 생성하여 관리합니다.
+> **Note**: Storybook stories는 각 컴포넌트와 함께 배치
 
 ## 파일 명명 규칙
 
@@ -102,7 +102,7 @@ import { config } from '@/shared/config';
 
 - 소스 파일과 함께 배치된 유닛 테스트: `component.test.tsx`
 - `e2e/` 디렉터리의 E2E 테스트
-- `src/stories/`의 Storybook stories 또는 컴포넌트와 함께 배치
+- 컴포넌트와 함께 배치
 
 ## 설정 파일
 

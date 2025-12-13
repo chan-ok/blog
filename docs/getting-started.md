@@ -65,8 +65,8 @@ pnpm dev
 pnpm dev:server
 ```
 
-- Next.js: http://localhost:3001
-- Netlify Dev: http://localhost:8888
+- Next.js: <http://localhost:3000>
+- Netlify Dev: <http://localhost:8888>
 
 ## 주요 명령어
 
@@ -225,7 +225,7 @@ GitHub에서 Pull Request를 생성합니다.
 
 ```bash
 # 포트 사용 중인 프로세스 확인
-lsof -i :3001
+lsof -i :3000
 
 # 프로세스 종료
 kill -9 <PID>

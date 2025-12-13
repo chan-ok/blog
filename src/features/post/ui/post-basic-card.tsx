@@ -1,7 +1,7 @@
 'use client';
 
 import { Frontmatter } from '@/entities/markdown/model/markdown.schema';
-import { Button } from '@base-ui/react';
+import { Button } from '@/shared/components/ui/button';
 import { format } from 'date-fns';
 import { Link2 } from 'lucide-react';
 import Image from 'next/image';
@@ -34,8 +34,9 @@ export default function PostBasicCard({
         <div className="flex-1">{summary}</div>
         <div className="">
           <Button
+            variant="primary"
+            className="place-self-end text-sm"
             render={<Link href={['/posts', ...path].join('/')} />}
-            className="flex items-center place-self-end gap-2 px-4 py-2 text-sm text-white rounded bg-zinc-600 hover:bg-zinc-700 dark:bg-zinc-700 dark:hover:bg-zinc-600"
           >
             <Link2 size={16} />
             Read More

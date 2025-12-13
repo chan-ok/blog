@@ -2,6 +2,43 @@
 
 모든 주요 변경사항이 이 파일에 문서화됩니다.
 
+## [2025-12-13]
+
+### 추가
+
+- Button 컴포넌트 구현 (`src/shared/components/ui/button.tsx`)
+  - 4가지 variant (primary, default, danger, link)
+  - 2가지 shape (fill, outline)
+  - 다크 모드 지원
+  - 접근성 고려 (focus-visible, disabled 상태)
+- Button 컴포넌트 테스트 (`button.test.tsx`)
+  - Property-Based 테스트 (fast-check) 도입
+  - Unit 테스트 작성
+- Button 컴포넌트 Storybook 스토리 (`button.stories.tsx`)
+- Vitest 테스트 환경 설정 파일 추가 (`vitest.setup.ts`)
+- Button 컴포넌트 Kiro Spec 추가 (`.kiro/specs/button-component/`)
+
+### 리팩토링
+
+- UI 컴포넌트 디렉토리 재구성 (`shared/ui/` → `shared/components/`)
+  - `locale-toggle` → `shared/components/toggle/locale-toggle/`
+  - `theme-toggle` → `shared/components/toggle/theme-toggle/`
+  - `turnstile` → `shared/components/turnstile/`
+
+### 수정
+
+- Vitest 설정 개선 (`vitest.config.ts`)
+- Storybook preview 설정 업데이트
+- Husky pre-commit 훅 업데이트
+- pnpm workspace 설정 업데이트
+
+### 제거
+
+- E2E 예제 테스트 파일 삭제 (`e2e/example.spec.ts`)
+- Kiro hooks 정리:
+  - `auto-storybook.kiro.hook` 삭제
+  - `code-quality-check.kiro.hook` 삭제
+
 ## [2025-12-12]
 
 ### 추가
