@@ -4,6 +4,14 @@
 
 이 프로젝트는 계층화된 아키텍처와 함께 **Feature-Sliced Design (FSD)** 원칙을 따릅니다.
 
+### FSD 적용 원칙 (시행착오에서 배운 점)
+
+> 초기에 FSD 전체 레이어를 한 번에 적용하려다 각 레이어에 무엇을 넣어야 할지 몰라 시간이 오래 걸렸음
+
+1. **features/ 우선 시작**: 새 기능은 일단 `features/`에서 구현
+2. **점진적 분리**: 역할이 광범위해지거나 응집되면 `widgets/`, `shared/`, `entities/`로 이동
+3. **과도한 초기 설계 지양**: 먼저 동작하는 코드를 만든 후 리팩토링
+
 ## 디렉터리 구조
 
 ```
@@ -113,3 +121,23 @@ import { config } from '@/shared/config';
 - `tsconfig.json` - TypeScript 컴파일러 옵션
 - `vitest.config.ts` - Vitest 테스트 설정
 - `playwright.config.ts` - Playwright E2E 테스트 설정
+
+## 과거 시행착오
+
+### 디렉토리 구조 변경 이력
+
+> components → ui → components 등 여러 번 변경이 있었음
+
+현재 구조가 최종 결정이며, 변경 시 아래 원칙을 따를 것:
+
+- `shared/components/ui/`: 순수 프레젠테이션 컴포넌트 (Button, Input 등)
+- `shared/components/`: 상태/로직을 포함하는 복합 컴포넌트 (toggle, turnstile 등)
+
+### 새 기능 추가 시 권장 흐름
+
+```
+1. features/{feature-name}/ui/ 에서 시작
+2. 여러 feature에서 사용 → shared/로 이동
+3. 레이아웃 수준 → widgets/로 이동
+4. 도메인 모델 → entities/로 이동
+```
