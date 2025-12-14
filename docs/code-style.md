@@ -110,7 +110,7 @@ import { z } from 'zod';
 import { create } from 'zustand';
 
 // 3. 내부 모듈 (절대 경로)
-import { Button } from '@/shared/components/button';
+import Button from '@/shared/components/ui/button';
 import { formatDate } from '@/shared/lib/date-utils';
 import { useTheme } from '@/shared/hooks/use-theme';
 

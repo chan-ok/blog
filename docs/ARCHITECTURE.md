@@ -14,8 +14,8 @@
 │   (Next.js App)     │ ◄─────  │  (MDX Contents)      │
 │                     │  fetch  │                      │
 │   - UI/UX           │         │  - Posts (ko/ja/en)  │
-│   - 렌더링           │         │  - About pages       │
-│   - 배포             │         │  - index.json        │
+│   - 렌더링            │         │  - index.json        │
+│   - 배포             │         │                      │
 └─────────────────────┘         └──────────────────────┘
          │                                │
          │ push to main                   │ push to main
@@ -66,6 +66,9 @@ src/
 │
 ├── entities/              # 📦 비즈니스 엔티티 (Entity Layer)
 │   └── markdown/         # 마크다운 렌더링 엔티티
+│       ├── model/        # 스키마 정의
+│       ├── ui/           # Typography, Code 컴포넌트
+│       └── util/         # 마크다운 처리 유틸리티
 │
 ├── widgets/               # 🧩 복합 UI 컴포넌트 (Widget Layer)
 │   ├── footer.tsx        # 푸터
@@ -73,12 +76,15 @@ src/
 │
 ├── shared/                # 🛠️ 공유 리소스 (Shared Layer)
 │   ├── components/       # 독립적인 복합 컴포넌트 (Atomic Design: 유기체 이상)
+│   │   ├── reply/        # Giscus 댓글 시스템
 │   │   ├── toggle/       # 토글 컴포넌트 (locale, theme) - 상태/로직 포함
 │   │   ├── turnstile/    # Cloudflare Turnstile - 외부 서비스 연동
 │   │   └── ui/           # 순수 UI 컴포넌트 (Atomic Design: 원자, 분자)
-│   │       └── button.tsx  # Button - 기능 없는 프레젠테이션 컴포넌트
-│   ├── config/           # 설정 (API 등)
-│   │   └── api/          # API 설정
+│   │       ├── button/   # Button 컴포넌트
+│   │       └── link/     # Link 컴포넌트
+│   ├── config/           # 설정 (API, i18n 등)
+│   │   ├── api/          # API 설정
+│   │   └── i18n/         # 다국어 설정 (i18next 기반)
 │   ├── hooks/            # 커스텀 훅 (useBreakpoint, useResize 등)
 │   ├── providers/        # Context providers (theme-provider, locale-provider)
 │   ├── stores/           # Zustand stores (theme-store, locale-store)
@@ -164,7 +170,7 @@ sequenceDiagram
     "updatedAt": "2025-12-06T00:00:00.000Z",
     "tags": ["tag1", "tag2"],
     "published": true,
-    "path": "/posts/post-slug"
+    "path": "/post-slug"
   }
 ]
 ```
@@ -205,16 +211,13 @@ graph TD
 ```
 blog-content/
 ├── ko/
-│   ├── posts/
-│   ├── about.md
+    ├── (posts.md)
 │   └── index.json (자동 생성)
 ├── ja/
-│   ├── posts/
-│   ├── about.md
+    ├── (posts.md)
 │   └── index.json (자동 생성)
 └── en/
-    ├── posts/
-    ├── about.md
+    ├── (posts.md)
     └── index.json (자동 생성)
 ```
 

@@ -6,10 +6,12 @@ import PostBasicCard from './post-basic-card';
 import PostSimpleCard from './post-simple-card';
 
 interface RecentPostBlockProps {
+  locale: LocaleType;
   postsPromise: Promise<PagingPosts>;
 }
 
 export default function RecentPostBlock({
+  locale,
   postsPromise,
 }: RecentPostBlockProps) {
   const pagingPosts = use(postsPromise);
@@ -22,9 +24,21 @@ export default function RecentPostBlock({
         {posts.length > 0 ? (
           posts.map((post, i) => {
             if (i === 0) {
-              return <PostBasicCard key={post.id} {...post} />;
+              return (
+                <PostBasicCard
+                  key={post.path.join('/')}
+                  locale={locale}
+                  {...post}
+                />
+              );
             } else {
-              return <PostSimpleCard key={post.id} {...post} />;
+              return (
+                <PostSimpleCard
+                  key={post.path.join('/')}
+                  locale={locale}
+                  {...post}
+                />
+              );
             }
           })
         ) : (

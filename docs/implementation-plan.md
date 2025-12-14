@@ -157,6 +157,9 @@ blog (main push)
 - MDX 의존성 제거 및 마크다운 처리 단순화
 - CSS 모듈을 Tailwind 유틸리티 클래스로 마이그레이션 (locale-toggle)
 - 폰트 설정 인라인화 (font.ts 삭제)
+- Typography 컴포넌트 분리 (h1-h5 heading)
+- Code 컴포넌트 분리 (인라인/블록 코드 렌더링)
+- 다크모드 지원 및 스타일 개선
 
 #### 13. About 페이지 개선
 
@@ -193,6 +196,25 @@ blog (main push)
   - `toggle/theme-toggle/` 이동
   - `turnstile/` 이동
 - 새로운 `ui/` 디렉토리에 공통 UI 컴포넌트 배치
+
+#### 17. i18next 기반 다국어 시스템
+
+- i18n 설정 구현 (`src/shared/config/i18n/`)
+  - 타입 안전한 번역 키 시스템 (Zod 스키마 기반)
+  - 언어별 JSON 파일 (ko.json, en.json, ja.json)
+  - 번역 키 일관성 테스트
+- locale-provider에 i18next 통합
+- UI 다국어 지원 설계 문서 작성 (`.kiro/specs/ui-i18n/`)
+
+#### 18. Giscus 댓글 시스템
+
+- Giscus 댓글 컴포넌트 구현 (`src/shared/components/reply/`)
+- GitHub Discussions 기반 댓글 시스템 통합
+
+#### 19. Link 컴포넌트
+
+- 타입 안전한 Link 컴포넌트 구현 (`src/shared/components/ui/link/`)
+- React key 처리 및 타입 안전성 개선
 
 ## 기술적 고려사항
 

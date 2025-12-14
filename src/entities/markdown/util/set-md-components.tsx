@@ -1,21 +1,16 @@
 import type { MDXComponents } from 'mdx/types';
+import Code from '../ui/Code';
+import Typography from '../ui/Typography';
 
 export default function setMdxComponents(
   components?: MDXComponents
 ): MDXComponents {
   return {
-    h1: ({ children }) => (
-      <h1 className="mb-4 text-4xl font-bold">{children}</h1>
-    ),
-    h2: ({ children }) => (
-      <h2 className="mt-6 mb-3 text-3xl font-bold">{children}</h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="mt-4 mb-2 text-2xl font-semibold">{children}</h3>
-    ),
-    h4: ({ children }) => (
-      <h4 className="mt-3 mb-2 text-xl font-semibold">{children}</h4>
-    ),
+    h1: Typography.h1,
+    h2: Typography.h2,
+    h3: Typography.h3,
+    h4: Typography.h4,
+    h5: Typography.h5,
     p: ({ children }) => <p className="mb-4">{children}</p>,
     ul: ({ children }) => (
       <ul className="mb-4 list-inside list-disc">{children}</ul>
@@ -34,18 +29,7 @@ export default function setMdxComponents(
         {children}
       </pre>
     ),
-    code: ({ children, className }) => {
-      const isInline = !className;
-      return isInline ? (
-        <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-          {children}
-        </code>
-      ) : (
-        <code className={`font-mono text-sm ${className || ''}`}>
-          {children}
-        </code>
-      );
-    },
+    code: Code,
     ...components,
   };
 }

@@ -1,7 +1,12 @@
+'use client';
+
 import Image from 'next/image';
 import { Github, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function AboutBlock() {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full flex items-center justify-start gap-8">
       <div>
@@ -15,17 +20,15 @@ export default function AboutBlock() {
         />
       </div>
       <div className="text-left">
-        <h2 className="mb-2 text-2xl font-bold">Hi, There! 👋</h2>
-        <p className="text-gray-600 dark:text-gray-300">
-          사용자 경험에 집중하는 프론트엔드 개발자입니다.
-          <br />
-          직관적인 코드와 명확한 구조를 지향합니다.
+        <h2 className="mb-2 text-2xl font-bold">{t('about.greeting')}</h2>
+        <p className="text-gray-600 dark:text-gray-300 whitespace-pre-line">
+          {t('about.introduction')}
         </p>
         <div className="mt-3 flex gap-4 text-sm text-gray-500 dark:text-gray-400">
           <a
             href="mailto:kiss.yagni.dry@gmail.com"
             className="flex items-center hover:text-gray-700 dark:hover:text-gray-200"
-            aria-label="이메일 보내기"
+            aria-label={t('about.emailLabel')}
           >
             <Mail size={16} />
           </a>
@@ -34,7 +37,7 @@ export default function AboutBlock() {
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-gray-700 dark:hover:text-gray-200"
-            aria-label="GitHub 프로필 보기"
+            aria-label={t('about.githubLabel')}
           >
             <Github size={16} />
           </a>

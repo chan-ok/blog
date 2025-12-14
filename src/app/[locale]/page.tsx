@@ -17,7 +17,7 @@ export default async function AboutPage({ params }: AboutProps) {
     <div className="flex flex-col min-h-screen  gap-8">
       <AboutBlock />
       <Suspense fallback={<RecentPostBlockSkeleton />}>
-        <RecentPostBlock postsPromise={postsPromise} />
+        <RecentPostBlock locale={locale} postsPromise={postsPromise} />
       </Suspense>
     </div>
   );

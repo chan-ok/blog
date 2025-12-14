@@ -164,20 +164,20 @@ blog/
 ### ✅ 구현 완료
 
 - 🚀 **Netlify 배포** - 자동 빌드 및 배포
-- 🌐 **다국어 지원** - URL 기반 (한국어, 일본어, 영어)
+- 🌐 **다국어 지원** - URL 기반 (한국어, 일본어, 영어) + i18next UI 번역
 - 🎨 **MDX 렌더링** - 코드 하이라이팅 포함
 - 📝 **About 페이지** - 마크다운 기반
 - 📰 **Posts 페이지** - blog-content 리포지터리 연동
 - 💬 **Contact 폼** - Zod 검증 + Turnstile + Resend
 - 🌙 **다크 모드** - Zustand + LocalStorage 지속성
-- 🔍 **언어 선택기** - 쿠키 기반 (NEXT_LOCALE)
+- 🔍 **언어 선택기** - URL 경로 기반 + Zustand
+- 💬 **댓글 시스템** - Giscus (GitHub Discussions 기반)
 
 ### 📋 예정 기능
 
 - 📚 **마크다운 고급화** - 코드 블록 개선, TOC, Reading time
 - 🏠 **홈화면 디자인 개선** - 최신/인기 포스트, 구독 폼
 - 🔎 **검색 기능** - 클라이언트 사이드 또는 Algolia
-- 💬 **댓글 시스템** - utterances/giscus
 
 ## 🤖 Kiro Agent Hooks
 

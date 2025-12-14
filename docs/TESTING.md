@@ -322,7 +322,7 @@ describe('Property: 다크 모드 클래스 포함', () => {
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button } from './button';
+import Button from './button';
 
 describe('Button Component - Unit Tests', () => {
   it('renders children correctly', () => {
@@ -481,7 +481,7 @@ test.describe('Contact Form', () => {
 ```typescript
 // src/shared/ui/button.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './button';
+import Button from './button';
 
 const meta = {
   title: 'UI/Button',

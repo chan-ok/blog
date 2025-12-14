@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import fc from 'fast-check';
 
-import { Button } from './button';
+import Button from './button';
 
 describe('해결책: unmount를 호출하면 DOM이 깨끗하게 유지됨', () => {
   /**

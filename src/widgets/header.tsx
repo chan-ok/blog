@@ -1,11 +1,11 @@
 'use client';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
+import Link from '@/shared/components/ui/link';
 import LocaleToggle from '@/shared/components/toggle/locale-toggle';
 import ThemeToggle from '@/shared/components/toggle/theme-toggle';
 import { useDetectScrolled } from '@/shared/hooks/useDetectScrolled';
-import { useLocaleStore } from '@/shared/stores/locale-store';
 
 import { Book, Mail, User } from 'lucide-react';
 import clsx from 'clsx';
@@ -13,7 +13,7 @@ import clsx from 'clsx';
 export default function Header() {
   const pathname = usePathname();
   const scrolled = useDetectScrolled();
-  const locale = useLocaleStore((state) => state.locale);
+  const { t } = useTranslation();
 
   const getNavButtonClasses = (path: string) =>
     clsx(
@@ -48,34 +48,34 @@ export default function Header() {
     <header className="flex items-center justify-center max-w-4xl h-16 sm:h-20 mx-auto">
       <div className={dynamicHeaderClasses}>
         <div className="ms-2">
-          <Link href={`/${locale}`} aria-label="Home" className={titleClasses}>
+          <Link href="/" aria-label="Home" className={titleClasses}>
             Chanho.dev
           </Link>
         </div>
         <div className="flex space-x-1">
           <Link
-            href={`/${locale}/about`}
-            aria-label="About"
-            className={getNavButtonClasses(`/${locale}/about`)}
+            href="/about"
+            aria-label={t('nav.about')}
+            className={getNavButtonClasses('/about')}
           >
             <User size={16} />
-            <span className="hidden md:inline">About</span>
+            <span className="hidden md:inline">{t('nav.about')}</span>
           </Link>
           <Link
-            href={`/${locale}/posts`}
-            aria-label="Posts"
-            className={getNavButtonClasses(`/${locale}/posts`)}
+            href="/posts"
+            aria-label={t('nav.posts')}
+            className={getNavButtonClasses('/posts')}
           >
             <Book size={16} />
-            <span className="hidden md:inline">Posts</span>
+            <span className="hidden md:inline">{t('nav.posts')}</span>
           </Link>
           <Link
-            href={`/${locale}/contact`}
-            aria-label="Contact"
-            className={getNavButtonClasses(`/${locale}/contact`)}
+            href="/contact"
+            aria-label={t('nav.contact')}
+            className={getNavButtonClasses('/contact')}
           >
             <Mail size={16} />
-            <span className="hidden md:inline">Contact</span>
+            <span className="hidden md:inline">{t('nav.contact')}</span>
           </Link>
           <ThemeToggle />
           <LocaleToggle />
