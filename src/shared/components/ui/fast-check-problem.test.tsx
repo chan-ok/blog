@@ -24,7 +24,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import fc from 'fast-check';
 
-import { Button } from './button';
+import Button from './button';
 
 // DEBUG 환경 변수가 설정되어 있을 때만 로그 출력
 const debug = (...args: unknown[]) => {

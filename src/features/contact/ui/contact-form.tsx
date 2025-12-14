@@ -3,10 +3,12 @@ import { TurnstileWidget } from '@/shared/components/turnstile';
 import { Field, Form } from '@base-ui/react';
 import Button from '@/shared/components/ui/button';
 import { useActionState, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type FormState } from '../model/contact-form.schema';
 import { submitFormWithToken } from '../util/submit-form-with-token';
 
 export default function ContactForm() {
+  const { t } = useTranslation();
   const [token, setToken] = useState<string>('');
   const [state, formAction, loading] = useActionState<FormState, FormData>(
     submitFormWithToken(token),
@@ -21,33 +23,35 @@ export default function ContactForm() {
     >
       <Field.Root name="from" className="flex flex-col items-start gap-1">
         <Field.Label className="text-sm font-medium text-gray-900 dark:text-gray-100">
-          From
+          {t('contact.from')}
         </Field.Label>
         <Field.Control
           type="email"
           required
+          placeholder={t('contact.fromPlaceholder')}
           className="h-10 w-full rounded-md border border-gray-200 pl-3.5 text-base text-gray-900 focus:outline-2 focus:-outline-offset-1 focus:outline-blue-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
         />
         <Field.Error className="text-sm text-red-800" />
       </Field.Root>
 
       <Field.Root name="subject" className="flex flex-col items-start gap-1">
-        <Field.Label>Subject</Field.Label>
+        <Field.Label>{t('contact.subject')}</Field.Label>
         <Field.Control
           type="text"
           required
+          placeholder={t('contact.subjectPlaceholder')}
           className="h-10 w-full rounded-md border border-gray-200 pl-3.5 text-base text-gray-900 focus:outline-2 focus:-outline-offset-1 focus:outline-blue-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
         />
         <Field.Error className="text-sm text-red-800" />
       </Field.Root>
 
       <Field.Root name="message" className="flex flex-col items-start gap-1">
-        <Field.Label>Message</Field.Label>
+        <Field.Label>{t('contact.message')}</Field.Label>
         <Field.Control
           render={({ className, ...controlProps }) => (
             <textarea
               {...controlProps}
-              placeholder="Write your message..."
+              placeholder={t('contact.placeholder')}
               className={`h-60 w-full resize-none rounded-md border border-gray-200 p-2 text-base text-gray-900 focus:outline-2 focus:-outline-offset-1 focus:outline-blue-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 ${className ?? ''}`}
             />
           )}
@@ -64,7 +68,11 @@ export default function ContactForm() {
             disabled={!token || loading}
             focusableWhenDisabled
           >
-            {!token ? 'Check Robot' : loading ? 'Sending...' : 'Submit'}
+            {!token
+              ? t('contact.checkRobot')
+              : loading
+                ? t('contact.sending')
+                : t('contact.submit')}
           </Button>
         </div>
         <Field.Error className="text-sm text-red-800" />

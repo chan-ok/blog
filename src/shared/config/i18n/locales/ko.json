@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "about": "소개",
+    "posts": "포스트",
+    "contact": "연락하기"
+  },
+  "about": {
+    "greeting": "안녕하세요! 👋",
+    "introduction": "사용자 경험에 집중하는 프론트엔드 개발자입니다.\n직관적인 코드와 명확한 구조를 지향합니다.",
+    "emailLabel": "이메일 보내기",
+    "githubLabel": "GitHub 프로필 보기"
+  },
+  "contact": {
+    "from": "보내는 분",
+    "fromPlaceholder": "이메일 주소를 입력해주세요...",
+    "subject": "제목",
+    "subjectPlaceholder": "제목을 입력해주세요...",
+    "message": "내용",
+    "placeholder": "메시지를 작성해주세요...",
+    "checkRobot": "로봇 확인",
+    "sending": "전송 중...",
+    "submit": "보내기",
+    "errors": {
+      "required": "필수 항목입니다",
+      "invalidEmail": "올바른 이메일 형식이 아닙니다"
+    }
+  }
+}

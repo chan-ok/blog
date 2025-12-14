@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "about": "紹介",
+    "posts": "記事",
+    "contact": "お問い合わせ"
+  },
+  "about": {
+    "greeting": "こんにちは！👋",
+    "introduction": "ユーザー体験に注力するフロントエンド開発者です。\n直感的なコードと明確な構造を目指しています。",
+    "emailLabel": "メールを送る",
+    "githubLabel": "GitHubプロフィールを見る"
+  },
+  "contact": {
+    "from": "送信者",
+    "fromPlaceholder": "メールアドレスを入力してください...",
+    "subject": "件名",
+    "subjectPlaceholder": "件名を入力してください...",
+    "message": "内容",
+    "placeholder": "メッセージを入力してください...",
+    "checkRobot": "ロボット確認",
+    "sending": "送信中...",
+    "submit": "送信",
+    "errors": {
+      "required": "必須項目です",
+      "invalidEmail": "メールアドレスの形式が正しくありません"
+    }
+  }
+}

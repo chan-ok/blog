@@ -1,11 +1,11 @@
 'use client';
 import { usePathname } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 import Link from '@/shared/components/ui/link';
 import LocaleToggle from '@/shared/components/toggle/locale-toggle';
 import ThemeToggle from '@/shared/components/toggle/theme-toggle';
 import { useDetectScrolled } from '@/shared/hooks/useDetectScrolled';
-import { useLocaleStore } from '@/shared/stores/locale-store';
 
 import { Book, Mail, User } from 'lucide-react';
 import clsx from 'clsx';
@@ -13,7 +13,7 @@ import clsx from 'clsx';
 export default function Header() {
   const pathname = usePathname();
   const scrolled = useDetectScrolled();
-  const locale = useLocaleStore((state) => state.locale);
+  const { t } = useTranslation();
 
   const getNavButtonClasses = (path: string) =>
     clsx(
@@ -55,27 +55,27 @@ export default function Header() {
         <div className="flex space-x-1">
           <Link
             href="/about"
-            aria-label="About"
+            aria-label={t('nav.about')}
             className={getNavButtonClasses('/about')}
           >
             <User size={16} />
-            <span className="hidden md:inline">About</span>
+            <span className="hidden md:inline">{t('nav.about')}</span>
           </Link>
           <Link
             href="/posts"
-            aria-label="Posts"
+            aria-label={t('nav.posts')}
             className={getNavButtonClasses('/posts')}
           >
             <Book size={16} />
-            <span className="hidden md:inline">Posts</span>
+            <span className="hidden md:inline">{t('nav.posts')}</span>
           </Link>
           <Link
             href="/contact"
-            aria-label="Contact"
+            aria-label={t('nav.contact')}
             className={getNavButtonClasses('/contact')}
           >
             <Mail size={16} />
-            <span className="hidden md:inline">Contact</span>
+            <span className="hidden md:inline">{t('nav.contact')}</span>
           </Link>
           <ThemeToggle />
           <LocaleToggle />

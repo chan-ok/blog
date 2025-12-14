@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "about": "About",
+    "posts": "Posts",
+    "contact": "Contact"
+  },
+  "about": {
+    "greeting": "Hello! 👋",
+    "introduction": "I'm a frontend developer focused on user experience.\nI pursue intuitive code and clear structure.",
+    "emailLabel": "Send email",
+    "githubLabel": "View GitHub profile"
+  },
+  "contact": {
+    "from": "From",
+    "fromPlaceholder": "Enter your email address...",
+    "subject": "Subject",
+    "subjectPlaceholder": "Enter subject...",
+    "message": "Message",
+    "placeholder": "Write your message...",
+    "checkRobot": "Check Robot",
+    "sending": "Sending...",
+    "submit": "Submit",
+    "errors": {
+      "required": "This field is required",
+      "invalidEmail": "Invalid email format"
+    }
+  }
+}
