@@ -25,11 +25,19 @@ export default function RecentPostBlock({
           posts.map((post, i) => {
             if (i === 0) {
               return (
-                <PostBasicCard key={post.title} locale={locale} {...post} />
+                <PostBasicCard
+                  key={post.path.join('/')}
+                  locale={locale}
+                  {...post}
+                />
               );
             } else {
               return (
-                <PostSimpleCard key={post.title} locale={locale} {...post} />
+                <PostSimpleCard
+                  key={post.path.join('/')}
+                  locale={locale}
+                  {...post}
+                />
               );
             }
           })

@@ -1,7 +1,9 @@
-import BaseLink from 'next/link';
+import NextLink from 'next/link';
+import type { LinkProps as NextLinkProps } from 'next/link';
+
 import { useLocaleStore } from '@/shared/stores/locale-store';
 
-interface LinkProps {
+interface LinkProps extends Omit<NextLinkProps, 'href'> {
   href: string;
   children?: React.ReactNode;
   className?: string;
@@ -30,8 +32,8 @@ export default function Link({
   }
 
   return (
-    <BaseLink href={localizedHref} className={className} {...props}>
+    <NextLink href={localizedHref} className={className} {...props}>
       {children}
-    </BaseLink>
+    </NextLink>
   );
 }
