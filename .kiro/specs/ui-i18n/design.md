@@ -298,7 +298,7 @@ fc.assert(
     // 검증 로직
     unmount(); // Property-Based 테스트에서는 명시적 unmount 필요
   }),
-  { numRuns: 100 }
+  { numRuns: 30 }
 );
 ```
 

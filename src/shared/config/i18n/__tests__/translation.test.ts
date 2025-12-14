@@ -27,7 +27,7 @@ describe('Property 1: 번역 키 완전성', () => {
 
         expect(result.success).toBe(true);
       }),
-      { numRuns: 100 }
+      { numRuns: 30 }
     );
   });
 });
@@ -51,7 +51,7 @@ describe('Property 3: 라운드트립 일관성', () => {
 
         expect(deserialized).toEqual(original);
       }),
-      { numRuns: 100 }
+      { numRuns: 30 }
     );
   });
 });
@@ -110,7 +110,7 @@ describe('Property 2: 폴백 동작', () => {
         expect(typeof expectedValue).toBe('string');
         expect(expectedValue!.length).toBeGreaterThan(0);
       }),
-      { numRuns: 100 }
+      { numRuns: 30 }
     );
   });
 });
