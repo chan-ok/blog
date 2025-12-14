@@ -1,7 +1,9 @@
 'use server';
 
-import MDComponent from '@/entities/markdown';
 import { notFound } from 'next/navigation';
+
+import MDComponent from '@/entities/markdown';
+import Reply from '@/shared/components/reply';
 
 interface PostDetailPageProps {
   params: Promise<{ locale: LocaleType; slug: string[] }>;
@@ -16,5 +18,10 @@ export default async function PostDetailPage(props: PostDetailPageProps) {
 
   const path = [locale, ...slug].join('/') + '.mdx';
 
-  return <MDComponent path={path} />;
+  return (
+    <>
+      <MDComponent path={path} />
+      <Reply locale={locale} />
+    </>
+  );
 }

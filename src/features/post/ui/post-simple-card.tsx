@@ -31,7 +31,7 @@ export default function PostSimpleCard({
           variant="primary"
           className="place-self-end text-sm"
           nativeButton={false}
-          render={<Link href={'/' + [locale, 'posts', ...path].join('/')} />}
+          render={<Link href={['/posts', ...path].join('/')} />}
         >
           <Link2 size={16} />
           Read More
