@@ -959,12 +959,15 @@ await page.pause();
 - [x] `src/shared/components/ui/button.test.tsx` - Button 컴포넌트 (Property-Based + Unit) (2025-12-13 완료)
   - Property-Based 테스트: Props 전달, 기본 스타일, Link variant 규칙, 다크 모드
   - Unit 테스트: children 렌더링, 기본값 적용, disabled 상태
+- [x] `src/shared/util/sanitize.test.ts` - 새니타이징 유틸리티 테스트 (2025-12-14 완료)
+- [x] `src/features/contact/model/contact-form.schema.test.ts` - Contact 폼 스키마 테스트 (2025-12-14 완료)
 
 ### Phase 1: 유틸리티 & 비즈니스 로직
 
-- [ ] `src/shared/lib/` 유틸리티 함수
+- [x] `src/shared/util/sanitize.ts` 새니타이징 유틸리티 (2025-12-14 완료)
+- [x] `src/features/contact/model/contact-form.schema.ts` Zod 스키마 (2025-12-14 완료)
+- [ ] `src/shared/lib/` 기타 유틸리티 함수
 - [ ] `src/shared/hooks/` 커스텀 훅
-- [ ] Zod 스키마 검증 로직
 
 ### Phase 2: 컴포넌트
 

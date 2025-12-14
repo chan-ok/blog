@@ -88,7 +88,8 @@ src/
 │   ├── hooks/            # 커스텀 훅 (useBreakpoint, useResize 등)
 │   ├── providers/        # Context providers (theme-provider, locale-provider)
 │   ├── stores/           # Zustand stores (theme-store, locale-store)
-│   └── types/            # 공통 타입 정의
+│   ├── types/            # 공통 타입 정의
+│   └── util/             # 공통 유틸리티 (sanitize 등)
 │
 └── proxy.ts              # 언어 감지 프록시
 ```
@@ -299,7 +300,8 @@ blog-content/
 ### 1. XSS 방지
 
 - MDX 렌더링 시 sanitization
-- Contact 폼 입력 검증 (Zod)
+- Contact 폼 입력 새니타이징 (DOMPurify + Zod transform)
+- `isomorphic-dompurify`로 SSR 환경 지원
 
 ### 2. 봇 방지
 
