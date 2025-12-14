@@ -157,6 +157,9 @@ blog (main push)
 - MDX 의존성 제거 및 마크다운 처리 단순화
 - CSS 모듈을 Tailwind 유틸리티 클래스로 마이그레이션 (locale-toggle)
 - 폰트 설정 인라인화 (font.ts 삭제)
+- Typography 컴포넌트 분리 (h1-h5 heading)
+- Code 컴포넌트 분리 (인라인/블록 코드 렌더링)
+- 다크모드 지원 및 스타일 개선
 
 #### 13. About 페이지 개선
 

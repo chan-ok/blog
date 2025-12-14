@@ -98,7 +98,7 @@ const variantStyles: Record<ButtonVariant, Record<ButtonShape, string[]>> = {
   },
 };
 
-export function Button({
+export default function Button({
   variant = 'default',
   shape = 'fill',
   className,
@@ -120,5 +120,3 @@ export function Button({
     </BaseButton>
   );
 }
-
-export default Button;

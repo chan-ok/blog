@@ -1,10 +1,11 @@
 'use client';
 
 import { Frontmatter } from '@/entities/markdown/model/markdown.schema';
-import { Button } from '@/shared/components/ui/button';
+import Button from '@/shared/components/ui/button';
+import Link from '@/shared/components/ui/link';
+
 import { format } from 'date-fns';
 import { Link2 } from 'lucide-react';
-import Link from 'next/link';
 
 interface Props extends Frontmatter {
   locale: string;

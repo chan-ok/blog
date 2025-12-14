@@ -10,10 +10,24 @@
   - Phase별 기술적 의사결정과 그 배경 기록
   - 프롬프트, AI 판단, 추가 수정 사항 추적 형식
   - 협업 패턴 분석 섹션 포함
+- Typography 컴포넌트 추가 (`src/entities/markdown/ui/Typography.tsx`)
+  - heading 컴포넌트(h1-h5) 분리
+
+### 리팩토링
+
+- 마크다운 컴포넌트 구조 개선
+  - 인라인/블록 코드 렌더링 로직을 Code 컴포넌트로 분리
+  - setMdxComponents에서 분리된 컴포넌트 사용하도록 리팩토링
+- getMarkdown에 locale 기반 URL 디코딩 처리 추가
+- PostDetailPage에 빈 slug 파라미터 검증 추가
+- markdown 스키마 문서화 및 필드 순서 개선
+- @base-ui/react Button을 커스텀 Button 컴포넌트로 교체
+- RecentPostBlock에 locale prop 전달
+- 코드 컴포넌트 다크모드 지원 및 스타일 개선
 
 ### 수정
 
-- README.md 업데이트 (의사결정 로그 문서 링크 추가)
+- README.md 업데이트 (의사결정 로그 문서 링크 추가, 언어 선택기 구현 방식 업데이트)
 
 ---
 
