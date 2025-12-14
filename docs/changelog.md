@@ -6,6 +6,14 @@
 
 ### 추가
 
+- Contact 폼 XSS 공격 방지를 위한 입력 새니타이징 기능 추가
+  - `src/shared/util/sanitize.ts` - DOMPurify 기반 HTML 소독 유틸리티
+  - `isomorphic-dompurify` 의존성 추가 (SSR 호환)
+  - Contact 폼 스키마에 sanitizeInput transform 적용
+- Contact 폼 새니타이징 테스트 추가
+  - `src/shared/util/sanitize.test.ts` - 새니타이징 유틸리티 테스트
+  - `src/features/contact/model/contact-form.schema.test.ts` - 스키마 테스트
+- Contact 폼 새니타이징 Kiro Spec 추가 (`.kiro/specs/contact-form-sanitization/`)
 - i18next 기반 다국어 시스템 구현 (`src/shared/config/i18n/`)
   - 타입 안전한 번역 키 시스템 (Zod 스키마 기반)
   - 언어별 JSON 파일 (ko, en, ja)

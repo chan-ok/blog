@@ -101,6 +101,7 @@ blog (main push)
 - Base UI Form 컴포넌트로 UI 구현
 - Cloudflare Turnstile 연동 (봇 방지)
 - Netlify Functions + Resend로 이메일 발송
+- XSS 공격 방지를 위한 입력 새니타이징 (DOMPurify)
 
 #### 6. Posts 기능
 

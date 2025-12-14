@@ -62,6 +62,44 @@ fetch('https://api.resend.com/emails', {
 
 ## XSS (Cross-Site Scripting) 방지
 
+### 입력 새니타이징 (Input Sanitization)
+
+사용자 입력에서 악성 HTML/스크립트를 제거하기 위해 DOMPurify를 사용합니다:
+
+```typescript
+// src/shared/util/sanitize.ts
+import DOMPurify from 'isomorphic-dompurify';
+
+export function sanitizeInput(input: string): string {
+  if (input == null) {
+    return '';
+  }
+  return DOMPurify.sanitize(input, { ALLOWED_TAGS: [] });
+}
+```
+
+**Zod 스키마에서 transform으로 적용**:
+
+```typescript
+// src/features/contact/model/contact-form.schema.ts
+import { sanitizeInput } from '@/shared/util/sanitize';
+
+export const ContactFormInputsSchema = z.object({
+  from: z.email('Invalid email'),
+  subject: z
+    .string()
+    .min(1, 'Subject is required')
+    .max(100, 'Subject length is over')
+    .transform(sanitizeInput), // HTML 태그 제거
+  message: z.string().min(1, 'Message is required').transform(sanitizeInput),
+});
+```
+
+**isomorphic-dompurify 사용 이유**:
+
+- SSR 환경에서도 동작 (Node.js + 브라우저 모두 지원)
+- Next.js의 서버 컴포넌트와 호환
+
 ### MDX 렌더링 시 주의사항
 
 MDX 콘텐츠는 외부 리포지터리에서 가져오므로 sanitization이 중요합니다:

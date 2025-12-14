@@ -29,6 +29,9 @@ importers:
       i18next:
         specifier: ^25.7.2
         version: 25.7.2(typescript@5.9.3)
+      isomorphic-dompurify:
+        specifier: ^2.34.0
+        version: 2.34.0(postcss@8.5.6)
       lucide-react:
         specifier: ^0.561.0
         version: 0.561.0(react@19.2.3)
@@ -3425,6 +3428,9 @@ packages:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
 
+  dompurify@3.3.1:
+    resolution: {integrity: sha512-qkdCKzLNtrgPFP1Vo+98FRzJnBRGe4ffyCea9IwHB1fyxPOeNTHpLKYGd4Uk9xvNoH0ZoOjwZxNptyMwqrId1Q==}
+
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
 
@@ -4658,6 +4664,10 @@ packages:
   isexe@3.1.1:
     resolution: {integrity: sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ==}
     engines: {node: '>=16'}
+
+  isomorphic-dompurify@2.34.0:
+    resolution: {integrity: sha512-7VeB/tDBQ8jt1+syT563hmmejY01nuwizpUIFPfM1aw3iTgLLiVP4/Nh+PKhNoa1V/H+E6ZlNcowsXLbChPCpw==}
+    engines: {node: '>=20.19.5'}
 
   istanbul-lib-coverage@3.2.2:
     resolution: {integrity: sha512-O8dpsF+r0WV/8MNRKfnmrtCWhuKjxrq2w+jpzBL5UZKTi2LeVWnWOmWRxFlesJONmc+wLAGvKQZEOanko0LFTg==}
@@ -10654,6 +10664,10 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
+  dompurify@3.3.1:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
+
   domutils@3.2.2:
     dependencies:
       dom-serializer: 2.0.0
@@ -12233,6 +12247,17 @@ snapshots:
   isexe@2.0.0: {}
 
   isexe@3.1.1: {}
+
+  isomorphic-dompurify@2.34.0(postcss@8.5.6):
+    dependencies:
+      dompurify: 3.3.1
+      jsdom: 27.3.0(postcss@8.5.6)
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - postcss
+      - supports-color
+      - utf-8-validate
 
   istanbul-lib-coverage@3.2.2: {}
 

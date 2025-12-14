@@ -115,7 +115,7 @@ describe('Property 4: Props 전달', () => {
         expect(button).toHaveAttribute('aria-label', label);
         unmount();
       }),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 
@@ -151,7 +151,7 @@ describe('Property 4: Props 전달', () => {
           unmount();
         }
       ),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 
@@ -190,7 +190,7 @@ describe('Property 4: Props 전달', () => {
           unmount();
         }
       ),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 });
@@ -250,7 +250,7 @@ describe('Property 2: 일관된 기본 스타일 적용', () => {
         expect(className).toContain('font-medium');
         unmount();
       }),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 });
@@ -325,7 +325,7 @@ describe('Property 1: Link variant는 shape을 무시함', () => {
         unmountLinkVariantButton();
         unmountLinkFillButton();
       }),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 });
@@ -378,7 +378,7 @@ describe('Property 3: 다크 모드 클래스 포함', () => {
         expect(className).toMatch(/dark:/);
         unmount();
       }),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 });

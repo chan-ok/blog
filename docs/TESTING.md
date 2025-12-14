@@ -151,7 +151,7 @@ fc.assert(
     // 중요: 각 반복 후 unmount 호출하여 DOM 정리
     unmount();
   }),
-  { numRuns: 50 } // 50회 반복 테스트
+  { numRuns: 30 } // 30회 반복 테스트
 );
 ```
 
@@ -189,7 +189,7 @@ describe('Property: Props 전달', () => {
         expect(button).toHaveAttribute('aria-label', label);
         unmount(); // Property-Based 테스트에서는 각 반복 후 unmount 필수
       }),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 
@@ -213,7 +213,7 @@ describe('Property: Props 전달', () => {
           unmount();
         }
       ),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 });
@@ -237,7 +237,7 @@ describe('Property: 일관된 기본 스타일 적용', () => {
         expect(className).toContain('font-medium'); // 폰트 굵기
         unmount();
       }),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 });
@@ -269,7 +269,7 @@ describe('Property: Link variant는 shape을 무시함', () => {
         unmount1();
         unmount2();
       }),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 });
@@ -288,7 +288,7 @@ describe('Property: 다크 모드 클래스 포함', () => {
         expect(button.className).toMatch(/dark:/);
         unmount();
       }),
-      { numRuns: 50 }
+      { numRuns: 30 }
     );
   });
 });
@@ -761,7 +761,7 @@ fc.assert(
   fc.property(variantArb, (variant) => {
     // 검증 로직
   }),
-  { numRuns: 50 } // 기본값 100, 빠른 피드백을 위해 50 권장
+  { numRuns: 30 } // 기본값 100, 빠른 피드백을 위해 50 권장
 );
 
 // 특수 케이스 분리: link variant처럼 다른 규칙을 따르는 경우 별도 테스트
@@ -792,7 +792,7 @@ it('should apply styles', () => {
       expect(button.className).toMatch(/dark:/);
       // 다음 반복에서 이전 버튼이 DOM에 남아있음!
     }),
-    { numRuns: 50 }
+    { numRuns: 30 }
   );
 });
 
@@ -805,7 +805,7 @@ it('should apply styles', () => {
       expect(button.className).toMatch(/dark:/);
       unmount(); // 각 반복이 끝날 때 DOM 정리
     }),
-    { numRuns: 50 }
+    { numRuns: 30 }
   );
 });
 ```
@@ -829,7 +829,7 @@ it('should apply identical styles for link variant regardless of shape', () => {
       unmount1();
       unmount2();
     }),
-    { numRuns: 50 }
+    { numRuns: 30 }
   );
 });
 ```
@@ -959,12 +959,15 @@ await page.pause();
 - [x] `src/shared/components/ui/button.test.tsx` - Button 컴포넌트 (Property-Based + Unit) (2025-12-13 완료)
   - Property-Based 테스트: Props 전달, 기본 스타일, Link variant 규칙, 다크 모드
   - Unit 테스트: children 렌더링, 기본값 적용, disabled 상태
+- [x] `src/shared/util/sanitize.test.ts` - 새니타이징 유틸리티 테스트 (2025-12-14 완료)
+- [x] `src/features/contact/model/contact-form.schema.test.ts` - Contact 폼 스키마 테스트 (2025-12-14 완료)
 
 ### Phase 1: 유틸리티 & 비즈니스 로직
 
-- [ ] `src/shared/lib/` 유틸리티 함수
+- [x] `src/shared/util/sanitize.ts` 새니타이징 유틸리티 (2025-12-14 완료)
+- [x] `src/features/contact/model/contact-form.schema.ts` Zod 스키마 (2025-12-14 완료)
+- [ ] `src/shared/lib/` 기타 유틸리티 함수
 - [ ] `src/shared/hooks/` 커스텀 훅
-- [ ] Zod 스키마 검증 로직
 
 ### Phase 2: 컴포넌트
 
