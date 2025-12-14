@@ -24,6 +24,7 @@
 2. WHEN 사용자가 locale을 변경할 때 THEN I18n_System SHALL 동일한 페이지 세션 내에서 모든 네비게이션 메뉴 라벨을 새로 선택된 locale로 업데이트한다
 3. WHEN locale이 "ko"일 때 THEN I18n_System SHALL 메뉴 라벨을 "소개", "글", "연락"으로 표시한다
 4. WHEN locale이 "ja"일 때 THEN I18n_System SHALL 메뉴 라벨을 "紹介", "記事", "お問い合わせ"로 표시한다
+5. WHEN locale이 "en"일 때 THEN I18n_System SHALL 메뉴 라벨을 "About", "Posts", "Contact"로 표시한다
 
 ### 요구사항 2
 
@@ -49,14 +50,6 @@
 
 ### 요구사항 4
 
-**사용자 스토리:** 사용자로서, 선택한 언어로 푸터 텍스트를 보고 싶습니다. 전체 페이지가 내 언어로 일관되게 느껴지도록 하기 위함입니다.
-
-#### 인수 조건
-
-1. WHEN 사용자가 푸터를 볼 때 THEN I18n_System SHALL 현재 locale 언어로 저작권 텍스트를 표시한다
-
-### 요구사항 5
-
 **사용자 스토리:** 개발자로서, 중앙화된 번역 시스템을 원합니다. UI 텍스트의 번역을 쉽게 추가하고 관리할 수 있도록 하기 위함입니다.
 
 #### 인수 조건
@@ -66,7 +59,7 @@
 3. WHEN 개발자가 번역에 접근할 때 THEN I18n_System SHALL react-i18next의 useTranslation 훅을 통해 번역을 제공한다
 4. WHEN 번역이 저장될 때 THEN I18n_System SHALL Translation_Resource 파일을 shared/config/i18n 디렉터리에 locale별로 구성한다
 
-### 요구사항 6
+### 요구사항 5
 
 **사용자 스토리:** 개발자로서, 번역 리소스를 직렬화하고 역직렬화하고 싶습니다. 번역을 올바르게 로드하고 검증할 수 있도록 하기 위함입니다.
 
