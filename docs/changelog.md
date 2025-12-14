@@ -6,12 +6,25 @@
 
 ### 추가
 
+- i18next 기반 다국어 시스템 구현 (`src/shared/config/i18n/`)
+  - 타입 안전한 번역 키 시스템 (Zod 스키마 기반)
+  - 언어별 JSON 파일 (ko, en, ja)
+  - 번역 키 일관성 테스트 추가
+- Giscus 댓글 시스템 추가 (`src/shared/components/reply/`)
+- Link 컴포넌트 추가 (`src/shared/components/ui/link/`)
+- UI 다국어 지원 설계 문서 추가 (`.kiro/specs/ui-i18n/`)
+  - 요구사항, 설계, 태스크 문서
 - 인간-AI 협업 의사결정 로그 문서 추가 (`docs/decision-log.md`)
   - Phase별 기술적 의사결정과 그 배경 기록
   - 프롬프트, AI 판단, 추가 수정 사항 추적 형식
   - 협업 패턴 분석 섹션 포함
 - Typography 컴포넌트 추가 (`src/entities/markdown/ui/Typography.tsx`)
   - heading 컴포넌트(h1-h5) 분리
+
+### 수정
+
+- React key 처리 및 Link 컴포넌트 타입 안전성 개선
+- locale-provider에 i18next 통합
 
 ### 리팩토링
 

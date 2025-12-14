@@ -23,6 +23,9 @@ blog/
 │   │   └── layout.tsx         # 루트 레이아웃
 │   ├── entities/              # 비즈니스 엔티티
 │   │   └── mdx/              # MDX 관련 엔티티
+│   │   │   ├── model/        # 데이터 모델
+│   │   │   ├── ui/           # UI 컴포넌트
+│   │   │   └── util/         # 유틸리티
 │   ├── features/              # 기능 모듈
 │   │   ├── about/            # About 페이지 기능
 │   │   │   ├── model/        # 데이터 모델

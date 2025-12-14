@@ -76,12 +76,15 @@ src/
 │
 ├── shared/                # 🛠️ 공유 리소스 (Shared Layer)
 │   ├── components/       # 독립적인 복합 컴포넌트 (Atomic Design: 유기체 이상)
+│   │   ├── reply/        # Giscus 댓글 시스템
 │   │   ├── toggle/       # 토글 컴포넌트 (locale, theme) - 상태/로직 포함
 │   │   ├── turnstile/    # Cloudflare Turnstile - 외부 서비스 연동
 │   │   └── ui/           # 순수 UI 컴포넌트 (Atomic Design: 원자, 분자)
-│   │       └── button.tsx  # Button - 기능 없는 프레젠테이션 컴포넌트
-│   ├── config/           # 설정 (API 등)
-│   │   └── api/          # API 설정
+│   │       ├── button/   # Button 컴포넌트
+│   │       └── link/     # Link 컴포넌트
+│   ├── config/           # 설정 (API, i18n 등)
+│   │   ├── api/          # API 설정
+│   │   └── i18n/         # 다국어 설정 (i18next 기반)
 │   ├── hooks/            # 커스텀 훅 (useBreakpoint, useResize 등)
 │   ├── providers/        # Context providers (theme-provider, locale-provider)
 │   ├── stores/           # Zustand stores (theme-store, locale-store)

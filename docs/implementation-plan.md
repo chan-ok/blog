@@ -197,6 +197,25 @@ blog (main push)
   - `turnstile/` 이동
 - 새로운 `ui/` 디렉토리에 공통 UI 컴포넌트 배치
 
+#### 17. i18next 기반 다국어 시스템
+
+- i18n 설정 구현 (`src/shared/config/i18n/`)
+  - 타입 안전한 번역 키 시스템 (Zod 스키마 기반)
+  - 언어별 JSON 파일 (ko.json, en.json, ja.json)
+  - 번역 키 일관성 테스트
+- locale-provider에 i18next 통합
+- UI 다국어 지원 설계 문서 작성 (`.kiro/specs/ui-i18n/`)
+
+#### 18. Giscus 댓글 시스템
+
+- Giscus 댓글 컴포넌트 구현 (`src/shared/components/reply/`)
+- GitHub Discussions 기반 댓글 시스템 통합
+
+#### 19. Link 컴포넌트
+
+- 타입 안전한 Link 컴포넌트 구현 (`src/shared/components/ui/link/`)
+- React key 처리 및 타입 안전성 개선
+
 ## 기술적 고려사항
 
 ### FSD 아키텍처
