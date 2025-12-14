@@ -14,8 +14,8 @@
 │   (Next.js App)     │ ◄─────  │  (MDX Contents)      │
 │                     │  fetch  │                      │
 │   - UI/UX           │         │  - Posts (ko/ja/en)  │
-│   - 렌더링           │         │  - About pages       │
-│   - 배포             │         │  - index.json        │
+│   - 렌더링            │         │  - index.json        │
+│   - 배포             │         │                      │
 └─────────────────────┘         └──────────────────────┘
          │                                │
          │ push to main                   │ push to main
@@ -170,7 +170,7 @@ sequenceDiagram
     "updatedAt": "2025-12-06T00:00:00.000Z",
     "tags": ["tag1", "tag2"],
     "published": true,
-    "path": "/posts/post-slug"
+    "path": "/post-slug"
   }
 ]
 ```
@@ -211,16 +211,13 @@ graph TD
 ```
 blog-content/
 ├── ko/
-│   ├── posts/
-│   ├── about.md
+    ├── (posts.md)
 │   └── index.json (자동 생성)
 ├── ja/
-│   ├── posts/
-│   ├── about.md
+    ├── (posts.md)
 │   └── index.json (자동 생성)
 └── en/
-    ├── posts/
-    ├── about.md
+    ├── (posts.md)
     └── index.json (자동 생성)
 ```
 
