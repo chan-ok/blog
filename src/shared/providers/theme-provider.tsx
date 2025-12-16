@@ -4,7 +4,7 @@ import { useThemeStore } from '@/shared/stores/theme-store';
 import { useEffect } from 'react';
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const theme = useThemeStore((state) => state.theme);
+  const { theme, setThemeClass } = useThemeStore();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -15,6 +15,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         theme === 'dark' || (theme === 'system' && mediaQuery.matches);
 
       root.classList.toggle('dark', isDark);
+      setThemeClass(isDark ? 'dark' : 'light');
     };
 
     applyTheme();

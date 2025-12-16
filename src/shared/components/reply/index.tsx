@@ -1,8 +1,10 @@
 'use client';
 
+import { useThemeStore } from '@/shared/stores/theme-store';
 import Giscus from '@giscus/react';
 
 export default function Reply({ locale }: { locale: LocaleType }) {
+  const themeClass = useThemeStore((state) => state.themeClass);
   return (
     <Giscus
       id="R_kgDOQgCWsw"
@@ -14,7 +16,7 @@ export default function Reply({ locale }: { locale: LocaleType }) {
       reactionsEnabled="1"
       emitMetadata="0"
       inputPosition="top"
-      theme="preferred_color_scheme"
+      theme={themeClass}
       lang={locale}
       loading="lazy"
       strict="1"
