@@ -1,4 +1,3 @@
-import { api } from '@/shared/config/api';
 import { compareDesc } from 'date-fns';
 
 import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.schema';
@@ -11,11 +10,11 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   const baseURL = process.env.NEXT_PUBLIC_GIT_RAW_URL;
 
   try {
-    const response = await api.get<PostInfo[]>(`/${locale}/index.json`, {
-      baseURL,
+    const response = await fetch(`${baseURL}/${locale}/index.json`, {
+      next: { revalidate: 60 },
     });
 
-    if (response.axios.status !== 200) {
+    if (!response.ok) {
       console.error('Failed to fetch posts');
       return {
         posts: [],
@@ -24,10 +23,9 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
         size,
       };
     }
-    if (!response.data) {
-      throw new Error('Failed to fetch posts');
-    }
-    const filteredPosts = response.data
+
+    const data: PostInfo[] = await response.json();
+    const filteredPosts = data
       .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))
       .filter((post) => post.published)
       .filter(
