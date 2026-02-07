@@ -88,6 +88,7 @@
     "git log *": "allow",
     "gh pr create *": "allow",
     "gh pr view *": "allow",
-    "gh pr checks *": "allow"
+    "gh pr checks *": "allow",
+    "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow"
   }
 }

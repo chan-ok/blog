@@ -1,9 +1,23 @@
+---
+priority: P0
+title: Next.js → TanStack Router 마이그레이션 체크리스트
+description: CSR Only 방식의 실행 체크리스트 (최우선)
+created: 2026-02-07
+updated: 2026-02-07
+status: in-progress
+related:
+  - P1-migration-plan.md
+  - ../project-log.md
+---
+
 # ✅ Next.js → TanStack Router (CSR) 마이그레이션 체크리스트
 
 > **프로젝트**: Chanho's Dev Blog  
 > **작성일**: 2026-02-07  
 > **버전**: 2.0.0 (CSR Only)  
-> **진행 상태**: 준비 중
+> **진행 상태**: 🔄 준비 중
+
+**📖 참조 문서**: [P1-migration-plan.md](./P1-migration-plan.md) (상세 구현 가이드)
 
 ---
 
@@ -790,3 +804,7 @@
 **문서 버전**: 2.0.0 (CSR Only)  
 **최종 수정일**: 2026-02-07  
 **작성자**: OpenCode (Claude)
+
+---
+
+**📋 [목차로 돌아가기](./README.md)**
