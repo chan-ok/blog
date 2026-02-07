@@ -106,6 +106,7 @@ future/
 
 ## 📚 관련 문서
 
+- [dashboard.md](../dashboard.md) - 마이그레이션 진행 상황 대시보드 📊
 - [agents.md](../agents.md) - AI 코딩 에이전트 가이드
 - [architecture.md](../architecture.md) - 프로젝트 아키텍처
 - [development.md](../development.md) - 개발 환경 설정
