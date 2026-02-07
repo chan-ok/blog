@@ -14,7 +14,7 @@
     }
   },
   "instructions": ["docs/agents.md", ".agents/agents/README.md"],
-  "disabled_providers": ["openai", "gemini"],
+  "disabled_providers": ["gemini"],
   "agent": {
     "build": {
       "disable": true
@@ -34,7 +34,19 @@
           "cat *": "allow",
           "mkdir *": "allow",
           "sleep *": "allow",
-          "git branch --short-current": "allow"
+          "git branch --show-current": "allow",
+          "pnpm install *": "ask",
+          "pnpm update *": "ask",
+          "pnpm test *": "allow",
+          ".agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
+          "ls *": "allow",
+          "git status *": "allow",
+          "git diff *": "allow",
+          "git log *": "allow",
+          "gh pr create *": "allow",
+          "gh pr view *": "allow",
+          "gh pr checks *": "allow",
+          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow"
         }
       }
     },
@@ -65,12 +77,22 @@
     }
   },
   "permission": {
+    "rm *": "deny",
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
+    },
+    "git commit *": "deny",
+    "git push *": "deny",
+
     "bash": "ask",
     "zsh": "ask",
     "pnpm install *": "ask",
     "pnpm update *": "ask",
+
     "pnpm test *": "allow",
-    "read": "allow",
     "task": "allow",
     "webfetch": "allow",
     "websearch": "allow",
@@ -82,7 +104,7 @@
     "todoread": "allow",
     "question": "allow",
     "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
-    "ls -la *": "allow",
+    "ls *": "allow",
     "git status *": "allow",
     "git diff *": "allow",
     "git log *": "allow",
