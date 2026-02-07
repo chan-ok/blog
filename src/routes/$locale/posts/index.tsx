@@ -1,17 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
+import PostCardList from '@/features/post/ui/post-card-list';
 
 export const Route = createFileRoute('/$locale/posts/')({
   component: PostsPage,
+  // TODO: SEO 메타 태그는 Phase 4에서 react-helmet-async로 처리
 });
 
 function PostsPage() {
   const { locale } = Route.useParams();
 
-  return (
-    <div className="flex flex-col min-h-screen gap-8">
-      <h1 className="text-4xl font-bold">Posts</h1>
-      <p className="text-gray-600">Locale: {locale}</p>
-      <p className="text-sm text-gray-500">TODO: 포스트 목록 추가 (Phase 4)</p>
-    </div>
-  );
+  return <PostCardList locale={locale as LocaleType} />;
 }

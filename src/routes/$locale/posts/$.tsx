@@ -1,4 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
+import MDComponent from '@/entities/markdown';
+import Reply from '@/shared/components/reply';
 
 export const Route = createFileRoute('/$locale/posts/$')({
   component: PostDetailPage,
@@ -7,12 +9,18 @@ export const Route = createFileRoute('/$locale/posts/$')({
 function PostDetailPage() {
   const { locale, _splat } = Route.useParams();
 
+  // _splat이 비어있으면 404
+  if (!_splat || _splat.trim() === '') {
+    throw notFound();
+  }
+
+  // 경로 생성: ko/posts/example.mdx
+  const path = `${locale}/${_splat}.mdx`;
+
   return (
-    <div className="flex flex-col min-h-screen gap-8">
-      <h1 className="text-4xl font-bold">Post Detail</h1>
-      <p className="text-gray-600">Locale: {locale}</p>
-      <p className="text-gray-600">Path: {_splat}</p>
-      <p className="text-sm text-gray-500">TODO: MDX 렌더링 추가 (Phase 3)</p>
-    </div>
+    <>
+      <MDComponent path={path} />
+      <Reply locale={locale as LocaleType} />
+    </>
   );
 }
