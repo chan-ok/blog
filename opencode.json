@@ -4,6 +4,15 @@
   "watcher": {
     "ignore": ["node_modules/**", "dist/**", ".git/**"]
   },
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+      }
+    }
+  },
   "instructions": ["docs/agents.md"],
   "disabled_providers": ["openai", "gemini"],
   "permission": {
