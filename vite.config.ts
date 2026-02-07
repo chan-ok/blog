@@ -10,6 +10,8 @@ export default defineConfig({
     TanStackRouterVite({
       // ⭐ 커스텀 route tree 생성 경로 (FSD 구조 준수)
       generatedRouteTree: './src/shared/config/route/routeTree.gen.ts',
+      // 테스트 파일 제외
+      routeFileIgnorePattern: '\\.test\\.tsx?$',
     }),
     tsconfigPaths(),
     ViteImageOptimizer({
