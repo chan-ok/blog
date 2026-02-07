@@ -1,0 +1,26 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": true,
+  "watcher": {
+    "ignore": ["node_modules/**", "dist/**", ".git/**"]
+  },
+  "instructions": ["docs/agents.md"],
+  "disabled_providers": ["openai", "gemini"],
+  "permission": {
+    "bash": "ask",
+    "zsh": "ask",
+    "pnpm install *": "ask",
+    "pnpm update *": "ask",
+    "pnpm test *": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "grep": "allow",
+    "glob": "allow",
+    "read": "allow",
+    "lsp": "allow",
+    "skill": "allow",
+    "todowrite": "allow",
+    "todoread": "allow",
+    "question": "allow"
+  }
+}
