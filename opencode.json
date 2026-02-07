@@ -80,6 +80,10 @@
     "todowrite": "allow",
     "todoread": "allow",
     "question": "allow",
-    "task": "allow"
+    "task": "allow",
+    "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
+    "git status *": "allow",
+    "git diff *": "allow",
+    "git log *": "allow"
   }
 }

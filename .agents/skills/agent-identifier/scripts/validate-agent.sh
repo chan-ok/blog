@@ -38,7 +38,9 @@ fi
 echo "✅ Starts with frontmatter"
 
 # Check 3: Has closing ---
-if ! tail -n +2 "$AGENT_FILE" | grep -q '^---$'; then
+# Count occurrences of --- (should be at least 2)
+DASH_COUNT=$(grep -c '^---$' "$AGENT_FILE" || echo "0")
+if [ "$DASH_COUNT" -lt 2 ]; then
   echo "❌ Frontmatter not closed (missing second ---)"
   exit 1
 fi
@@ -88,7 +90,14 @@ else
 fi
 
 # Check description field
-DESCRIPTION=$(echo "$FRONTMATTER" | grep '^description:' | sed 's/description: *//')
+# Extract multiline description from frontmatter
+# Description starts at "description:" and continues until the next top-level field (model:, color:, tools:)
+# Ignore example-internal fields like user:, assistant:, context:, commentary:
+DESCRIPTION=$(echo "$FRONTMATTER" | awk '
+  /^description:/ { in_desc=1; sub(/^description: */, ""); print; next }
+  in_desc && /^(model|color|tools|capabilities|proactive):/ { exit }
+  in_desc { print }
+')
 
 if [ -z "$DESCRIPTION" ]; then
   echo "❌ Missing required field: description"
