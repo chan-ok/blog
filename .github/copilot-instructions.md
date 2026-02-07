@@ -16,6 +16,7 @@ Note: Only `.agents/skills/**` is enforced via `.gitattributes`. Other paths are
 ## OpenCode Configuration
 
 The `opencode.json` configuration includes:
+
 - **Watcher ignore patterns**: Excludes `.agents/skills/**` from file watching
 - **Global permissions**: Allows common development commands (`ls -la`, `git status/diff/log`, `gh pr create/view/checks`) to streamline agent workflows
 
