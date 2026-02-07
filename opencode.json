@@ -13,8 +13,57 @@
       }
     }
   },
-  "instructions": ["docs/agents.md"],
+  "instructions": ["docs/agents.md", ".agents/agents/README.md"],
   "disabled_providers": ["openai", "gemini"],
+  "agent": {
+    "build": {
+      "disable": true
+    },
+    "master-orchestrator": {
+      "mode": "primary",
+      "description": "Default agent that orchestrates all user requests",
+      "prompt": "{file:.agents/agents/master-orchestrator.md}",
+      "permission": {
+        "task": {
+          "*": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "date *": "allow",
+          "echo *": "allow",
+          "cat *": "allow",
+          "mkdir *": "allow",
+          "sleep *": "allow",
+          "git branch --short-current": "allow"
+        }
+      }
+    },
+    "feature-developer": {
+      "mode": "subagent",
+      "description": "Develops features using TDD methodology",
+      "prompt": "{file:.agents/agents/feature-developer.md}",
+      "hidden": true
+    },
+    "test-specialist": {
+      "mode": "subagent",
+      "description": "Writes comprehensive tests",
+      "prompt": "{file:.agents/agents/test-specialist.md}",
+      "hidden": true
+    },
+    "security-scanner": {
+      "mode": "subagent",
+      "description": "Scans for security vulnerabilities",
+      "prompt": "{file:.agents/agents/security-scanner.md}",
+      "hidden": true
+    },
+    "doc-validator": {
+      "mode": "subagent",
+      "description": "Validates documentation accuracy",
+      "prompt": "{file:.agents/agents/doc-validator.md}",
+      "model": "openai/gpt-5.2-codex",
+      "hidden": true
+    }
+  },
   "permission": {
     "bash": "ask",
     "zsh": "ask",
@@ -30,6 +79,7 @@
     "skill": "allow",
     "todowrite": "allow",
     "todoread": "allow",
-    "question": "allow"
+    "question": "allow",
+    "task": "allow"
   }
 }

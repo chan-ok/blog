@@ -6,6 +6,56 @@
 
 ## 사용 가능한 에이전트
 
+### master-orchestrator
+
+멀티 에이전트 시스템의 프로젝트 관리자이자 조율자입니다. 복잡한 기능 요청을 분석하고 여러 전문 에이전트에게 작업을 분배합니다.
+
+**주요 역할**:
+
+- 🎯 요구사항 분석 및 작업 분해
+- 📋 작업 계획 수립 및 우선순위 결정
+- 🤖 에이전트 선택 및 역할 할당 (동적 할당)
+- 📊 진행 상황 모니터링 및 대시보드 갱신
+- 🔄 오류 처리 및 재할당 전략
+- ✅ 결과 통합 및 최종 보고
+
+**중요**: 이 에이전트는 **코드를 직접 작성하지 않습니다**. 대신 작업을 분석하고 적절한 슬레이브 에이전트(feature-developer, test-specialist, security-scanner, doc-validator)에게 분배합니다.
+
+**사용 시기**:
+
+- 복잡한 기능 개발 (개발+테스트+보안+문서화 필요)
+- 여러 독립적인 작업을 병렬 처리해야 할 때
+- 대규모 시스템 구축 (인증, 결제 등)
+- 여러 컴포넌트를 동시에 개발해야 할 때
+
+**사용 예시**:
+
+```
+"다크 모드를 지원하는 태그 필터 컴포넌트를 개발해줘"
+"블로그 포스트 필터링 기능을 추가하고, 동시에 Contact 폼의 보안을 강화해줘"
+"사용자 인증 시스템을 구축해줘"
+```
+
+**작업 프로세스**:
+
+1. 요구사항 분석 및 작업 분해
+2. Git Flow 준비 (develop → feature branch → worktrees)
+3. Subagent 병렬/순차 실행 (Task tool)
+4. Worktrees → Feature branch 통합
+5. PR 생성 (develop ← feature)
+6. 결과 보고
+
+**Subagent 매핑**:
+
+| 작업 유형           | 할당 에이전트     | 우선순위 |
+| ------------------- | ----------------- | -------- |
+| feature-development | feature-developer | HIGH     |
+| test-writing        | test-specialist   | HIGH     |
+| security-check      | security-scanner  | MEDIUM   |
+| doc-validation      | doc-validator     | LOW      |
+
+---
+
 ### feature-developer
 
 10년차 프론트엔드 개발자로서, TDD 방식으로 새로운 기능을 개발하는 전문 에이전트입니다.
@@ -125,6 +175,63 @@
 
 ---
 
+### test-specialist
+
+10년차 테스트 엔지니어로서, 포괄적인 테스트 코드를 작성하고 코드 품질을 보장하는 전문 에이전트입니다.
+
+**주요 역할**:
+
+- ✅ Unit, Integration, E2E, Property-based 테스트 작성
+- ✅ 다양한 입력값, 경계 조건, 예외 상황 검증
+- ✅ 테스트 실행 후 기능 요건과 일치 여부 확인
+- ✅ 실패한 테스트 분석 및 수정
+- ✅ 테스트 커버리지 목표 달성 (80% 이상)
+
+**사용 시기**:
+
+- 새로운 컴포넌트/함수의 테스트 작성
+- 유틸리티 함수의 엣지 케이스 검증
+- 실패한 테스트 수정 및 검증
+- E2E 사용자 플로우 테스트
+- 테스트 커버리지 확인 및 개선
+
+**사용 예시**:
+
+```
+"Button 컴포넌트에 대한 테스트 코드를 작성해줘"
+"sanitize 함수의 엣지 케이스를 테스트해줘"
+"테스트가 실패하는데 확인해줘"
+"Contact 폼 제출 플로우에 대한 E2E 테스트를 작성해줘"
+"테스트 커버리지를 확인하고 부족한 부분을 보완해줘"
+```
+
+**테스트 작성 프로세스**:
+
+1. 요구사항 분석 및 테스트 케이스 식별
+2. Unit/Integration/E2E/Property-based 테스트 작성
+3. 테스트 실행 및 결과 검증
+4. 실패 시 원인 분석 및 수정
+5. 커버리지 확인 및 추가 테스트 작성
+6. 테스트 리팩토링 및 문서화
+
+**검증 항목**:
+
+- ✅ 정상 케이스: 일반적인 사용 시나리오
+- ✅ 경계 조건: 빈 값, 최소/최대값, null/undefined
+- ✅ 엣지 케이스: 특이한 입력 조합, 예외 상황
+- ✅ 에러 케이스: 잘못된 입력, 실패 시나리오
+- ✅ 접근성: 키보드 네비게이션, 스크린 리더 지원
+- ✅ UI/UX: 다크 모드, 반응형, 상호작용 피드백
+
+**커버리지 목표**:
+
+- 전체: 80% 이상
+- 유틸리티 함수: 90% 이상
+- 비즈니스 로직: 85% 이상
+- UI 컴포넌트: 70% 이상
+
+---
+
 ### doc-validator
 
 프로젝트 문서(특히 `docs/agents.md`)의 정확성과 최신성을 검증하는 전문 에이전트입니다.
@@ -160,13 +267,72 @@
 - ✅ 코드 예제 문법 및 정확성
 - ✅ 내부 문서 링크 유효성
 
-## 에이전트 트리거 방법
+## 에이전트 사용 방법
 
-Claude Code가 자동으로 에이전트를 트리거합니다. 명시적으로 사용하고 싶다면:
+### 기본 사용
+
+**master-orchestrator**는 opencode 실행 시 자동으로 활성화되며, 사용자의 요청을 분석하여 적절한 subagent에게 작업을 위임합니다.
+
+```bash
+# opencode 실행
+opencode
+
+# 사용자 요청
+"다크 모드를 지원하는 태그 필터 컴포넌트를 만들어줘"
+```
+
+master-orchestrator가 자동으로:
+
+1. 요구사항 분석
+2. 작업 분해 (feature-development + test-writing)
+3. Git Flow 준비 (develop → feature branch → worktrees)
+4. 병렬 실행 (feature-developer + test-specialist)
+5. 결과 통합 및 PR 생성
+
+### Git Flow + Worktree 방식
+
+master-orchestrator는 **Git Flow 브랜치 전략**과 **worktrees**를 사용하여 각 subagent를 격리된 환경에서 실행합니다:
+
+```
+develop (base)
+  └─ feature/dark-mode-button-20260207-143000
+       ├─ worktree/feature-dev-20260207-143000  (feature-developer)
+       ├─ worktree/test-spec-20260207-143000    (test-specialist)
+       └─ worktree/security-20260207-143000     (security-scanner)
+```
+
+**장점**:
+
+- ✅ 병렬 안전성: 각 agent가 독립적인 작업 환경 보장
+- ✅ Git 충돌 없음: 각 worktree는 별도의 브랜치
+- ✅ 자동 정리: 작업 완료 후 worktrees 자동 제거
+
+### 병렬 vs 순차 실행
+
+**병렬 실행** (독립적인 작업):
+
+```
+"태그 필터 컴포넌트를 만들고, 동시에 보안 취약점을 검사해줘"
+→ feature-developer + security-scanner 동시 실행
+```
+
+**순차 실행** (의존적인 작업):
+
+```
+"다크 모드 버튼을 만들고, 그 다음 E2E 테스트를 작성해줘"
+→ feature-developer 완료 후 → test-specialist 실행
+```
+
+### 명시적 에이전트 지정
+
+특정 에이전트를 명시적으로 사용하고 싶다면:
 
 ```
 "feature-developer 에이전트를 사용하여 [기능]을 구현해줘"
+"test-specialist 에이전트로 [컴포넌트] 테스트를 작성해줘"
 ```
+
+---
 
 ## 에이전트 검증
 
