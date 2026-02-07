@@ -1,8 +1,6 @@
-'use client';
-
-import Image from 'next/image';
 import { Github, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import OptimizedImage from '@/shared/components/ui/optimized-image';
 
 export default function AboutBlock() {
   const { t } = useTranslation();
@@ -10,7 +8,7 @@ export default function AboutBlock() {
   return (
     <div className="w-full flex items-center justify-start gap-8">
       <div>
-        <Image
+        <OptimizedImage
           src="/image/git-profile.png"
           alt="Profile"
           width={120}

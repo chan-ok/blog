@@ -1,9 +1,9 @@
-import NextLink from 'next/link';
-import type { LinkProps as NextLinkProps } from 'next/link';
+import { Link as RouterLink } from '@tanstack/react-router';
+import type { LinkProps as RouterLinkProps } from '@tanstack/react-router';
 
 import { useLocaleStore } from '@/shared/stores/locale-store';
 
-interface LinkProps extends Omit<NextLinkProps, 'href'> {
+interface LinkProps extends Omit<RouterLinkProps, 'to'> {
   href: string;
   children?: React.ReactNode;
   className?: string;
@@ -32,8 +32,13 @@ export default function Link({
   }
 
   return (
-    <NextLink href={localizedHref} className={className} {...props}>
+    <RouterLink
+      // @ts-ignore - TanStack Router 타입 이슈
+      to={localizedHref}
+      className={className}
+      {...props}
+    >
       {children}
-    </NextLink>
+    </RouterLink>
   );
 }

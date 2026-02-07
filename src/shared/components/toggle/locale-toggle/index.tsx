@@ -1,7 +1,5 @@
-'use client';
-
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import OptimizedImage from '@/shared/components/ui/optimized-image';
+import { useRouterState, useRouter } from '@tanstack/react-router';
 import { useLocaleStore } from '@/shared/stores/locale-store';
 import { Menu } from '@base-ui/react';
 import clsx from 'clsx';
@@ -9,12 +7,13 @@ import clsx from 'clsx';
 export default function LocaleToggle() {
   const locale = useLocaleStore((state) => state.locale);
   const setLocale = useLocaleStore((state) => state.setLocale);
-  const pathname = usePathname();
+  const { location } = useRouterState();
+  const pathname = location.pathname;
   const router = useRouter();
 
   const getLocaleIcon = (locale: LocaleType, w = 24, h = 24) => {
     return (
-      <Image
+      <OptimizedImage
         src={`/icon/${locale}.svg`}
         width={w}
         height={h}
@@ -83,7 +82,7 @@ export default function LocaleToggle() {
   function changeLocale(newLocale: LocaleType) {
     const newPath = pathname.replace(/^\/(ko|en|ja)/, `/${newLocale}`);
     setLocale(newLocale);
-    router.push(newPath);
+    router.navigate({ to: newPath });
   }
 
   return (
