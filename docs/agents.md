@@ -40,6 +40,7 @@
 
 - **프레임워크**: Next.js 16, React 19, TypeScript 5
 - **스타일링**: Tailwind CSS v4
+- **국제화**: i18next
 - **상태 관리**: Zustand
 - **검증**: Zod v4
 - **콘텐츠**: MDX (next-mdx-remote-client)
@@ -83,7 +84,7 @@ pnpm tsc --noEmit     # TypeScript 타입 체크
 ```bash
 # 전체 테스트
 pnpm test             # Vitest (Watch 모드)
-pnpm test:run         # Vitest (1회 실행)
+pnpm test run         # Vitest (1회 실행, CLI 옵션)
 pnpm coverage         # 커버리지 리포트
 
 # 단일 파일 테스트
@@ -101,8 +102,8 @@ pnpm test --project=storybook
 ### E2E 테스트
 
 ```bash
-pnpm test:e2e         # Playwright E2E 테스트
-pnpm test:e2e:ui      # Playwright UI 모드
+pnpm e2e              # Playwright E2E 테스트
+pnpm e2e:ui           # Playwright UI 모드
 ```
 
 ### Storybook
