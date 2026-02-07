@@ -1,18 +1,24 @@
+import { compile } from '@mdx-js/mdx';
 import { api } from '@/shared/config/api';
 import matter from 'gray-matter';
+import remarkGfm from 'remark-gfm';
+import remarkFrontmatter from 'remark-frontmatter';
+import rehypeHighlight from 'rehype-highlight';
 import { Frontmatter } from '../model/markdown.schema';
 
 interface MarkdownElement {
   frontmatter: Frontmatter;
   content: string;
   source: string;
+  compiledSource: string; // 컴파일된 MDX 코드
 }
 
 export default async function getMarkdown(
   path: string,
   baseUrl?: string
 ): Promise<MarkdownElement> {
-  const baseURL = baseUrl || process.env.NEXT_PUBLIC_GIT_RAW_URL;
+  // Vite 환경 변수 사용
+  const baseURL = baseUrl || import.meta.env.VITE_GIT_RAW_URL;
   const realPath = decodeURIComponent(path).replace(/[^/]+$/, (s) =>
     s.replaceAll('-', ' ')
   );
@@ -24,9 +30,18 @@ export default async function getMarkdown(
   }
 
   const { content, data } = matter(response.data);
+
+  // MDX 컴파일 (outputFormat: 'function-body')
+  const compiled = await compile(content, {
+    outputFormat: 'function-body',
+    remarkPlugins: [remarkGfm, remarkFrontmatter],
+    rehypePlugins: [rehypeHighlight],
+  });
+
   return {
     content,
     frontmatter: data as unknown as Frontmatter,
     source: response.data,
+    compiledSource: String(compiled),
   };
 }

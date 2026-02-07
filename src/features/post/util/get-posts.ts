@@ -4,14 +4,14 @@ import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.sche
 import { GetPostsProps, PagingPosts } from '../model/post.schema';
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
-  'use server';
   const { locale, page = 0, size = 10, tags = [] } = props;
 
-  const baseURL = process.env.NEXT_PUBLIC_GIT_RAW_URL;
+  // Vite 환경 변수 사용
+  const baseURL = import.meta.env.VITE_GIT_RAW_URL;
 
   try {
     const response = await fetch(`${baseURL}/${locale}/index.json`, {
-      next: { revalidate: 60 },
+      // Vite는 'next' 옵션 없음 - 일반 fetch 사용
     });
 
     if (!response.ok) {

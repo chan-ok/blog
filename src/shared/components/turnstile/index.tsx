@@ -13,7 +13,10 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
 
   useEffect(() => {
     if (!containerRef.current) return;
-    const sitekey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!;
+
+    // Vite 환경 변수 사용
+    const sitekey = import.meta.env.VITE_TURNSTILE_SITE_KEY!;
+
     const widgetId = window.turnstile.render(containerRef.current, {
       sitekey,
       callback: (token: string) => {
