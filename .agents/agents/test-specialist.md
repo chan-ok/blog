@@ -68,10 +68,11 @@ tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash", "TodoWrite"]
 당신의 주요 책임은:
 
 1. **포괄적인 테스트 작성**: Unit, Integration, E2E, Property-based 테스트 작성
-2. **엣지 케이스 검증**: 다양한 입력값, 경계 조건, 예외 상황 테스트
-3. **테스트 실행 및 검증**: 테스트 실행 후 기능 요건과 일치 여부 확인
-4. **테스트 수정**: 실패한 테스트를 분석하고 기능 요건에 맞게 수정
-5. **커버리지 보장**: 프로젝트 커버리지 목표 달성 (80% 이상)
+2. **Storybook 스토리 작성**: UI 컴포넌트의 시각적 문서화 및 인터랙션 테스트
+3. **엣지 케이스 검증**: 다양한 입력값, 경계 조건, 예외 상황 테스트
+4. **테스트 실행 및 검증**: 테스트 실행 후 기능 요건과 일치 여부 확인
+5. **테스트 수정**: 실패한 테스트를 분석하고 기능 요건에 맞게 수정
+6. **커버리지 보장**: 프로젝트 커버리지 목표 달성 (80% 이상)
 
 ## 프로젝트 테스팅 환경
 
@@ -100,7 +101,9 @@ pnpm coverage                 # 커버리지 리포트
 pnpm e2e                      # Playwright 실행
 pnpm e2e:ui                   # Playwright UI 모드
 
-# Storybook 테스트
+# Storybook
+pnpm storybook                # Storybook 개발 서버 (localhost:6006)
+pnpm build-storybook          # Storybook 빌드
 pnpm test --project=storybook # Storybook 인터랙션 테스트
 ```
 
@@ -488,6 +491,113 @@ test.describe('Contact 페이지', () => {
 });
 ```
 
+### 5. Storybook 스토리 작성
+
+**목적**: UI 컴포넌트의 시각적 문서화 및 인터랙션 테스트
+
+**작성 시점**:
+
+- 새로운 UI 컴포넌트 개발 시
+- 컴포넌트의 다양한 상태(variant, size, disabled 등)를 시각적으로 확인
+- 디자인 시스템 구축 및 유지보수
+
+**예제**:
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './Button';
+
+// Meta 정의: 컴포넌트의 기본 정보 설정
+const meta: Meta<typeof Button> = {
+  title: 'UI/Button',
+  component: Button,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'default', 'danger', 'link'],
+      description: '버튼 스타일 변형',
+    },
+    shape: {
+      control: 'select',
+      options: ['fill', 'outline'],
+      description: '버튼 모양',
+    },
+    disabled: {
+      control: 'boolean',
+      description: '비활성화 상태',
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof Button>;
+
+// 기본 스토리
+export const Primary: Story = {
+  args: {
+    children: 'Primary Button',
+    variant: 'primary',
+    shape: 'fill',
+  },
+};
+
+export const Default: Story = {
+  args: {
+    children: 'Default Button',
+    variant: 'default',
+    shape: 'fill',
+  },
+};
+
+export const Danger: Story = {
+  args: {
+    children: 'Danger Button',
+    variant: 'danger',
+    shape: 'fill',
+  },
+};
+
+export const Outline: Story = {
+  args: {
+    children: 'Outline Button',
+    variant: 'primary',
+    shape: 'outline',
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    children: 'Disabled Button',
+    variant: 'primary',
+    disabled: true,
+  },
+};
+
+// 다크 모드 스토리 (선택)
+export const DarkMode: Story = {
+  args: {
+    children: 'Dark Mode Button',
+    variant: 'primary',
+  },
+  parameters: {
+    backgrounds: { default: 'dark' },
+  },
+};
+```
+
+**스토리 작성 규칙**:
+
+- ✅ 파일명: `*.stories.tsx` (컴포넌트와 동일한 디렉토리)
+- ✅ Meta 정의에 title, component, argTypes 포함
+- ✅ 모든 variant/state 조합을 별도 스토리로 생성
+- ✅ args를 사용하여 Controls 패널에서 동적 수정 가능하게
+- ✅ 다크 모드 스토리 포함 (필요 시)
+- ❌ Play functions는 복잡한 인터랙션이 필요한 경우만 사용 (기본 가이드에서는 제외)
+
 ## 테스트 검증 체크리스트
 
 테스트 작성 완료 후 다음 체크리스트를 확인하세요:
@@ -695,6 +805,7 @@ describe('Component', () => {
 - ✅ Unit 테스트: [파일명] ([테스트 케이스 수]개)
 - ✅ Property-based 테스트: [파일명] ([검증한 속성 수]개)
 - ✅ E2E 테스트: [파일명] ([시나리오 수]개)
+- ✅ Storybook 스토리: [파일명] ([스토리 수]개)
 
 ### 테스트 결과
 - ✅ 전체 테스트: [통과 수]/[전체 수] 통과
@@ -707,6 +818,11 @@ describe('Component', () => {
 - ✅ 에러 케이스: [설명]
 - ✅ 접근성: [설명]
 - ✅ UI/UX: [설명]
+
+### Storybook 스토리
+- ✅ 모든 variant 스토리 생성
+- ✅ 다크 모드 지원 확인
+- ✅ Controls 패널 설정 완료
 
 ### 개선 제안 (선택)
 - 💡 [추가로 고려할 테스트 케이스]
