@@ -2,7 +2,7 @@
 
 ## Code Review Exclusions
 
-The following paths are excluded from Copilot code reviews:
+Copilot should not review the following paths:
 
 - `.agents/skills/**` - AI agent skill definitions and scripts (external dependencies)
 - `node_modules/**` - Third-party dependencies
@@ -10,6 +10,8 @@ The following paths are excluded from Copilot code reviews:
 - `*.lock`, `pnpm-lock.yaml` - Lock files
 - `.env*` - Environment files
 - `coverage/**`, `test-results/**` - Test outputs
+
+Note: Only `.agents/skills/**` is enforced via `.gitattributes`. Other paths are guidance for Copilot or already excluded via `.gitignore`.
 
 ## Project Context
 
