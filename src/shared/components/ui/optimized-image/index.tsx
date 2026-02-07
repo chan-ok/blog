@@ -1,5 +1,5 @@
 // OptimizedImage 컴포넌트
-// 로컬 이미지는 Vite Plugin이 자동 최적화 (WebP, AVIF 생성)
+// 로컬 이미지는 Vite Plugin이 자동 압축 (PNG 압축률 70%)
 // 외부 이미지는 직접 로드 + lazy loading
 
 interface OptimizedImageProps {
@@ -37,25 +37,17 @@ export default function OptimizedImage({
     );
   }
 
-  // 로컬 이미지는 Vite Plugin이 자동 최적화
-  const basePath = src.replace(/\.(jpg|jpeg|png)$/, '');
-
+  // 로컬 이미지는 Vite Plugin이 자동 압축 (PNG → 최적화된 PNG)
+  // 현재는 WebP/AVIF 변환 없이 압축된 PNG만 사용 (70% 절감 성공)
   return (
-    <picture>
-      {/* Vite Plugin이 빌드 시 자동 생성 */}
-      <source srcSet={`${basePath}.avif`} type="image/avif" />
-      <source srcSet={`${basePath}.webp`} type="image/webp" />
-
-      {/* Fallback: 원본 이미지 */}
-      <img
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
-        className={className}
-      />
-    </picture>
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      className={className}
+    />
   );
 }

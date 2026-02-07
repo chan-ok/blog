@@ -38,6 +38,7 @@
           "pnpm install *": "ask",
           "pnpm update *": "ask",
           "pnpm test *": "allow",
+          "pnpm tsc *": "allow",
           ".agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
           "ls *": "allow",
           "git status *": "allow",
@@ -94,8 +95,8 @@
     "zsh": "ask",
     "pnpm install *": "ask",
     "pnpm update *": "ask",
-
     "pnpm test *": "allow",
+    "pnpm tsc *": "allow",
     "task": "allow",
     "webfetch": "allow",
     "websearch": "allow",
