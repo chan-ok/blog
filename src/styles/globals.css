@@ -4,6 +4,28 @@
 /* https://tailwindcss.com/docs/dark-mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* 기본 폰트 패밀리 (모든 언어 지원) */
+html,
+body {
+  font-family: 'Inter', 'Noto Sans KR', 'Noto Sans JP', sans-serif;
+}
+
+/* 언어별 폰트 설정 */
+html:lang(ko),
+html:lang(ko) body {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+html:lang(en),
+html:lang(en) body {
+  font-family: 'Inter', sans-serif;
+}
+
+html:lang(ja),
+html:lang(ja) body {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
 html {
   scrollbar-gutter: stable;
 }

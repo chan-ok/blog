@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { z } from 'zod';
 import { LocaleProvider } from '@/shared/providers/locale-provider';
 import { ThemeProvider } from '@/shared/providers/theme-provider';
@@ -21,6 +22,11 @@ export const Route = createFileRoute('/$locale')({
 
 function LocaleLayout() {
   const { locale } = Route.useParams();
+
+  // HTML lang 속성 동적 설정
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   return (
     <ThemeProvider>
