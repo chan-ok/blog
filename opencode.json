@@ -47,7 +47,9 @@
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
           "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
-          "head *": "allow"
+          "head *": "allow",
+          "find *": "allow",
+          "wc *": "allow"
         }
       }
     },
@@ -113,6 +115,8 @@
     "gh pr view *": "allow",
     "gh pr checks *": "allow",
     "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
-    "head *": "allow"
+    "head *": "allow",
+    "find *": "allow",
+    "wc *": "allow"
   }
 }
