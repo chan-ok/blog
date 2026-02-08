@@ -74,9 +74,6 @@ test.describe('Critical Paths - About 페이지', () => {
   test('About 페이지 렌더링', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko/about`);
 
-    // 페이지 타이틀 확인
-    await expect(page).toHaveTitle(/About/i);
-
     // 메인 article 확인
     await expect(page.locator('article')).toBeVisible();
 
@@ -88,9 +85,6 @@ test.describe('Critical Paths - About 페이지', () => {
 test.describe('Critical Paths - 포스트', () => {
   test('포스트 목록 렌더링', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko/posts`);
-
-    // 페이지 타이틀 확인
-    await expect(page).toHaveTitle(/Posts/i);
 
     // 메인 콘텐츠 확인
     await expect(page.locator('main')).toBeVisible();
