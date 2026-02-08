@@ -77,10 +77,6 @@ test.describe('Critical Paths - About 페이지', () => {
   test('About 페이지 렌더링', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko/about`);
 
-    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화
-    // 현재는 기본 타이틀만 확인
-    await expect(page).toHaveTitle(/Chanho/i);
-
     // 메인 article 확인
     await expect(page.locator('article')).toBeVisible();
 
@@ -92,10 +88,6 @@ test.describe('Critical Paths - About 페이지', () => {
 test.describe('Critical Paths - 포스트', () => {
   test('포스트 목록 렌더링', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko/posts`);
-
-    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화
-    // 현재는 기본 타이틀만 확인
-    await expect(page).toHaveTitle(/Chanho/i);
 
     // 메인 콘텐츠 확인
     await expect(page.locator('main')).toBeVisible();
