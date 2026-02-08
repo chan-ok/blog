@@ -3,10 +3,88 @@ import type { LinkProps as RouterLinkProps } from '@tanstack/react-router';
 
 import { useLocaleStore } from '@/shared/stores/locale-store';
 
-interface LinkProps extends Omit<RouterLinkProps, 'to'> {
+interface LinkProps extends Omit<RouterLinkProps, 'to' | 'params'> {
   href: string;
   children?: React.ReactNode;
   className?: string;
+}
+
+/**
+ * 내부 링크를 TanStack Router의 타입 안전한 형식으로 변환합니다.
+ *
+ * @param href - 변환할 경로 (예: "/about", "/posts", "/ko/contact")
+ * @param currentLocale - 현재 locale (예: "ko", "en", "ja")
+ * @returns TanStack Router의 to와 params 객체
+ */
+function parseInternalLink(href: string, currentLocale: string) {
+  // 이미 locale이 포함되어 있는지 확인 (/ko/*, /en/*, /ja/*)
+  const localeMatch = href.match(/^\/(ko|en|ja)(\/|$)/);
+
+  if (localeMatch) {
+    // 이미 locale이 있으면 해당 locale 사용
+    const detectedLocale = localeMatch[1];
+    const path = href.slice(detectedLocale.length + 1) || '/';
+
+    if (path === '/') {
+      return { to: '/$locale' as const, params: { locale: detectedLocale } };
+    }
+
+    // 경로 패턴 매칭
+    if (path === '/about') {
+      return {
+        to: '/$locale/about' as const,
+        params: { locale: detectedLocale },
+      };
+    } else if (path === '/contact') {
+      return {
+        to: '/$locale/contact' as const,
+        params: { locale: detectedLocale },
+      };
+    } else if (path === '/posts') {
+      return {
+        to: '/$locale/posts' as const,
+        params: { locale: detectedLocale },
+      };
+    } else if (path.startsWith('/posts/')) {
+      const postPath = path.slice(7); // Remove '/posts/'
+      return {
+        to: '/$locale/posts/$' as const,
+        params: { locale: detectedLocale, _splat: postPath },
+      };
+    }
+
+    // 일치하는 경로가 없으면 루트로 폴백
+    return { to: '/$locale' as const, params: { locale: detectedLocale } };
+  }
+
+  // locale이 없으면 현재 locale 사용
+  if (href === '/' || href === '') {
+    return { to: '/$locale' as const, params: { locale: currentLocale } };
+  }
+
+  // 슬래시로 시작하는지 확인하고 정규화
+  const normalizedPath = href.startsWith('/') ? href : `/${href}`;
+
+  // 경로 패턴 매칭
+  if (normalizedPath === '/about') {
+    return { to: '/$locale/about' as const, params: { locale: currentLocale } };
+  } else if (normalizedPath === '/contact') {
+    return {
+      to: '/$locale/contact' as const,
+      params: { locale: currentLocale },
+    };
+  } else if (normalizedPath === '/posts') {
+    return { to: '/$locale/posts' as const, params: { locale: currentLocale } };
+  } else if (normalizedPath.startsWith('/posts/')) {
+    const postPath = normalizedPath.slice(7); // Remove '/posts/'
+    return {
+      to: '/$locale/posts/$' as const,
+      params: { locale: currentLocale, _splat: postPath },
+    };
+  }
+
+  // 일치하는 경로가 없으면 루트로 폴백
+  return { to: '/$locale' as const, params: { locale: currentLocale } };
 }
 
 export default function Link({
@@ -17,37 +95,25 @@ export default function Link({
 }: LinkProps) {
   const { locale } = useLocaleStore();
   const isExternal = href.startsWith('http');
-  const isStartsWithSlash = href.startsWith('/');
-  const isRoot = href === '/';
 
-  // 이미 locale이 포함되어 있는지 확인 (/ko/*, /en/*, /ja/*)
-  const hasLocale = /^\/(ko|en|ja)(\/|$)/.test(href);
-
-  let localizedHref: string;
+  // 외부 링크는 일반 <a> 태그로 처리
   if (isExternal) {
-    // 외부 링크는 그대로 유지
-    localizedHref = href;
-  } else if (hasLocale) {
-    // 이미 locale이 있으면 그대로 유지
-    localizedHref = href;
-  } else if (isRoot) {
-    // 루트 경로는 locale만 추가
-    localizedHref = `/${locale}`;
-  } else if (isStartsWithSlash) {
-    // 슬래시로 시작하면 locale 추가
-    localizedHref = `/${locale}${href}`;
-  } else {
-    // 슬래시 없으면 locale과 슬래시 모두 추가
-    localizedHref = `/${locale}/${href}`;
+    return (
+      <a
+        href={href}
+        className={className}
+        {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      >
+        {children}
+      </a>
+    );
   }
 
+  // 내부 링크를 TanStack Router 형식으로 변환
+  const { to, params } = parseInternalLink(href, locale);
+
   return (
-    <RouterLink
-      // @ts-ignore - TanStack Router 타입 이슈
-      to={localizedHref}
-      className={className}
-      {...props}
-    >
+    <RouterLink to={to} params={params} className={className} {...props}>
       {children}
     </RouterLink>
   );
