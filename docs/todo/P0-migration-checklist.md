@@ -25,7 +25,6 @@ related:
 
 - [ ] 현재 프로젝트 백업
   - [ ] Git 브랜치 생성: `migration/tanstack-router`
-  - [ ] 로컬 백업 (zip 파일)
 - [ ] TanStack Router 공식 문서 최신 버전 확인
 - [ ] 개발 환경 테스트
   - [ ] Node.js 버전 확인 (v18+)
@@ -50,21 +49,23 @@ related:
 
 ### 1.2 패키지 설치
 
-- [ ] TanStack Router 설치
+- [ ] TanStack Router + 통합 DevTools 설치
   ```bash
-  pnpm add @tanstack/react-router @tanstack/router-devtools
+  pnpm add @tanstack/react-router @tanstack/react-query
+  pnpm add -D @tanstack/react-router-devtools
   ```
 - [ ] 빌드 도구 설치
   ```bash
   pnpm add -D vite @vitejs/plugin-react vite-tsconfig-paths @tanstack/router-vite-plugin
   ```
-- [ ] MDX 설치
+- [ ] MDX + 플러그인 설치
   ```bash
-  pnpm add @mdx-js/mdx @mdx-js/react
+  pnpm add @mdx-js/mdx @mdx-js/react gray-matter
+  pnpm add remark-gfm remark-frontmatter rehype-highlight
   ```
-- [ ] 이미지 최적화 도구
+- [ ] 이미지 최적화 도구 (Vite Plugin)
   ```bash
-  pnpm add -D sharp vite-plugin-image-optimizer
+  pnpm add -D vite-plugin-image-optimizer
   ```
 - [ ] Storybook 프레임워크 변경
   ```bash
@@ -75,7 +76,7 @@ related:
 
 - [ ] `vite.config.ts` 생성
   - [ ] React 플러그인
-  - [ ] TanStack Router 플러그인
+  - [ ] TanStack Router 플러그인 (**generatedRouteTree**: `'./src/shared/config/route/routeTree.gen.ts'`)
   - [ ] tsconfig paths
   - [ ] Image optimizer 플러그인
   - [ ] alias 설정 (`@` → `/src`)
@@ -94,10 +95,8 @@ related:
 ### 1.4 package.json 스크립트 수정
 
 - [ ] `dev`: `vite`
-- [ ] `build`: `vite build`
+- [ ] `build`: `vite build` (Vite Plugin이 자동으로 이미지 최적화)
 - [ ] `preview`: `vite preview`
-- [ ] `optimize:images`: `node scripts/optimize-images.js`
-- [ ] `prebuild`: `pnpm optimize:images`
 
 ### 1.5 환경 변수 변경
 
@@ -130,7 +129,7 @@ related:
 
 - [ ] `src/main.tsx` 생성
   - [ ] RouterProvider 설정
-  - [ ] routeTree import
+  - [ ] routeTree import (`@/shared/config/route/routeTree.gen`)
   - [ ] globals.css import
   - [ ] StrictMode
   - [ ] createRoot
@@ -143,7 +142,7 @@ related:
   - [ ] 타이틀
   - [ ] Google Fonts 링크 (Noto Sans, Noto Sans KR, Noto Sans JP)
   - [ ] Cloudflare Turnstile 스크립트
-  - [ ] TanStackRouterDevtools (dev 환경만)
+  - [ ] **통합 DevTools** (`@tanstack/react-router-devtools`) - dev 환경만
   - [ ] Outlet 컴포넌트
 
 ### 2.4 인덱스 리다이렉트
@@ -197,21 +196,22 @@ related:
 ### 3.1 getMarkdown 유틸 수정
 
 - [ ] `src/entities/markdown/util/get-markdown.ts` 열기
-- [ ] `@mdx-js/mdx`의 `compile` import
+- [ ] `@mdx-js/mdx`의 `compile`, `gray-matter` import
 - [ ] `process.env.NEXT_PUBLIC_GIT_RAW_URL` → `import.meta.env.VITE_GIT_RAW_URL`
+- [ ] `gray-matter`로 frontmatter 분리
 - [ ] `compile` 함수로 MDX 컴파일
-  - [ ] `outputFormat: 'function-body'`
-  - [ ] remarkPlugins 설정
-  - [ ] rehypePlugins 설정
+  - [ ] `outputFormat: 'function-body'` ⭐
+  - [ ] remarkPlugins: `[remarkGfm, remarkFrontmatter]`
+  - [ ] rehypePlugins: `[rehypeHighlight]`
 - [ ] 반환값: `{ source: String(compiled), frontmatter }`
 
 ### 3.2 MDXComponent 수정
 
 - [ ] `src/entities/markdown/index.tsx` 열기
 - [ ] `next-mdx-remote-client` 제거
-- [ ] `react/jsx-runtime` import
-- [ ] `useMemo`로 런타임 실행
-  - [ ] `new Function(source)(runtime)`
+- [ ] `react/jsx-runtime` import ⭐
+- [ ] `useMemo`로 런타임 실행 (캐싱)
+  - [ ] `new Function(...Object.keys(runtime), source)(...Object.values(runtime))` ⭐
   - [ ] `Component` 추출
 - [ ] 커스텀 컴포넌트 적용 (Typography, Code)
 
@@ -230,7 +230,10 @@ related:
 ### 4.1 OptimizedImage 컴포넌트 생성
 
 - [ ] `src/shared/components/ui/image/index.tsx` 생성
-- [ ] `<picture>` 태그 사용
+- [ ] **외부 URL 감지 로직** 추가 (http/https 시작)
+  - [ ] 외부 이미지: 직접 `<img>` 로드
+  - [ ] 로컬 이미지: `<picture>` 태그 사용
+- [ ] `<picture>` 태그 구조
   - [ ] `<source srcSet="*.avif" type="image/avif" />`
   - [ ] `<source srcSet="*.webp" type="image/webp" />`
   - [ ] `<img>` fallback
@@ -296,35 +299,38 @@ related:
 
 ---
 
-## 🖼️ Phase 5: 이미지 최적화 (Sharp) (1일)
+## 🖼️ Phase 5: 이미지 최적화 (Vite Plugin) (0.5일)
 
-### 5.1 Sharp 스크립트 작성
+### 5.1 Vite Plugin 설정 확인
 
-- [ ] `scripts/optimize-images.js` 생성
-- [ ] sharp, glob import
-- [ ] `public/image/**/*.{jpg,jpeg,png}` 검색
-- [ ] 각 이미지에 대해:
-  - [ ] WebP 변환 (quality: 80)
-  - [ ] AVIF 변환 (quality: 70)
-  - [ ] 진행 상황 로그
+- [ ] `vite.config.ts`에서 `ViteImageOptimizer` 설정 확인
+  - [ ] png, jpeg, webp, avif 품질 설정
+  - [ ] cache 활성화 확인
 
-### 5.2 스크립트 테스트
+### 5.2 OptimizedImage 컴포넌트 (4.1에서 완료)
 
-- [ ] `pnpm optimize:images` 실행
-- [ ] `public/image/` 디렉토리 확인
-  - [ ] `.webp` 파일 생성 확인
-  - [ ] `.avif` 파일 생성 확인
+- [ ] 외부/로컬 이미지 감지 로직 재확인
+- [ ] `<picture>` 태그 구조 재확인
+
+### 5.3 빌드 테스트
+
+- [ ] 로컬 이미지 준비 (`public/image/**/*.{jpg,png}`)
+- [ ] `pnpm build` 실행
+- [ ] `dist/image/` 디렉토리 확인
+  - [ ] `.webp` 파일 자동 생성 확인
+  - [ ] `.avif` 파일 자동 생성 확인
 - [ ] 용량 비교 (원본 vs WebP vs AVIF)
 
-### 5.3 빌드 통합
+### 5.4 외부 썸네일 테스트
 
-- [ ] `package.json`의 `prebuild` 스크립트 확인
-- [ ] `pnpm build` 실행 시 자동으로 이미지 최적화 확인
+- [ ] GitHub Raw URL 썸네일 렌더링 테스트
+- [ ] 네트워크 탭에서 직접 로드 확인
+- [ ] lazy loading 동작 확인
 
-### 5.4 .gitignore 업데이트
+### 5.5 .gitignore 업데이트
 
 - [ ] 최적화된 이미지 파일 Git 추적 여부 결정
-  - [ ] 옵션 1: Git에 포함 (배포 빠름)
+  - [ ] 옵션 1: Git에 포함 (권장 - 배포 빠름)
   - [ ] 옵션 2: Git에서 제외 (빌드 시 생성)
 - [ ] 선택한 옵션에 따라 `.gitignore` 수정
 
@@ -337,7 +343,6 @@ related:
 - [ ] `src/routes/__root.tsx`의 `<head>` 섹션
 - [ ] preconnect 링크 추가
   - [ ] `https://fonts.googleapis.com`
-  - [ ] `https://fonts.gstatic.com`
 - [ ] 폰트 로드 링크
   - [ ] Noto Sans (영어)
   - [ ] Noto Sans KR (한국어)
@@ -586,7 +591,8 @@ related:
 ### 9.9 이미지 최적화 확인
 
 - [ ] 네트워크 탭에서 이미지 확인
-- [ ] AVIF/WebP 로드 확인 (브라우저 지원 시)
+- [ ] **로컬 이미지**: AVIF/WebP 로드 확인 (브라우저 지원 시)
+- [ ] **외부 썸네일**: 직접 로드 확인 (GitHub Raw)
 - [ ] Fallback 이미지 로드 확인 (구형 브라우저)
 - [ ] lazy loading 동작 확인
 
@@ -668,8 +674,7 @@ related:
 
 ### 11.1 모니터링 설정
 
-- [ ] 에러 추적 도구 연동 (Sentry, Rollbar 등)
-- [ ] 성능 모니터링 (Google Analytics, Vercel Analytics)
+- [ ] 성능 모니터링 (Google Analytics)
 - [ ] Uptime 모니터링 (UptimeRobot, Pingdom)
 - [ ] Netlify Logs 확인
 
@@ -699,6 +704,8 @@ related:
 
 ## 📊 진행 상태 트래킹
 
+> **💡 Tip**: [dashboard.md](../dashboard.md)에서 전체 현황을 한눈에 확인할 수 있습니다.
+
 | Phase    | 작업 내용     | 예상 시간      | 실제 시간 | 상태    | 완료일 |
 | -------- | ------------- | -------------- | --------- | ------- | ------ |
 | Pre      | 사전 준비     | 0.5일          | -         | 🔲 대기 | -      |
@@ -706,20 +713,22 @@ related:
 | Phase 2  | 라우팅        | 2-3일          | -         | 🔲 대기 | -      |
 | Phase 3  | MDX           | 1일            | -         | 🔲 대기 | -      |
 | Phase 4  | 컴포넌트      | 1-2일          | -         | 🔲 대기 | -      |
-| Phase 5  | 이미지 최적화 | 1일            | -         | 🔲 대기 | -      |
+| Phase 5  | 이미지 최적화 | 0.5일          | -         | 🔲 대기 | -      |
 | Phase 6  | 웹폰트        | 0.5일          | -         | 🔲 대기 | -      |
 | Phase 7  | 보안          | 0.5일          | -         | 🔲 대기 | -      |
 | Phase 8  | 배포 설정     | 0.5일          | -         | 🔲 대기 | -      |
 | Phase 9  | 테스트        | 1-2일          | -         | 🔲 대기 | -      |
 | Phase 10 | 배포          | 1일            | -         | 🔲 대기 | -      |
 | Post     | 사후 관리     | 지속           | -         | 🔲 대기 | -      |
-| **합계** |               | **9.5-13.5일** | -         | -       | -      |
+| **합계** |               | **8.5-12.5일** | -         | -       | -      |
 
 **범례**: 🔲 대기 | 🔄 진행 중 | ✅ 완료 | ❌ 차단됨
 
 ---
 
 ## 🐛 이슈 트래킹
+
+> **💡 Tip**: [dashboard.md](../dashboard.md)에서도 이슈 현황을 확인할 수 있습니다.
 
 ### 발견된 문제
 
@@ -738,7 +747,11 @@ related:
 
 - ✅ CSR Only (TanStack Router만 사용, TanStack Start 제외)
 - ✅ Netlify Functions 유지 (보안 로직 처리)
-- ✅ Sharp로 이미지 최적화 (빌드 시)
+- ✅ **Vite Plugin 이미지 최적화** (로컬 이미지 자동 처리)
+- ✅ **외부 썸네일** (GitHub Raw URLs 직접 로드 + lazy loading)
+- ✅ **통합 DevTools** (`@tanstack/react-router-devtools`)
+- ✅ **TanStack Router Meta 함수** (react-helmet-async 불필요)
+- ✅ **MDX 컴파일** (compile + new Function 방식)
 - ✅ Google Fonts 웹폰트 (영어, 한국어, 일본어)
 - ✅ SEO 고려 안 함 (개인 블로그)
 
@@ -748,12 +761,22 @@ related:
 - Type-safe navigation
 - Prefetch 기본 지원 (`defaultPreload: 'intent'`)
 - Loader로 데이터 fetch (React Query 스타일)
+- 내장 Meta 함수 (SEO 메타데이터 관리)
 
-### Sharp 이미지 최적화
+### Vite Plugin 이미지 최적화
 
+- 로컬 이미지: 빌드 시 자동 최적화 (WebP, AVIF 생성)
 - WebP: 용량 30-50% 절감
 - AVIF: 용량 50-70% 절감
+- 외부 이미지 (GitHub Raw): 직접 로드 + lazy loading
 - `<picture>` 태그로 브라우저별 최적 포맷 제공
+
+### MDX 컴파일 전략
+
+- `@mdx-js/mdx`로 사전 컴파일 (`outputFormat: 'function-body'`)
+- `new Function()` 방식으로 런타임 실행
+- `useMemo`로 캐싱 (source 변경 시에만 재실행)
+- `react/jsx-runtime` 주입으로 JSX 렌더링
 
 ### 보안 고려사항
 
@@ -770,7 +793,9 @@ related:
 ### 참고 링크
 
 - [TanStack Router 공식 문서](https://tanstack.com/router)
-- [Sharp 공식 문서](https://sharp.pixelplumbing.com/)
+- [TanStack DevTools 공식 문서](https://tanstack.com/devtools/latest/docs/installation)
+- [Vite Plugin Image Optimizer](https://github.com/FatehAK/vite-plugin-image-optimizer)
+- [MDX 공식 문서](https://mdxjs.com/)
 - [Netlify Functions 문서](https://docs.netlify.com/functions/overview/)
 
 ---

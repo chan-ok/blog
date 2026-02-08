@@ -27,27 +27,74 @@
         "task": {
           "*": "allow"
         },
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny",
+          "dashboard.md": "allow",
+          "docs/phase*.md": "allow",
+          "docs/dashboard.md": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "dashboard.md": "allow",
+          "docs/phase*.md": "allow",
+          "docs/dashboard.md": "allow"
+        },
         "bash": {
           "*": "ask",
           "date *": "allow",
           "echo *": "allow",
-          "cat *": "allow",
-          "mkdir *": "allow",
+          "cat dashboard.md": "allow",
+          "cat docs/*.md": "allow",
+          "cat package.json": "allow",
+          "cat tsconfig.json": "allow",
+          "cat vite.config.ts": "allow",
+          "cat .env.example": "allow",
+          "cat src/**/*.ts": "allow",
+          "cat src/**/*.tsx": "allow",
+          "mkdir .worktrees/*": "allow",
+          "mkdir docs/*": "allow",
           "sleep *": "allow",
-          "git branch --show-current": "allow",
           "pnpm install *": "ask",
           "pnpm update *": "ask",
           "pnpm test *": "allow",
+          "pnpm coverage *": "allow",
+          "pnpm lint *": "allow",
+          "pnpm tsc *": "allow",
+          "pnpm exec vitest *": "allow",
+          "pnpm exec tsc *": "allow",
+          "webfetch": "allow",
           ".agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
           "ls *": "allow",
-          "git status *": "allow",
-          "git diff *": "allow",
-          "git log *": "allow",
-          "gh pr create *": "allow",
+          "head *": "allow",
+          "find . -name '*.ts' -o -name '*.tsx'": "allow",
+          "find . -name '*.test.ts'": "allow",
+          "find . -name '*.md'": "allow",
+          "wc *": "allow",
+          "git status": "allow",
+          "git status --short": "allow",
+          "git diff": "allow",
+          "git diff --staged": "allow",
+          "git log --oneline -10": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
-          "head *": "allow"
+          "afplay /System/Library/Sounds/Funk.aiff": "allow",
+          "grep *": "allow",
+          "grep -c *": "allow",
+          "grep -A *": "allow",
+          "grep -B *": "allow",
+          "grep -n *": "allow",
+          "grep -iE *": "allow",
+          "grep -E *": "allow",
+          "cat opencode.json | grep *": "allow",
+          "git diff *": "allow",
+          "git log *": "allow"
         }
       }
     },
@@ -55,26 +102,338 @@
       "mode": "subagent",
       "description": "Develops features using TDD methodology",
       "prompt": "{file:.agents/agents/feature-developer.md}",
-      "hidden": true
+      "hidden": true,
+      "permission": {
+        "bash": {
+          "*": "ask",
+          "ls *": "allow",
+          "cat src/**/*.ts": "allow",
+          "cat src/**/*.tsx": "allow",
+          "cat *.config.ts": "allow",
+          "cat package.json": "allow",
+          "cat tsconfig.json": "allow",
+          "pnpm test *": "allow",
+          "pnpm coverage *": "allow",
+          "pnpm lint *": "allow",
+          "pnpm tsc *": "allow",
+          "pnpm exec vitest *": "allow",
+          "pnpm exec tsc *": "allow",
+          "find . -name '*.ts' -o -name '*.tsx'": "allow",
+          "find . -name '*.test.ts'": "allow",
+          "wc *": "allow",
+          "git status": "allow",
+          "git status --short": "allow",
+          "git diff": "allow",
+          "git diff --staged": "allow",
+          "git log --oneline -10": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow",
+          "git add src/**/*.ts": "ask",
+          "git add src/**/*.tsx": "ask",
+          "git add *.config.ts": "ask",
+          "gh pr view *": "allow",
+          "gh pr checks *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+        }
+      }
     },
     "test-specialist": {
       "mode": "subagent",
       "description": "Writes comprehensive tests",
       "prompt": "{file:.agents/agents/test-specialist.md}",
-      "hidden": true
+      "hidden": true,
+      "permission": {
+        "bash": {
+          "*": "ask",
+          "ls *": "allow",
+          "cat src/**/*.ts": "allow",
+          "cat src/**/*.tsx": "allow",
+          "cat src/**/*.test.ts": "allow",
+          "cat src/**/*.test.tsx": "allow",
+          "cat src/**/*.stories.tsx": "allow",
+          "cat *.config.ts": "allow",
+          "cat package.json": "allow",
+          "cat tsconfig.json": "allow",
+          "pnpm test *": "allow",
+          "pnpm coverage *": "allow",
+          "pnpm lint *": "allow",
+          "pnpm tsc *": "allow",
+          "pnpm exec vitest *": "allow",
+          "pnpm exec tsc *": "allow",
+          "pnpm storybook": "allow",
+          "pnpm build-storybook": "allow",
+          "find . -name '*.test.ts'": "allow",
+          "find . -name '*.test.tsx'": "allow",
+          "find . -name '*.stories.tsx'": "allow",
+          "wc *": "allow",
+          "git status": "allow",
+          "git status --short": "allow",
+          "git diff": "allow",
+          "git diff --staged": "allow",
+          "git log --oneline -10": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow",
+          "git add src/**/*.test.ts": "ask",
+          "git add src/**/*.test.tsx": "ask",
+          "git add src/**/*.stories.tsx": "ask",
+          "gh pr view *": "allow",
+          "gh pr checks *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+        }
+      }
+    },
+    "lint-formatter": {
+      "mode": "subagent",
+      "description": "Fixes formatting and linting errors without changing code behavior",
+      "prompt": "{file:.agents/agents/lint-formatter.md}",
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny"
+        },
+        "edit": {
+          "src/**/*.ts": "ask",
+          "src/**/*.tsx": "ask",
+          "*.config.ts": "ask"
+        },
+        "bash": {
+          "*": "ask",
+          "ls *": "allow",
+          "cat src/**/*.ts": "allow",
+          "cat src/**/*.tsx": "allow",
+          "cat *.config.ts": "allow",
+          "cat package.json": "allow",
+          "cat tsconfig.json": "allow",
+          "pnpm fmt": "allow",
+          "pnpm lint": "allow",
+          "pnpm lint --fix": "allow",
+          "pnpm tsc --noEmit": "allow",
+          "pnpm exec tsc --noEmit": "allow",
+          "find . -name '*.ts' -o -name '*.tsx'": "allow",
+          "wc *": "allow",
+          "git status": "allow",
+          "git status --short": "allow",
+          "git diff": "allow",
+          "git diff --staged": "allow",
+          "git add src/**/*.ts": "ask",
+          "git add src/**/*.tsx": "ask",
+          "git add *.config.ts": "ask",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+        }
+      }
     },
     "security-scanner": {
       "mode": "subagent",
       "description": "Scans for security vulnerabilities",
       "prompt": "{file:.agents/agents/security-scanner.md}",
-      "hidden": true
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "bash": {
+          "*": "ask",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow",
+          "ls *": "allow",
+          "cat src/**/*.ts": "allow",
+          "cat src/**/*.tsx": "allow",
+          "cat docs/**/*.md": "allow",
+          "cat package.json": "allow",
+          "cat pnpm-lock.yaml": "allow",
+          "cat .gitignore": "allow",
+          "cat .env.example": "allow",
+          "pnpm audit": "allow",
+          "pnpm audit --json": "allow",
+          "find . -name '.env*'": "allow",
+          "find . -name '*.ts' -o -name '*.tsx'": "allow",
+          "wc *": "allow",
+          "git status": "allow",
+          "git status --short": "allow",
+          "git diff": "allow",
+          "git diff --staged": "allow",
+          "git diff --cached --name-only": "allow",
+          "git diff develop..HEAD": "allow",
+          "git show *": "allow",
+          "git log --oneline -10": "allow",
+          "git log --oneline *": "allow",
+          "git log develop..HEAD *": "allow",
+          "git ls-tree -r HEAD --name-only": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow",
+          "grep -r *": "allow",
+          "grep -iE *": "allow",
+          "grep -E *": "allow",
+          "grep -n *": "allow",
+          "gh pr view *": "allow",
+          "gh pr checks *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+        }
+      }
     },
-    "doc-validator": {
+    "doc-manager": {
       "mode": "subagent",
-      "description": "Validates documentation accuracy",
-      "prompt": "{file:.agents/agents/doc-validator.md}",
-      "model": "openai/gpt-5.2-codex",
-      "hidden": true
+      "description": "Manages and maintains all project documentation including agent prompts",
+      "prompt": "{file:.agents/agents/doc-manager.md}",
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny",
+          "docs/*.md": "allow",
+          ".agents/agents/*.md": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "docs/*.md": "allow",
+          ".agents/agents/*.md": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "ls *": "allow",
+          "cat docs/*.md": "allow",
+          "cat .agents/agents/*.md": "allow",
+          "cat src/**/*.ts": "allow",
+          "cat src/**/*.tsx": "allow",
+          "cat package.json": "allow",
+          "cat tsconfig.json": "allow",
+          "cat *.config.ts": "allow",
+          "find . -name '*.md'": "allow",
+          "find . -name '*.ts' -o -name '*.tsx'": "allow",
+          "wc *": "allow",
+          "git status": "allow",
+          "git diff": "allow",
+          "git log --oneline -10": "allow",
+          "git branch --show-current": "allow",
+          "git add docs/*.md": "ask",
+          "git add .agents/agents/*.md": "ask",
+          "gh pr view *": "allow",
+          "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+        }
+      }
+    },
+    "git-guardian": {
+      "mode": "subagent",
+      "description": "Git workflow management and safe version control",
+      "prompt": "{file:.agents/agents/git-guardian.md}",
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "bash": {
+          "*": "ask",
+          "date *": "allow",
+          "ls *": "allow",
+          "rm -f .git/index.lock": "allow",
+          "git status": "allow",
+          "git status --short": "allow",
+          "git diff": "allow",
+          "git diff --staged": "allow",
+          "git diff --cached": "allow",
+          "git diff HEAD": "allow",
+          "git log --oneline -10": "allow",
+          "git log --oneline -50": "allow",
+          "git log -1 --format='%an %ae'": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow",
+          "git fetch origin": "allow",
+          "git fetch --all": "allow",
+          "git checkout -b *": "allow",
+          "git checkout develop": "allow",
+          "git checkout main": "allow",
+          "git add .": "ask",
+          "git add -A": "ask",
+          "git add src/**/*": "ask",
+          "git add docs/*.md": "ask",
+          "git add .agents/agents/*.md": "ask",
+          "git add *.config.ts": "ask",
+          "git add opencode.json": "ask",
+          "git reset HEAD *": "allow",
+          "git stash": "allow",
+          "git stash pop": "allow",
+          "git stash list": "allow",
+          "git stash drop": "ask",
+          "git worktree add *": "allow",
+          "git worktree list": "allow",
+          "git worktree remove *": "ask",
+          "git merge --no-ff *": "ask",
+          "git merge --abort": "allow",
+          "git rm --cached .env*": "allow",
+          "git rm --cached node_modules/*": "allow",
+          "git config --get *": "allow",
+          "git commit -m *": "ask",
+          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+        }
+      }
+    },
+    "github-helper": {
+      "mode": "subagent",
+      "description": "GitHub integration using gh CLI",
+      "prompt": "{file:.agents/agents/github-helper.md}",
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny"
+        },
+        "edit": {
+          "*": "deny"
+        },
+        "bash": {
+          "*": "ask",
+          "ls *": "allow",
+          "git status": "allow",
+          "git diff": "allow",
+          "git log --oneline -10": "allow",
+          "git log --oneline -50": "allow",
+          "git diff develop...HEAD": "allow",
+          "git branch --show-current": "allow",
+          "gh pr create *": "ask",
+          "gh pr view *": "allow",
+          "gh pr list": "allow",
+          "gh pr checks *": "allow",
+          "gh pr comment *": "ask",
+          "gh pr merge *": "ask",
+          "gh issue create *": "ask",
+          "gh issue view *": "allow",
+          "gh issue list": "allow",
+          "gh run list": "allow",
+          "gh run view *": "allow",
+          "gh api repos/*/*/pulls/*/comments": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+        }
+      }
     }
   },
   "permission": {
@@ -87,13 +446,18 @@
     },
     "git commit *": "deny",
     "git push *": "deny",
-
+    "git reset --hard *": "deny",
+    "git rebase *": "deny",
     "bash": "ask",
     "zsh": "ask",
     "pnpm install *": "ask",
     "pnpm update *": "ask",
-
     "pnpm test *": "allow",
+    "pnpm coverage *": "allow",
+    "pnpm lint *": "allow",
+    "pnpm tsc *": "allow",
+    "pnpm exec vitest *": "allow",
+    "pnpm exec tsc *": "allow",
     "task": "allow",
     "webfetch": "allow",
     "websearch": "allow",
@@ -106,13 +470,42 @@
     "question": "allow",
     "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
     "ls *": "allow",
+    "head *": "allow",
+    "find . -name '*.ts' -o -name '*.tsx'": "allow",
+    "find . -name '*.test.ts'": "allow",
+    "find . -name '*.md'": "allow",
+    "tail *": "allow",
+    "wc *": "allow",
+    "rm -f .git/index.lock": "allow",
     "git status *": "allow",
     "git diff *": "allow",
     "git log *": "allow",
-    "gh pr create *": "allow",
+    "git branch --show-current": "allow",
+    "git branch --list": "allow",
+    "git fetch *": "allow",
+    "git checkout -b *": "allow",
+    "git checkout develop": "allow",
+    "git checkout main": "allow",
+    "git add .": "ask",
+    "git add -A": "ask",
+    "git add *.ts": "ask",
+    "git add *.tsx": "ask",
+    "git add docs/*.md": "allow",
+    "git reset HEAD *": "allow",
+    "git stash": "allow",
+    "git stash pop": "allow",
+    "git stash list": "allow",
+    "git worktree add *": "allow",
+    "git worktree list": "allow",
+    "git worktree remove *": "ask",
+    "git merge --no-ff *": "ask",
+    "git rm --cached .env*": "allow",
+    "git rm --cached node_modules/*": "allow",
+    "git config --get *": "allow",
+    "git commit --no-verify *": "deny",
+    "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
     "gh pr view *": "allow",
     "gh pr checks *": "allow",
-    "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
-    "head *": "allow"
+    "afplay /System/Library/Sounds/Funk.aiff": "allow"
   }
 }

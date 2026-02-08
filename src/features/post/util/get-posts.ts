@@ -1,20 +1,32 @@
+import { api } from '@/shared/config/api';
 import { compareDesc } from 'date-fns';
 
 import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.schema';
 import { GetPostsProps, PagingPosts } from '../model/post.schema';
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
-  'use server';
   const { locale, page = 0, size = 10, tags = [] } = props;
 
-  const baseURL = process.env.NEXT_PUBLIC_GIT_RAW_URL;
+  // Vite 환경 변수 사용
+  const baseURL = import.meta.env.VITE_GIT_RAW_URL;
+
+  if (!baseURL) {
+    console.error('VITE_GIT_RAW_URL is not defined');
+    return {
+      posts: [],
+      total: 0,
+      page,
+      size,
+    };
+  }
 
   try {
-    const response = await fetch(`${baseURL}/${locale}/index.json`, {
-      next: { revalidate: 60 },
+    // axios 사용 (get-markdown.ts와 일관성 유지)
+    const response = await api.get<PostInfo[]>(`/${locale}/index.json`, {
+      baseURL, // baseURL을 옵션으로 전달 (axios가 자동으로 조합)
     });
 
-    if (!response.ok) {
+    if (response.axios.status !== 200) {
       console.error('Failed to fetch posts');
       return {
         posts: [],
@@ -24,8 +36,11 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       };
     }
 
-    const data: PostInfo[] = await response.json();
-    const filteredPosts = data
+    if (!response.data) {
+      throw new Error('Failed to fetch posts: empty response');
+    }
+
+    const filteredPosts = response.data
       .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))
       .filter((post) => post.published)
       .filter(

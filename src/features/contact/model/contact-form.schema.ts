@@ -4,7 +4,7 @@ import z from 'zod';
 import { sanitizeInput } from '@/shared/util/sanitize';
 
 export const ContactFormInputsSchema = z.object({
-  from: z.email('Invalid email'),
+  from: z.string().email('Invalid email'),
   subject: z
     .string()
     .min(1, 'Subject is required')

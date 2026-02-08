@@ -1,6 +1,4 @@
-'use client';
-
-import Image from 'next/image';
+import OptimizedImage from '@/shared/components/ui/optimized-image';
 
 import { Frontmatter } from '@/entities/markdown/model/markdown.schema';
 import Button from '@/shared/components/ui/button';
@@ -24,13 +22,13 @@ export default function PostBasicCard({
   return (
     <article className="grid grid-cols-12 gap-y-4 gap-4 p-6 rounded-lg border border-zinc-100 bg-white shadow dark:border-zinc-800 dark:bg-gray-800">
       <div className="col-span-full md:col-span-6">
-        <Image
+        <OptimizedImage
           src={thumbnail || '/image/context.png'}
           alt={title}
           width={200}
           height={200}
           className="w-full h-full object-cover"
-          preload
+          priority
         />
       </div>
       <div className="col-span-full md:col-span-6 flex flex-col gap-0.5">

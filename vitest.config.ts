@@ -16,6 +16,7 @@ export default defineConfig({
     },
   },
   test: {
+    globals: true, // Enable global test APIs (describe, it, expect, etc.)
     exclude: ['**/node_modules/**', '**/.git/**'],
     projects: [
       // Unit tests project

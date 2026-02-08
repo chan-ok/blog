@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chanho's dev blog</title>
+
+    <!-- Google Fonts (영어, 한국어, 일본어) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- 폰트 적용 (인라인 스타일) -->
+    <style>
+      html,
+      body {
+        font-family: 'Inter', 'Noto Sans KR', 'Noto Sans JP', sans-serif;
+      }
+
+      html:lang(ko),
+      html:lang(ko) body {
+        font-family: 'Noto Sans KR', sans-serif;
+      }
+
+      html:lang(en),
+      html:lang(en) body {
+        font-family: 'Inter', sans-serif;
+      }
+
+      html:lang(ja),
+      html:lang(ja) body {
+        font-family: 'Noto Sans JP', sans-serif;
+      }
+    </style>
+
+    <!-- Cloudflare Turnstile -->
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+      defer
+    ></script>
+  </head>
+  <body class="relative isolate antialiased">
+    <div id="root"></div>
+    <!-- Buffer polyfill for browser (gray-matter 호환성) -->
+    <script type="module">
+      import { Buffer } from 'buffer';
+      window.Buffer = Buffer;
+      window.global = window;
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

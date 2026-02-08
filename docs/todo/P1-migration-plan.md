@@ -49,7 +49,11 @@ references:
 
 - ✅ **CSR Only**: TanStack Start 사용 안 함 (안정성 우선)
 - ✅ **Netlify Functions 유지**: 보안 로직 (Turnstile, 메일 전송)
-- ✅ **Sharp 이미지 최적화**: 빌드 시 수동 최적화
+- ✅ **Vite Plugin 이미지 최적화**: 로컬 이미지 자동 최적화
+- ✅ **외부 이미지 처리**: GitHub Raw URLs는 직접 로드 + lazy loading
+- ✅ **통합 DevTools**: `@tanstack/react-router-devtools` (Router + Query 포함)
+- ✅ **TanStack Router Meta**: 내장 meta 함수 사용 (react-helmet-async 불필요)
+- ✅ **MDX 컴파일**: `@mdx-js/mdx`의 compile + new Function 방식
 - ✅ **Google Fonts 웹폰트**: 영어, 한국어, 일본어 지원
 - ✅ **SEO**: 현재 고려 대상 아님 (개인 블로그)
 
@@ -93,17 +97,19 @@ pnpm remove next next-mdx-remote-client eslint-config-next @netlify/plugin-nextj
 ### 추가할 패키지
 
 ```bash
-# 라우터
-pnpm add @tanstack/react-router @tanstack/router-devtools
+# 라우터 + 통합 DevTools
+pnpm add @tanstack/react-router @tanstack/react-query
+pnpm add -D @tanstack/react-router-devtools
 
 # 빌드 도구
 pnpm add -D vite @vitejs/plugin-react vite-tsconfig-paths @tanstack/router-vite-plugin
 
 # MDX
-pnpm add @mdx-js/mdx @mdx-js/react
+pnpm add @mdx-js/mdx @mdx-js/react gray-matter
+pnpm add remark-gfm remark-frontmatter rehype-highlight
 
-# 이미지 최적화
-pnpm add -D sharp vite-plugin-image-optimizer
+# 이미지 최적화 (Vite Plugin)
+pnpm add -D vite-plugin-image-optimizer
 
 # Storybook
 pnpm add -D @storybook/react-vite
@@ -115,21 +121,31 @@ pnpm add -D @storybook/react-vite
 {
   "dependencies": {
     "@tanstack/react-router": "^1.x.x",
-    "@tanstack/router-devtools": "^1.x.x",
+    "@tanstack/react-query": "^5.x.x",
     "@mdx-js/mdx": "^3.x.x",
-    "@mdx-js/react": "^3.x.x"
+    "@mdx-js/react": "^3.x.x",
+    "gray-matter": "^4.x.x",
+    "remark-gfm": "^4.x.x",
+    "remark-frontmatter": "^5.x.x",
+    "rehype-highlight": "^7.x.x"
   },
   "devDependencies": {
     "vite": "^6.x.x",
     "@vitejs/plugin-react": "^4.x.x",
     "vite-tsconfig-paths": "^5.x.x",
     "@tanstack/router-vite-plugin": "^1.x.x",
-    "sharp": "^0.33.x",
+    "@tanstack/react-router-devtools": "^1.x.x",
     "vite-plugin-image-optimizer": "^1.x.x",
     "@storybook/react-vite": "^10.x.x"
   }
 }
 ```
+
+**중요 참고사항**:
+
+- **DevTools**: `@tanstack/react-router-devtools`는 Router + Query DevTools를 모두 포함합니다 ([공식 문서](https://tanstack.com/devtools/latest/docs/installation))
+- **이미지 최적화**: `vite-plugin-image-optimizer`를 사용하여 빌드 시 자동 최적화 (Sharp, SVG 등 지원)
+- **MDX**: `@mdx-js/mdx`로 컴파일하고 런타임에 `new Function()` 방식으로 실행
 
 ---
 
@@ -209,6 +225,14 @@ export const Route = createFileRoute('/$locale/posts/$')({
     const markdown = await getMarkdown(path);
     return { markdown };
   },
+  // Meta: SEO 메타데이터 (CSR이지만 기본 설정 가능)
+  meta: ({ loaderData }) => [
+    { title: loaderData?.markdown?.frontmatter?.title || 'Post' },
+    {
+      name: 'description',
+      content: loaderData?.markdown?.frontmatter?.excerpt || '',
+    },
+  ],
   component: PostDetailPage,
 });
 
@@ -223,6 +247,7 @@ function PostDetailPage() {
 - ❌ SSR 제거: 서버에서 사전 렌더링 안 함
 - ✅ 클라이언트 Loader: 브라우저에서 데이터 fetch
 - ✅ 코드 간결: `'use server'`, `await props.params` 불필요
+- ✅ 내장 Meta 함수: `react-helmet-async` 불필요
 
 ---
 
@@ -279,7 +304,12 @@ function RootLayout() {
       </head>
       <body className="relative isolate antialiased">
         <Outlet />
-        {import.meta.env.DEV && <TanStackRouterDevtools />}
+        {import.meta.env.DEV && (
+          <>
+            {/* 통합 DevTools: Router + Query 모두 포함 */}
+            <TanStackRouterDevtools position="bottom-right" />
+          </>
+        )}
       </body>
     </html>
   );
@@ -326,39 +356,76 @@ export default async function MDComponent({ path }) {
 }
 ```
 
-#### TanStack Router (@mdx-js/mdx)
+#### TanStack Router (@mdx-js/mdx + new Function)
+
+**중요**: 이 방식은 MDX를 **사전 컴파일**하고 **런타임에 실행**하는 2단계 접근입니다.
+
+##### 1단계: MDX 컴파일 (Loader에서 1회)
 
 ```tsx
 // src/entities/markdown/util/get-markdown.ts
 import { compile } from '@mdx-js/mdx';
 import matter from 'gray-matter';
+import remarkGfm from 'remark-gfm';
+import remarkFrontmatter from 'remark-frontmatter';
+import rehypeHighlight from 'rehype-highlight';
 
 export async function getMarkdown(path: string, baseUrl?: string) {
   const url = `${baseUrl || import.meta.env.VITE_GIT_RAW_URL}/${path}`;
   const response = await fetch(url);
   const source = await response.text();
+
+  // 1. Frontmatter 분리
   const { data: frontmatter, content } = matter(source);
 
-  // MDX 컴파일
+  // 2. MDX 컴파일 (한 번만 실행)
   const compiled = await compile(content, {
+    outputFormat: 'function-body', // ⭐ 핵심: function body만 출력
     remarkPlugins: [remarkGfm, remarkFrontmatter],
     rehypePlugins: [rehypeHighlight],
-    outputFormat: 'function-body',
   });
 
+  // 3. 컴파일된 코드를 문자열로 반환
   return {
-    source: String(compiled),
+    source: String(compiled), // JavaScript 함수 바디 (문자열)
     frontmatter,
   };
 }
+```
 
+**`outputFormat: 'function-body'`란?**
+
+- MDX를 JavaScript 함수의 **본문(body)** 형태로 컴파일
+- 런타임에 `new Function()`으로 실행 가능한 형태
+
+**컴파일 결과 예시**:
+
+```javascript
+// 입력 (MDX)
+# Hello World
+This is **bold**.
+
+// 출력 (function-body)
+"return _jsx('h1', { children: 'Hello World' }), _jsx('p', { children: ['This is ', _jsx('strong', { children: 'bold' })] })"
+```
+
+##### 2단계: 런타임 실행 (Component에서 캐싱)
+
+```tsx
 // src/entities/markdown/index.tsx
 import { useMemo } from 'react';
-import * as runtime from 'react/jsx-runtime';
+import * as runtime from 'react/jsx-runtime'; // ⭐ JSX 런타임 제공
+import setMdxComponents from './util/set-md-components';
 
 export default function MDXComponent({ source, frontmatter }) {
+  // useMemo로 캐싱 (source가 같으면 재실행 안 함)
   const MDXContent = useMemo(() => {
-    const { default: Component } = new Function(source)(runtime);
+    // new Function()으로 컴파일된 코드 실행
+    const { default: Component } = new Function(
+      ...Object.keys(runtime), // _jsx, _jsxs, Fragment 등
+      source // 컴파일된 함수 바디
+    )(...Object.values(runtime)); // 런타임 객체 주입
+
     return Component;
   }, [source]);
 
@@ -373,61 +440,122 @@ export default function MDXComponent({ source, frontmatter }) {
 }
 ```
 
----
+**`new Function()` 방식의 장점**:
 
-### 4. 이미지 최적화 (Sharp)
+- ✅ **보안**: MDX는 외부 리포지터리에서 가져오지만, 컴파일 시점에 검증됨
+- ✅ **성능**: Loader에서 1회 컴파일, Component에서 캐싱
+- ✅ **유연성**: 커스텀 컴포넌트 주입 가능
 
-#### Sharp란?
+**보안 고려사항**:
 
-**Sharp**는 Node.js 기반 **고성능 이미지 처리 라이브러리**입니다.
-
-- **빠름**: libvips 기반 (ImageMagick보다 4-5배 빠름)
-- **포맷**: JPEG, PNG, WebP, AVIF 등
-- **기능**: 리사이징, 크롭, 품질 조정
-
-#### 빌드 시 이미지 최적화
-
-```javascript
-// scripts/optimize-images.js
-import sharp from 'sharp';
-import { glob } from 'glob';
-import path from 'path';
-import fs from 'fs/promises';
-
-async function optimizeImages() {
-  const images = await glob('public/image/**/*.{jpg,jpeg,png}');
-
-  for (const imagePath of images) {
-    const parsed = path.parse(imagePath);
-    const outputDir = parsed.dir;
-
-    // 1. WebP 생성 (80% 품질, 용량 30-50% 절감)
-    await sharp(imagePath)
-      .webp({ quality: 80 })
-      .toFile(`${outputDir}/${parsed.name}.webp`);
-
-    // 2. AVIF 생성 (70% 품질, 용량 50-70% 절감)
-    await sharp(imagePath)
-      .avif({ quality: 70 })
-      .toFile(`${outputDir}/${parsed.name}.avif`);
-
-    console.log(`✅ Optimized: ${imagePath}`);
-  }
-}
-
-optimizeImages();
+```typescript
+// ⚠️ 주의: new Function()은 eval()처럼 위험할 수 있지만,
+// 여기서는 다음 이유로 안전합니다:
+// 1. MDX는 신뢰할 수 있는 출처 (자신의 GitHub 리포지터리)
+// 2. @mdx-js/mdx가 컴파일 시 검증 (XSS 방지)
+// 3. rehype/remark 플러그인으로 추가 sanitization
 ```
 
-#### package.json 스크립트
+##### 컴포넌트 커스터마이징
 
-```json
-{
-  "scripts": {
-    "optimize:images": "node scripts/optimize-images.js",
-    "prebuild": "pnpm optimize:images",
-    "build": "vite build"
-  }
+```tsx
+// src/entities/markdown/util/set-md-components.tsx
+import { MDXComponents } from 'mdx/types';
+
+export default function setMdxComponents(): MDXComponents {
+  return {
+    // 타이포그래피
+    h1: (props) => <h1 className="text-4xl font-bold mb-4" {...props} />,
+    h2: (props) => <h2 className="text-3xl font-semibold mb-3" {...props} />,
+    p: (props) => <p className="mb-4 leading-relaxed" {...props} />,
+
+    // 코드 블록
+    pre: (props) => (
+      <pre className="p-4 rounded-lg overflow-x-auto" {...props} />
+    ),
+    code: (props) => (
+      <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded" {...props} />
+    ),
+
+    // 링크
+    a: (props) => <a className="text-blue-600 hover:underline" {...props} />,
+  };
 }
+```
+
+##### 전체 플로우
+
+```
+[GitHub Raw URL]
+    ↓ fetch()
+[MDX Source (문자열)]
+    ↓ gray-matter (Frontmatter 분리)
+[Content + Frontmatter]
+    ↓ compile() (@mdx-js/mdx)
+[JavaScript Function Body (문자열)]
+    ↓ Loader 반환
+[Component에서 new Function() 실행]
+    ↓ useMemo 캐싱
+[React Component 렌더링]
+```
+
+---
+
+### 4. 이미지 최적화 (Vite Plugin)
+
+#### 이미지 최적화 전략
+
+이 프로젝트는 **두 가지 출처**의 이미지를 사용합니다:
+
+1. **로컬 이미지** (`public/image/**`) → Vite Plugin 자동 최적화
+2. **외부 썸네일** (GitHub Raw URLs) → 직접 로드 + lazy loading
+
+#### Vite Plugin Image Optimizer란?
+
+**vite-plugin-image-optimizer**는 Vite 빌드 시 이미지를 자동으로 최적화하는 플러그인입니다.
+
+- **지원 포맷**: JPEG, PNG, WebP, AVIF, SVG
+- **자동 변환**: 원본 이미지 → WebP/AVIF 자동 생성
+- **빌드 시 처리**: Sharp 기반 고성능 처리
+- **Zero Configuration**: 기본 설정으로 즉시 사용 가능
+
+#### Vite 설정
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    TanStackRouterVite({
+      // ⭐ 커스텀 route tree 생성 경로 (FSD 구조 준수)
+      generatedRouteTree: './src/shared/config/route/routeTree.gen.ts',
+    }),
+    tsconfigPaths(),
+    ViteImageOptimizer({
+      // 이미지 품질 설정
+      png: { quality: 80 },
+      jpeg: { quality: 85 },
+      jpg: { quality: 85 },
+      webp: { quality: 80 },
+      avif: { quality: 70 },
+
+      // 추가 옵션
+      cache: true, // 캐싱 활성화 (빌드 속도 향상)
+      cacheLocation: '.cache/images', // 캐시 위치
+    }),
+  ],
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
+});
 ```
 
 #### 최적화된 이미지 컴포넌트
@@ -435,7 +563,7 @@ optimizeImages();
 ```tsx
 // src/shared/components/ui/image/index.tsx
 interface ImageProps {
-  src: string;
+  src: string; // 로컬 또는 외부 URL
   alt: string;
   width: number;
   height: number;
@@ -449,11 +577,30 @@ export default function OptimizedImage({
   height,
   priority = false,
 }: ImageProps) {
+  // 외부 URL 감지 (GitHub Raw, CDN 등)
+  const isExternal = src.startsWith('http://') || src.startsWith('https://');
+
+  // 외부 이미지는 직접 로드 (최적화 불가)
+  if (isExternal) {
+    return (
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+
+  // 로컬 이미지는 Vite Plugin이 자동 최적화
   const basePath = src.replace(/\.(jpg|jpeg|png)$/, '');
 
   return (
     <picture>
-      {/* 최신 포맷부터 (브라우저가 지원하는 첫 번째 포맷 사용) */}
+      {/* Vite Plugin이 빌드 시 자동 생성 */}
       <source srcSet={`${basePath}.avif`} type="image/avif" />
       <source srcSet={`${basePath}.webp`} type="image/webp" />
 
@@ -472,11 +619,111 @@ export default function OptimizedImage({
 }
 ```
 
-**최적화 효과**:
-| 포맷 | 원본 (PNG 500KB) | JPEG (85%) | WebP (80%) | AVIF (70%) |
-|------|-----------------|-----------|-----------|-----------|
-| 용량 | 500 KB | 180 KB | 120 KB | 80 KB |
-| 절감율 | - | 64% | 76% | 84% |
+#### 사용 예시
+
+```tsx
+// 로컬 이미지 (Vite Plugin 최적화)
+<OptimizedImage
+  src="/image/profile.jpg"
+  alt="Profile"
+  width={400}
+  height={400}
+  priority
+/>
+
+// 외부 썸네일 (직접 로드)
+<OptimizedImage
+  src="https://raw.githubusercontent.com/chan-ok/blog-content/main/ko/thumbnails/post-1.png"
+  alt="Post Thumbnail"
+  width={600}
+  height={400}
+/>
+```
+
+#### 최적화 효과
+
+**로컬 이미지 (Vite Plugin 자동 처리)**:
+
+| 포맷   | 원본 (PNG 500KB) | JPEG (85%) | WebP (80%) | AVIF (70%) |
+| ------ | ---------------- | ---------- | ---------- | ---------- |
+| 용량   | 500 KB           | 180 KB     | 120 KB     | 80 KB      |
+| 절감율 | -                | 64%        | 76%        | 84%        |
+
+**외부 썸네일 (GitHub Raw)**:
+
+- 최적화 불가 (외부 서버)
+- `loading="lazy"` 적용으로 초기 로딩 시간 단축
+- 이미지가 뷰포트에 들어올 때만 로드
+
+#### 빌드 프로세스
+
+```bash
+# 1. 개발 모드 (최적화 안 함)
+pnpm dev
+
+# 2. 빌드 (Vite Plugin 자동 실행)
+pnpm build
+# → public/image/profile.jpg
+# → dist/image/profile.jpg (원본)
+# → dist/image/profile.webp (자동 생성)
+# → dist/image/profile.avif (자동 생성)
+```
+
+#### package.json 스크립트
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build", // Vite Plugin이 자동으로 이미지 최적화
+    "preview": "vite preview"
+  }
+}
+```
+
+**Sharp 스크립트 불필요**: Vite Plugin이 내부적으로 Sharp를 사용하므로 별도 스크립트 작성 불필요
+
+#### 주의사항
+
+**로컬 이미지**:
+
+- ✅ `public/image/**/*.{jpg,jpeg,png}` → 자동 최적화
+- ✅ 빌드 시 WebP, AVIF 자동 생성
+- ✅ `<picture>` 태그로 브라우저 최적 포맷 선택
+
+**외부 이미지** (GitHub Raw, CDN):
+
+- ❌ 빌드 시 최적화 불가 (외부 서버)
+- ✅ `loading="lazy"` 적용
+- ⚠️ GitHub Raw는 캐싱이 제한적이므로 주의
+- 💡 권장: 중요 썸네일은 로컬로 복사하여 최적화
+
+#### 외부 썸네일을 로컬로 이동 (선택)
+
+성능 개선을 위해 자주 사용하는 썸네일을 로컬로 복사:
+
+```bash
+# 1. 썸네일 다운로드
+curl -o public/image/thumbnails/post-1.png \
+  https://raw.githubusercontent.com/chan-ok/blog-content/main/ko/thumbnails/post-1.png
+
+# 2. 빌드 시 자동 최적화됨
+pnpm build
+
+# 3. 컴포넌트에서 로컬 경로 사용
+<OptimizedImage src="/image/thumbnails/post-1.png" ... />
+```
+
+#### 빌드 출력 예시
+
+```
+dist/
+├── image/
+│   ├── profile.jpg       (원본, 500KB)
+│   ├── profile.webp      (자동 생성, 120KB)
+│   └── profile.avif      (자동 생성, 80KB)
+└── index.html
+```
 
 ---
 
@@ -734,7 +981,10 @@ import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 export default defineConfig({
   plugins: [
     react(),
-    TanStackRouterVite(),
+    TanStackRouterVite({
+      // ⭐ 커스텀 route tree 생성 경로 (FSD 구조 준수)
+      generatedRouteTree: './src/shared/config/route/routeTree.gen.ts',
+    }),
     tsconfigPaths(),
     ViteImageOptimizer({
       png: { quality: 80 },
@@ -815,7 +1065,7 @@ mkdir -p src/routes/$locale/posts
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
-import { routeTree } from './routeTree.gen';
+import { routeTree } from '@/shared/config/route/routeTree.gen'; // ⭐ 커스텀 경로
 import './styles/globals.css';
 
 const router = createRouter({

@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from '@tanstack/react-query';
 import PostBasicCard from '@/features/post/ui/post-basic-card';
 import { getPosts } from '../util/get-posts';
 
@@ -5,19 +6,32 @@ interface PostCardListProps {
   locale: LocaleType;
 }
 
-export default async function PostCardList({ locale }: PostCardListProps) {
-  const pagingPosts = await getPosts({ locale });
+export default function PostCardList({ locale }: PostCardListProps) {
+  // useSuspenseQuery로 데이터 가져오기
+  const { data: pagingPosts } = useSuspenseQuery({
+    queryKey: ['posts', locale],
+    queryFn: () => getPosts({ locale }),
+    retry: 3, // 최대 3회 재시도
+    staleTime: 1000 * 60 * 5, // 5분간 캐시
+  });
+
   const posts = pagingPosts.posts;
+
+  if (!posts || posts.length === 0) {
+    return (
+      <div className="rounded-lg border border-gray-200 p-8 text-center dark:border-gray-700">
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+          No posts found. Please check your content repository.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
-      {posts.length > 0 ? (
-        posts.map((post) => (
-          <PostBasicCard key={post.title} locale={locale} {...post} />
-        ))
-      ) : (
-        <p>No posts found</p>
-      )}
+      {posts.map((post) => (
+        <PostBasicCard key={post.path.join('/')} locale={locale} {...post} />
+      ))}
     </div>
   );
 }
