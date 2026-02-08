@@ -35,7 +35,7 @@ else
   SENSITIVE_PATTERNS="(api[_-]?key|apikey|api[_-]?secret|token|auth[_-]?token|password|passwd|pwd|AKIA[0-9A-Z]{16}|BEGIN.*PRIVATE KEY|mongodb://.*:.*@|postgres://.*:.*@|mysql://.*:.*@|gh[pousr]_[0-9a-zA-Z]{36})"
   
   # 제외 패턴 (False Positive 방지)
-  EXCLUDE_PATTERNS="(process\.env\.|NEXT_PUBLIC_|test\.|spec\.|mock|fixture|stories\.|example\.com|your-api-key|\*\*\*|xxx|REPLACE_ME)"
+  EXCLUDE_PATTERNS="(process\.env\.|NEXT_PUBLIC_|test\.|spec\.|mock|fixture|stories\.|example\.com|your-api-key|\*\*\*|xxx|REPLACE_ME|-tokens@|-token@|/tokens:|/token:|comma-separated-tokens|space-separated-tokens|pnpm-lock\.yaml)"
   
   # 스테이징된 변경사항에서 민감 정보 검색
   SENSITIVE_MATCHES=$(git diff --cached | grep -iE "$SENSITIVE_PATTERNS" | grep -ivE "$EXCLUDE_PATTERNS" | grep -E '^\+' || true)
@@ -57,11 +57,10 @@ else
   echo "✅ No sensitive data detected."
 fi
 
-# TypeScript 타입 체크 (스테이징된 파일만)
+# TypeScript 타입 체크
 echo ""
-echo "Running TypeScript type check on staged files..."
-# Skip full type check since there are pre-existing errors unrelated to current changes
-# pnpm tsc --noEmit
+echo "Running TypeScript type check..."
+pnpm tsc --noEmit
 
 # 스테이징 파일 검사 (format, lint)
 echo "Running lint-staged..."
@@ -69,8 +68,7 @@ pnpm exec lint-staged
 
 # 유닛 테스트 / 기능 테스트
 echo "Running unit test / function test..."
-# Skip tests since there are pre-existing failures unrelated to current changes
-# pnpm test run
+pnpm test run
 
 # 통합 테스트 (선택사항)
 # echo "Running integration test..."
