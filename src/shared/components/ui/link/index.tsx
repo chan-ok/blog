@@ -23,9 +23,13 @@ function parseInternalLink(href: string, currentLocale: string) {
   if (localeMatch) {
     // 이미 locale이 있으면 해당 locale 사용
     const detectedLocale = localeMatch[1];
-    const path = href.slice(detectedLocale.length + 1) || '/';
+    // Skip the `/{locale}` prefix: `/ko/about` -> `/about`, `/ko` -> `/`
+    const pathAfterLocale = href.slice(1 + detectedLocale.length); // Skip '/' + locale
+    const path = pathAfterLocale.startsWith('/')
+      ? pathAfterLocale
+      : `/${pathAfterLocale}`;
 
-    if (path === '/') {
+    if (path === '/' || path === '') {
       return { to: '/$locale' as const, params: { locale: detectedLocale } };
     }
 
