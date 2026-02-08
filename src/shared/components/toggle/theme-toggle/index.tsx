@@ -21,11 +21,11 @@ export default function ThemeToggle() {
   const getAriaLabel = () => {
     switch (theme) {
       case 'light':
-        return 'Switch to dark mode';
+        return 'Toggle theme: Switch to dark theme';
       case 'dark':
-        return 'Switch to system theme';
+        return 'Toggle theme: Switch to system theme';
       case 'system':
-        return 'Switch to light mode';
+        return 'Toggle theme: Switch to light theme';
     }
   };
 

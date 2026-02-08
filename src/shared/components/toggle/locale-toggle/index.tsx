@@ -26,11 +26,11 @@ export default function LocaleToggle() {
   const getAriaLabel = () => {
     switch (locale) {
       case 'ko':
-        return 'Switch to Korean';
+        return 'Change language: Switch to Korean';
       case 'en':
-        return 'Switch to English';
+        return 'Change language: Switch to English';
       case 'ja':
-        return 'Switch to Japanese';
+        return 'Change language: Switch to Japanese';
     }
   };
 

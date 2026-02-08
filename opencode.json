@@ -33,13 +33,13 @@
           "*.env.*": "deny"
         },
         "write": {
-          "*": "ask",
+          "*": "deny",
           "dashboard.md": "allow",
           "docs/phase*.md": "allow",
           "docs/dashboard.md": "allow"
         },
         "edit": {
-          "*": "ask",
+          "*": "deny",
           "dashboard.md": "allow",
           "docs/phase*.md": "allow",
           "docs/dashboard.md": "allow"
@@ -478,6 +478,7 @@
     "git commit --no-verify *": "deny",
     "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
     "gh pr view *": "allow",
-    "gh pr checks *": "allow"
+    "gh pr checks *": "allow",
+    "afplay /System/Library/Sounds/Funk.aiff": "allow"
   }
 }
