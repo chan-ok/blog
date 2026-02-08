@@ -35,7 +35,7 @@ else
   SENSITIVE_PATTERNS="(api[_-]?key|apikey|api[_-]?secret|token|auth[_-]?token|password|passwd|pwd|AKIA[0-9A-Z]{16}|BEGIN.*PRIVATE KEY|mongodb://.*:.*@|postgres://.*:.*@|mysql://.*:.*@|gh[pousr]_[0-9a-zA-Z]{36})"
   
   # 제외 패턴 (False Positive 방지)
-  EXCLUDE_PATTERNS="(process\.env\.|NEXT_PUBLIC_|test\.|spec\.|mock|fixture|stories\.|example\.com|your-api-key|\*\*\*|xxx|REPLACE_ME|-tokens@|-token@|separated-tokens)"
+  EXCLUDE_PATTERNS="(process\.env\.|NEXT_PUBLIC_|test\.|spec\.|mock|fixture|stories\.|example\.com|your-api-key|\*\*\*|xxx|REPLACE_ME|comma-separated-tokens|space-separated-tokens)"
   
   # 스테이징된 변경사항에서 민감 정보 검색
   SENSITIVE_MATCHES=$(git diff --cached | grep -iE "$SENSITIVE_PATTERNS" | grep -ivE "$EXCLUDE_PATTERNS" | grep -E '^\+' || true)
