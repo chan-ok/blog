@@ -287,7 +287,6 @@
       "mode": "subagent",
       "description": "Manages and maintains all project documentation including agent prompts",
       "prompt": "{file:.agents/agents/doc-manager.md}",
-      "model": "openai/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {

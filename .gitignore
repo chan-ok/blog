@@ -67,5 +67,11 @@ contents/.obsidian
 # deno
 deno.lock.worktrees/
 test-mdx.mjs
+
+# git worktrees
 .worktrees/
+
+# tanstack
 .tanstack/
+**/routeTree.gen.ts
+

@@ -38,12 +38,12 @@
 
 ### 기술 스택
 
-- **프레임워크**: Next.js 16, React 19, TypeScript 5
+- **프레임워크**: React 19, TanStack Router v1, Vite v6, TypeScript 5
 - **스타일링**: Tailwind CSS v4
 - **국제화**: i18next
 - **상태 관리**: Zustand
 - **검증**: Zod v4
-- **콘텐츠**: MDX (next-mdx-remote-client)
+- **콘텐츠**: MDX (gray-matter + rehype/remark)
 - **테스팅**: Vitest, Playwright, Storybook, fast-check
 - **배포**: Netlify
 
@@ -52,12 +52,12 @@
 Feature-Sliced Design (FSD) 패턴 사용
 
 ```
-app → widgets → features → entities → shared
+routes → widgets → features → entities → shared
 ```
 
 ### 리포지터리 구조
 
-- **blog** (현재): Next.js 애플리케이션
+- **blog** (현재): React + TanStack Router 애플리케이션
 - **blog-content**: MDX 콘텐츠 저장소 (분리됨)
 
 ## 명령어
@@ -65,10 +65,10 @@ app → widgets → features → entities → shared
 ### 개발 서버
 
 ```bash
-pnpm dev              # Next.js 개발 서버 (localhost:3000)
+pnpm dev              # Vite 개발 서버 (localhost:5173)
 pnpm dev:server       # Netlify Functions와 함께 시작 (localhost:8888)
 pnpm build            # 프로덕션 빌드
-pnpm start            # 프로덕션 서버 시작
+pnpm preview          # 프로덕션 빌드 미리보기
 ```
 
 ### 린트/포맷팅
@@ -118,10 +118,9 @@ pnpm build-storybook  # Storybook 빌드
 ### Import 순서 (4단계)
 
 ```typescript
-// 1. React/Next.js
+// 1. React/TanStack Router
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from '@tanstack/react-router';
 
 // 2. 외부 라이브러리
 import { z } from 'zod';
@@ -301,10 +300,10 @@ export function PostCard({ title, excerpt, tags }: PostCardProps) {
 #### 지시사항
 
 ```
-app → widgets → features → entities → shared
+routes → widgets → features → entities → shared
 ```
 
-- **app/**: 라우팅, widgets/features/entities/shared import 가능
+- **routes/**: 라우팅, widgets/features/entities/shared import 가능
 - **widgets/**: 복합 UI, features/entities/shared import 가능
 - **features/**: 비즈니스 기능, entities/shared만 import 가능
 - **entities/**: 도메인 엔티티, shared만 import 가능
@@ -457,18 +456,18 @@ pnpm test:e2e
 
 #### 지시사항
 
-- **클라이언트 노출 가능**: `NEXT_PUBLIC_*` 접두사
-- **서버 전용**: 접두사 없음
+- **클라이언트 노출 가능**: `VITE_*` 접두사
+- **서버 전용**: Netlify Functions 환경 변수 (접두사 없음)
 - **하드코딩 금지**: 환경 변수 사용 필수
 
 #### 예제
 
 ```typescript
-// ✅ Good - 서버 컴포넌트에서 서버 환경 변수
+// ✅ Good - Netlify Functions에서 서버 환경 변수
 const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
-// ✅ Good - 클라이언트에서 NEXT_PUBLIC_ 변수
-const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+// ✅ Good - 클라이언트에서 VITE_ 변수
+const siteKey = process.env.VITE_TURNSTILE_SITE_KEY;
 
 // ❌ Bad - 하드코딩
 const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
@@ -510,7 +509,7 @@ export const ContactFormInputsSchema = z.object({
 
 - React 기본 이스케이프 신뢰
 - `dangerouslySetInnerHTML` 사용 금지 (MDX 제외)
-- MDX는 `next-mdx-remote-client` + rehype/remark 플러그인 사용
+- MDX는 `gray-matter + rehype/remark` + rehype/remark 플러그인 사용
 
 #### 주의사항
 
@@ -578,15 +577,15 @@ type(scope): 한국어 제목
 
 ### Type
 
-| Type       | 설명             | 예시                                   |
-| ---------- | ---------------- | -------------------------------------- |
-| `feat`     | 새 기능          | `feat(post): 태그 필터링 추가`         |
-| `fix`      | 버그 수정        | `fix(contact): 이메일 검증 오류 수정`  |
-| `refactor` | 리팩토링         | `refactor(header): 네비게이션 분리`    |
-| `test`     | 테스트 추가/수정 | `test(button): 클릭 테스트 추가`       |
-| `docs`     | 문서 수정        | `docs(readme): 설치 가이드 업데이트`   |
-| `style`    | 코드 스타일      | `style: Prettier 포맷팅 적용`          |
-| `chore`    | 빌드/설정 변경   | `chore(deps): Next.js 16.0.7 업데이트` |
+| Type       | 설명             | 예시                                  |
+| ---------- | ---------------- | ------------------------------------- |
+| `feat`     | 새 기능          | `feat(post): 태그 필터링 추가`        |
+| `fix`      | 버그 수정        | `fix(contact): 이메일 검증 오류 수정` |
+| `refactor` | 리팩토링         | `refactor(header): 네비게이션 분리`   |
+| `test`     | 테스트 추가/수정 | `test(button): 클릭 테스트 추가`      |
+| `docs`     | 문서 수정        | `docs(readme): 설치 가이드 업데이트`  |
+| `style`    | 코드 스타일      | `style: Prettier 포맷팅 적용`         |
+| `chore`    | 빌드/설정 변경   | `chore(deps): React 19.2.3 업데이트`  |
 
 ### Scope 예시
 

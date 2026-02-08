@@ -75,10 +75,10 @@ pnpm install
 # .env.local
 
 # 콘텐츠 리포지터리 (필수)
-NEXT_PUBLIC_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
+VITE_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
 
 # Cloudflare Turnstile (Contact 폼용)
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_site_key
+VITE_TURNSTILE_SITE_KEY=your_site_key
 TURNSTILE_SECRET_KEY=your_secret_key
 
 # Resend (이메일 발송용)
@@ -90,14 +90,14 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
 #### 4. 개발 서버 시작
 
 ```bash
-# Next.js만 실행 (기본)
+# Vite 개발 서버 실행 (기본)
 pnpm dev
 
 # Netlify Functions와 함께 실행 (Contact 폼 테스트 시)
 pnpm dev:server
 ```
 
-- Next.js: http://localhost:3000
+- Vite: http://localhost:5173
 - Netlify Dev: http://localhost:8888
 
 ## 개발 규칙
@@ -117,7 +117,7 @@ pnpm dev:server
 Feature-Sliced Design 레이어 간 의존성 규칙 엄격히 준수:
 
 ```
-app → widgets → features → entities → shared
+routes → widgets → features → entities → shared
 ```
 
 - **역방향 import 금지** (예: shared → features)
@@ -254,19 +254,19 @@ it('모든 variant에서 다크 모드 클래스 포함', () => {
 
 #### 클라이언트 vs 서버
 
-| 접두사          | 노출 범위         | 용도             |
-| --------------- | ----------------- | ---------------- |
-| `NEXT_PUBLIC_*` | 클라이언트 + 서버 | 공개 가능한 설정 |
-| (접두사 없음)   | 서버만            | 민감한 정보      |
+| 접두사        | 노출 범위         | 용도             |
+| ------------- | ----------------- | ---------------- |
+| `VITE_*`      | 클라이언트 + 서버 | 공개 가능한 설정 |
+| (접두사 없음) | 서버만            | 민감한 정보      |
 
 #### 예제
 
 ```typescript
-// ✅ Good - 서버 컴포넌트에서 서버 환경 변수
+// ✅ Good - Netlify Functions에서 서버 환경 변수
 const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
-// ✅ Good - 클라이언트에서 NEXT_PUBLIC_ 변수
-const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+// ✅ Good - 클라이언트에서 VITE_ 변수
+const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
 // ❌ Bad - 하드코딩
 const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
@@ -308,7 +308,7 @@ if (!result.success) {
 Contact 폼에 Cloudflare Turnstile 적용:
 
 - **획득**: [Cloudflare Dashboard](https://dash.cloudflare.com/)에서 Turnstile 생성
-- **환경 변수**: `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
+- **환경 변수**: `VITE_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
 - **서버 측 검증**: Netlify Functions에서 토큰 검증
 
 ### XSS 방지
@@ -330,15 +330,15 @@ type(scope): 한국어 제목
 
 #### Type
 
-| Type       | 설명             | 예시                                   |
-| ---------- | ---------------- | -------------------------------------- |
-| `feat`     | 새 기능          | `feat(post): 태그 필터링 추가`         |
-| `fix`      | 버그 수정        | `fix(contact): 이메일 검증 오류 수정`  |
-| `refactor` | 리팩토링         | `refactor(header): 네비게이션 분리`    |
-| `test`     | 테스트 추가/수정 | `test(button): 클릭 테스트 추가`       |
-| `docs`     | 문서 수정        | `docs(readme): 설치 가이드 업데이트`   |
-| `style`    | 코드 스타일      | `style: Prettier 포맷팅 적용`          |
-| `chore`    | 빌드/설정 변경   | `chore(deps): Next.js 16.0.7 업데이트` |
+| Type       | 설명             | 예시                                  |
+| ---------- | ---------------- | ------------------------------------- |
+| `feat`     | 새 기능          | `feat(post): 태그 필터링 추가`        |
+| `fix`      | 버그 수정        | `fix(contact): 이메일 검증 오류 수정` |
+| `refactor` | 리팩토링         | `refactor(header): 네비게이션 분리`   |
+| `test`     | 테스트 추가/수정 | `test(button): 클릭 테스트 추가`      |
+| `docs`     | 문서 수정        | `docs(readme): 설치 가이드 업데이트`  |
+| `style`    | 코드 스타일      | `style: Prettier 포맷팅 적용`         |
+| `chore`    | 빌드/설정 변경   | `chore(deps): React 19.2.3 업데이트`  |
 
 #### 예시
 
@@ -403,7 +403,7 @@ pnpm lint-staged
 
 - **트리거**: `main` 브랜치 push 시 자동 배포
 - **빌드 명령어**: `pnpm build`
-- **출력 디렉토리**: `.next`
+- **출력 디렉토리**: `dist`
 
 ### 환경 변수 설정
 
@@ -413,9 +413,9 @@ Netlify Dashboard에서 설정:
 2. Add a variable
 3. 다음 변수 설정:
    - `RESEND_API_KEY`
-   - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+   - `VITE_TURNSTILE_SITE_KEY`
    - `TURNSTILE_SECRET_KEY`
-   - `NEXT_PUBLIC_GIT_RAW_URL`
+   - `VITE_GIT_RAW_URL`
 
 ### 배포 전 체크리스트
 
@@ -495,7 +495,7 @@ kill -9 <PID>
 
 **해결**:
 
-1. `NEXT_PUBLIC_TURNSTILE_SITE_KEY` 환경 변수 확인
+1. `VITE_TURNSTILE_SITE_KEY` 환경 변수 확인
 2. 브라우저 콘솔에서 에러 메시지 확인
 3. Cloudflare Dashboard에서 사이트 키 확인
 4. 로컬에서는 `localhost` 도메인 허용 확인
@@ -506,7 +506,7 @@ kill -9 <PID>
 
 **해결**:
 
-1. `NEXT_PUBLIC_GIT_RAW_URL` 환경 변수 확인
+1. `VITE_GIT_RAW_URL` 환경 변수 확인
 2. `blog-content` 리포지터리 public 설정 확인
 3. `index.json` 파일 존재 확인
 4. 브라우저 Network 탭에서 요청 확인
