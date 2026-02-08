@@ -64,9 +64,10 @@ test.describe('웹폰트 검증', () => {
     // 폰트 리소스 요청 감지
     page.on('request', (request) => {
       const url = request.url();
+      const hostname = new URL(url).hostname;
       if (
-        url.includes('fonts.googleapis.com') ||
-        url.includes('fonts.gstatic.com')
+        hostname === 'fonts.googleapis.com' ||
+        hostname === 'fonts.gstatic.com'
       ) {
         fontRequests.push(url);
       }
