@@ -83,7 +83,18 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow",
+          "grep *": "allow",
+          "grep -c *": "allow",
+          "grep -A *": "allow",
+          "grep -B *": "allow",
+          "grep -n *": "allow",
+          "grep -iE *": "allow",
+          "grep -E *": "allow",
+          "cat opencode.json | grep *": "allow",
+          "git diff *": "allow",
+          "git log *": "allow"
         }
       }
     },
@@ -121,7 +132,8 @@
           "git add src/**/*.tsx": "ask",
           "git add *.config.ts": "ask",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
         }
       }
     },
@@ -165,7 +177,8 @@
           "git add src/**/*.test.tsx": "ask",
           "git add src/**/*.stories.tsx": "ask",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
         }
       }
     },
@@ -209,7 +222,8 @@
           "git diff --staged": "allow",
           "git add src/**/*.ts": "ask",
           "git add src/**/*.tsx": "ask",
-          "git add *.config.ts": "ask"
+          "git add *.config.ts": "ask",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
         }
       }
     },
@@ -232,6 +246,7 @@
         },
         "bash": {
           "*": "ask",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow",
           "ls *": "allow",
           "cat src/**/*.ts": "allow",
           "cat src/**/*.tsx": "allow",
@@ -250,11 +265,21 @@
           "git diff": "allow",
           "git diff --staged": "allow",
           "git diff --cached --name-only": "allow",
+          "git diff develop..HEAD": "allow",
+          "git show *": "allow",
           "git log --oneline -10": "allow",
+          "git log --oneline *": "allow",
+          "git log develop..HEAD *": "allow",
+          "git ls-tree -r HEAD --name-only": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
+          "grep -r *": "allow",
+          "grep -iE *": "allow",
+          "grep -E *": "allow",
+          "grep -n *": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
         }
       }
     },
@@ -300,7 +325,8 @@
           "git add docs/*.md": "ask",
           "git add .agents/agents/*.md": "ask",
           "gh pr view *": "allow",
-          "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow"
+          "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
         }
       }
     },
@@ -363,7 +389,8 @@
           "git rm --cached node_modules/*": "allow",
           "git config --get *": "allow",
           "git commit -m *": "ask",
-          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow"
+          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
         }
       }
     },
@@ -404,7 +431,8 @@
           "gh issue list": "allow",
           "gh run list": "allow",
           "gh run view *": "allow",
-          "gh api repos/*/*/pulls/*/comments": "allow"
+          "gh api repos/*/*/pulls/*/comments": "allow",
+          "afplay /System/Library/Sounds/Funk.aiff": "allow"
         }
       }
     }
