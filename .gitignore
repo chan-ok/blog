@@ -67,3 +67,4 @@ contents/.obsidian
 deno.lock.worktrees/
 test-mdx.mjs
 .worktrees/
+.tanstack/
