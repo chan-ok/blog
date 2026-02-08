@@ -90,10 +90,10 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
 #### 4. 개발 서버 시작
 
 ```bash
-# Vite 개발 서버 실행 (기본)
+# Vite 개발 서버 실행 (기본, localhost:5173)
 pnpm dev
 
-# Netlify Functions와 함께 실행 (Contact 폼 테스트 시)
+# Netlify Functions와 함께 실행 (Contact 폼 테스트 시, localhost:8888)
 pnpm dev:server
 ```
 
@@ -174,7 +174,7 @@ Husky pre-commit 훅이 자동으로 lint-staged를 실행합니다.
 
 ```bash
 pnpm test             # Watch 모드
-pnpm test:run         # 1회 실행
+pnpm test run         # 1회 실행 (Vitest CLI 옵션)
 pnpm coverage         # 커버리지 리포트
 
 # 단일 파일 테스트
@@ -192,7 +192,7 @@ pnpm test -t "클릭 시 onClick 호출"
 #### 3. E2E 테스트 (Playwright)
 
 - **대상**: 핵심 사용자 플로우
-- **실행**: `pnpm test:e2e` 또는 `pnpm test:e2e:ui`
+- **실행**: `pnpm e2e:ui`
 
 ### TDD 실전 예제
 
@@ -254,10 +254,10 @@ it('모든 variant에서 다크 모드 클래스 포함', () => {
 
 #### 클라이언트 vs 서버
 
-| 접두사        | 노출 범위         | 용도             |
-| ------------- | ----------------- | ---------------- |
-| `VITE_*`      | 클라이언트 + 서버 | 공개 가능한 설정 |
-| (접두사 없음) | 서버만            | 민감한 정보      |
+| 접두사        | 노출 범위         | 용도                            |
+| ------------- | ----------------- | ------------------------------- |
+| `VITE_*`      | 클라이언트 + 서버 | 공개 가능한 설정 (사이트 키 등) |
+| (접두사 없음) | 서버만            | 민감한 정보 (Secret 키 등)      |
 
 #### 예제
 
@@ -275,7 +275,8 @@ const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
 #### 주의사항
 
 - ⚠️ `.env.local` 파일은 Git에 커밋 금지
-- ⚠️ 서버 환경 변수를 클라이언트에 노출 금지
+- ⚠️ 서버 환경 변수(`TURNSTILE_SECRET_KEY` 등)를 클라이언트에 노출 금지
+- ⚠️ 클라이언트 환경 변수는 반드시 `VITE_` 접두사 사용
 
 ### 입력 검증
 
@@ -423,7 +424,7 @@ Netlify Dashboard에서 설정:
 - [ ] 빌드 성공 확인 (`pnpm build`)
 - [ ] Lint 통과 (`pnpm lint`)
 - [ ] 포맷팅 적용 (`pnpm fmt`)
-- [ ] 테스트 통과 (`pnpm test:run`)
+- [ ] 테스트 통과 (`pnpm test run`)
 
 ## 문제 해결
 

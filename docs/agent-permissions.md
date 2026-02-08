@@ -47,7 +47,7 @@
 **제한 권한**:
 
 - ❌ 테스트 파일 작성 (test-specialist에 위임)
-- ❌ 문서 수정 (doc-validator에 위임)
+- ❌ 문서 수정 (doc-manager에 위임)
 - ❌ Git branch/merge 작업 (git-guardian에 위임)
 - ❌ GitHub PR 작업 (github-helper에 위임)
 - ❌ .env 파일 접근
@@ -70,12 +70,35 @@
 **제한 권한**:
 
 - ❌ 소스 코드 수정 (feature-developer에 위임)
-- ❌ 문서 수정 (doc-validator에 위임)
+- ❌ 문서 수정 (doc-manager에 위임)
 - ❌ Git branch/merge 작업 (git-guardian에 위임)
 - ❌ GitHub PR 작업 (github-helper에 위임)
 - ❌ .env 파일 접근
 
-### 4. security-scanner
+### 4. lint-formatter
+
+**역할**: 포맷팅 및 린트 전문가
+**책임**: 코드 스타일 자동 수정 (동작 변경 없음)
+
+**허용 권한**:
+
+- ✅ 소스 코드 파일 읽기
+- ✅ 소스 코드 파일 수정 (Edit 도구, 사용자 확인 필요)
+- ✅ 설정 파일 읽기/수정 (\*.config.ts)
+- ✅ pnpm fmt, pnpm lint, pnpm lint --fix 실행
+- ✅ pnpm tsc --noEmit (타입 체크)
+- ✅ Git 읽기 명령
+- ✅ Git add/commit (사용자 확인 필요)
+
+**제한 권한**:
+
+- ❌ 파일 작성 (Write 금지, Edit만 허용)
+- ❌ Git branch/merge 작업 (git-guardian에 위임)
+- ❌ .env 파일 접근
+
+**중요**: lint-formatter는 **코드 동작을 변경하지 않고** 포맷팅과 린트 오류만 수정합니다.
+
+### 5. security-scanner
 
 **역할**: 보안 감사관
 **책임**: 보안 취약점 탐지 및 민감 정보 노출 방지
@@ -96,18 +119,20 @@
 
 **중요**: security-scanner는 **읽기 전용** 모드로 동작하며, 문제 발견 시 보고만 합니다.
 
-### 5. doc-validator
+### 6. doc-manager
 
-**역할**: 문서 검증자
-**책임**: 문서 정확성 검증 및 갱신
+**역할**: 문서 관리자
+**책임**: 프로젝트 문서 및 에이전트 프롬프트(.agents/agents/\*.md)의 정확성과 최신성을 관리
 
 **허용 권한**:
 
 - ✅ 문서 파일 읽기/작성/수정 (docs/\*.md)
+- ✅ 에이전트 프롬프트 읽기/작성/수정 (.agents/agents/\*.md)
 - ✅ 소스 코드 파일 읽기 (검증 목적)
 - ✅ 설정 파일 읽기
 - ✅ Git 읽기 명령
-- ✅ Git add/commit (문서 파일만, 사용자 확인 필요)
+- ✅ Git add/commit (문서 및 에이전트 파일, 사용자 확인 필요)
+- ✅ validate-agent.sh 실행
 
 **제한 권한**:
 
@@ -116,7 +141,7 @@
 - ❌ GitHub PR 작업 (github-helper에 위임)
 - ❌ .env 파일 접근
 
-### 6. git-guardian
+### 7. git-guardian
 
 **역할**: Git 워크플로우 관리자
 **책임**: 안전한 Git 작업 수행
@@ -141,7 +166,7 @@
 
 **중요**: git-guardian은 **Git 작업 전용**이며, 파일 수정은 하지 않습니다.
 
-### 7. github-helper
+### 8. github-helper
 
 **역할**: GitHub 통합 관리자
 **책임**: PR, Issue, CI/CD 관리
@@ -164,34 +189,36 @@
 
 ## 권한 매트릭스
 
-| 권한             | master         | feature-dev | test-spec | security | doc-val  | git-guard | github   |
-| ---------------- | -------------- | ----------- | --------- | -------- | -------- | --------- | -------- |
-| **파일 작업**    |
-| 소스 코드 읽기   | ✅             | ✅          | ✅        | ✅       | ✅       | ❌        | ❌       |
-| 소스 코드 쓰기   | ❌             | ✅          | ❌        | ❌       | ❌       | ❌        | ❌       |
-| 테스트 파일 쓰기 | ❌             | ❌          | ✅        | ❌       | ❌       | ❌        | ❌       |
-| 문서 쓰기        | ✅ (dashboard) | ❌          | ❌        | ❌       | ✅       | ❌        | ❌       |
-| .env 읽기        | ❌             | ❌          | ❌        | ❌       | ❌       | ❌        | ❌       |
-| **테스트/빌드**  |
-| pnpm test        | ✅             | ✅          | ✅        | ❌       | ❌       | ❌        | ❌       |
-| pnpm audit       | ✅             | ❌          | ❌        | ✅       | ❌       | ❌        | ❌       |
-| **Git 읽기**     |
-| git status       | ❌             | ✅          | ✅        | ✅       | ✅       | ✅        | ✅       |
-| git diff         | ❌             | ✅          | ✅        | ✅       | ✅       | ✅        | ✅       |
-| git log          | ❌             | ✅          | ✅        | ✅       | ✅       | ✅        | ✅       |
-| **Git 쓰기**     |
-| git add          | ❌             | ✅ (ask)    | ✅ (ask)  | ❌       | ✅ (ask) | ✅ (ask)  | ❌       |
-| git commit       | ❌             | ✅ (ask)    | ✅ (ask)  | ❌       | ✅ (ask) | ✅ (ask)  | ❌       |
-| git checkout     | ❌             | ❌          | ❌        | ❌       | ❌       | ✅        | ❌       |
-| git merge        | ❌             | ❌          | ❌        | ❌       | ❌       | ✅ (ask)  | ❌       |
-| git push         | ❌             | ❌          | ❌        | ❌       | ❌       | ✅ (ask)  | ❌       |
-| git worktree     | ❌             | ❌          | ❌        | ❌       | ❌       | ✅        | ❌       |
-| **GitHub**       |
-| gh pr create     | ❌             | ❌          | ❌        | ❌       | ❌       | ❌        | ✅ (ask) |
-| gh pr view       | ❌             | ✅          | ✅        | ✅       | ✅       | ❌        | ✅       |
-| gh pr merge      | ❌             | ❌          | ❌        | ❌       | ❌       | ❌        | ✅ (ask) |
-| **Task Tool**    |
-| task \*          | ✅             | ❌          | ❌        | ❌       | ❌       | ❌        | ❌       |
+| 권한                   | master         | feature-dev | test-spec | lint-fmt | security | doc-mgr  | git-guard | github   |
+| ---------------------- | -------------- | ----------- | --------- | -------- | -------- | -------- | --------- | -------- |
+| **파일 작업**          |
+| 소스 코드 읽기         | ✅             | ✅          | ✅        | ✅       | ✅       | ✅       | ❌        | ❌       |
+| 소스 코드 쓰기         | ❌             | ✅          | ❌        | ❌       | ❌       | ❌       | ❌        | ❌       |
+| 테스트 파일 쓰기       | ❌             | ❌          | ✅        | ❌       | ❌       | ❌       | ❌        | ❌       |
+| 문서 쓰기              | ✅ (dashboard) | ❌          | ❌        | ❌       | ❌       | ✅       | ❌        | ❌       |
+| 에이전트 프롬프트 쓰기 | ❌             | ❌          | ❌        | ❌       | ❌       | ✅       | ❌        | ❌       |
+| .env 읽기              | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ❌        | ❌       |
+| **테스트/빌드**        |
+| pnpm test              | ✅             | ✅          | ✅        | ❌       | ❌       | ❌       | ❌        | ❌       |
+| pnpm fmt/lint          | ✅             | ✅          | ✅        | ✅       | ❌       | ❌       | ❌        | ❌       |
+| pnpm audit             | ✅             | ❌          | ❌        | ❌       | ✅       | ❌       | ❌        | ❌       |
+| **Git 읽기**           |
+| git status             | ✅             | ✅          | ✅        | ✅       | ✅       | ✅       | ✅        | ✅       |
+| git diff               | ✅             | ✅          | ✅        | ✅       | ✅       | ✅       | ✅        | ✅       |
+| git log                | ✅             | ✅          | ✅        | ✅       | ✅       | ✅       | ✅        | ✅       |
+| **Git 쓰기**           |
+| git add                | ❌             | ✅ (ask)    | ✅ (ask)  | ✅ (ask) | ❌       | ✅ (ask) | ✅ (ask)  | ❌       |
+| git commit             | ❌             | ✅ (ask)    | ✅ (ask)  | ✅ (ask) | ❌       | ✅ (ask) | ✅ (ask)  | ❌       |
+| git checkout           | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ✅        | ❌       |
+| git merge              | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ✅ (ask)  | ❌       |
+| git push               | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ✅ (ask)  | ❌       |
+| git worktree           | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ✅        | ❌       |
+| **GitHub**             |
+| gh pr create           | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ❌        | ✅ (ask) |
+| gh pr view             | ✅             | ✅          | ✅        | ❌       | ✅       | ✅       | ❌        | ✅       |
+| gh pr merge            | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ❌        | ✅ (ask) |
+| **Task Tool**          |
+| task \*                | ✅             | ❌          | ❌        | ❌       | ❌       | ❌       | ❌        | ❌       |
 
 ## 워크플로우 예시
 
@@ -203,7 +230,9 @@
 master-orchestrator (조율)
   ├─ Task → feature-developer (컴포넌트 구현)
   ├─ Task → test-specialist (테스트 작성)
+  ├─ Task → lint-formatter (코드 포맷팅) - 선택적
   ├─ Task → security-scanner (보안 검증)
+  ├─ Task → doc-manager (문서 업데이트) - 필요시
   └─ Task → git-guardian (커밋 생성)
        └─ Task → github-helper (PR 생성)
 ```
@@ -286,17 +315,26 @@ Task → github-helper (PR 생성)
 
 ## 변경 이력
 
-- **2025-02-08**: 초안 작성 - 에이전트별 권한 분리 완료
+- **2026-02-08**: 초안 작성 - 에이전트별 권한 분리 완료
   - master-orchestrator: Git/코드 수정 권한 제거
   - feature-developer: 소스 코드 작성 권한 추가
   - test-specialist: 테스트 파일 작성 권한 추가
   - security-scanner: 읽기 전용 보안 검증 권한 추가
-  - doc-validator: 문서 작성 권한 추가
+  - doc-manager: 문서 작성 권한 추가
   - git-guardian: Git 워크플로우 관리 권한 추가
   - github-helper: GitHub 통합 권한 추가
 
+- **2026-02-09**: opencode.json 기준으로 갱신
+  - doc-validator → doc-manager로 명칭 변경
+  - lint-formatter 에이전트 추가
+  - 에이전트 프롬프트 관리 권한 명시 (.agents/agents/\*.md)
+  - 권한 매트릭스에 lint-formatter 열 추가
+  - 실제 opencode.json 권한 설정 반영
+  - master-orchestrator의 Git 읽기 명령 권한 추가
+  - 워크플로우 예시에 lint-formatter와 doc-manager 추가
+
 ## 참고 문서
 
-- [에이전트 README](./.agents/agents/README.md)
+- [에이전트 README](../.agents/agents/README.md)
 - [코딩 가이드](./agents.md)
 - [opencode.json 설정 파일](../opencode.json)

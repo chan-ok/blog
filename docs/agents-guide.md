@@ -1,8 +1,8 @@
-# 기능 개발 에이전트
+# 에이전트 가이드
 
 ## 개요
 
-이 디렉토리에는 프로젝트의 커스텀 에이전트가 포함되어 있습니다. 에이전트는 특정 작업을 자율적으로 수행하는 전문화된 AI 도우미입니다.
+이 프로젝트는 멀티 에이전트 시스템을 사용하여 복잡한 기능을 개발합니다. 각 에이전트는 특정 작업을 자율적으로 수행하는 전문화된 AI 도우미입니다.
 
 ## 사용 가능한 에이전트
 
@@ -19,7 +19,7 @@
 - 🔄 오류 처리 및 재할당 전략
 - ✅ 결과 통합 및 최종 보고
 
-**중요**: 이 에이전트는 **코드를 직접 작성하지 않습니다**. 대신 작업을 분석하고 적절한 슬레이브 에이전트(feature-developer, test-specialist, security-scanner, doc-validator)에게 분배합니다.
+**중요**: 이 에이전트는 **코드를 직접 작성하지 않습니다**. 대신 작업을 분석하고 적절한 슬레이브 에이전트(feature-developer, test-specialist, security-scanner, doc-manager)에게 분배합니다.
 
 **사용 시기**:
 
@@ -52,7 +52,7 @@
 | feature-development | feature-developer | HIGH     |
 | test-writing        | test-specialist   | HIGH     |
 | security-check      | security-scanner  | MEDIUM   |
-| doc-validation      | doc-validator     | LOW      |
+| doc-validation      | doc-manager       | LOW      |
 
 ---
 
@@ -234,9 +234,9 @@
 
 ---
 
-### doc-validator
+### doc-manager
 
-프로젝트 문서(특히 `docs/agents.md`)의 정확성과 최신성을 검증하는 전문 에이전트입니다.
+프로젝트 문서 및 에이전트 프롬프트의 정확성과 최신성을 관리하는 전문 에이전트입니다.
 
 **주요 역할**:
 
@@ -244,6 +244,8 @@
 - 🔍 오류 및 오래된 내용 탐지
 - 🔄 Git 변경사항 추적하여 문서 업데이트 제안
 - ✏️ 자동 문서 갱신 실행
+- ⭐ 에이전트 프롬프트 관리 (.agents/agents/\*.md)
+- 📝 표준 섹션 적용 (명령 실행 요청 규칙 등)
 
 **사용 시기**:
 
@@ -459,6 +461,26 @@ develop (base)
 → feature-developer + security-scanner 동시 실행
 ```
 
+```
+"포스트 카드 컴포넌트를 개발하고, 동시에 문서를 검증하고, 보안 스캔도 해줘"
+→ feature-developer + doc-manager + security-scanner 동시 실행 (3개 병렬)
+```
+
+```
+"Contact 폼을 개발하고, 테스트 작성하고, 보안 검사까지 모두 해줘"
+→ feature-developer 완료 후 → (test-specialist + security-scanner) 병렬 실행
+```
+
+**주요 병렬 조합**:
+
+- `feature-developer + security-scanner`: 기능 개발과 보안 검증 동시 진행
+- `feature-developer + doc-manager`: 기능 개발과 문서 업데이트 동시 진행
+- `test-specialist + security-scanner`: 테스트 작성과 보안 스캔 동시 진행
+- `test-specialist + doc-manager`: 테스트 작성과 문서 업데이트 동시 진행
+- `feature-developer + test-specialist + security-scanner + doc-manager`: 4개 에이전트 병렬 (완전 독립적인 경우)
+
+**원칙**: 각 에이전트가 **다른 파일을 수정**하면 병렬 안전. 같은 파일을 수정하면 순차 실행 필요.
+
 **순차 실행** (의존적인 작업):
 
 ```
@@ -501,14 +523,14 @@ bash ../.agents/skills/agent-identifier/scripts/validate-agent.sh feature-develo
 
 ### 기술 스택
 
-- Next.js 16, React 19, TypeScript 5
+- React 19, TanStack Router v1, Vite v7, TypeScript 5
 - Tailwind CSS v4
 - Vitest, Playwright, Storybook, fast-check
 
 ### 아키텍처
 
 - Feature-Sliced Design (FSD) 패턴
-- `app → widgets → features → entities → shared`
+- `routes → widgets → features → entities → shared`
 
 ### 코딩 규칙
 
@@ -518,4 +540,4 @@ bash ../.agents/skills/agent-identifier/scripts/validate-agent.sh feature-develo
 - 타입 안정성 (any 금지)
 - 보안 및 접근성 고려
 
-자세한 내용은 `/docs/agents.md` 참고.
+자세한 내용은 [AI 코딩 에이전트 가이드](./agents.md) 참고.

@@ -15,7 +15,7 @@
 
 ## 개요
 
-이 프로젝트는 Next.js 16 기반의 개인 개발 블로그로, **Feature-Sliced Design(FSD)** 아키텍처 패턴을 따릅니다. 콘텐츠와 코드를 분리하여 관리하는 독립적인 리포지터리 구조를 채택하고 있습니다.
+이 프로젝트는 React 19 + TanStack Router v1 + Vite v7 기반의 개인 개발 블로그로, **Feature-Sliced Design(FSD)** 아키텍처 패턴을 따릅니다. 콘텐츠와 코드를 분리하여 관리하는 독립적인 리포지터리 구조를 채택하고 있습니다.
 
 ## 대상
 
@@ -40,15 +40,15 @@
 
 이 프로젝트는 코드와 콘텐츠를 분리하여 관리합니다:
 
-- **blog**: Next.js 애플리케이션 (UI, 렌더링, 비즈니스 로직)
+- **blog**: React + TanStack Router + Vite 애플리케이션 (UI, 렌더링, 비즈니스 로직)
 - **blog-content**: MDX 콘텐츠 저장소 (다국어 포스트)
 
 #### 데이터 흐름
 
-\`\`\`
+```
 ┌─────────────────────┐ ┌──────────────────────┐
 │ blog │ │ blog-content │
-│ (Next.js App) │ ◄───── │ (MDX Contents) │
+│ (React + Vite App) │ ◄───── │ (MDX Contents) │
 │ │ fetch │ │
 │ - UI/UX │ │ - Posts (ko/ja/en) │
 │ - 렌더링 │ │ - index.json │
@@ -61,14 +61,14 @@
 │ Netlify │ │ GitHub Actions │
 │ 배포 │ │ 인덱싱 생성 │
 └─────────────┘ └──────────────────┘
-\`\`\`
+```
 
 #### 예제
 
 **blog (현재 리포지터리)**:
 
 - **역할**: 블로그 애플리케이션
-- **기술**: Next.js 16.0.10, React 19.2.3, TypeScript 5, Tailwind CSS v4
+- **기술**: React 19.2.3, TanStack Router v1, Vite v7, TypeScript 5, Tailwind CSS v4
 - **배포**: Netlify (main 브랜치 자동 배포)
 - **URL**: https://chan-ok.com
 
@@ -93,20 +93,21 @@
 
 Feature-Sliced Design(FSD)는 단방향 의존성을 갖는 5개 레이어로 구성됩니다:
 
-\`\`\`
-app → widgets → features → entities → shared
-\`\`\`
+```
+routes → widgets → features → entities → shared
+```
 
 각 레이어는 자신보다 하위 레이어만 import할 수 있습니다.
 
 #### 디렉토리 구조
 
-\`\`\`
+```
 src/
-├── app/ # 🗂️ App Layer (라우팅)
-│ ├── [locale]/ # 다국어 라우팅
-│ ├── globals.css
-│ └── layout.tsx
+├── routes/ # 🗂️ Route Layer (라우팅)
+│ ├── __root.tsx # 루트 레이아웃
+│ ├── index.tsx # 홈 페이지
+│ ├── posts/ # 포스트 라우트
+│ └── about.tsx # About 페이지
 │
 ├── widgets/ # 🧩 Widget Layer (복합 UI)
 │ ├── footer.tsx
@@ -144,14 +145,14 @@ src/
 │ ├── types/
 │ └── util/
 │
-└── proxy.ts # 언어 감지 프록시
-\`\`\`
+└── main.tsx # 앱 진입점
+```
 
 #### 레이어별 역할
 
-**1️⃣ App Layer (라우팅)**:
+**1️⃣ Route Layer (라우팅)**:
 
-- Next.js의 파일 기반 라우팅
+- TanStack Router의 파일 기반 라우팅
 - 페이지 컴포넌트는 최소한의 로직만 포함
 - 비즈니스 로직은 하위 레이어에 위임
 - import 가능: widgets, features, entities, shared
@@ -250,7 +251,7 @@ return (
 }
 
 // 3. App - 페이지에서 사용
-// src/app/[locale]/posts/page.tsx
+// src/routes/posts/index.tsx
 import { TagFilter } from '@/features/post/ui/tag-filter';
 
 export default function PostsPage() {
@@ -268,10 +269,10 @@ return <TagFilter tags={['react', 'nextjs']} onFilter={handleFilter} />;
 
 1. 작성자가 blog-content 리포지터리에 MDX 포스트 push
 2. GitHub Actions가 main 브랜치 트리거 감지
-3. \`generate-index.ts\` 스크립트 실행하여 \`index.json\` 생성
-4. blog 애플리케이션이 \`index.json\` fetch (목록 페이지)
+3. `generate-index.ts` 스크립트 실행하여 `index.json` 생성
+4. blog 애플리케이션이 `index.json` fetch (목록 페이지)
 5. 필요 시 MDX 파일 fetch (상세 페이지)
-6. \`next-mdx-remote-client\`로 런타임 렌더링
+6. `@mdx-js/mdx`로 런타임 렌더링 (`compile()` + `new Function()`)
 7. 사용자에게 렌더링된 페이지 제공
 
 #### 시퀀스 다이어그램
@@ -281,7 +282,7 @@ sequenceDiagram
 participant Writer as 작성자
 participant BC as blog-content
 participant GHA as GitHub Actions
-participant Blog as blog (Next.js)
+participant Blog as blog (React + Vite)
 participant User as 사용자
 
     Writer->>BC: 1. MDX 포스트 push
@@ -319,26 +320,41 @@ participant User as 사용자
 \`\`\`typescript
 // src/features/post/api/get-posts.ts
 const response = await fetch(
-\`\${process.env.NEXT_PUBLIC_GIT_RAW_URL}/\${locale}/index.json\`
+\`\${import.meta.env.VITE_GIT_RAW_URL}/\${locale}/index.json\`
 );
 const posts: PostMetadata[] = await response.json();
 \`\`\`
 
-**상세 페이지에서 MDX fetch**:
+**상세 페이지에서 MDX fetch 및 렌더링**:
 
 \`\`\`typescript
-// src/features/post/api/get-post-content.ts
-const response = await fetch(
-\`\${process.env.NEXT_PUBLIC_GIT_RAW_URL}/\${locale}/\${slug}.mdx\`
-);
-const mdxSource = await response.text();
+// src/entities/markdown/util/render-mdx.ts
+import { compile } from '@mdx-js/mdx';
+import \* as runtime from 'react/jsx-runtime';
+
+export async function renderMDX(source: string) {
+// 1. MDX → JavaScript 변환
+const compiled = await compile(source, {
+outputFormat: 'function-body',
+development: false,
+});
+
+// 2. JavaScript 실행 → React 컴포넌트
+const { default: Component } = new Function(
+'React',
+...Object.keys(runtime),
+String(compiled)
+)(React, ...Object.values(runtime));
+
+return Component;
+}
 \`\`\`
 
 #### 주의사항
 
-- ⚠️ \`index.json\`은 GitHub Actions가 자동 생성하므로 수동 수정 금지
+- ⚠️ `index.json`은 GitHub Actions가 자동 생성하므로 수동 수정 금지
 - ⚠️ MDX 파일 fetch 실패 시 에러 처리 필수
-- ⚠️ Next.js fetch cache를 활용하여 불필요한 재요청 방지
+- ⚠️ 브라우저 캐시를 활용하여 불필요한 재요청 방지
 
 ### 페이지네이션
 
@@ -371,13 +387,13 @@ totalPages: Math.ceil(posts.length / perPage),
 
 #### 지시사항
 
-이 프로젝트는 URL 경로 기반으로 다국어를 지원합니다:
+이 프로젝트는 TanStack Router의 파일 기반 라우팅을 통해 다국어를 지원합니다:
 
-- \`/ko/posts/example\` - 한국어
-- \`/ja/posts/example\` - 일본어
-- \`/en/posts/example\` - 영어
+- `/ko/posts/example` - 한국어
+- `/ja/posts/example` - 일본어
+- `/en/posts/example` - 영어
 
-URL에 locale이 없으면 \`proxy.ts\`가 자동으로 언어를 감지하여 리다이렉트합니다.
+locale은 라우팅 컨텍스트에서 관리되며, `LocaleProvider`를 통해 앱 전체에서 접근할 수 있습니다.
 
 #### 언어 감지 프로세스
 
@@ -385,12 +401,12 @@ URL에 locale이 없으면 \`proxy.ts\`가 자동으로 언어를 감지하여 �
 graph TD
 A[사용자 접속] --> B{경로에 locale 있음?}
 B -->|Yes| C[해당 locale 페이지]
-B -->|No| D[proxy.ts]
+B -->|No| D[LocaleProvider]
 D --> E{NEXT_LOCALE 쿠키 확인}
-E -->|Yes| G[쿠키 언어로 리다이렉트]
+E -->|Yes| G[쿠키 언어로 설정]
 E -->|No| F{브라우저 언어 확인}
-F -->|Yes| G[감지된 언어로 리다이렉트]
-F -->|No| H[기본 언어 ko로 리다이렉트]
+F -->|Yes| G[감지된 언어로 설정]
+F -->|No| H[기본 언어 ko로 설정]
 \`\`\`
 
 #### 예제
@@ -411,16 +427,16 @@ blog-content/
 └── index.json (자동 생성)
 \`\`\`
 
-**언어 감지 프록시 (proxy.ts)**:
+**언어 감지 프로바이더 (LocaleProvider)**:
 
 \`\`\`typescript
-// src/proxy.ts
-export async function GET(request: NextRequest) {
-const locale = request.cookies.get('NEXT_LOCALE')?.value
-|| detectBrowserLocale(request)
-|| 'ko';
+// src/shared/providers/locale-provider.tsx
+export function LocaleProvider({ children }: Props) {
+const cookieLocale = getCookie('NEXT_LOCALE');
+const browserLocale = navigator.language.split('-')[0];
+const locale = cookieLocale || browserLocale || 'ko';
 
-return NextResponse.redirect(new URL(\`/\${locale}\`, request.url));
+return <LocaleContext.Provider value={{ locale }}>{children}</LocaleContext.Provider>;
 }
 \`\`\`
 
@@ -432,7 +448,35 @@ return NextResponse.redirect(new URL(\`/\${locale}\`, request.url));
 
 ## 기술 선택 이유
 
-### 1. 리포지터리 분리
+### 1. TanStack Router + Vite 채택
+
+**결정**: Next.js 16에서 TanStack Router v1 + Vite v7로 전환
+
+**배경**:
+
+- Next.js App Router의 `use client`/`use server` 혼란
+- 예측 불가능한 캐싱 동작
+- 느린 빌드 속도 (12초)
+- 느린 HMR (2초)
+- 블로그처럼 단순한 프로젝트에 Next.js는 과한 선택
+
+**결과**:
+
+- 빌드 시간: 12s → 5s (60% 개선)
+- HMR: 2s → 100ms (95% 개선)
+- 번들 크기: 200KB → 150KB (25% 감소)
+- 타입 안전성: TanStack Router의 파일 기반 라우팅 자동 타입 생성
+- 복잡도 감소: `use client`/`use server` 제거
+
+**주요 기술 결정**:
+
+- TanStack Router v1 파일 기반 라우팅
+- Vite v7 빌드 도구 및 개발 서버
+- `@mdx-js/mdx` 런타임 MDX 렌더링
+- 클라이언트 사이드 렌더링 (SSR 미사용, 필요 시 추가 가능)
+- Netlify Functions로 서버리스 함수 처리 (Turnstile, 이메일 발송)
+
+### 2. 리포지터리 분리
 
 **결정**: blog와 blog-content 분리
 
@@ -443,22 +487,33 @@ return NextResponse.redirect(new URL(\`/\${locale}\`, request.url));
 - Git 히스토리 분리로 관리 용이성 증대
 - 콘텐츠 작성자와 개발자의 역할 분리 가능
 
-### 2. next-mdx-remote-client 채택
+### 2. @mdx-js/mdx 채택
 
-**결정**: 빌드 타임 MDX 대신 런타임 렌더링
+**결정**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
+
+**배경**:
+
+- 콘텐츠가 외부 리포지터리에 있어 빌드 타임 접근 불가
+- 동적 콘텐츠 로딩 가능 (콘텐츠 수정 시 재배포 불필요)
+- 브라우저 캐시로 성능 보완
+
+### 3. @mdx-js/mdx 채택
+
+**결정**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
 
 **이유**:
 
 - 콘텐츠가 외부 리포지터리에 있어 빌드 타임 접근 불가
 - 동적 콘텐츠 로딩 가능 (콘텐츠 수정 시 재배포 불필요)
-- Next.js 캐싱 전략으로 성능 보완
+- 서버/클라이언트 구분 없이 어디서든 MDX 렌더링 가능
+- 브라우저 캐시로 성능 보완
 
 **트레이드오프**:
 
 - 빌드 타임 MDX보다 초기 렌더링 느림
-- 하지만 fetch cache로 두 번째 요청부터는 빠름
+- 하지만 캐시로 두 번째 요청부터는 빠름
 
-### 3. FSD 아키텍처
+### 4. FSD 아키텍처
 
 **결정**: Feature-Sliced Design 패턴 채택
 
@@ -469,7 +524,7 @@ return NextResponse.redirect(new URL(\`/\${locale}\`, request.url));
 - 팀 협업 시 충돌 최소화
 - 기능 단위 재사용 용이
 
-### 4. URL 기반 i18n
+### 5. URL 기반 i18n
 
 **결정**: 쿠키/세션 대신 URL 경로로 언어 관리
 
@@ -487,7 +542,33 @@ return NextResponse.redirect(new URL(\`/\${locale}\`, request.url));
 
 ## 성능 최적화
 
-### 1. React Compiler
+### 1. Vite 빌드 최적화
+
+Vite의 빠른 빌드 속도와 HMR을 활용하여 개발 생산성을 극대화합니다:
+
+\`\`\`typescript
+// vite.config.ts
+export default defineConfig({
+build: {
+rollupOptions: {
+output: {
+manualChunks: {
+vendor: ['react', 'react-dom'],
+router: ['@tanstack/react-router'],
+},
+},
+},
+},
+});
+\`\`\`
+
+**결과**:
+
+- 빌드 시간: 12s → 5s (60% 개선)
+- HMR: 2s → 100ms (95% 개선)
+- 번들 크기: 200KB → 150KB (25% 감소)
+
+### 2. React Compiler
 
 React 19의 자동 최적화를 활용하여 수동 메모이제이션을 최소화합니다.
 
@@ -502,9 +583,9 @@ const sortedPosts = useMemo(
 const sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
 \`\`\`
 
-### 2. 폰트 최적화
+### 3. 폰트 최적화
 
-Google Fonts의 \`preload: true\` 설정과 서브셋 로딩:
+Google Fonts의 `preload: true` 설정과 서브셋 로딩:
 
 \`\`\`typescript
 // src/app/layout.tsx
@@ -517,47 +598,69 @@ preload: true,
 });
 \`\`\`
 
-### 3. 이미지 최적화
+### 4. 이미지 최적화
 
-\`next/image\`를 사용하여 WebP/AVIF 자동 변환 및 Lazy loading:
+Vite 플러그인을 사용하여 이미지를 최적화합니다:
 
-\`\`\`typescript
-import Image from 'next/image';
+```typescript
+// vite.config.ts
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
-<Image
-  src="/images/hero.jpg"
-  alt="Hero"
-  width={800}
-  height={600}
-  loading="lazy"
-/>
-\`\`\`
-
-### 4. 코드 스플리팅
-
-라우트 기반 자동 분할 및 동적 import:
-
-\`\`\`typescript
-import dynamic from 'next/dynamic';
-
-const ContactForm = dynamic(() => import('@/features/contact/ui/form'), {
-loading: () => <p>Loading...</p>,
+export default defineConfig({
+  plugins: [ViteImageOptimizer()],
 });
-\`\`\`
 
-### 5. 데이터 캐싱
+// 컴포넌트에서 사용
+<img src="/images/hero.jpg" alt="Hero" loading="lazy" />
+```
 
-Next.js fetch cache로 \`index.json\` 캐싱:
+### 5. 코드 스플리팅
 
-\`\`\`typescript
-const response = await fetch(url, {
-next: { revalidate: 3600 }, // 1시간 캐싱
+React의 lazy와 Suspense를 사용한 동적 import:
+
+```typescript
+import { lazy, Suspense } from 'react';
+
+const ContactForm = lazy(() => import('@/features/contact/ui/form'));
+
+<Suspense fallback={<p>Loading...</p>}>
+  <ContactForm />
+</Suspense>
+```
+
+### 6. 데이터 캐싱
+
+TanStack Query를 사용한 데이터 캐싱:
+
+```typescript
+import { useQuery } from '@tanstack/react-query';
+
+const { data } = useQuery({
+  queryKey: ['posts', locale],
+  queryFn: () => fetch(url).then((res) => res.json()),
+  staleTime: 3600000, // 1시간
 });
-\`\`\`
+```
 
 ## 과거 시행착오
 
-### 1. Contact 봇 스팸 문제
+### 1. Next.js App Router의 복잡도
+
+**문제**: `use client` / `use server`의 난해함, 예측 불가능한 캐싱, 느린 빌드 속도
+
+**시도**:
+
+- ❌ 1차 시도 (Claude Code): 단일 에이전트, 8시간 → Next.js에서 TanStack Router로 마이그레이션 실패
+- ❌ 2차 시도 (Amazon Kiro): 단일 에이전트, 7시간 → 타입 에러
+- ✅ 3차 시도 (멀티 에이전트): Master Orchestrator + 6 Subagents, 12시간 → 성공
+
+**해결**:
+
+- ✅ TanStack Router v1 + Vite v7로 전환
+- ✅ 빌드 시간 60% 개선, HMR 95% 개선, 번들 크기 25% 감소
+- ✅ 멀티 에이전트 시스템 활용 (Master Orchestrator, feature-developer, test-specialist, security-scanner, git-guardian, github-helper, doc-manager)
+
+### 2. Contact 봇 스팸 문제
 
 **문제**: Contact 폼에 봇 스팸 발생
 
@@ -571,7 +674,7 @@ next: { revalidate: 3600 }, // 1시간 캐싱
 - ✅ Cloudflare Turnstile 도입 → 봇 차단 + 사용자 경험 유지
 - ✅ Rate limiting (Netlify Functions) → API 남용 방지
 
-### 2. 쿠키 영속성 문제
+### 3. 쿠키 영속성 문제
 
 **문제**: 언어 선택 후 새로고침 시 기본 언어로 돌아감
 
@@ -585,7 +688,7 @@ next: { revalidate: 3600 }, // 1시간 캐싱
 - ✅ \`NEXT_LOCALE\` 쿠키 도입 → 서버/클라이언트 모두 접근 가능
 - ✅ \`proxy.ts\`에서 쿠키 우선 확인 → 브라우저 언어는 폴백
 
-### 3. MDX 렌더링 문제
+### 4. MDX 렌더링 문제
 
 **문제**: 외부 리포지터리 MDX를 빌드 타임에 처리 불가
 
@@ -596,9 +699,9 @@ next: { revalidate: 3600 }, // 1시간 캐싱
 
 **해결**:
 
-- ✅ \`next-mdx-remote-client\`로 런타임 렌더링
+- ✅ `@mdx-js/mdx`로 런타임 렌더링 (`compile()` + `new Function()`)
 - ✅ GitHub Raw URL로 fetch → 간단하고 빠름
-- ✅ Next.js fetch cache로 성능 보완
+- ✅ 브라우저 캐시로 성능 보완
 
 ## 참고 문서
 

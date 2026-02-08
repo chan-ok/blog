@@ -114,6 +114,141 @@ pnpm test --project=storybook # Storybook 인터랙션 테스트
 - **비즈니스 로직**: 85% 이상
 - **UI 컴포넌트**: 70% 이상
 
+## MCP 도구 활용 ⭐
+
+이 프로젝트는 두 가지 MCP(Model Context Protocol) 도구를 제공합니다. **작업 시 적극 활용**하세요.
+
+### Context7 - 라이브러리 최신 문서 참조
+
+**사용 시기**:
+
+- Vitest, Playwright, Storybook, fast-check 등 테스팅 라이브러리 API 확인 시
+- 최신 테스트 패턴 및 Best Practice 참조 시
+- 라이브러리 버전 업데이트 후 변경된 API 확인 시
+
+**주요 활용 케이스**:
+
+- ✅ Vitest 최신 매처 및 Mocking 패턴
+- ✅ Testing Library 쿼리 및 Assertion 방법
+- ✅ Playwright E2E 테스트 패턴
+- ✅ fast-check Property-based 테스트 작성법
+- ✅ Storybook 스토리 및 인터랙션 테스트
+
+**사용 방법**:
+
+1. `context7_resolve-library-id` - 라이브러리 ID 찾기
+2. `context7_query-docs` - 구체적인 API/패턴 질의
+
+**예시**:
+
+```typescript
+// Vitest의 최신 mocking 패턴 확인
+context7_resolve-library-id("Vitest")
+→ /vitest-dev/vitest
+
+context7_query-docs(
+  libraryId: "/vitest-dev/vitest",
+  query: "How to mock ES modules with vi.mock()?"
+)
+```
+
+### Serena - 프로젝트 인덱싱 및 토큰 최적화
+
+**사용 시기**:
+
+- 테스트 대상 컴포넌트/함수 찾기
+- 기존 테스트 파일 구조 확인
+- 테스트 대상 코드의 심볼 정보 확인 (Props, 함수 시그니처 등)
+- 테스트 파일 생성 및 수정
+
+**핵심 도구**:
+
+1. **프로젝트 탐색**:
+   - `serena_list_dir` - 디렉토리 구조 확인
+   - `serena_find_file` - 파일명 검색
+   - `serena_search_for_pattern` - 정규식 패턴 검색
+
+2. **심볼 기반 작업** (토큰 최적화):
+   - `serena_get_symbols_overview` - 파일의 심볼 개요 (함수/클래스 목록)
+   - `serena_find_symbol` - 특정 심볼 찾기 (예: `Button`, `formatDate`)
+   - `serena_find_referencing_symbols` - 심볼 사용처 찾기
+
+3. **심볼 편집** (정확한 수정):
+   - `serena_replace_symbol_body` - 함수/클래스 본문 교체
+   - `serena_insert_after_symbol` - 심볼 다음에 코드 삽입
+   - `serena_insert_before_symbol` - 심볼 앞에 코드 삽입
+   - `serena_rename_symbol` - 심볼 이름 변경 (전체 프로젝트 반영)
+
+**장점**:
+
+- ✅ **토큰 절약**: 전체 파일 대신 필요한 심볼만 읽기
+- ✅ **정확한 수정**: 심볼 단위로 정확히 수정 (줄 번호 불필요)
+- ✅ **안전한 리팩토링**: `serena_rename_symbol`로 전체 프로젝트에서 이름 변경
+- ✅ **빠른 탐색**: FSD 레이어 구조 빠르게 파악
+
+**예시 1: 테스트 대상 컴포넌트 찾기**
+
+```typescript
+// Button 컴포넌트 Props 타입 확인
+serena_find_symbol(
+  name_path_pattern: "ButtonProps",
+  relative_path: "src/shared/components/ui",
+  include_body: true
+)
+```
+
+**예시 2: 기존 테스트 패턴 참조**
+
+```typescript
+// 유사한 테스트 파일 찾기
+serena_search_for_pattern(
+  substring_pattern: "describe.*Button",
+  paths_include_glob: "**/*.test.tsx",
+  relative_path: "src"
+)
+```
+
+**예시 3: 테스트 추가**
+
+```typescript
+// 기존 describe 블록 다음에 새 테스트 추가
+serena_insert_after_symbol(
+  name_path: "describe",
+  relative_path: "src/shared/components/ui/button.test.tsx",
+  body: "\n  it('should handle async onClick', async () => { ... });\n"
+)
+```
+
+### Serena vs 기존 도구 (Read/Edit/Grep/Glob)
+
+| 작업 유형      | 기존 도구        | Serena 도구                   | 장점                         |
+| -------------- | ---------------- | ----------------------------- | ---------------------------- |
+| 파일 전체 읽기 | `Read`           | `serena_get_symbols_overview` | 심볼 목록만 확인 (토큰 절약) |
+| 함수 본문 수정 | `Edit` (줄 번호) | `serena_replace_symbol_body`  | 심볼 이름으로 정확히 수정    |
+| 함수명 변경    | `Edit` (수동)    | `serena_rename_symbol`        | 전체 프로젝트 자동 반영      |
+| 패턴 검색      | `Grep`           | `serena_search_for_pattern`   | 심볼 컨텍스트 포함 검색      |
+| 디렉토리 탐색  | `Glob`           | `serena_list_dir`             | 구조화된 JSON 응답           |
+
+**권장 사항**:
+
+- ⭐ 심볼 단위 작업 시 **Serena 우선 사용** (토큰 최적화)
+- ⭐ 라이브러리 API 불확실 시 **Context7 우선 참조** (최신 문서)
+- ⭐ 간단한 텍스트 수정은 기존 도구 사용 (Read/Edit)
+
+### MCP 도구 사용 원칙
+
+1. **Context7 먼저, 구현은 Serena와 함께**
+   - 외부 라이브러리 패턴 → Context7 참조
+   - 프로젝트 코드 작성 → Serena로 기존 코드 확인 후 심볼 편집
+
+2. **토큰 효율성 우선**
+   - 큰 파일은 `serena_get_symbols_overview`로 구조 파악 후 필요한 심볼만 `serena_find_symbol`
+   - 전체 파일 읽기는 최후 수단
+
+3. **안전한 리팩토링**
+   - 함수/클래스 이름 변경 시 `serena_rename_symbol` 사용 (전체 프로젝트 반영)
+   - 심볼 본문만 수정 시 `serena_replace_symbol_body` 사용
+
 ## 테스트 작성 프로세스
 
 ### 1. 요구사항 분석 및 테스트 케이스 식별
@@ -378,15 +513,12 @@ describe('Button 컴포넌트', () => {
 ```typescript
 // Arbitrary 정의
 const variantArb = fc.constantFrom('primary', 'default', 'danger');
-const shapeArb = fc.constantFrom('fill', 'outline');
 
 // Property 검증
-it('모든 variant/shape 조합에서 다크 모드 클래스 포함', () => {
+it('모든 variant 조합에서 다크 모드 클래스 포함', () => {
   fc.assert(
-    fc.property(variantArb, shapeArb, (variant, shape) => {
-      const { unmount } = render(
-        <Button variant={variant} shape={shape}>Test</Button>
-      );
+    fc.property(variantArb, (variant) => {
+      const { unmount } = render(<Button variant={variant}>Test</Button>);
       const button = screen.getByRole('button');
 
       // 검증: 모든 조합에서 dark: 클래스 존재
@@ -511,81 +643,27 @@ import { Button } from './Button';
 const meta: Meta<typeof Button> = {
   title: 'UI/Button',
   component: Button,
-  parameters: {
-    layout: 'centered',
-  },
+  parameters: { layout: 'centered' },
   tags: ['autodocs'],
   argTypes: {
     variant: {
       control: 'select',
-      options: ['primary', 'default', 'danger', 'link'],
-      description: '버튼 스타일 변형',
+      options: ['primary', 'default', 'danger'],
     },
-    shape: {
-      control: 'select',
-      options: ['fill', 'outline'],
-      description: '버튼 모양',
-    },
-    disabled: {
-      control: 'boolean',
-      description: '비활성화 상태',
-    },
+    disabled: { control: 'boolean' },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof Button>;
 
-// 기본 스토리
+// 주요 variant 스토리
 export const Primary: Story = {
-  args: {
-    children: 'Primary Button',
-    variant: 'primary',
-    shape: 'fill',
-  },
-};
-
-export const Default: Story = {
-  args: {
-    children: 'Default Button',
-    variant: 'default',
-    shape: 'fill',
-  },
-};
-
-export const Danger: Story = {
-  args: {
-    children: 'Danger Button',
-    variant: 'danger',
-    shape: 'fill',
-  },
-};
-
-export const Outline: Story = {
-  args: {
-    children: 'Outline Button',
-    variant: 'primary',
-    shape: 'outline',
-  },
+  args: { children: 'Primary Button', variant: 'primary' },
 };
 
 export const Disabled: Story = {
-  args: {
-    children: 'Disabled Button',
-    variant: 'primary',
-    disabled: true,
-  },
-};
-
-// 다크 모드 스토리 (선택)
-export const DarkMode: Story = {
-  args: {
-    children: 'Dark Mode Button',
-    variant: 'primary',
-  },
-  parameters: {
-    backgrounds: { default: 'dark' },
-  },
+  args: { children: 'Disabled', disabled: true },
 };
 ```
 
@@ -593,61 +671,29 @@ export const DarkMode: Story = {
 
 - ✅ 파일명: `*.stories.tsx` (컴포넌트와 동일한 디렉토리)
 - ✅ Meta 정의에 title, component, argTypes 포함
-- ✅ 모든 variant/state 조합을 별도 스토리로 생성
+- ✅ 주요 variant/state 조합을 별도 스토리로 생성
 - ✅ args를 사용하여 Controls 패널에서 동적 수정 가능하게
-- ✅ 다크 모드 스토리 포함 (필요 시)
-- ❌ Play functions는 복잡한 인터랙션이 필요한 경우만 사용 (기본 가이드에서는 제외)
 
 ## 테스트 검증 체크리스트
 
 테스트 작성 완료 후 다음 체크리스트를 확인하세요:
 
-### 기능 검증
+### 기능/품질 검증
 
 - [ ] 정상 케이스가 모두 통과하는가?
-- [ ] 경계 조건이 올바르게 처리되는가?
-- [ ] 엣지 케이스가 검증되었는가?
-- [ ] 에러 시나리오가 테스트되었는가?
-
-### 품질 검증
-
+- [ ] 경계 조건/엣지 케이스/에러 시나리오가 검증되었는가?
 - [ ] 테스트가 기능 요구사항과 일치하는가?
-- [ ] 테스트가 실제 사용자 시나리오를 반영하는가?
 - [ ] 테스트가 독립적으로 실행 가능한가? (테스트 간 의존성 없음)
-- [ ] 테스트가 재현 가능한가? (동일한 결과 보장)
 
-### 접근성 검증
+### 접근성/UI/보안
 
-- [ ] aria-label, role 등 접근성 속성이 테스트되었는가?
-- [ ] 키보드 네비게이션이 검증되었는가?
-- [ ] 스크린 리더 호환성이 고려되었는가?
+- [ ] aria-label, role, 키보드 네비게이션이 검증되었는가?
+- [ ] 다크 모드, 반응형, 상호작용 피드백이 테스트되었는가?
+- [ ] XSS, Injection 공격이 방어되는가?
 
-### UI/UX 검증
+### 커버리지
 
-- [ ] 다크 모드 스타일이 검증되었는가?
-- [ ] 반응형 동작이 테스트되었는가? (필요 시 Playwright)
-- [ ] 상호작용 피드백(hover, focus, disabled)이 테스트되었는가?
-
-### 보안 검증
-
-- [ ] XSS 공격이 방어되는가? (입력 sanitization)
-- [ ] Injection 공격이 방어되는가? (SQL, Command Injection)
-- [ ] 민감 정보가 로그에 노출되지 않는가?
-
-### 커버리지 검증
-
-- [ ] 목표 커버리지를 달성했는가?
-  - 전체: 80% 이상
-  - 유틸리티: 90% 이상
-  - 비즈니스 로직: 85% 이상
-  - UI 컴포넌트: 70% 이상
-
-### 코드 품질
-
-- [ ] 테스트 코드가 가독성이 좋은가?
-- [ ] 중복 코드가 제거되었는가?
-- [ ] 테스트 이름이 명확한가?
-- [ ] 한국어 주석이 충분한가?
+- [ ] 목표 커버리지를 달성했는가? (전체 80%, 유틸 90%, 비즈니스 85%, UI 70%)
 
 ## 테스트 실패 시 대응
 
@@ -659,38 +705,17 @@ pnpm test button.test.tsx
 
 # 특정 테스트만 실행 (이름 필터)
 pnpm test -t "클릭 시 onClick 호출"
-
-# Watch 모드로 디버깅
-pnpm test
 ```
 
 ### 2. 원인별 대응 방법
 
-**Case 1: 코드 버그**
-
-- 코드를 수정하여 테스트 통과
-- 버그 수정 후 회귀 방지를 위해 테스트 유지
-
-**Case 2: 테스트 오류**
-
-- 테스트 로직을 수정
-- 기능 요구사항과 일치하도록 수정
-
-**Case 3: 요구사항 변경**
-
-- 사용자에게 요구사항 변경 확인
-- 확인 후 테스트 및 코드 수정
+**Case 1: 코드 버그** → 코드 수정하여 테스트 통과
+**Case 2: 테스트 오류** → 테스트 로직 수정
+**Case 3: 요구사항 변경** → 사용자에게 확인 후 테스트 및 코드 수정
 
 ### 3. 디버깅 팁
 
 ```typescript
-// ❌ Bad - console.log 사용
-it('test', () => {
-  const result = myFunction();
-  console.log(result); // 디버깅 후 제거 필요
-  expect(result).toBe(10);
-});
-
 // ✅ Good - screen.debug 사용
 it('test', () => {
   render(<Component />);
@@ -741,11 +766,9 @@ it('should have className "bg-blue-500"', () => {
 let sharedState;
 it('test 1', () => {
   sharedState = 'value';
-  expect(sharedState).toBe('value');
 });
 it('test 2', () => {
-  // test 1에 의존! test 2만 실행 시 실패
-  expect(sharedState).toBe('value');
+  expect(sharedState).toBe('value'); // test 1에 의존!
 });
 ```
 
@@ -764,33 +787,10 @@ it('should apply styles', () => {
   fc.assert(
     fc.property(variantArb, (variant) => {
       const { unmount } = render(<Button variant={variant}>Test</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toBeInTheDocument();
+      expect(screen.getByRole('button')).toBeInTheDocument();
       unmount(); // 필수!
     })
   );
-});
-
-// ✅ 동작 테스트 (구현 세부사항 숨김)
-it('should apply primary styles', () => {
-  render(<Button variant="primary">Test</Button>);
-  const button = screen.getByRole('button');
-  // 시각적 속성 대신 의미론적 속성 검증
-  expect(button).toHaveAttribute('class');
-  expect(button.className).toContain('primary'); // 의미론적 클래스명
-});
-
-// ✅ 독립적인 테스트
-describe('Component', () => {
-  it('test 1', () => {
-    const localState = 'value';
-    expect(localState).toBe('value');
-  });
-
-  it('test 2', () => {
-    const localState = 'value';
-    expect(localState).toBe('value');
-  });
 });
 ```
 
@@ -802,31 +802,17 @@ describe('Component', () => {
 ## 테스트 작성 완료
 
 ### 작성한 테스트
-- ✅ Unit 테스트: [파일명] ([테스트 케이스 수]개)
-- ✅ Property-based 테스트: [파일명] ([검증한 속성 수]개)
-- ✅ E2E 테스트: [파일명] ([시나리오 수]개)
-- ✅ Storybook 스토리: [파일명] ([스토리 수]개)
+- ✅ Unit: [파일명] ([케이스 수]개)
+- ✅ Property-based: [속성 수]개
+- ✅ E2E: [시나리오 수]개
+- ✅ Storybook: [스토리 수]개
 
 ### 테스트 결과
-- ✅ 전체 테스트: [통과 수]/[전체 수] 통과
-- ✅ 커버리지: [커버리지 퍼센트]%
+- ✅ 통과: [수]/[전체]
+- ✅ 커버리지: [%]%
 
-### 검증한 항목
-- ✅ 정상 케이스: [설명]
-- ✅ 경계 조건: [설명]
-- ✅ 엣지 케이스: [설명]
-- ✅ 에러 케이스: [설명]
-- ✅ 접근성: [설명]
-- ✅ UI/UX: [설명]
-
-### Storybook 스토리
-- ✅ 모든 variant 스토리 생성
-- ✅ 다크 모드 지원 확인
-- ✅ Controls 패널 설정 완료
-
-### 개선 제안 (선택)
-- 💡 [추가로 고려할 테스트 케이스]
-- 💡 [커버리지 개선 방안]
+### 검증 항목
+- ✅ 정상/경계/엣지/에러/접근성/UI/UX
 ```
 
 ## 성공 기준

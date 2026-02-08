@@ -38,7 +38,7 @@
 
 ### 기술 스택
 
-- **프레임워크**: React 19, TanStack Router v1, Vite v6, TypeScript 5
+- **프레임워크**: React 19, TanStack Router v1, Vite v7, TypeScript 5
 - **스타일링**: Tailwind CSS v4
 - **국제화**: i18next
 - **상태 관리**: Zustand
@@ -102,8 +102,7 @@ pnpm test --project=storybook
 ### E2E 테스트
 
 ```bash
-pnpm e2e              # Playwright E2E 테스트
-pnpm e2e:ui           # Playwright UI 모드
+pnpm e2e:ui           # Playwright E2E 테스트 (UI 모드)
 ```
 
 ### Storybook
@@ -440,7 +439,7 @@ pnpm test --project=unit
 pnpm test --project=storybook
 
 # E2E 테스트
-pnpm test:e2e
+pnpm e2e:ui
 ```
 
 ### 테스트 커버리지 목표

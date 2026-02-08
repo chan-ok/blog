@@ -268,6 +268,136 @@ Before completing validation, ensure:
 - [ ] Agent descriptions include at least 3 usage examples
 - [ ] Agent permissions in `opencode.json` match documented responsibilities
 
+## MCP 도구 활용 ⭐
+
+이 프로젝트는 두 가지 MCP(Model Context Protocol) 도구를 제공합니다. **작업 시 적극 활용**하세요.
+
+### Context7 - 라이브러리 최신 문서 참조
+
+**사용 시기**:
+
+- 문서화 도구 및 마크다운 라이브러리 참조 시
+- 프로젝트에서 사용하는 기술 스택의 공식 문서 확인 시
+- 최신 API 변경사항 확인하여 문서 업데이트 시
+
+**주요 활용 케이스**:
+
+- ✅ MDX, gray-matter, rehype/remark 플러그인 사용법
+- ✅ React, TanStack Router, Vite 공식 문서 참조
+- ✅ Vitest, Playwright 설정 및 명령어 확인
+
+**사용 방법**:
+
+1. `context7_resolve-library-id` - 라이브러리 ID 찾기
+2. `context7_query-docs` - 구체적인 API/패턴 질의
+
+**예시**:
+
+```typescript
+// React 19의 최신 API 확인
+context7_resolve-library-id("React")
+→ /facebook/react
+
+context7_query-docs(
+  libraryId: "/facebook/react",
+  query: "What are the new features in React 19?"
+)
+```
+
+### Serena - 프로젝트 인덱싱 및 토큰 최적화
+
+**사용 시기**:
+
+- 프로젝트 전체 구조 스캔 (문서-코드 일관성 검증)
+- package.json 스크립트 확인
+- 실제 파일 경로 및 디렉토리 구조 검증
+- 코드 예제의 심볼 존재 여부 확인
+
+**핵심 도구**:
+
+1. **프로젝트 탐색**:
+   - `serena_list_dir` - 디렉토리 구조 확인
+   - `serena_find_file` - 파일명 검색
+   - `serena_search_for_pattern` - 정규식 패턴 검색
+
+2. **심볼 기반 작업** (토큰 최적화):
+   - `serena_get_symbols_overview` - 파일의 심볼 개요 (함수/클래스 목록)
+   - `serena_find_symbol` - 특정 심볼 찾기 (예: `Button`, `formatDate`)
+   - `serena_find_referencing_symbols` - 심볼 사용처 찾기
+
+3. **심볼 편집** (정확한 수정):
+   - `serena_replace_symbol_body` - 함수/클래스 본문 교체
+   - `serena_insert_after_symbol` - 심볼 다음에 코드 삽입
+   - `serena_insert_before_symbol` - 심볼 앞에 코드 삽입
+   - `serena_rename_symbol` - 심볼 이름 변경 (전체 프로젝트 반영)
+
+**장점**:
+
+- ✅ **토큰 절약**: 전체 파일 대신 필요한 심볼만 읽기
+- ✅ **정확한 수정**: 심볼 단위로 정확히 수정 (줄 번호 불필요)
+- ✅ **안전한 리팩토링**: `serena_rename_symbol`로 전체 프로젝트에서 이름 변경
+- ✅ **빠른 탐색**: FSD 레이어 구조 빠르게 파악
+
+**예시 1: 프로젝트 구조 확인**
+
+```typescript
+// src/ 디렉토리 구조 확인 (FSD 레이어 검증)
+serena_list_dir(
+  relative_path: "src",
+  recursive: true
+)
+```
+
+**예시 2: package.json 스크립트 확인**
+
+```typescript
+// 문서화된 명령어가 실제로 존재하는지 확인
+serena_search_for_pattern(
+  substring_pattern: "\"test\":\\s*\".*\"",
+  relative_path: "package.json"
+)
+```
+
+**예시 3: 코드 예제 검증**
+
+```typescript
+// 문서에 나온 함수가 실제로 존재하는지 확인
+serena_find_symbol(
+  name_path_pattern: "formatDate",
+  relative_path: "src/shared/util"
+)
+```
+
+### Serena vs 기존 도구 (Read/Edit/Grep/Glob)
+
+| 작업 유형      | 기존 도구        | Serena 도구                   | 장점                         |
+| -------------- | ---------------- | ----------------------------- | ---------------------------- |
+| 파일 전체 읽기 | `Read`           | `serena_get_symbols_overview` | 심볼 목록만 확인 (토큰 절약) |
+| 함수 본문 수정 | `Edit` (줄 번호) | `serena_replace_symbol_body`  | 심볼 이름으로 정확히 수정    |
+| 함수명 변경    | `Edit` (수동)    | `serena_rename_symbol`        | 전체 프로젝트 자동 반영      |
+| 패턴 검색      | `Grep`           | `serena_search_for_pattern`   | 심볼 컨텍스트 포함 검색      |
+| 디렉토리 탐색  | `Glob`           | `serena_list_dir`             | 구조화된 JSON 응답           |
+
+**권장 사항**:
+
+- ⭐ 심볼 단위 작업 시 **Serena 우선 사용** (토큰 최적화)
+- ⭐ 라이브러리 API 불확실 시 **Context7 우선 참조** (최신 문서)
+- ⭐ 간단한 텍스트 수정은 기존 도구 사용 (Read/Edit)
+
+### MCP 도구 사용 원칙
+
+1. **Context7 먼저, 구현은 Serena와 함께**
+   - 외부 라이브러리 패턴 → Context7 참조
+   - 프로젝트 코드 작성 → Serena로 기존 코드 확인 후 심볼 편집
+
+2. **토큰 효율성 우선**
+   - 큰 파일은 `serena_get_symbols_overview`로 구조 파악 후 필요한 심볼만 `serena_find_symbol`
+   - 전체 파일 읽기는 최후 수단
+
+3. **안전한 리팩토링**
+   - 함수/클래스 이름 변경 시 `serena_rename_symbol` 사용 (전체 프로젝트 반영)
+   - 심볼 본문만 수정 시 `serena_replace_symbol_body` 사용
+
 ## 명령 실행 요청 규칙
 
 에이전트 프롬프트 수정 및 검증 명령은 대부분 `"ask"` 권한으로 설정되어 있습니다.
