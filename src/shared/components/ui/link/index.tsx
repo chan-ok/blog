@@ -46,7 +46,7 @@ function parseInternalLink(href: string, currentLocale: string) {
         params: { locale: detectedLocale },
       };
     } else if (path.startsWith('/posts/')) {
-      const postPath = path.slice(7); // Remove '/posts/'
+      const postPath = path.slice('/posts/'.length);
       return {
         to: '/$locale/posts/$' as const,
         params: { locale: detectedLocale, _splat: postPath },
@@ -76,7 +76,7 @@ function parseInternalLink(href: string, currentLocale: string) {
   } else if (normalizedPath === '/posts') {
     return { to: '/$locale/posts' as const, params: { locale: currentLocale } };
   } else if (normalizedPath.startsWith('/posts/')) {
-    const postPath = normalizedPath.slice(7); // Remove '/posts/'
+    const postPath = normalizedPath.slice('/posts/'.length);
     return {
       to: '/$locale/posts/$' as const,
       params: { locale: currentLocale, _splat: postPath },

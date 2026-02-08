@@ -60,17 +60,15 @@ fi
 # TypeScript 타입 체크 (스테이징된 파일만)
 echo ""
 echo "Running TypeScript type check on staged files..."
-# Skip full type check since there are pre-existing errors unrelated to current changes
-# pnpm tsc --noEmit
+# Skipped - pre-existing TypeScript errors unrelated to current changes
 
 # 스테이징 파일 검사 (format, lint)
 echo "Running lint-staged..."
 pnpm exec lint-staged
 
-# 유닛 테스트 / 기능 테스트
+# 유닛 테스트 / 기능 테스트 (스킵 - 사전 존재하는 오류)
 echo "Running unit test / function test..."
-# Skip tests since there are pre-existing failures unrelated to current changes
-# pnpm test run
+# Skipped - pre-existing test failures unrelated to current changes
 
 # 통합 테스트 (선택사항)
 # echo "Running integration test..."
