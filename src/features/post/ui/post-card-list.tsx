@@ -30,7 +30,7 @@ export default function PostCardList({ locale }: PostCardListProps) {
   return (
     <div className="flex flex-col gap-4">
       {posts.map((post) => (
-        <PostBasicCard key={post.title} locale={locale} {...post} />
+        <PostBasicCard key={post.path.join('/')} locale={locale} {...post} />
       ))}
     </div>
   );
