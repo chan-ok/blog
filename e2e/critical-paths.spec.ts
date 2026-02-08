@@ -24,7 +24,7 @@ test.describe('Critical Paths - 홈 페이지', () => {
   test('홈 페이지 - 한국어', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko`);
 
-    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화 (react-helmet-async)
+    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화
     // 현재는 기본 타이틀만 확인
     await expect(page).toHaveTitle(/Chanho/i);
 
@@ -41,7 +41,7 @@ test.describe('Critical Paths - 홈 페이지', () => {
   test('홈 페이지 - 영어', async ({ page }) => {
     await page.goto(`${BASE_URL}/en`);
 
-    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화 (react-helmet-async)
+    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화
     // 현재는 기본 타이틀만 확인
     await expect(page).toHaveTitle(/Chanho/i);
 
@@ -58,7 +58,7 @@ test.describe('Critical Paths - 홈 페이지', () => {
   test('홈 페이지 - 일본어', async ({ page }) => {
     await page.goto(`${BASE_URL}/ja`);
 
-    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화 (react-helmet-async)
+    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화
     // 현재는 기본 타이틀만 확인
     await expect(page).toHaveTitle(/Chanho/i);
 
@@ -77,7 +77,7 @@ test.describe('Critical Paths - About 페이지', () => {
   test('About 페이지 렌더링', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko/about`);
 
-    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화 (react-helmet-async)
+    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화
     // 현재는 기본 타이틀만 확인
     await expect(page).toHaveTitle(/Chanho/i);
 
@@ -93,7 +93,7 @@ test.describe('Critical Paths - 포스트', () => {
   test('포스트 목록 렌더링', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko/posts`);
 
-    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화 (react-helmet-async)
+    // TODO: 페이지별 타이틀 변경은 SEO 기능 구현 후 활성화
     // 현재는 기본 타이틀만 확인
     await expect(page).toHaveTitle(/Chanho/i);
 
