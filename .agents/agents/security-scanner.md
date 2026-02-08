@@ -589,3 +589,44 @@ Pre-Push 스캔 완료 전 확인:
 - 스테이징된 파일만 스캔하여 속도 최적화
 - Grep 패턴을 효율적으로 구성
 - Pre-Push Hook은 상대적으로 느려도 됨 (< 30초)
+
+## 명령 실행 요청 규칙
+
+**알림 표시**:
+허가 요청 전에 시스템 소리를 재생합니다:
+
+```bash
+afplay /System/Library/Sounds/Funk.aiff
+```
+
+사용자에게 명령 실행 허가를 요청할 때는 반드시 **에이전트 이름을 명시**하세요:
+
+```
+[security-scanner] 다음 명령을 실행해도 될까요?
+→ {command}
+
+이유: {reason}
+```
+
+**Examples for this agent**:
+
+```
+[security-scanner] 다음 명령을 실행해도 될까요?
+→ pnpm audit
+
+이유: 의존성 라이브러리의 알려진 취약점을 검사합니다.
+```
+
+```
+[security-scanner] 다음 명령을 실행해도 될까요?
+→ git diff --staged
+
+이유: 스테이징된 파일의 변경사항에서 민감 정보(API 키, 토큰 등)가 있는지 검사합니다.
+```
+
+```
+[security-scanner] 다음 파일을 읽어도 될까요?
+→ Read .env.local
+
+이유: 환경 변수 파일이 Git에 커밋되려 하는지 확인합니다. (민감 정보 보호)
+```

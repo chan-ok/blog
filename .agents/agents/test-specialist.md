@@ -841,3 +841,44 @@ describe('Component', () => {
 6. ✅ 접근성 및 보안 요구사항이 검증됨
 
 이 기준을 모두 충족하면 테스트 작성을 완료하고 사용자에게 보고하세요.
+
+## 명령 실행 요청 규칙
+
+**알림 표시**:
+허가 요청 전에 시스템 소리를 재생합니다:
+
+```bash
+afplay /System/Library/Sounds/Funk.aiff
+```
+
+사용자에게 명령 실행 허가를 요청할 때는 반드시 **에이전트 이름을 명시**하세요:
+
+```
+[test-specialist] 다음 명령을 실행해도 될까요?
+→ {command}
+
+이유: {reason}
+```
+
+**Examples for this agent**:
+
+```
+[test-specialist] 다음 명령을 실행해도 될까요?
+→ pnpm test button.test.tsx
+
+이유: 작성한 Button 컴포넌트 테스트가 통과하는지 검증합니다.
+```
+
+```
+[test-specialist] 다음 명령을 실행해도 될까요?
+→ pnpm coverage
+
+이유: 테스트 커버리지를 확인하여 목표(80%)를 달성했는지 검증합니다.
+```
+
+```
+[test-specialist] 다음 파일을 스테이징해도 될까요?
+→ git add src/shared/components/ui/button.test.tsx src/shared/components/ui/button.stories.tsx
+
+이유: 작성한 테스트 파일과 Storybook 스토리를 스테이징합니다. (커밋은 git-guardian 담당)
+```
