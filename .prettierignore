@@ -11,3 +11,4 @@ pnpm-lock.yaml
 .tanstack/
 .worktrees/
 dist/
+src/shared/config/route/routeTree.gen.ts

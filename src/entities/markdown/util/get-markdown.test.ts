@@ -1,10 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fc from 'fast-check';
-import { compile } from '@mdx-js/mdx';
-import matter from 'gray-matter';
 
 import getMarkdown from './get-markdown';
 import { api } from '@/shared/config/api';
+import { AxiosResponse } from 'axios';
 
 /**
  * ============================================================================
@@ -99,15 +98,12 @@ vi.mock('@/shared/config/api', () => ({
 // 테스트 전/후 처리
 // ============================================================================
 
-// 환경 변수 초기화
-const originalEnv = import.meta.env.VITE_GIT_RAW_URL;
-
 beforeEach(() => {
   // 각 테스트 전에 mock 초기화
   vi.clearAllMocks();
 
   // 환경 변수를 undefined로 초기화 (테스트 격리)
-  vi.stubEnv('VITE_GIT_RAW_URL', undefined as any);
+  vi.stubEnv('VITE_GIT_RAW_URL', undefined);
 });
 
 afterEach(() => {
@@ -124,7 +120,7 @@ describe('Unit 테스트 - 정상 케이스', () => {
     // API 응답 모킹
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     // 함수 실행
@@ -159,7 +155,7 @@ describe('Unit 테스트 - 정상 케이스', () => {
 
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     await getMarkdown('test/Post.md', customBaseUrl);
@@ -173,7 +169,7 @@ describe('Unit 테스트 - 정상 케이스', () => {
   it('파일명의 하이픈을 공백으로 변환해야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     await getMarkdown('category/My-First-Post.md');
@@ -187,7 +183,7 @@ describe('Unit 테스트 - 정상 케이스', () => {
   it('URL 인코딩된 경로를 디코딩해야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     // %20 = 공백, %ED = 한글 시작
@@ -208,7 +204,7 @@ describe('Unit 테스트 - 엣지 케이스', () => {
   it('본문이 없는 MDX를 처리할 수 있어야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDXWithoutContent,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('empty/Empty-Post.md');
@@ -235,7 +231,7 @@ Minimal content.
 
     vi.mocked(api.get).mockResolvedValue({
       data: minimalMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('minimal/Post.md');
@@ -267,7 +263,7 @@ createdAt: 2024-01-01
 
     vi.mocked(api.get).mockResolvedValue({
       data: gfmMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('gfm/Post.md');
@@ -311,7 +307,7 @@ describe('Unit 테스트 - 에러 케이스', () => {
   it('잘못된 MDX 문법은 컴파일 에러를 발생시켜야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockInvalidMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     // 검증: MDX 컴파일 에러 발생
@@ -327,7 +323,7 @@ No frontmatter here.
 
     vi.mocked(api.get).mockResolvedValue({
       data: noFrontmatterMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('no-frontmatter/Post.md');
@@ -406,7 +402,7 @@ Test content.
         // API 응답 모킹
         vi.mocked(api.get).mockResolvedValue({
           data: mdxContent,
-          axios: { status: 200 } as any,
+          axios: { status: 200 } as AxiosResponse,
         });
 
         // 함수 실행
@@ -456,7 +452,7 @@ ${content}
 
           vi.mocked(api.get).mockResolvedValue({
             data: mdxContent,
-            axios: { status: 200 } as any,
+            axios: { status: 200 } as AxiosResponse,
           });
 
           const result = await getMarkdown('test/Post.md');
@@ -491,7 +487,7 @@ createdAt: 2024-01-01
 
     vi.mocked(api.get).mockResolvedValue({
       data: gfmTableMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('test/GFM-Table.md');
@@ -518,7 +514,7 @@ console.log(hello);
 
     vi.mocked(api.get).mockResolvedValue({
       data: codeBlockMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('test/Code-Block.md');
@@ -533,7 +529,7 @@ console.log(hello);
     // frontmatter가 있는 MDX (기본 케이스)
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('test/Frontmatter.md');
@@ -553,7 +549,7 @@ describe('통합 테스트 - MDX 컴파일', () => {
   it('컴파일된 MDX는 function-body 형식이어야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('test/Function-Body.md');
@@ -595,7 +591,7 @@ const test = 'complex';
 
     vi.mocked(api.get).mockResolvedValue({
       data: complexMDX,
-      axios: { status: 200 } as any,
+      axios: { status: 200 } as AxiosResponse,
     });
 
     const result = await getMarkdown('complex/Example.md');
