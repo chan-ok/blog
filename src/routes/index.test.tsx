@@ -7,8 +7,12 @@ vi.mock('@tanstack/react-router', async () => {
   const actual = await vi.importActual('@tanstack/react-router');
   return {
     ...actual,
-    Navigate: ({ to }: { to: string }) => (
-      <div data-testid="navigate" data-to={to}>
+    Navigate: ({ to, params }: { to: string; params?: { locale: string } }) => (
+      <div
+        data-testid="navigate"
+        data-to={to}
+        data-params={JSON.stringify(params)}
+      >
         Navigate to {to}
       </div>
     ),
@@ -23,7 +27,7 @@ describe('index 라우트 (루트 리다이렉트)', () => {
     render(<Component />);
   });
 
-  it('RootRedirect가 /ko로 리다이렉트해야 한다', () => {
+  it('RootRedirect가 /$locale (ko)로 리다이렉트해야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
 
     const { container } = render(<Component />);
@@ -31,7 +35,13 @@ describe('index 라우트 (루트 리다이렉트)', () => {
     // Navigate 컴포넌트가 렌더링되는지 확인
     const navigateElement = container.querySelector('[data-testid="navigate"]');
     expect(navigateElement).toBeInTheDocument();
-    expect(navigateElement?.getAttribute('data-to')).toBe('/ko');
+    expect(navigateElement?.getAttribute('data-to')).toBe('/$locale');
+
+    // params에 locale: 'ko'가 전달되는지 확인
+    const params = JSON.parse(
+      navigateElement?.getAttribute('data-params') || '{}'
+    );
+    expect(params.locale).toBe('ko');
   });
 
   it('createFileRoute가 올바른 경로로 생성되어야 한다', () => {
