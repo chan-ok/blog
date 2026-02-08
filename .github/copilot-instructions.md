@@ -10,6 +10,8 @@ Copilot should not review the following paths:
 - `*.lock`, `pnpm-lock.yaml` - Lock files
 - `.env*` - Environment files
 - `coverage/**`, `test-results/**` - Test outputs
+- `routeTree.gen.ts` - Generated route tree
+- `**/*.gen.ts`, `**/*.gen.tsx` - Other generated code files
 
 Note: Only `.agents/skills/**` is enforced via `.gitattributes`. Other paths are guidance for Copilot or already excluded via `.gitignore`.
 
