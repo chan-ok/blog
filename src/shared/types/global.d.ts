@@ -23,6 +23,8 @@ declare global {
   }
   interface Window {
     turnstile: TurnstileWidget;
+    Buffer: typeof import('buffer').Buffer; // Buffer polyfill
+    global: typeof globalThis; // global polyfill
   }
 
   namespace NodeJS {
@@ -32,6 +34,17 @@ declare global {
       NEXT_PUBLIC_CONTENT_REPO_URL: string;
     }
   }
+}
+
+// Vite 환경 변수 타입 정의
+interface ImportMetaEnv {
+  readonly VITE_GIT_RAW_URL: string;
+  readonly VITE_TURNSTILE_SITE_KEY: string;
+  readonly VITE_API_BASE_URL?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
 }
 
 export {};

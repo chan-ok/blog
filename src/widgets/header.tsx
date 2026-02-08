@@ -1,5 +1,4 @@
-'use client';
-import { usePathname } from 'next/navigation';
+import { useRouterState } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
 import Link from '@/shared/components/ui/link';
@@ -11,7 +10,8 @@ import { Book, Mail, User } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function Header() {
-  const pathname = usePathname();
+  const { location } = useRouterState();
+  const pathname = location.pathname;
   const scrolled = useDetectScrolled();
   const { t } = useTranslation();
 

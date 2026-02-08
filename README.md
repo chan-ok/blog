@@ -4,15 +4,15 @@
 
 ## 📖 프로젝트 소개
 
-Next.js 16 기반의 개인 개발 블로그로, **Feature-Sliced Design(FSD)** 아키텍처와 이중 리포지터리 구조를 특징으로 합니다.
+React 19와 TanStack Router 기반의 개인 개발 블로그로, **Feature-Sliced Design(FSD)** 아키텍처와 이중 리포지터리 구조를 특징으로 합니다.
 
-| 항목       | 내용                            |
-| ---------- | ------------------------------- |
-| 프레임워크 | Next.js 16.0.10 + React 19.2.3  |
-| 스타일링   | Tailwind CSS v4                 |
-| 상태 관리  | Zustand                         |
-| 테스팅     | Vitest + Playwright + Storybook |
-| 배포       | Netlify                         |
+| 항목       | 내용                                    |
+| ---------- | --------------------------------------- |
+| 프레임워크 | React 19 + TanStack Router v1 + Vite v6 |
+| 스타일링   | Tailwind CSS v4                         |
+| 상태 관리  | Zustand                                 |
+| 테스팅     | Vitest + Playwright + Storybook         |
+| 배포       | Netlify                                 |
 
 ### 목적
 
@@ -24,7 +24,7 @@ Next.js 16 기반의 개인 개발 블로그로, **Feature-Sliced Design(FSD)** 
 
 블로그는 두 개의 독립적인 리포지터리로 구성됩니다:
 
-- **[blog](https://github.com/chan-ok/blog)** (현재 리포지터리) - Next.js 16 기반 블로그 애플리케이션
+- **[blog](https://github.com/chan-ok/blog)** (현재 리포지터리) - React + TanStack Router 기반 블로그 애플리케이션
 - **[blog-content](https://github.com/chan-ok/blog-content)** - MDX 형식의 포스트 콘텐츠 저장소
 
 ```mermaid
@@ -51,7 +51,7 @@ graph LR
 # 의존성 설치
 pnpm install
 
-# 개발 서버 시작 (http://localhost:3000)
+# 개발 서버 시작 (http://localhost:5173)
 pnpm dev
 
 # Netlify Functions와 함께 시작 (http://localhost:8888)
@@ -64,10 +64,10 @@ pnpm dev:server
 
 ```bash
 # 콘텐츠 리포지터리 (필수)
-NEXT_PUBLIC_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
+VITE_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
 
 # Cloudflare Turnstile (Contact 폼용)
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_site_key
+VITE_TURNSTILE_SITE_KEY=your_site_key
 TURNSTILE_SECRET_KEY=your_secret_key
 
 # Resend (이메일 발송용)
@@ -83,7 +83,7 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
 pnpm dev              # 개발 서버 시작
 pnpm dev:server       # Netlify Functions와 함께 시작
 pnpm build            # 프로덕션 빌드
-pnpm start            # 프로덕션 서버 시작
+pnpm preview          # 프로덕션 빌드 미리보기
 
 # 코드 품질
 pnpm lint             # ESLint 실행
@@ -104,7 +104,7 @@ pnpm build-storybook  # Storybook 빌드
 ```
 blog/
 ├── src/
-│   ├── app/           # Next.js App Router (라우팅)
+│   ├── routes/        # TanStack Router (라우팅)
 │   ├── features/      # 비즈니스 기능 (about, contact, post)
 │   ├── entities/      # 비즈니스 엔티티 (markdown)
 │   ├── widgets/       # 복합 UI (header, footer)

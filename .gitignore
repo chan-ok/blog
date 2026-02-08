@@ -9,16 +9,19 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+package-lock.json
 
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# vite
+/dist
 
 # production
 /build
+
+# cache
+/.cache
 
 # misc
 .DS_Store
@@ -38,7 +41,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 # Playwright
 node_modules/
@@ -63,4 +65,13 @@ storybook-static
 contents/.obsidian
 
 # deno
-deno.lock
+deno.lock.worktrees/
+test-mdx.mjs
+
+# git worktrees
+.worktrees/
+
+# tanstack
+.tanstack/
+**/routeTree.gen.ts
+

@@ -1,9 +1,0 @@
-@import 'tailwindcss';
-@import 'highlight.js/styles/github-dark.css';
-
-/* https://tailwindcss.com/docs/dark-mode */
-@custom-variant dark (&:where(.dark, .dark *));
-
-html {
-  scrollbar-gutter: stable;
-}
