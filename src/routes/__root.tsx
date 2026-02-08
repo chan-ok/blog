@@ -1,5 +1,20 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
+
+// QueryClient 인스턴스 생성
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5분
+      gcTime: 1000 * 60 * 10, // 10분
+      retry: 3, // 최대 3회 재시도
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // 지수 백오프 (1s, 2s, 4s)
+    },
+  },
+});
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -7,11 +22,22 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Outlet />
       {import.meta.env.DEV && (
-        <TanStackRouterDevtools position="bottom-right" />
+        <TanStackDevtools
+          plugins={[
+            {
+              name: 'TanStack Query',
+              render: <ReactQueryDevtoolsPanel />,
+            },
+            {
+              name: 'TanStack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
       )}
-    </>
+    </QueryClientProvider>
   );
 }

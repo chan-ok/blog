@@ -99,9 +99,20 @@ vi.mock('@/shared/config/api', () => ({
 // 테스트 전/후 처리
 // ============================================================================
 
+// 환경 변수 초기화
+const originalEnv = import.meta.env.VITE_GIT_RAW_URL;
+
 beforeEach(() => {
   // 각 테스트 전에 mock 초기화
   vi.clearAllMocks();
+
+  // 환경 변수를 undefined로 초기화 (테스트 격리)
+  vi.stubEnv('VITE_GIT_RAW_URL', undefined as any);
+});
+
+afterEach(() => {
+  // 환경 변수 복원
+  vi.unstubAllEnvs();
 });
 
 // ============================================================================

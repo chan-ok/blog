@@ -198,7 +198,7 @@
 - [x] Zod 스키마 수정
   - [x] z.email() → z.string().email() (Zod v4 호환)
 - [x] .env.example 생성
-  - [x] 환경 변수 문서화 (VITE*\*, TURNSTILE*_, RESEND\__)
+  - [x] 환경 변수 문서화 (VITE*\*, TURNSTILE*\_, RESEND\_\_)
 - [x] Netlify Function 검증
   - [x] /api/mail 엔드포인트 확인
   - [x] Turnstile 검증 로직 확인

@@ -10,7 +10,7 @@ interface MarkdownElement {
   frontmatter: Frontmatter;
   content: string;
   source: string;
-  compiledSource: string; // 컴파일된 MDX 코드
+  compiledSource: string; // 컴파일된 MDX 코드 (function body string)
 }
 
 export default async function getMarkdown(
@@ -29,7 +29,12 @@ export default async function getMarkdown(
     throw new Error('Failed to fetch posts');
   }
 
-  const { content, data } = matter(response.data);
+  // 브라우저 환경을 위한 Buffer polyfill 방지
+  // gray-matter에 문자열만 전달하면 Buffer 사용 안 함
+  const stringData =
+    typeof response.data === 'string' ? response.data : String(response.data);
+
+  const { content, data } = matter(stringData);
 
   // MDX 컴파일 (outputFormat: 'function-body')
   const compiled = await compile(content, {

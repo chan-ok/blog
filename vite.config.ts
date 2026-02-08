@@ -30,6 +30,19 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': '/src',
+      buffer: 'buffer', // Buffer polyfill
+    },
+  },
+  define: {
+    // Buffer를 global로 주입 (gray-matter 호환성)
+    global: 'globalThis',
+  },
+  optimizeDeps: {
+    include: ['buffer'], // Buffer polyfill을 pre-bundle
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
     },
   },
   build: {

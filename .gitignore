@@ -64,4 +64,5 @@ storybook-static
 contents/.obsidian
 
 # deno
-deno.lock
+deno.lock.worktrees/
+test-mdx.mjs

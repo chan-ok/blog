@@ -58,26 +58,35 @@ const createMockFrontmatter = (): Frontmatter => ({
 
 // 실제 MDX 컴파일 결과 시뮬레이션
 // MDX는 outputFormat: 'function-body'로 컴파일됨
+// @mdx-js/mdx의 실제 출력 형태를 그대로 재현
 const createMockCompiledSource = (content: string) => {
-  // new Function(...Object.keys(runtime), compiledSource)(...Object.values(runtime))
-  // 형태로 실행될 수 있도록 React 컴포넌트 반환
-  return `
-    const {Fragment: _Fragment, jsx: _jsx, jsxs: _jsxs} = arguments[0];
-    function _createMdxContent(props) {
-      const _components = {
-        h1: "h1",
-        p: "p",
-        code: "code",
-        ...props.components
-      };
-      return _jsx(_Fragment, {
-        children: ${JSON.stringify(content)}
-      });
-    }
-    return {
-      default: _createMdxContent
-    };
-  `;
+  // 실제 MDX compile 결과와 동일한 형태 (function body)
+  // "use strict" + const 선언 + 함수 정의 + return 문
+  return `"use strict";
+const {Fragment: _Fragment, jsx: _jsx, jsxs: _jsxs} = arguments[0];
+function _createMdxContent(props) {
+  const _components = {
+    h1: "h1",
+    p: "p",
+    code: "code",
+    ...props.components
+  };
+  return _jsx(_Fragment, {
+    children: ${JSON.stringify(content)}
+  });
+}
+function MDXContent(props = {}) {
+  const {wrapper: MDXLayout} = props.components || ({});
+  return MDXLayout ? _jsx(MDXLayout, {
+    ...props,
+    children: _jsx(_createMdxContent, {
+      ...props
+    })
+  }) : _createMdxContent(props);
+}
+return {
+  default: MDXContent
+};`;
 };
 
 // ============================================================================
