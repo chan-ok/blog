@@ -493,41 +493,27 @@ type(scope): 한국어 제목
 
 ## 명령 실행 요청 규칙
 
-**알림 표시**:
-허가 요청 전에 시스템 소리를 재생합니다:
+Git 명령은 대부분 `"ask"` 권한으로 설정되어 있어 사용자 승인이 필요합니다.
+
+**알림 재생 (ask 권한 명령만)**:
+사용자 판단이 필요한 Git 명령 실행 전에 알림을 재생합니다:
 
 ```bash
 afplay /System/Library/Sounds/Funk.aiff
 ```
 
-사용자에게 명령 실행 허가를 요청할 때는 반드시 **에이전트 이름을 명시**하세요:
+**도구 직접 호출**:
 
-```
-[git-guardian] 다음 명령을 실행해도 될까요?
-→ {command}
+- 텍스트로 물어보지 마세요 (보안 위험)
+- Bash 도구를 직접 호출하세요
+- OpenCode가 자동으로 권한 UI를 표시합니다 (실제 명령 + Allow/Reject 버튼)
+- 사용자는 실제 실행될 Git 명령을 확인 후 승인합니다
 
-이유: {reason}
-```
+**허가된 명령 (`"allow"`)**: 알림 없이 자동 실행됩니다 (예: git status, git log).
 
-**Examples for this agent**:
+**Examples of ask-permission commands for this agent**:
 
-```
-[git-guardian] 다음 명령을 실행해도 될까요?
-→ git commit -m "feat(button): Add dark mode support"
-
-이유: 스테이징된 변경사항(다크 모드 버튼)을 프로젝트 커밋 규칙에 따라 커밋합니다.
-```
-
-```
-[git-guardian] 다음 명령을 실행해도 될까요?
-→ git stash
-
-이유: 현재 작업 중인 변경사항을 임시 저장하여 다른 브랜치로 전환합니다.
-```
-
-```
-[git-guardian] 다음 명령을 실행해도 될까요?
-→ git push origin migration/tanstack-router
-
-이유: 로컬 커밋을 원격 저장소에 푸시합니다. (main 브랜치는 차단됨)
-```
+- `git commit` - 변경사항 커밋
+- `git push` - 원격 저장소에 푸시
+- `git stash` - 변경사항 임시 저장
+- `git merge` - 브랜치 병합

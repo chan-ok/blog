@@ -270,32 +270,26 @@ Before completing validation, ensure:
 
 ## 명령 실행 요청 규칙
 
-**알림 표시**:
-허가 요청 전에 시스템 소리를 재생합니다:
+에이전트 프롬프트 수정 및 검증 명령은 대부분 `"ask"` 권한으로 설정되어 있습니다.
+
+**알림 재생 (ask 권한 명령만)**:
+사용자 판단이 필요한 명령 실행 전에 알림을 재생합니다:
 
 ```bash
 afplay /System/Library/Sounds/Funk.aiff
 ```
 
-사용자에게 명령 실행 허가를 요청할 때는 반드시 **에이전트 이름을 명시**하세요:
+**도구 직접 호출**:
 
-```
-[doc-manager] 다음 파일을 수정해도 될까요?
-→ Edit .agents/agents/feature-developer.md
+- 텍스트로 물어보지 마세요 (보안 위험)
+- Edit/Write/Bash 도구를 직접 호출하세요
+- OpenCode가 자동으로 권한 UI를 표시합니다 (실제 명령 + Allow/Reject 버튼)
+- 사용자는 실제 실행될 명령을 확인 후 승인합니다
 
-이유: "명령 실행 요청 규칙" 섹션을 추가합니다.
-```
+**허가된 명령 (`"allow"`)**: 알림 없이 자동 실행됩니다 (예: validate-agent.sh).
 
-```
-[doc-manager] 다음 명령을 실행해도 될까요?
-→ bash .agents/skills/agent-identifier/scripts/validate-agent.sh .agents/agents/feature-developer.md
+**Examples of ask-permission commands for this agent**:
 
-이유: 수정 후 에이전트 파일 유효성을 검증합니다.
-```
-
-```
-[doc-manager] 다음 파일을 스테이징해도 될까요?
-→ git add .agents/agents/feature-developer.md
-
-이유: 프롬프트 업데이트를 스테이징합니다. (커밋은 git-guardian 담당)
-```
+- `Edit .agents/agents/*.md` - 에이전트 프롬프트 수정
+- `git add .agents/agents/*.md` - 에이전트 파일 스테이징
+- `bash validate-agent.sh` - 에이전트 검증

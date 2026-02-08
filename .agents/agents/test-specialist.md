@@ -844,41 +844,26 @@ describe('Component', () => {
 
 ## 명령 실행 요청 규칙
 
-**알림 표시**:
-허가 요청 전에 시스템 소리를 재생합니다:
+일부 명령은 opencode.json에서 `"ask"` 권한으로 설정되어 있어 사용자 승인이 필요합니다.
+
+**알림 재생 (ask 권한 명령만)**:
+사용자 판단이 필요한 명령 실행 전에 알림을 재생합니다:
 
 ```bash
 afplay /System/Library/Sounds/Funk.aiff
 ```
 
-사용자에게 명령 실행 허가를 요청할 때는 반드시 **에이전트 이름을 명시**하세요:
+**도구 직접 호출**:
 
-```
-[test-specialist] 다음 명령을 실행해도 될까요?
-→ {command}
+- 텍스트로 물어보지 마세요 (보안 위험)
+- Bash/Edit/Write 도구를 직접 호출하세요
+- OpenCode가 자동으로 권한 UI를 표시합니다 (실제 명령 + Allow/Reject 버튼)
+- 사용자는 실제 실행될 명령을 확인 후 승인합니다
 
-이유: {reason}
-```
+**허가된 명령 (`"allow"`)**: 알림 없이 자동 실행됩니다.
 
-**Examples for this agent**:
+**Examples of ask-permission commands for this agent**:
 
-```
-[test-specialist] 다음 명령을 실행해도 될까요?
-→ pnpm test button.test.tsx
-
-이유: 작성한 Button 컴포넌트 테스트가 통과하는지 검증합니다.
-```
-
-```
-[test-specialist] 다음 명령을 실행해도 될까요?
-→ pnpm coverage
-
-이유: 테스트 커버리지를 확인하여 목표(80%)를 달성했는지 검증합니다.
-```
-
-```
-[test-specialist] 다음 파일을 스테이징해도 될까요?
-→ git add src/shared/components/ui/button.test.tsx src/shared/components/ui/button.stories.tsx
-
-이유: 작성한 테스트 파일과 Storybook 스토리를 스테이징합니다. (커밋은 git-guardian 담당)
-```
+- `pnpm test` - 테스트 실행 및 검증
+- `pnpm coverage` - 커버리지 확인
+- `git add <test-files>` - 테스트 파일 스테이징

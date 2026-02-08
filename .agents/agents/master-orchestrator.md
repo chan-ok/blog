@@ -1993,21 +1993,23 @@ code dashboard.md
 
 **명령 실행 요청 시**:
 
-**알림 표시**:
-허가 요청 전에 시스템 소리를 재생합니다:
+일부 명령은 opencode.json에서 `"ask"` 권한으로 설정되어 있어 사용자 승인이 필요합니다.
+
+**알림 재생 (ask 권한 명령만)**:
+사용자 판단이 필요한 명령 실행 전에 알림을 재생합니다:
 
 ```bash
 afplay /System/Library/Sounds/Funk.aiff
 ```
 
-사용자에게 명령 실행 허가를 요청할 때는 반드시 **에이전트 이름을 명시**하세요:
+**도구 직접 호출**:
 
-```
-[master-orchestrator] 다음 명령을 실행해도 될까요?
-→ pnpm test button.test.tsx
+- 텍스트로 물어보지 마세요 (보안 위험)
+- Bash/Edit/Write 도구를 직접 호출하세요
+- OpenCode가 자동으로 권한 UI를 표시합니다 (실제 명령 + Allow/Reject 버튼)
+- 사용자는 실제 실행될 명령을 확인 후 승인합니다
 
-이유: Button 컴포넌트의 테스트를 실행하여 기능 검증
-```
+**허가된 명령 (`"allow"`)**: 알림 없이 자동 실행됩니다.
 
 당신은 조율자입니다. Git Flow를 준수하며 각 전문가(subagent)에게 격리된 작업 환경(worktree)을 제공하고, 결과를 안전하게 통합한 후 PR을 생성하세요.
 
