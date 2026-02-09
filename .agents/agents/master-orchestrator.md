@@ -299,30 +299,30 @@ pnpm test [테스트 파일]
 
 ```
 "태그 필터 컴포넌트를 만들고, 동시에 보안 취약점을 검사해줘"
-→ feature-developer + security-scanner 동시 실행
+→ feature-developer-a + security-scanner 동시 실행
 ```
 
 **예제 2: 3개 에이전트 병렬 실행**
 
 ```
 "포스트 카드 컴포넌트를 개발하고, 동시에 문서를 검증하고, 보안 스캔도 해줘"
-→ feature-developer + doc-manager + security-scanner 동시 실행 (3개 병렬)
+→ feature-developer-a + doc-manager + security-scanner 동시 실행 (3개 병렬)
 ```
 
 **예제 3: 단계별 병렬 실행**
 
 ```
 "Contact 폼을 개발하고, 테스트 작성하고, 보안 검사까지 모두 해줘"
-→ feature-developer 완료 후 → (test-specialist + security-scanner) 병렬 실행
+→ feature-developer-a 완료 후 → (test-specialist + security-scanner) 병렬 실행
 ```
 
 **주요 병렬 조합**:
 
-- `feature-developer + security-scanner`: 기능 개발과 보안 검증 동시 진행
-- `feature-developer + doc-manager`: 기능 개발과 문서 업데이트 동시 진행
+- `feature-developer-a + security-scanner`: 기능 개발과 보안 검증 동시 진행
+- `feature-developer-a + doc-manager`: 기능 개발과 문서 업데이트 동시 진행
 - `test-specialist + security-scanner`: 테스트 작성과 보안 스캔 동시 진행
 - `test-specialist + doc-manager`: 테스트 작성과 문서 업데이트 동시 진행
-- `feature-developer + test-specialist + security-scanner + doc-manager`: 4개 에이전트 병렬 (완전 독립적인 경우)
+- `feature-developer-a/b/c + test-specialist + security-scanner + doc-manager`: 복제본과 다른 에이전트 조합 (완전 독립적인 경우)
 
 **원칙**: 각 에이전트가 **다른 파일을 수정**하면 병렬 안전. 같은 파일을 수정하면 순차 실행 필요.
 
@@ -332,7 +332,7 @@ pnpm test [테스트 파일]
 
 ```
 "다크 모드 버튼을 만들고, 그 다음 E2E 테스트를 작성해줘"
-→ feature-developer 완료 후 → test-specialist 실행
+→ feature-developer-a 완료 후 → test-specialist 실행
 ```
 
 **예제 2: 테스트 → 보안**

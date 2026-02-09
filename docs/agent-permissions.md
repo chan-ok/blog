@@ -30,7 +30,11 @@
 - ❌ GitHub 작업 (github-helper에 위임)
 - ❌ .env 파일 접근
 
-### 2. feature-developer
+### 2. feature-developer (a/b/c)
+
+**병렬 실행을 위한 3개 복제본**: feature-developer-a, feature-developer-b, feature-developer-c
+
+각 복제본은 동일한 권한과 역할을 가지며, 독립적인 worktree에서 병렬 실행됩니다.
 
 **역할**: 기능 개발자
 **책임**: 새로운 기능 구현
