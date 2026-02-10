@@ -3,7 +3,7 @@ import { createMemoryHistory, createRouter, RouterProvider, createRootRoute } fr
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 
-import '../src/styles/globals.css';
+import '../src/0-app/globals.css';
 
 // QueryClient 인스턴스 생성 (Storybook용)
 const queryClient = new QueryClient({

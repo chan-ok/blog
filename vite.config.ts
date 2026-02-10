@@ -11,7 +11,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       tanstackRouter({
-        generatedRouteTree: './src/shared/config/route/routeTree.gen.ts',
+        routesDirectory: './src/4-pages',
+        generatedRouteTree: './src/5-shared/config/route/routeTree.gen.ts',
         routeFileIgnorePattern: '\\.test\\.tsx?$',
         autoCodeSplitting: true,
       }),
