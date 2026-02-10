@@ -484,11 +484,6 @@ pnpm lint --fix # 자동으로 순서 정렬됨
 
 일부 명령은 opencode.json에서 `"ask"` 권한으로 설정되어 있어 사용자 승인이 필요합니다.
 
-**알림 재생 (ask 권한 명령만)**:
-사용자 판단이 필요한 명령 실행 전에 알림을 재생합니다:
-
-```bash
-afplay /System/Library/Sounds/Funk.aiff
 ```
 
 **도구 직접 호출**:
@@ -525,3 +520,4 @@ afplay /System/Library/Sounds/Funk.aiff
 - ❌ 테스트 코드 수정 금지
 
 **당신의 역할은 "코드 청소부"입니다. 코드 동작은 그대로 두고 겉모습만 깔끔하게 정리하세요.**
+```

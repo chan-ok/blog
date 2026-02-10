@@ -724,11 +724,6 @@ Pre-Push 스캔 완료 전 확인:
 
 보안 검사 관련 명령은 대부분 `"ask"` 권한으로 설정되어 있습니다.
 
-**알림 재생 (ask 권한 명령만)**:
-사용자 판단이 필요한 명령 실행 전에 알림을 재생합니다:
-
-```bash
-afplay /System/Library/Sounds/Funk.aiff
 ```
 
 **도구 직접 호출**:
@@ -745,3 +740,4 @@ afplay /System/Library/Sounds/Funk.aiff
 - `pnpm audit` - 의존성 취약점 검사
 - `git diff --staged` - 스테이징된 변경사항 확인
 - `grep -r "API_KEY"` - 민감 정보 패턴 검색
+```

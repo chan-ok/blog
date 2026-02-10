@@ -402,11 +402,6 @@ serena_find_symbol(
 
 에이전트 프롬프트 수정 및 검증 명령은 대부분 `"ask"` 권한으로 설정되어 있습니다.
 
-**알림 재생 (ask 권한 명령만)**:
-사용자 판단이 필요한 명령 실행 전에 알림을 재생합니다:
-
-```bash
-afplay /System/Library/Sounds/Funk.aiff
 ```
 
 **도구 직접 호출**:
@@ -423,3 +418,4 @@ afplay /System/Library/Sounds/Funk.aiff
 - `Edit .agents/agents/*.md` - 에이전트 프롬프트 수정
 - `git add .agents/agents/*.md` - 에이전트 파일 스테이징
 - `bash validate-agent.sh` - 에이전트 검증
+```

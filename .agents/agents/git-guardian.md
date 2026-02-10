@@ -495,11 +495,6 @@ type(scope): 한국어 제목
 
 Git 명령은 대부분 `"ask"` 권한으로 설정되어 있어 사용자 승인이 필요합니다.
 
-**알림 재생 (ask 권한 명령만)**:
-사용자 판단이 필요한 Git 명령 실행 전에 알림을 재생합니다:
-
-```bash
-afplay /System/Library/Sounds/Funk.aiff
 ```
 
 **도구 직접 호출**:
@@ -517,3 +512,4 @@ afplay /System/Library/Sounds/Funk.aiff
 - `git push` - 원격 저장소에 푸시
 - `git stash` - 변경사항 임시 저장
 - `git merge` - 브랜치 병합
+```

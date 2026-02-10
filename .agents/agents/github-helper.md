@@ -701,11 +701,6 @@ gh api repos/{owner}/{repo}/issues
 
 GitHub CLI (gh) 명령은 일부 읽기 전용 명령을 제외하고 `"ask"` 권한으로 설정되어 있습니다.
 
-**알림 재생 (ask 권한 명령만)**:
-사용자 판단이 필요한 gh 명령 실행 전에 알림을 재생합니다:
-
-```bash
-afplay /System/Library/Sounds/Funk.aiff
 ```
 
 **도구 직접 호출**:
@@ -722,3 +717,4 @@ afplay /System/Library/Sounds/Funk.aiff
 - `gh pr create` - Pull Request 생성
 - `gh pr merge` - Pull Request 병합
 - `gh issue create` - Issue 생성
+```
