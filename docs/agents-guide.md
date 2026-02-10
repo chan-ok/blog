@@ -49,7 +49,7 @@
 
 | 작업 유형           | 할당 에이전트     | 우선순위 |
 | ------------------- | ----------------- | -------- |
-| feature-development | feature-developer-a/b/c | HIGH     |
+| feature-development | feature-developer | HIGH     |
 | test-writing        | test-specialist   | HIGH     |
 | security-check      | security-scanner  | MEDIUM   |
 | doc-validation      | doc-manager       | LOW      |
@@ -91,37 +91,6 @@
 3. 리팩토링 및 품질 개선
 4. 통합 및 검증 (린트, 타입 체크)
 5. 문서화
-
----
-
-### feature-developer-a, feature-developer-b, feature-developer-c
-
-**병렬 실행을 위한 3개 복제본**
-
-이 프로젝트는 feature-developer를 **병렬 작업을 위해 3개로 복제**했습니다:
-- **feature-developer-a**
-- **feature-developer-b**
-- **feature-developer-c**
-
-**핵심 특징**:
-- ✅ **동일한 역할**: 3개 모두 위의 feature-developer와 같은 역할/기능을 수행
-- ✅ **독립적인 환경**: 각각 독립적인 worktree에서 실행
-- ✅ **병렬 안전성**: Git 충돌 없이 동시 작업 가능
-
-**사용 예시**:
-```
-"3개 컴포넌트를 동시에 개발해줘"
-→ feature-developer-a + feature-developer-b + feature-developer-c 병렬 실행
-
-"기능 개발하고, 테스트하고, 문서 검증해줘"
-→ feature-developer-a + test-specialist + doc-manager 병렬 실행
-```
-
-**주의사항**:
-- 필요에 따라 1개, 2개, 3개 모두 사용 가능
-- 다른 서브에이전트(test-specialist, security-scanner 등)와 자유롭게 조합
-- 각 에이전트가 다른 파일을 수정해야 병렬 안전
-
 
 ---
 
@@ -462,7 +431,7 @@ master-orchestrator가 자동으로:
 1. 요구사항 분석
 2. 작업 분해 (feature-development + test-writing)
 3. Git Flow 준비 (develop → feature branch → worktrees)
-4. 병렬 실행 (feature-developer-a + test-specialist)
+4. 병렬 실행 (feature-developer + test-specialist)
 5. 결과 통합 및 PR 생성
 
 ### Git Flow + Worktree 방식
@@ -472,7 +441,7 @@ master-orchestrator는 **Git Flow 브랜치 전략**과 **worktrees**를 사용�
 ```
 develop (base)
   └─ feature/dark-mode-button-20260207-143000
-       ├─ worktree/feature-dev-20260207-143000  (feature-developer-a)
+       ├─ worktree/feature-dev-20260207-143000  (feature-developer)
        ├─ worktree/test-spec-20260207-143000    (test-specialist)
        └─ worktree/security-20260207-143000     (security-scanner)
 ```
@@ -489,32 +458,25 @@ develop (base)
 
 ```
 "태그 필터 컴포넌트를 만들고, 동시에 보안 취약점을 검사해줘"
-→ feature-developer-a + security-scanner 동시 실행
+→ feature-developer + security-scanner 동시 실행
 ```
 
 ```
 "포스트 카드 컴포넌트를 개발하고, 동시에 문서를 검증하고, 보안 스캔도 해줘"
-→ feature-developer-a + doc-manager + security-scanner 동시 실행 (3개 병렬)
+→ feature-developer + doc-manager + security-scanner 동시 실행 (3개 병렬)
 ```
 
 ```
 "Contact 폼을 개발하고, 테스트 작성하고, 보안 검사까지 모두 해줘"
-→ feature-developer-a 완료 후 → (test-specialist + security-scanner) 병렬 실행
-```
-
-```
-"3개 컴포넌트를 동시에 개발해줘"
-→ feature-developer-a + feature-developer-b + feature-developer-c 병렬 실행 (3개 복제본 활용)
+→ feature-developer 완료 후 → (test-specialist + security-scanner) 병렬 실행
 ```
 
 **주요 병렬 조합**:
 
-- `feature-developer-a + security-scanner`: 기능 개발과 보안 검증 동시 진행
-- `feature-developer-a + doc-manager`: 기능 개발과 문서 업데이트 동시 진행
-- `feature-developer-a + feature-developer-b + feature-developer-c`: 3개 기능 동시 개발 (복제본 활용)
+- `feature-developer + security-scanner`: 기능 개발과 보안 검증 동시 진행
+- `feature-developer + doc-manager`: 기능 개발과 문서 업데이트 동시 진행
 - `test-specialist + security-scanner`: 테스트 작성과 보안 스캔 동시 진행
 - `test-specialist + doc-manager`: 테스트 작성과 문서 업데이트 동시 진행
-- `feature-developer-a/b/c + test-specialist + security-scanner + doc-manager`: 복제본과 다른 에이전트 조합 (완전 독립적인 경우)
 
 **원칙**: 각 에이전트가 **다른 파일을 수정**하면 병렬 안전. 같은 파일을 수정하면 순차 실행 필요.
 
@@ -530,9 +492,8 @@ develop (base)
 특정 에이전트를 명시적으로 사용하고 싶다면:
 
 ```
-"feature-developer-a 에이전트를 사용하여 [기능]을 구현해줘"
+"feature-developer 에이전트를 사용하여 [기능]을 구현해줘"
 "test-specialist 에이전트로 [컴포넌트] 테스트를 작성해줘"
-"feature-developer-a, b, c 모두 사용하여 3개 컴포넌트를 동시에 개발해줘"
 ```
 
 ---

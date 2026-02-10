@@ -48,29 +48,16 @@
           "*.env.*": "deny"
         },
         "write": {
-          "*": "deny",
-          "dashboard.md": "allow",
-          "docs/phase*.md": "allow",
-          "docs/dashboard.md": "allow"
+          "*": "deny"
         },
         "edit": {
-          "*": "deny",
-          "dashboard.md": "allow",
-          "docs/phase*.md": "allow",
-          "docs/dashboard.md": "allow"
+          "*": "deny"
         },
         "bash": {
           "*": "ask",
           "date *": "allow",
           "echo *": "allow",
-          "cat dashboard.md": "allow",
-          "cat docs/*.md": "allow",
-          "cat package.json": "allow",
-          "cat tsconfig.json": "allow",
-          "cat vite.config.ts": "allow",
-          "cat .env.example": "allow",
-          "cat src/**/*.ts": "allow",
-          "cat src/**/*.tsx": "allow",
+          "cat *": "deny",
           "mkdir .worktrees/*": "allow",
           "mkdir docs/*": "allow",
           "sleep *": "allow",
@@ -83,33 +70,24 @@
           "pnpm exec vitest *": "allow",
           "pnpm exec tsc *": "allow",
           "webfetch": "allow",
-          ".agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
           "ls *": "allow",
           "head *": "allow",
           "find . -name '*.ts' -o -name '*.tsx'": "allow",
           "find . -name '*.test.ts'": "allow",
           "find . -name '*.md'": "allow",
           "wc *": "allow",
-          "git status": "allow",
-          "git status --short": "allow",
-          "git diff": "allow",
-          "git diff --staged": "allow",
-          "git log --oneline -10": "allow",
+          "git status *": "allow",
+          "git diff *": "allow",
+          "git log *": "allow",
+          "git log * | head *": "allow",
+          "git log * | tail *": "allow",
+          "git log * | grep *": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow",
           "grep *": "allow",
-          "grep -c *": "allow",
-          "grep -A *": "allow",
-          "grep -B *": "allow",
-          "grep -n *": "allow",
-          "grep -iE *": "allow",
-          "grep -E *": "allow",
-          "cat opencode.json | grep *": "allow",
-          "git diff *": "allow",
-          "git log *": "allow"
+          "tail *": "allow"
         }
       }
     },
@@ -136,11 +114,11 @@
           "find . -name '*.ts' -o -name '*.tsx'": "allow",
           "find . -name '*.test.ts'": "allow",
           "wc *": "allow",
-          "git status": "allow",
+          "git status *": "allow",
           "git status --short": "allow",
-          "git diff": "allow",
+          "git diff *": "allow",
           "git diff --staged": "allow",
-          "git log --oneline -10": "allow",
+          "git log *": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "git add src/**/*.ts": "ask",
@@ -148,7 +126,9 @@
           "git add *.config.ts": "ask",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+          "head *": "allow",
+          "tail *": "allow",
+          "grep *": "allow"
         }
       }
     },
@@ -167,7 +147,6 @@
           "cat src/**/*.test.tsx": "allow",
           "cat src/**/*.stories.tsx": "allow",
           "cat *.config.ts": "allow",
-          "cat package.json": "allow",
           "cat tsconfig.json": "allow",
           "pnpm test *": "allow",
           "pnpm coverage *": "allow",
@@ -181,11 +160,11 @@
           "find . -name '*.test.tsx'": "allow",
           "find . -name '*.stories.tsx'": "allow",
           "wc *": "allow",
-          "git status": "allow",
+          "git status *": "allow",
           "git status --short": "allow",
-          "git diff": "allow",
+          "git diff *": "allow",
           "git diff --staged": "allow",
-          "git log --oneline -10": "allow",
+          "git log *": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "git add src/**/*.test.ts": "ask",
@@ -193,7 +172,9 @@
           "git add src/**/*.stories.tsx": "ask",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+          "head *": "allow",
+          "tail *": "allow",
+          "grep *": "allow"
         }
       }
     },
@@ -224,21 +205,22 @@
           "cat *.config.ts": "allow",
           "cat package.json": "allow",
           "cat tsconfig.json": "allow",
-          "pnpm fmt": "allow",
-          "pnpm lint": "allow",
-          "pnpm lint --fix": "allow",
+          "pnpm fmt *": "allow",
+          "pnpm lint *": "allow",
+          "pnpm lint --fix *": "allow",
           "pnpm tsc --noEmit": "allow",
           "pnpm exec tsc --noEmit": "allow",
           "find . -name '*.ts' -o -name '*.tsx'": "allow",
           "wc *": "allow",
-          "git status": "allow",
+          "git status *": "allow",
           "git status --short": "allow",
-          "git diff": "allow",
-          "git diff --staged": "allow",
+          "git diff *": "allow",
           "git add src/**/*.ts": "ask",
           "git add src/**/*.tsx": "ask",
           "git add *.config.ts": "ask",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+          "head *": "allow",
+          "tail *": "allow",
+          "grep *": "allow"
         }
       }
     },
@@ -261,7 +243,6 @@
         },
         "bash": {
           "*": "ask",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow",
           "ls *": "allow",
           "cat src/**/*.ts": "allow",
           "cat src/**/*.tsx": "allow",
@@ -275,16 +256,11 @@
           "find . -name '.env*'": "allow",
           "find . -name '*.ts' -o -name '*.tsx'": "allow",
           "wc *": "allow",
-          "git status": "allow",
+          "git status *": "allow",
           "git status --short": "allow",
-          "git diff": "allow",
-          "git diff --staged": "allow",
-          "git diff --cached --name-only": "allow",
-          "git diff develop..HEAD": "allow",
+          "git diff *": "allow",
           "git show *": "allow",
-          "git log --oneline -10": "allow",
-          "git log --oneline *": "allow",
-          "git log develop..HEAD *": "allow",
+          "git log *": "allow",
           "git ls-tree -r HEAD --name-only": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
@@ -294,7 +270,9 @@
           "grep -n *": "allow",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+          "head *": "allow",
+          "tail *": "allow",
+          "grep *": "allow"
         }
       }
     },
@@ -324,23 +302,21 @@
           "ls *": "allow",
           "cat docs/*.md": "allow",
           "cat .agents/agents/*.md": "allow",
-          "cat src/**/*.ts": "allow",
-          "cat src/**/*.tsx": "allow",
-          "cat package.json": "allow",
           "cat tsconfig.json": "allow",
           "cat *.config.ts": "allow",
           "find . -name '*.md'": "allow",
           "find . -name '*.ts' -o -name '*.tsx'": "allow",
           "wc *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git log --oneline -10": "allow",
+          "git status *": "allow",
+          "git diff *": "allow",
+          "git log *": "allow",
           "git branch --show-current": "allow",
           "git add docs/*.md": "ask",
           "git add .agents/agents/*.md": "ask",
           "gh pr view *": "allow",
-          "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+          "head *": "allow",
+          "tail *": "allow",
+          "grep *": "allow"
         }
       }
     },
@@ -366,15 +342,9 @@
           "date *": "allow",
           "ls *": "allow",
           "rm -f .git/index.lock": "allow",
-          "git status": "allow",
-          "git status --short": "allow",
-          "git diff": "allow",
-          "git diff --staged": "allow",
-          "git diff --cached": "allow",
-          "git diff HEAD": "allow",
-          "git log --oneline -10": "allow",
-          "git log --oneline -50": "allow",
-          "git log -1 --format='%an %ae'": "allow",
+          "git status *": "allow",
+          "git diff *": "allow",
+          "git log *": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "git fetch origin": "allow",
@@ -404,7 +374,9 @@
           "git config --get *": "allow",
           "git commit -m *": "ask",
           "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+          "head *": "allow",
+          "tail *": "allow",
+          "grep *": "allow"
         }
       }
     },
@@ -428,11 +400,9 @@
         "bash": {
           "*": "ask",
           "ls *": "allow",
-          "git status": "allow",
-          "git diff": "allow",
-          "git log --oneline -10": "allow",
-          "git log --oneline -50": "allow",
-          "git diff develop...HEAD": "allow",
+          "git status *": "allow",
+          "git diff *": "allow",
+          "git log *": "allow",
           "git branch --show-current": "allow",
           "gh pr create *": "ask",
           "gh pr view *": "allow",
@@ -446,7 +416,9 @@
           "gh run list": "allow",
           "gh run view *": "allow",
           "gh api repos/*/*/pulls/*/comments": "allow",
-          "afplay /System/Library/Sounds/Funk.aiff": "allow"
+          "head *": "allow",
+          "tail *": "allow",
+          "grep *": "allow"
         }
       }
     }
@@ -520,7 +492,7 @@
     "git commit --no-verify *": "deny",
     "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
     "gh pr view *": "allow",
-    "gh pr checks *": "allow",
-    "afplay /System/Library/Sounds/Funk.aiff": "allow"
-  }
+    "gh pr checks *": "allow"
+  },
+  "plugin": ["@mohak34/opencode-notifier@latest"]
 }
