@@ -1,4 +1,6 @@
 [dev]
+  framework = "tanstack-router"
+  command = "pnpm dev"
   port = 8888
   targetPort = 5173
   functions = "netlify/functions"
