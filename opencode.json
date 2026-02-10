@@ -5,6 +5,16 @@
     "ignore": ["node_modules/**", "dist/**", ".git/**", ".agents/skills/**"]
   },
   "mcp": {
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp",
+      "enabled": true
+    },
+    "grep": {
+      "type": "remote",
+      "url": "https://mcp.grep.app",
+      "enabled": true
+    },
     "context7": {
       "type": "remote",
       "url": "https://mcp.context7.com/mcp",
@@ -494,5 +504,8 @@
     "gh pr view *": "allow",
     "gh pr checks *": "allow"
   },
-  "plugin": ["@mohak34/opencode-notifier@latest"]
+  "plugin": [
+    "@mohak34/opencode-notifier@latest",
+    "@franlol/opencode-md-table-formatter@0.0.3"
+  ]
 }
