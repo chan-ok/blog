@@ -2,7 +2,25 @@
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": true,
   "watcher": {
-    "ignore": ["node_modules/**", "dist/**", ".git/**", ".agents/skills/**"]
+    "ignore": [
+      "node_modules/**",
+      "dist/**",
+      ".git/**",
+      ".agents/skills/**",
+      "*.pem",
+      "*.key",
+      "*.p12",
+      "*.pfx",
+      "*.crt",
+      ".ssh/**",
+      "id_rsa*",
+      "id_ed25519*",
+      ".idea/**",
+      ".vscode/**",
+      ".DS_Store",
+      "Thumbs.db",
+      "pnpm-lock.yaml"
+    ]
   },
   "mcp": {
     "exa": {
@@ -33,7 +51,7 @@
         "--context",
         "ide-assistant",
         "--project",
-        "/Users/chanhokim/myFiles/0_Project/blog",
+        ".",
         "--open-web-dashboard",
         "false"
       ]
@@ -66,7 +84,7 @@
         "bash": {
           "*": "ask",
           "date *": "allow",
-          "echo *": "allow",
+          "echo *": "deny",
           "cat *": "deny",
           "mkdir .worktrees/*": "allow",
           "mkdir docs/*": "allow",
@@ -81,7 +99,8 @@
           "pnpm exec tsc *": "allow",
           "webfetch": "allow",
           "ls *": "allow",
-          "head *": "allow",
+          "head src/**/*": "allow",
+          "head docs/**/*": "allow",
           "find . -name '*.ts' -o -name '*.tsx'": "allow",
           "find . -name '*.test.ts'": "allow",
           "find . -name '*.md'": "allow",
@@ -96,8 +115,10 @@
           "git branch --list": "allow",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "grep *": "allow",
-          "tail *": "allow"
+          "grep * src/**/*": "allow",
+          "grep * docs/**/*": "allow",
+          "tail src/**/*": "allow",
+          "tail docs/**/*": "allow"
         }
       }
     },
@@ -110,11 +131,7 @@
         "bash": {
           "*": "ask",
           "ls *": "allow",
-          "cat src/**/*.ts": "allow",
-          "cat src/**/*.tsx": "allow",
-          "cat *.config.ts": "allow",
-          "cat package.json": "allow",
-          "cat tsconfig.json": "allow",
+          "cat *": "deny",
           "pnpm test *": "allow",
           "pnpm coverage *": "allow",
           "pnpm lint *": "allow",
@@ -136,9 +153,11 @@
           "git add *.config.ts": "ask",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "head *": "allow",
-          "tail *": "allow",
-          "grep *": "allow"
+          "head src/**/*": "allow",
+          "head *.config.ts": "allow",
+          "tail src/**/*": "allow",
+          "tail *.config.ts": "allow",
+          "grep * src/**/*": "allow"
         }
       }
     },
@@ -151,13 +170,7 @@
         "bash": {
           "*": "ask",
           "ls *": "allow",
-          "cat src/**/*.ts": "allow",
-          "cat src/**/*.tsx": "allow",
-          "cat src/**/*.test.ts": "allow",
-          "cat src/**/*.test.tsx": "allow",
-          "cat src/**/*.stories.tsx": "allow",
-          "cat *.config.ts": "allow",
-          "cat tsconfig.json": "allow",
+          "cat *": "deny",
           "pnpm test *": "allow",
           "pnpm coverage *": "allow",
           "pnpm lint *": "allow",
@@ -182,9 +195,11 @@
           "git add src/**/*.stories.tsx": "ask",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "head *": "allow",
-          "tail *": "allow",
-          "grep *": "allow"
+          "head src/**/*": "allow",
+          "head *.config.ts": "allow",
+          "tail src/**/*": "allow",
+          "tail *.config.ts": "allow",
+          "grep * src/**/*": "allow"
         }
       }
     },
@@ -210,11 +225,7 @@
         "bash": {
           "*": "ask",
           "ls *": "allow",
-          "cat src/**/*.ts": "allow",
-          "cat src/**/*.tsx": "allow",
-          "cat *.config.ts": "allow",
-          "cat package.json": "allow",
-          "cat tsconfig.json": "allow",
+          "cat *": "deny",
           "pnpm fmt *": "allow",
           "pnpm lint *": "allow",
           "pnpm lint --fix *": "allow",
@@ -228,9 +239,11 @@
           "git add src/**/*.ts": "ask",
           "git add src/**/*.tsx": "ask",
           "git add *.config.ts": "ask",
-          "head *": "allow",
-          "tail *": "allow",
-          "grep *": "allow"
+          "head src/**/*": "allow",
+          "head *.config.ts": "allow",
+          "tail src/**/*": "allow",
+          "tail *.config.ts": "allow",
+          "grep * src/**/*": "allow"
         }
       }
     },
@@ -243,7 +256,8 @@
         "read": {
           "*": "allow",
           "*.env": "deny",
-          "*.env.*": "deny"
+          "*.env.*": "deny",
+          "pnpm-lock.yaml": "allow"
         },
         "write": {
           "*": "deny"
@@ -254,13 +268,7 @@
         "bash": {
           "*": "ask",
           "ls *": "allow",
-          "cat src/**/*.ts": "allow",
-          "cat src/**/*.tsx": "allow",
-          "cat docs/**/*.md": "allow",
-          "cat package.json": "allow",
-          "cat pnpm-lock.yaml": "allow",
-          "cat .gitignore": "allow",
-          "cat .env.example": "allow",
+          "cat *": "deny",
           "pnpm audit": "allow",
           "pnpm audit --json": "allow",
           "find . -name '.env*'": "allow",
@@ -274,15 +282,21 @@
           "git ls-tree -r HEAD --name-only": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
-          "grep -r *": "allow",
-          "grep -iE *": "allow",
-          "grep -E *": "allow",
-          "grep -n *": "allow",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "head *": "allow",
-          "tail *": "allow",
-          "grep *": "allow"
+          "head src/**/*": "allow",
+          "head docs/**/*": "allow",
+          "head netlify/**/*": "allow",
+          "head package.json": "allow",
+          "head .gitignore": "allow",
+          "tail src/**/*": "allow",
+          "tail docs/**/*": "allow",
+          "grep * src/**/*": "allow",
+          "grep * docs/**/*": "allow",
+          "grep * netlify/**/*": "allow",
+          "grep -r * src/": "allow",
+          "grep -rn * src/": "allow",
+          "grep -iE * src/**/*": "allow"
         }
       }
     },
@@ -310,10 +324,7 @@
         "bash": {
           "*": "ask",
           "ls *": "allow",
-          "cat docs/*.md": "allow",
-          "cat .agents/agents/*.md": "allow",
-          "cat tsconfig.json": "allow",
-          "cat *.config.ts": "allow",
+          "cat *": "deny",
           "find . -name '*.md'": "allow",
           "find . -name '*.ts' -o -name '*.tsx'": "allow",
           "wc *": "allow",
@@ -324,9 +335,13 @@
           "git add docs/*.md": "ask",
           "git add .agents/agents/*.md": "ask",
           "gh pr view *": "allow",
-          "head *": "allow",
-          "tail *": "allow",
-          "grep *": "allow"
+          "head docs/**/*": "allow",
+          "head .agents/**/*": "allow",
+          "tail docs/**/*": "allow",
+          "tail .agents/**/*": "allow",
+          "grep * docs/**/*": "allow",
+          "grep * .agents/**/*": "allow",
+          "grep * src/**/*": "allow"
         }
       }
     },
@@ -339,7 +354,10 @@
         "read": {
           "*": "allow",
           "*.env": "deny",
-          "*.env.*": "deny"
+          "*.env.*": "deny",
+          ".git/config": "allow",
+          ".git/HEAD": "allow",
+          ".git/MERGE_HEAD": "allow"
         },
         "write": {
           "*": "deny"
@@ -384,9 +402,11 @@
           "git config --get *": "allow",
           "git commit -m *": "ask",
           "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
-          "head *": "allow",
-          "tail *": "allow",
-          "grep *": "allow"
+          "head src/**/*": "allow",
+          "head docs/**/*": "allow",
+          "tail src/**/*": "allow",
+          "tail docs/**/*": "allow",
+          "grep * src/**/*": "allow"
         }
       }
     },
@@ -426,20 +446,43 @@
           "gh run list": "allow",
           "gh run view *": "allow",
           "gh api repos/*/*/pulls/*/comments": "allow",
-          "head *": "allow",
-          "tail *": "allow",
-          "grep *": "allow"
+          "head src/**/*": "allow",
+          "head docs/**/*": "allow",
+          "tail src/**/*": "allow",
+          "tail docs/**/*": "allow",
+          "grep * src/**/*": "allow",
+          "grep * docs/**/*": "allow"
         }
       }
     }
   },
   "permission": {
     "rm *": "deny",
+    "cp *": "deny",
+    "mv *": "deny",
+    "cat *": "deny",
+    "echo *": "deny",
     "read": {
       "*": "allow",
       "*.env": "deny",
       "*.env.*": "deny",
-      "*.env.example": "allow"
+      "*.env.example": "allow",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny",
+      "*.crt": "deny",
+      ".ssh/**": "deny",
+      "id_rsa*": "deny",
+      "id_ed25519*": "deny",
+      ".git/**": "deny",
+      ".idea/**": "deny",
+      ".vscode/**": "deny",
+      "dist/**": "deny",
+      "node_modules/**": "deny",
+      "pnpm-lock.yaml": "deny",
+      ".DS_Store": "deny",
+      "Thumbs.db": "deny"
     },
     "git commit *": "deny",
     "git push *": "deny",
@@ -467,11 +510,17 @@
     "question": "allow",
     "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
     "ls *": "allow",
-    "head *": "allow",
+    "head src/**/*": "allow",
+    "head docs/**/*": "allow",
+    "head .agents/**/*": "allow",
+    "head *.config.ts": "allow",
+    "head package.json": "allow",
     "find . -name '*.ts' -o -name '*.tsx'": "allow",
     "find . -name '*.test.ts'": "allow",
     "find . -name '*.md'": "allow",
-    "tail *": "allow",
+    "tail src/**/*": "allow",
+    "tail docs/**/*": "allow",
+    "tail .agents/**/*": "allow",
     "wc *": "allow",
     "rm -f .git/index.lock": "allow",
     "git status *": "allow",
