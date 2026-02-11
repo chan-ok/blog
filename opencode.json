@@ -66,6 +66,7 @@
       "mode": "primary",
       "description": "Primary orchestrator that analyzes requests and delegates to specialized subagents. Does NOT write code, tests, or documentation directly - only coordinates workflow via Task tool.",
       "prompt": "{file:.agents/agents/master-orchestrator.md}",
+      "model": "github-copilot/claude-opus-4.6",
       "permission": {
         "webfetch": "allow",
         "task": {
@@ -122,6 +123,7 @@
       "mode": "subagent",
       "description": "Develops new features and UI components following FSD architecture and project coding standards. Does NOT write test code - test-specialist handles testing.",
       "prompt": "{file:.agents/agents/feature-developer.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {
@@ -189,6 +191,7 @@
       "mode": "subagent",
       "description": "Writes comprehensive tests including Unit (Vitest), Property-based (fast-check), E2E (Playwright), and Storybook stories. Ensures code quality through thorough testing coverage.",
       "prompt": "{file:.agents/agents/test-specialist.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {
@@ -228,6 +231,10 @@
           "pnpm test *": "allow",
           "pnpm coverage": "allow",
           "pnpm coverage *": "allow",
+          "pnpm e2e": "allow",
+          "pnpm e2e *": "allow",
+          "pnpm e2e:ui": "allow",
+          "pnpm e2e:ui *": "allow",
           "pnpm lint": "allow",
           "pnpm lint *": "allow",
           "pnpm tsc": "allow",
@@ -259,6 +266,7 @@
       "mode": "subagent",
       "description": "Fixes formatting and linting errors without changing code behavior",
       "prompt": "{file:.agents/agents/lint-formatter.md}",
+      "model": "github-copilot/gpt-5-mini",
       "hidden": true,
       "permission": {
         "read": {
@@ -316,6 +324,7 @@
       "mode": "subagent",
       "description": "Read-only security scanner that detects sensitive data exposure, dependency vulnerabilities, and insecure code patterns. Does NOT modify code - only reports findings.",
       "prompt": "{file:.agents/agents/security-scanner.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {
@@ -371,6 +380,7 @@
       "mode": "subagent",
       "description": "Manages and maintains all project documentation including agent prompts",
       "prompt": "{file:.agents/agents/doc-manager.md}",
+      "model": "opencode/glm-4.7-free",
       "hidden": true,
       "permission": {
         "read": {
@@ -434,6 +444,7 @@
       "mode": "subagent",
       "description": "Git Flow workflow management (main ← develop ← feature branches) with safe version control, standardized Korean commit messages, and conflict resolution support.",
       "prompt": "{file:.agents/agents/git-guardian.md}",
+      "model": "github-copilot/gpt-5-mini",
       "hidden": true,
       "permission": {
         "read": {
@@ -513,6 +524,7 @@
       "mode": "subagent",
       "description": "GitHub integration via gh CLI for PR management (create/review/merge), CI/CD monitoring, and Issue tracking. Uses squash merge by default with auto branch cleanup.",
       "prompt": "{file:.agents/agents/github-helper.md}",
+      "model": "github-copilot/gpt-5-mini",
       "hidden": true,
       "permission": {
         "read": {
@@ -574,6 +586,7 @@
       "mode": "subagent",
       "description": "Validates subagent output quality - FSD architecture compliance, code style, requirements accuracy, over-engineering detection",
       "prompt": "{file:.agents/agents/tech-architect.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": { "*": "allow", "*.env": "deny", "*.env.*": "deny" },
@@ -621,6 +634,7 @@
       "mode": "subagent",
       "description": "Performs retrospective analysis on PRs/commits - identifies what went well, improvements, and suggests agent prompt enhancements",
       "prompt": "{file:.agents/agents/retrospector.md}",
+      "model": "opencode/kimi-k2.5-free",
       "hidden": true,
       "permission": {
         "read": {
