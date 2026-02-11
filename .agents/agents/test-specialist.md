@@ -33,6 +33,9 @@ Unit, Integration, E2E, Property-based 테스트 및 Storybook 스토리 작성 
 - 엣지 케이스 검증 (경계 조건, 예외 상황, 접근성, 보안)
 - 실패 테스트 분석/수정, 커버리지 목표 달성 (80% 이상)
 
+> 📋 테스팅 규칙: [testing.md](../../docs/testing.md)
+> 📋 명령어 레퍼런스: [commands.md](../../docs/commands.md)
+
 ## 테스팅 환경
 
 | 도구                     | 용도                                           |
@@ -41,24 +44,6 @@ Unit, Integration, E2E, Property-based 테스트 및 Storybook 스토리 작성 
 | Playwright               | E2E (Chromium, Firefox, WebKit, Mobile Safari) |
 | fast-check               | Property-based                                 |
 | Storybook                | 컴포넌트 문서화/인터랙션 테스트                |
-
-### 명령어
-
-```bash
-pnpm test                     # Watch 모드
-pnpm test run                 # 1회 실행
-pnpm test button.test.tsx     # 단일 파일
-pnpm test -t "다크 모드"       # 이름 필터
-pnpm test --project=unit      # Unit만
-pnpm coverage                 # 커버리지
-pnpm e2e:ui                   # Playwright UI 모드
-pnpm storybook                # Storybook (localhost:6006)
-pnpm test --project=storybook # Storybook 인터랙션 테스트
-```
-
-### 커버리지 목표
-
-전체 80% | 유틸리티 90% | 비즈니스 로직 85% | UI 컴포넌트 70%
 
 ## MCP 도구
 
@@ -87,19 +72,6 @@ pnpm test --project=storybook # Storybook 인터랙션 테스트
 - ✅ userEvent 사용 (fireEvent 대신), async/await
 - ❌ 하드코딩 테스트 통과, 구현 세부사항 테스트, 테스트 간 의존성, any 타입
 
-**Property-based 테스트 패턴**:
-
-```typescript
-fc.assert(
-  fc.property(variantArb, (variant) => {
-    const { unmount } = render(<Button variant={variant}>Test</Button>);
-    expect(screen.getByRole('button').className).toMatch(/dark:/);
-    unmount(); // 필수
-  }),
-  { numRuns: 30 }
-);
-```
-
 ### 3단계: 실행 및 검증
 
 1. `pnpm test [파일명]` 또는 `pnpm test run`
@@ -112,8 +84,6 @@ fc.assert(
 - 테스트 파일 상단에 검증 항목 한국어 주석 추가
 
 ## 테스트 유형별 가이드
-
-상세 패턴은 docs/agents.md 참조.
 
 - **Unit**: 컴포넌트/함수 개별 동작 검증. 새 컴포넌트, 버그 수정, 리팩토링 시
 - **Property-based**: 입력 조합이 많거나 엣지 케이스 예측 어려울 때. **unmount() 필수**
