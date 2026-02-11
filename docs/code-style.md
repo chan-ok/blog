@@ -192,4 +192,4 @@ export function PostCard({ title, excerpt, tags }: PostCardProps) {
 | 스키마 (Zod) | `*.schema.ts`         | `contact-form.schema.ts`        |
 | 훅           | `use-*.ts`            | `use-theme.ts`, `use-resize.ts` |
 | 설정         | `*.config.ts`         | `vitest.config.ts`              |
-| 인덱스       | `index.ts` (re-export | export만)                       |
+| 인덱스       | `index.ts` (re-export만)                            |
