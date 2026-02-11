@@ -138,3 +138,4 @@ pages → widgets → features → entities → shared
 - [git-flow.md](./git-flow.md) - Git Flow 가이드
 - [anti-patterns.md](./anti-patterns.md) - 안티패턴 목록
 - [agent-system.md](./agent-system.md) - 에이전트 시스템 상세
+- [agent-permissions.md](./agent-permissions.md) - 에이전트별 권한 분리 가이드
