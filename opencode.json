@@ -57,7 +57,7 @@
       ]
     }
   },
-  "instructions": ["docs/agents.md", "docs/agents-guide.md"],
+  "instructions": ["docs/agents.md"],
   "agent": {
     "build": {
       "disable": true
