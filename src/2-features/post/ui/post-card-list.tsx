@@ -1,4 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import PostBasicCard from '@/2-features/post/ui/post-basic-card';
 import { getPosts } from '../util/get-posts';
 
@@ -7,6 +8,8 @@ interface PostCardListProps {
 }
 
 export default function PostCardList({ locale }: PostCardListProps) {
+  const { t } = useTranslation();
+  
   // useSuspenseQuery로 데이터 가져오기
   const { data: pagingPosts } = useSuspenseQuery({
     queryKey: ['posts', locale],
@@ -21,7 +24,7 @@ export default function PostCardList({ locale }: PostCardListProps) {
     return (
       <div className="rounded-lg border border-gray-200 p-8 text-center dark:border-gray-700">
         <p className="text-lg text-gray-600 dark:text-gray-400">
-          No posts found. Please check your content repository.
+          {t('post.noPosts')}
         </p>
       </div>
     );
@@ -32,6 +35,16 @@ export default function PostCardList({ locale }: PostCardListProps) {
       {posts.map((post) => (
         <PostBasicCard key={post.path.join('/')} locale={locale} {...post} />
       ))}
+    </div>
+  );
+}
+
+export function PostCardListSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+      <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+      <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
     </div>
   );
 }

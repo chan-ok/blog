@@ -24,5 +24,16 @@
       "required": "This field is required",
       "invalidEmail": "Invalid email format"
     }
+  },
+  "post": {
+    "recentPosts": "Recent Posts",
+    "noPosts": "No posts found. Please check your content repository.",
+    "readMore": "Read More",
+    "loading": "Loading posts..."
+  },
+  "markdown": {
+    "loadError": "Failed to load content",
+    "loading": "Loading...",
+    "retry": "Retry"
   }
 }
