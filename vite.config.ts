@@ -1,49 +1,42 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
+import { tanstackRouter } from '@tanstack/router-vite-plugin';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
-// @ts-expect-error - Vite 플러그인 타입 충돌 (hotUpdate 타입 불일치)
 export default defineConfig(({ mode }) => {
   // ⭐ 환경 변수 로드 (process.cwd()는 프로젝트 루트)
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
     plugins: [
-      react(),
-      TanStackRouterVite({
-        // ⭐ 커스텀 route tree 생성 경로 (FSD 구조 준수)
-        generatedRouteTree: './src/shared/config/route/routeTree.gen.ts',
-        // 테스트 파일 제외
+      tanstackRouter({
+        routesDirectory: './src/4-pages',
+        generatedRouteTree: './src/5-shared/config/route/routeTree.gen.ts',
         routeFileIgnorePattern: '\\.test\\.tsx?$',
+        autoCodeSplitting: true,
       }),
+      react(),
       tsconfigPaths(),
       ViteImageOptimizer({
-        // 이미지 품질 설정
         png: { quality: 80 },
         jpeg: { quality: 85 },
         jpg: { quality: 85 },
         webp: { quality: 80 },
         avif: { quality: 70 },
 
-        // 추가 옵션
-        cache: true, // 캐싱 활성화 (빌드 속도 향상)
-        cacheLocation: '.cache/images', // 캐시 위치
+        cache: true,
+        cacheLocation: '.cache/images',
       }),
     ],
-    // ⭐ 환경 변수 prefix 설정
     envPrefix: 'VITE_',
     resolve: {
       alias: {
-        '@': '/src',
         buffer: 'buffer', // Buffer polyfill
       },
     },
     define: {
-      // Buffer를 global로 주입 (gray-matter 호환성)
       global: 'globalThis',
-      // ⭐ Turnstile 환경 변수를 명시적으로 주입 (loadEnv 사용)
       'import.meta.env.VITE_TURNSTILE_SITE_KEY': JSON.stringify(
         env.VITE_TURNSTILE_SITE_KEY || env.TURNSTILE_SITE_KEY || ''
       ),

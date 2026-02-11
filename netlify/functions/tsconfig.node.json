@@ -7,7 +7,6 @@
     "moduleResolution": "node",
     "lib": ["ES2020"],
     "types": ["node"],
-    "plugins": [{ "name": "next" }],
     "baseUrl": "./",
     "paths": {
       "@/*": ["./*"]
