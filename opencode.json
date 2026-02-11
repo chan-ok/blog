@@ -57,7 +57,7 @@
       ]
     }
   },
-  "instructions": ["docs/agents.md"],
+  "instructions": ["docs/*.md"],
   "agent": {
     "build": {
       "disable": true
@@ -85,19 +85,10 @@
           "*": "deny",
           "sleep *": "allow",
           "mkdir .worktrees/*": "allow",
-          "mkdir docs/*": "allow",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
           "wc *": "allow",
-          "pnpm test": "allow",
-          "pnpm test *": "allow",
-          "pnpm coverage": "allow",
-          "pnpm coverage *": "allow",
-          "pnpm lint": "allow",
-          "pnpm lint *": "allow",
-          "pnpm tsc": "allow",
-          "pnpm tsc *": "allow",
           "git status": "allow",
           "git status *": "allow",
           "git diff": "allow",
@@ -140,9 +131,6 @@
           "git log *": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
-          "git add src/**/*.ts": "ask",
-          "git add src/**/*.tsx": "ask",
-          "git add *.config.ts": "ask",
           "gh pr view *": "allow",
           "gh pr checks *": "allow"
         }
@@ -179,9 +167,6 @@
           "git log *": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
-          "git add src/**/*.test.ts": "ask",
-          "git add src/**/*.test.tsx": "ask",
-          "git add src/**/*.stories.tsx": "ask",
           "gh pr view *": "allow",
           "gh pr checks *": "allow"
         }
@@ -202,6 +187,7 @@
           "*": "deny"
         },
         "edit": {
+          "*": "deny",
           "src/**/*.ts": "ask",
           "src/**/*.tsx": "ask",
           "*.config.ts": "ask"
@@ -221,10 +207,7 @@
           "git status": "allow",
           "git status *": "allow",
           "git diff": "allow",
-          "git diff *": "allow",
-          "git add src/**/*.ts": "ask",
-          "git add src/**/*.tsx": "ask",
-          "git add *.config.ts": "ask"
+          "git diff *": "allow"
         }
       }
     },
@@ -237,8 +220,7 @@
         "read": {
           "*": "allow",
           "*.env": "deny",
-          "*.env.*": "deny",
-          "pnpm-lock.yaml": "allow"
+          "*.env.*": "deny"
         },
         "write": {
           "*": "deny"
@@ -303,9 +285,10 @@
           "git log": "allow",
           "git log *": "allow",
           "git branch --show-current": "allow",
-          "git add docs/*.md": "ask",
-          "git add .agents/agents/*.md": "ask",
-          "gh pr view *": "allow"
+          "gh pr view *": "allow",
+          "mkdir docs/*": "allow",
+          "git branch --list": "allow",
+          "gh pr checks *": "allow"
         }
       }
     },
@@ -334,16 +317,6 @@
           "ls": "allow",
           "ls *": "allow",
           "rm -f .git/index.lock": "allow",
-          "pnpm test": "allow",
-          "pnpm test *": "allow",
-          "pnpm coverage": "allow",
-          "pnpm coverage *": "allow",
-          "pnpm lint": "allow",
-          "pnpm lint *": "allow",
-          "pnpm tsc": "allow",
-          "pnpm tsc *": "allow",
-          "pnpm fmt": "allow",
-          "pnpm fmt *": "allow",
           "git status": "allow",
           "git status *": "allow",
           "git diff": "allow",
@@ -358,6 +331,7 @@
           "git checkout -b *": "allow",
           "git checkout develop": "allow",
           "git checkout main": "allow",
+          "git add *": "ask",
           "git add .": "ask",
           "git add -A": "ask",
           "git add src/**/*": "ask",
@@ -365,6 +339,7 @@
           "git add .agents/agents/*.md": "ask",
           "git add *.config.ts": "ask",
           "git add opencode.json": "ask",
+          "git push *": "ask",
           "git reset HEAD *": "allow",
           "git stash": "allow",
           "git stash pop": "allow",
@@ -403,16 +378,6 @@
           "*": "ask",
           "ls": "allow",
           "ls *": "allow",
-          "pnpm test": "allow",
-          "pnpm test *": "allow",
-          "pnpm coverage": "allow",
-          "pnpm coverage *": "allow",
-          "pnpm lint": "allow",
-          "pnpm lint *": "allow",
-          "pnpm tsc": "allow",
-          "pnpm tsc *": "allow",
-          "pnpm fmt": "allow",
-          "pnpm fmt *": "allow",
           "git status": "allow",
           "git status *": "allow",
           "git diff": "allow",
@@ -431,7 +396,8 @@
           "gh issue list": "allow",
           "gh run list": "allow",
           "gh run view *": "allow",
-          "gh api repos/*/*/pulls/*/comments": "allow"
+          "gh api repos/*/*/pulls/*/comments": "allow",
+          "git branch --list": "allow"
         }
       }
     }
@@ -441,6 +407,7 @@
     "cp *": "deny",
     "mv *": "deny",
     "echo *": "deny",
+    "git add *": "deny",
     "git commit *": "deny",
     "git push *": "deny",
     "git reset --hard *": "deny",
@@ -470,7 +437,7 @@
     },
     "bash": "ask",
     "zsh": "ask",
-    "task": "allow",
+    "task": "deny",
     "webfetch": "allow",
     "websearch": "allow",
     "grep": "allow",
@@ -507,11 +474,6 @@
     "git checkout -b *": "allow",
     "git checkout develop": "allow",
     "git checkout main": "allow",
-    "git add .": "ask",
-    "git add -A": "ask",
-    "git add *.ts": "ask",
-    "git add *.tsx": "ask",
-    "git add docs/*.md": "allow",
     "git reset HEAD *": "allow",
     "git stash": "allow",
     "git stash pop": "allow",

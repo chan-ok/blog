@@ -431,6 +431,16 @@
 
 > 최근 3개월간의 주요 변경 사항을 기록합니다.
 
+### 2026-02-11
+
+- 에이전트 권한 체계 전면 정비 (opencode.json + 문서 12개 동기화)
+  - git add: git-guardian 전용으로 통합 (다른 에이전트에서 제거)
+  - pnpm test/lint/tsc/fmt: 전문 에이전트만 보유 (orchestrator/git-guardian/github-helper에서 제거)
+  - mkdir docs/\*: master-orchestrator → doc-manager 이관
+  - lint-formatter edit에 기본 deny 추가
+  - global permission에서 git add 관련 5개 항목 삭제
+  - 권한 매트릭스 및 에이전트 프롬프트 전면 재검증
+
 ### 2026-02-08
 
 - Next.js 16에서 TanStack Router v1 + Vite v7로 마이그레이션 완료

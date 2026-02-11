@@ -830,7 +830,7 @@ Git 워크플로우 관리 및 안전한 버전 관리 담당.
 
 **사용 시기**: 커밋, 푸시, Git 충돌 발생, 새 feature 브랜치 생성
 
-**주요 기능**: 커밋 생성 (main 차단, fetch 후 변경사항 분석), 안전한 푸시 (upstream 설정), 충돌 해결 (ours/theirs/manual), 브랜치 생성 (develop 기준, 타임스탬프 포함)
+**주요 기능**: 커밋 생성 (main 차단, fetch 후 변경사항 분석), 충돌 해결 (ours/theirs/manual), 브랜치 생성 (develop 기준, 타임스탬프 포함)
 
 **Git Flow**: `main ← develop ← feature/[name]-[timestamp]`
 

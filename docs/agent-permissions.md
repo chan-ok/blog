@@ -17,39 +17,39 @@
 
 **허용 권한**:
 
-- ✅ Task tool (subagent 호출)
-- ✅ 파일 읽기 (소스 코드, 문서, 설정 파일)
-- ✅ Dashboard 문서 작성/수정
-- ✅ 테스트/린트 실행
-- ✅ 파일 검색 (find, grep)
+- ✅ Task tool (subagent 호출, `"*": "allow"`)
+- ✅ 파일 읽기 (소스 코드, 문서, 설정 파일, `.env` 제외)
+- ✅ Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
+- ✅ GitHub 읽기 (`gh pr view`, `gh pr checks`)
+- ✅ 디렉토리 생성 (`mkdir .worktrees/*`)
+- ✅ `sleep *`, `ls`, `wc`, `webfetch`
 
 **제한 권한**:
 
+- ❌ 파일 쓰기 (`write: { "*": "deny" }`)
+- ❌ 파일 수정 (`edit: { "*": "deny" }`)
 - ❌ 소스 코드 작성/수정 (feature-developer/test-specialist에 위임)
-- ❌ Git 작업 (git-guardian에 위임)
+- ❌ Git 쓰기 작업 (git-guardian에 위임)
 - ❌ GitHub 작업 (github-helper에 위임)
 - ❌ .env 파일 접근
 
-### 2. feature-developer (a/b/c)
-
-**병렬 실행을 위한 3개 복제본**: feature-developer-a, feature-developer-b, feature-developer-c
-
-각 복제본은 동일한 권한과 역할을 가지며, 독립적인 worktree에서 병렬 실행됩니다.
+### 2. feature-developer
 
 **역할**: 기능 개발자
 **책임**: 새로운 기능 구현
 
 **허용 권한**:
 
-- ✅ 소스 코드 파일 읽기 (src/**/\*.ts, src/**/\*.tsx)
-- ✅ 소스 코드 파일 작성/수정
-- ✅ 설정 파일 읽기/수정 (\*.config.ts, package.json)
-- ✅ 테스트/린트/타입체크 실행
-- ✅ Git 읽기 명령 (status, diff, log)
-- ✅ Git add/commit (사용자 확인 필요)
+- ✅ 파일 읽기/쓰기/수정 (global 권한 따름)
+- ✅ 테스트/린트/타입체크 실행 (`pnpm test`, `pnpm lint`, `pnpm tsc`, `pnpm coverage`)
+- ✅ Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
+- ✅ GitHub 읽기 (`gh pr view`, `gh pr checks`)
+- ✅ `ls`, `wc`
+- ✅ 기타 bash 명령 (사용자 확인 필요, `"*": "ask"`)
 
 **제한 권한**:
 
+- ❌ git add/commit (git-guardian에 위임)
 - ❌ 테스트 파일 작성 (test-specialist에 위임)
 - ❌ 문서 수정 (doc-manager에 위임)
 - ❌ Git branch/merge 작업 (git-guardian에 위임)
@@ -63,16 +63,17 @@
 
 **허용 권한**:
 
-- ✅ 소스 코드 파일 읽기
-- ✅ 테스트 파일 읽기/작성/수정 (_.test.ts, _.test.tsx)
-- ✅ Storybook 파일 읽기/작성/수정 (\*.stories.tsx)
-- ✅ 테스트/커버리지/린트 실행
-- ✅ Storybook 실행
-- ✅ Git 읽기 명령
-- ✅ Git add/commit (테스트 파일만, 사용자 확인 필요)
+- ✅ 파일 읽기/쓰기/수정 (global 권한 따름)
+- ✅ 테스트/커버리지/린트/타입체크 실행 (`pnpm test`, `pnpm coverage`, `pnpm lint`, `pnpm tsc`)
+- ✅ Storybook 실행 (`pnpm storybook`, `pnpm build-storybook`)
+- ✅ Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
+- ✅ GitHub 읽기 (`gh pr view`, `gh pr checks`)
+- ✅ `ls`, `wc`
+- ✅ 기타 bash 명령 (사용자 확인 필요, `"*": "ask"`)
 
 **제한 권한**:
 
+- ❌ git add/commit (git-guardian에 위임)
 - ❌ 소스 코드 수정 (feature-developer에 위임)
 - ❌ 문서 수정 (doc-manager에 위임)
 - ❌ Git branch/merge 작업 (git-guardian에 위임)
@@ -86,17 +87,17 @@
 
 **허용 권한**:
 
-- ✅ 소스 코드 파일 읽기
-- ✅ 소스 코드 파일 수정 (Edit 도구, 사용자 확인 필요)
-- ✅ 설정 파일 읽기/수정 (\*.config.ts)
-- ✅ pnpm fmt, pnpm lint, pnpm lint --fix 실행
-- ✅ pnpm tsc --noEmit (타입 체크)
-- ✅ Git 읽기 명령
-- ✅ Git add/commit (사용자 확인 필요)
+- ✅ 파일 읽기 (`"*": "allow"`, `.env/.env.*` 제외)
+- ✅ 파일 수정 (Edit, 사용자 확인 필요): `src/**/*.ts`, `src/**/*.tsx`, `*.config.ts` (기본값 `"*": "deny"`, 허용 패턴만 ask)
+- ✅ `pnpm fmt`, `pnpm lint`, `pnpm tsc` 실행
+- ✅ Git 읽기 명령 (`git status`, `git diff`)
+- ✅ `ls`, `wc`
+- ✅ 기타 bash 명령 (사용자 확인 필요, `"*": "ask"`)
 
 **제한 권한**:
 
-- ❌ 파일 작성 (Write 금지, Edit만 허용)
+- ❌ 파일 쓰기 (Write 금지, `"*": "deny"`, Edit만 허용)
+- ❌ git add/commit (git-guardian에 위임)
 - ❌ Git branch/merge 작업 (git-guardian에 위임)
 - ❌ .env 파일 접근
 
@@ -109,15 +110,17 @@
 
 **허용 권한**:
 
-- ✅ 모든 파일 읽기 (.env 제외)
-- ✅ pnpm audit 실행
-- ✅ Git 읽기 명령 (변경사항 확인)
-- ✅ .gitignore 파일 읽기
+- ✅ 모든 파일 읽기 (`.env` 제외)
+- ✅ `pnpm audit`, `pnpm audit --json` 실행
+- ✅ Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
+- ✅ Git 추가 읽기 (`git show *`, `git ls-tree -r HEAD --name-only`)
+- ✅ GitHub 읽기 (`gh pr view`, `gh pr checks`)
+- ✅ `ls`, `wc`
 - ✅ 민감 정보 패턴 검색
 
 **제한 권한**:
 
-- ❌ 모든 파일 쓰기/수정 (읽기 전용)
+- ❌ 모든 파일 쓰기/수정 (읽기 전용, `write/edit: { "*": "deny" }`)
 - ❌ Git add/commit
 - ❌ .env 파일 읽기 (보안상 접근 불가)
 
@@ -130,17 +133,19 @@
 
 **허용 권한**:
 
-- ✅ 문서 파일 읽기/작성/수정 (docs/\*.md)
-- ✅ 에이전트 프롬프트 읽기/작성/수정 (.agents/agents/\*.md)
-- ✅ 소스 코드 파일 읽기 (검증 목적)
-- ✅ 설정 파일 읽기
-- ✅ Git 읽기 명령
-- ✅ Git add/commit (문서 및 에이전트 파일, 사용자 확인 필요)
-- ✅ validate-agent.sh 실행
+- ✅ 파일 읽기 (`"*": "allow"`, `.env/.env.*` 제외)
+- ✅ 문서 파일 쓰기/수정 (`docs/*.md`)
+- ✅ 에이전트 프롬프트 쓰기/수정 (`.agents/agents/*.md`)
+- ✅ Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
+- ✅ GitHub 읽기 (`gh pr view`, `gh pr checks`)
+- ✅ 디렉토리 생성 (`mkdir docs/*`)
+- ✅ `ls`, `wc`
+- ✅ 기타 bash 명령 (사용자 확인 필요, `"*": "ask"`)
 
 **제한 권한**:
 
-- ❌ 소스 코드 수정
+- ❌ 소스 코드 쓰기/수정 (`write/edit: { "*": "deny" }`, 문서/에이전트 파일만 허용)
+- ❌ git add/commit (git-guardian에 위임)
 - ❌ Git branch/merge 작업 (git-guardian에 위임)
 - ❌ GitHub PR 작업 (github-helper에 위임)
 - ❌ .env 파일 접근
@@ -152,23 +157,33 @@
 
 **허용 권한**:
 
-- ✅ 모든 Git 읽기 명령
-- ✅ Git branch 생성/전환
-- ✅ Git add/commit (사용자 확인 필요)
-- ✅ Git stash 관리
-- ✅ Git worktree 관리
-- ✅ Git merge (사용자 확인 필요)
-- ✅ Git push (사용자 확인 필요)
-- ✅ Git config 읽기 (--get만)
+- ✅ 파일 읽기 (`.env` 제외, `.git/config`, `.git/HEAD`, `.git/MERGE_HEAD` 허용)
+- ✅ 모든 Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
+- ✅ Git fetch (`git fetch origin`, `git fetch --all`)
+- ✅ Git config 읽기 (`git config --get *`)
+- ✅ Git branch 생성/전환 (`git checkout -b *`, `git checkout develop`, `git checkout main`)
+- ✅ 타임스탬프 브랜치 생성 (`TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *`)
+- ✅ Git add (사용자 확인 필요): `git add .`, `git add -A`, `git add src/**/*`, `git add docs/*.md`, `git add .agents/agents/*.md`, `git add *.config.ts`, `git add opencode.json`
+- ✅ **git commit (사용자 확인 필요)**: `git commit -m *` — **유일하게 git commit이 가능한 에이전트**
+- ✅ Git stash 관리 (`git stash`, `git stash pop`, `git stash list`)
+- ✅ Git stash drop (사용자 확인 필요, `"ask"`)
+- ✅ Git worktree 관리 (`git worktree add *`, `git worktree list`, `git worktree remove *` (ask))
+- ✅ Git merge (사용자 확인 필요): `git merge --no-ff *`
+- ✅ Git merge 중단 (`git merge --abort`)
+- ✅ Git reset (`git reset HEAD *`)
+- ✅ Git rm 캐시 (`git rm --cached .env*`, `git rm --cached node_modules/*`)
+- ✅ `rm -f .git/index.lock` (잠금 파일 제거)
+- ✅ `ls`
 
 **제한 권한**:
 
-- ❌ 파일 쓰기/수정 (읽기 전용)
+- ❌ 파일 쓰기/수정 (읽기 전용, `write/edit: { "*": "deny" }`)
+- ❌ git push (global deny, 어떤 에이전트도 불가)
 - ❌ git reset --hard (global deny)
 - ❌ git rebase (global deny)
 - ❌ git config 쓰기 (커밋 위조 방지)
 
-**중요**: git-guardian은 **Git 작업 전용**이며, 파일 수정은 하지 않습니다.
+**중요**: git-guardian은 **Git 작업 전용**이며, 파일 수정은 하지 않습니다. **git commit이 가능한 유일한 에이전트**입니다.
 
 ### 8. github-helper
 
@@ -177,15 +192,17 @@
 
 **허용 권한**:
 
-- ✅ Git 읽기 명령 (상태 확인 목적)
-- ✅ gh pr create/view/list/merge (PR 관리)
-- ✅ gh issue create/view/list (Issue 관리)
-- ✅ gh run list/view (CI/CD 모니터링)
-- ✅ gh api (GitHub API 호출)
+- ✅ 파일 읽기 (`"*": "allow"`, `.env/.env.*` 제외)
+- ✅ Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
+- ✅ `ls`
+- ✅ PR 관리: `gh pr create` (ask), `gh pr view`, `gh pr list`, `gh pr checks`, `gh pr comment` (ask), `gh pr merge` (ask)
+- ✅ Issue 관리: `gh issue create` (ask), `gh issue view`, `gh issue list`
+- ✅ CI/CD 모니터링: `gh run list`, `gh run view`
+- ✅ GitHub API: `gh api repos/*/*/pulls/*/comments`
 
 **제한 권한**:
 
-- ❌ 파일 쓰기/수정 (읽기 전용)
+- ❌ 파일 쓰기/수정 (읽기 전용, `write/edit: { "*": "deny" }`)
 - ❌ Git add/commit/push (git-guardian에 위임)
 - ❌ .env 파일 접근
 
@@ -193,36 +210,40 @@
 
 ## 권한 매트릭스
 
-| 권한                   | master         | feature-dev | test-spec | lint-fmt | security | doc-mgr  | git-guard | github   |
-| ---------------------- | -------------- | ----------- | --------- | -------- | -------- | -------- | --------- | -------- |
+| 권한                   | master | feature-dev | test-spec | lint-fmt | security | doc-mgr | git-guard | github   |
+| ---------------------- | ------ | ----------- | --------- | -------- | -------- | ------- | --------- | -------- |
 | **파일 작업**          |
-| 소스 코드 읽기         | ✅             | ✅          | ✅        | ✅       | ✅       | ✅       | ❌        | ❌       |
-| 소스 코드 쓰기         | ❌             | ✅          | ❌        | ❌       | ❌       | ❌       | ❌        | ❌       |
-| 테스트 파일 쓰기       | ❌             | ❌          | ✅        | ❌       | ❌       | ❌       | ❌        | ❌       |
-| 문서 쓰기              | ✅ (dashboard) | ❌          | ❌        | ❌       | ❌       | ✅       | ❌        | ❌       |
-| 에이전트 프롬프트 쓰기 | ❌             | ❌          | ❌        | ❌       | ❌       | ✅       | ❌        | ❌       |
-| .env 읽기              | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ❌        | ❌       |
+| 소스 코드 읽기         | ✅     | ✅          | ✅        | ✅       | ✅       | ✅      | ✅        | ✅       |
+| 소스 코드 쓰기         | ❌     | ✅          | ❌        | ❌       | ❌       | ❌      | ❌        | ❌       |
+| 소스 코드 수정 (Edit)  | ❌     | ✅          | ❌        | ✅ (ask) | ❌       | ❌      | ❌        | ❌       |
+| 문서 쓰기/수정         | ❌     | ❌          | ❌        | ❌       | ❌       | ✅      | ❌        | ❌       |
+| 에이전트 프롬프트 쓰기 | ❌     | ❌          | ❌        | ❌       | ❌       | ✅      | ❌        | ❌       |
+| .env 읽기              | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ❌       |
 | **테스트/빌드**        |
-| pnpm test              | ✅             | ✅          | ✅        | ❌       | ❌       | ❌       | ❌        | ❌       |
-| pnpm fmt/lint          | ✅             | ✅          | ✅        | ✅       | ❌       | ❌       | ❌        | ❌       |
-| pnpm audit             | ✅             | ❌          | ❌        | ❌       | ✅       | ❌       | ❌        | ❌       |
+| pnpm test/coverage     | ❌     | ✅          | ✅        | ❌       | ❌       | ❌      | ❌        | ❌       |
+| pnpm fmt               | ❌     | ❌          | ❌        | ✅       | ❌       | ❌      | ❌        | ❌       |
+| pnpm lint/tsc          | ❌     | ✅          | ✅        | ✅       | ❌       | ❌      | ❌        | ❌       |
+| pnpm audit             | ❌     | ❌          | ❌        | ❌       | ✅       | ❌      | ❌        | ❌       |
+| pnpm storybook         | ❌     | ❌          | ✅        | ❌       | ❌       | ❌      | ❌        | ❌       |
 | **Git 읽기**           |
-| git status             | ✅             | ✅          | ✅        | ✅       | ✅       | ✅       | ✅        | ✅       |
-| git diff               | ✅             | ✅          | ✅        | ✅       | ✅       | ✅       | ✅        | ✅       |
-| git log                | ✅             | ✅          | ✅        | ✅       | ✅       | ✅       | ✅        | ✅       |
+| git status/diff/log    | ✅     | ✅          | ✅        | ✅       | ✅       | ✅      | ✅        | ✅       |
+| git show               | ❌     | ❌          | ❌        | ❌       | ✅       | ❌      | ❌        | ❌       |
+| git ls-tree            | ❌     | ❌          | ❌        | ❌       | ✅       | ❌      | ❌        | ❌       |
 | **Git 쓰기**           |
-| git add                | ❌             | ✅ (ask)    | ✅ (ask)  | ✅ (ask) | ❌       | ✅ (ask) | ✅ (ask)  | ❌       |
-| git commit             | ❌             | ✅ (ask)    | ✅ (ask)  | ✅ (ask) | ❌       | ✅ (ask) | ✅ (ask)  | ❌       |
-| git checkout           | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ✅        | ❌       |
-| git merge              | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ✅ (ask)  | ❌       |
-| git push               | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ✅ (ask)  | ❌       |
-| git worktree           | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ✅        | ❌       |
+| git add                | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅ (ask)  | ❌       |
+| git commit             | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅ (ask)  | ❌       |
+| git checkout           | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅        | ❌       |
+| git merge              | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅ (ask)  | ❌       |
+| git push               | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ❌       |
+| git stash              | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅        | ❌       |
+| git worktree           | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅        | ❌       |
 | **GitHub**             |
-| gh pr create           | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ❌        | ✅ (ask) |
-| gh pr view             | ✅             | ✅          | ✅        | ❌       | ✅       | ✅       | ❌        | ✅       |
-| gh pr merge            | ❌             | ❌          | ❌        | ❌       | ❌       | ❌       | ❌        | ✅ (ask) |
+| gh pr create           | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ✅ (ask) |
+| gh pr view/checks      | ✅     | ✅          | ✅        | ❌       | ✅       | ✅      | ❌        | ✅       |
+| gh pr comment          | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ✅ (ask) |
+| gh pr merge            | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ✅ (ask) |
 | **Task Tool**          |
-| task \*                | ✅             | ❌          | ❌        | ❌       | ❌       | ❌       | ❌        | ❌       |
+| task \*                | ✅     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ❌       |
 
 ## 워크플로우 예시
 
@@ -237,8 +258,8 @@ master-orchestrator (조율)
   ├─ Task → lint-formatter (코드 포맷팅) - 선택적
   ├─ Task → security-scanner (보안 검증)
   ├─ Task → doc-manager (문서 업데이트) - 필요시
-  └─ Task → git-guardian (커밋 생성)
-       └─ Task → github-helper (PR 생성)
+  ├─ Task → git-guardian (커밋 생성)
+  └─ Task → github-helper (PR 생성)
 ```
 
 ### 예시 2: Git 충돌 해결
@@ -272,30 +293,46 @@ Task → github-helper (PR 생성)
 
 ### 1. 데이터 손실 방지
 
+- ❌ `rm *` 전역 차단 (파일 삭제 방지)
+- ❌ `cp *` 전역 차단 (의도하지 않은 복사 방지)
+- ❌ `mv *` 전역 차단 (의도하지 않은 이동 방지)
 - ❌ `git branch -D` 차단 (강제 삭제 방지)
 - ❌ `git checkout -- file` 차단 (변경사항 버림 방지)
-- ❌ `git stash drop/clear` 차단 (git-guardian에서만 사용자 확인 후)
 - ❌ `git reset --hard` 전역 차단
 - ❌ `git rebase` 전역 차단
+- ✅ `git stash drop` git-guardian에서 사용자 확인 후 허용 (ask)
 
 ### 2. 데이터 변질 방지
 
 - ❌ `git config user.email` 차단 (커밋 위조 방지)
+- ❌ `echo *` 전역 차단 (파일 덮어쓰기 방지)
 - ✅ `git config --get` 읽기만 허용
 - ✅ Git add/commit은 사용자 확인 필요 (ask)
+- ✅ git commit은 **git-guardian만** 가능 (global deny, 에이전트 레벨 override)
 
 ### 3. 민감 정보 노출 방지
 
-- ❌ `.env`, `.env.*` 파일 접근 전역 차단
-- ❌ `cat *` 차단 → 특정 파일만 허용
+- ❌ `.env`, `.env.*` 파일 접근 전역 차단 (`.env.example`은 허용)
+- ❌ `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.crt` 파일 접근 차단
+- ❌ `.ssh/**`, `id_rsa*`, `id_ed25519*` 접근 차단
+- ❌ `.git/**`, `.idea/**`, `.vscode/**` 접근 차단
+- ❌ `dist/**`, `node_modules/**`, `pnpm-lock.yaml` 접근 차단
 - ✅ security-scanner가 민감 정보 탐지
 - ✅ Git add 시 .env 파일 스테이징 방지
 
-### 4. 권한 분리
+### 4. 실행 제한
+
+- ❌ `pnpm exec *` 전역 차단 (임의 스크립트 실행 방지)
+- ❌ `git push *` 전역 차단 (어떤 에이전트도 push 불가)
+- ❌ `task` 전역 차단 (순환 호출 방지, master-orchestrator만 개별 override로 허용)
+- ✅ `rm -f .git/index.lock`만 허용 (잠금 파일 제거)
+
+### 5. 권한 분리
 
 - ✅ 각 에이전트는 자신의 역할에 필요한 최소 권한만 보유
 - ✅ master-orchestrator는 조율만, 실제 작업은 subagent에 위임
-- ✅ git-guardian과 github-helper로 Git 작업 분리
+- ✅ git-guardian과 github-helper로 Git/GitHub 작업 분리
+- ✅ git commit은 git-guardian만, git push는 모두 차단
 
 ## Global Permission (모든 에이전트 공통)
 
@@ -303,15 +340,36 @@ Task → github-helper (PR 생성)
 {
   "permission": {
     "rm *": "deny",
+    "cp *": "deny",
+    "mv *": "deny",
+    "echo *": "deny",
     "git commit *": "deny",
     "git push *": "deny",
     "git reset --hard *": "deny",
     "git rebase *": "deny",
+    "pnpm exec *": "deny",
+    "task": "deny",
     "read": {
       "*": "allow",
       "*.env": "deny",
       "*.env.*": "deny",
-      "*.env.example": "allow"
+      "*.env.example": "allow",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny",
+      "*.crt": "deny",
+      ".ssh/**": "deny",
+      "id_rsa*": "deny",
+      "id_ed25519*": "deny",
+      ".git/**": "deny",
+      ".idea/**": "deny",
+      ".vscode/**": "deny",
+      "dist/**": "deny",
+      "node_modules/**": "deny",
+      "pnpm-lock.yaml": "deny",
+      ".DS_Store": "deny",
+      "Thumbs.db": "deny"
     }
   }
 }
@@ -319,14 +377,26 @@ Task → github-helper (PR 생성)
 
 ## 변경 이력
 
-- **2026-02-08**: 초안 작성 - 에이전트별 권한 분리 완료
-  - master-orchestrator: Git/코드 수정 권한 제거
-  - feature-developer: 소스 코드 작성 권한 추가
-  - test-specialist: 테스트 파일 작성 권한 추가
-  - security-scanner: 읽기 전용 보안 검증 권한 추가
-  - doc-manager: 문서 작성 권한 추가
-  - git-guardian: Git 워크플로우 관리 권한 추가
-  - github-helper: GitHub 통합 권한 추가
+- **2026-02-11**: 에이전트 권한 정비 2차 갱신
+  - git add: git-guardian 전용으로 통합 (다른 에이전트에서 제거)
+  - pnpm test/lint/tsc/fmt: 전문 에이전트만 보유 (orchestrator/git-guardian/github-helper에서 제거)
+  - mkdir docs/\*: master-orchestrator → doc-manager 이관
+  - lint-formatter edit에 "\*": "deny" 기본값 추가
+  - security-scanner에서 pnpm-lock.yaml 허용 제거
+  - doc-manager에 mkdir docs/\*, git branch --list, gh pr checks 추가
+  - github-helper에 git branch --list 추가
+  - global permission에서 git add 관련 5개 항목 삭제
+  - 권한 매트릭스 전면 재검증
+
+- **2026-02-11**: opencode.json 기준 전면 갱신
+  - feature-developer 복제본(a/b/c) 제거 → 단일 에이전트로 변경
+  - git commit 권한 정리 (git-guardian만 보유)
+  - git push 권한 정리 (global deny, 어떤 에이전트도 불가)
+  - master-orchestrator write/edit deny 반영
+  - git-guardian에 pnpm test/lint/tsc/fmt, rm -f .git/index.lock 등 추가
+  - github-helper에 pnpm test/lint/tsc/fmt, gh pr comment 추가
+  - Global Permission에 cp/mv/echo/pnpm exec deny, 민감 파일 패턴 추가
+  - 권한 매트릭스 opencode.json 기준 전면 재작성
 
 - **2026-02-09**: opencode.json 기준으로 갱신
   - doc-validator → doc-manager로 명칭 변경
@@ -337,8 +407,16 @@ Task → github-helper (PR 생성)
   - master-orchestrator의 Git 읽기 명령 권한 추가
   - 워크플로우 예시에 lint-formatter와 doc-manager 추가
 
+- **2026-02-08**: 초안 작성 - 에이전트별 권한 분리 완료
+  - master-orchestrator: Git/코드 수정 권한 제거
+  - feature-developer: 소스 코드 작성 권한 추가
+  - test-specialist: 테스트 파일 작성 권한 추가
+  - security-scanner: 읽기 전용 보안 검증 권한 추가
+  - doc-manager: 문서 작성 권한 추가
+  - git-guardian: Git 워크플로우 관리 권한 추가
+  - github-helper: GitHub 통합 권한 추가
+
 ## 참고 문서
 
-- [에이전트 README](../.agents/agents/README.md)
 - [코딩 가이드](./agents.md)
 - [opencode.json 설정 파일](../opencode.json)
