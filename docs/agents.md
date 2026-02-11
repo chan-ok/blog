@@ -33,7 +33,7 @@
 
 - 처음 프로젝트를 설정하는 개발자 → [development.md](./development.md) 참고
 - 프로젝트 구조를 이해하고 싶은 경우 → [architecture.md](./architecture.md) 참고
-- 프로젝트 이력을 확인하고 싶은 경우 → [project-log.md](./project-log.md) 참고
+- 프로젝트 회고 및 의사결정을 확인하고 싶은 경우 → [retrospective/overview.md](./retrospective/overview.md) 참고
 
 ## 프로젝트 정보
 
@@ -734,6 +734,8 @@ it('should apply styles', () => {
 | test-writing        | test-specialist   | HIGH     |
 | security-check      | security-scanner  | MEDIUM   |
 | doc-validation      | doc-manager       | LOW      |
+| quality-validation  | tech-architect    | MEDIUM   |
+| retrospective       | retrospector      | LOW      |
 
 ---
 
@@ -848,6 +850,44 @@ GitHub CLI (gh)를 사용한 GitHub 통합 작업 담당.
 
 **브랜치 보호**: main은 직접 푸시 금지 (PR + 리뷰 필수), develop은 PR 권장
 
+---
+
+#### tech-architect
+
+서브에이전트 결과물의 품질을 검증하는 읽기 전용 에이전트. **코드를 수정하지 않고** 검증 보고서만 제출합니다.
+
+- FSD 아키텍처 준수 여부, 코드 스타일, 타입 안전성 검증
+- 오버엔지니어링, 중복 코드, 요구사항 정확성 검증
+- ✅ 통과 / ⚠️ 개선 필요 / 🚨 차단 3단계 보고서 출력
+
+**사용 시기**: 각 Phase 완료 후 결과물 품질 검증, PR 전 코드 리뷰
+
+**사용 예시**:
+
+```
+"feature-developer가 만든 컴포넌트를 검증해줘"
+"이 변경사항이 FSD 아키텍처를 준수하는지 확인해줘"
+```
+
+---
+
+#### retrospector
+
+PR/커밋에 대한 회고 분석을 수행하고 에이전트 프롬프트 개선을 제안하는 에이전트.
+
+- "잘한 점 / 개선점 / 에이전트 프롬프트 개선 제안" 3축 분석
+- `docs/retrospective/` 디렉토리에 회고 문서 작성
+- Serena 메모리에 회고 결과 이중 저장
+
+**사용 시기**: PR 생성 후 회고 분석, 에이전트 시스템 개선점 파악
+
+**사용 예시**:
+
+```
+"이번 PR의 회고 분석을 해줘"
+"최근 작업에서 에이전트 프롬프트 개선점을 찾아줘"
+```
+
 ### 에이전트 사용 방법
 
 **기본 사용**: master-orchestrator가 자동으로 요구사항 분석 → 작업 분해 → Git Flow 준비 → 에이전트 병렬/순차 실행 → 결과 통합 및 PR 생성
@@ -884,4 +924,4 @@ bash ../.agents/skills/agent-identifier/scripts/validate-agent.sh feature-develo
 
 - [development.md](./development.md) - 개발 시작 및 환경 설정
 - [architecture.md](./architecture.md) - FSD 구조 상세 설명
-- [project-log.md](./project-log.md) - 프로젝트 이력 및 의사결정
+- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그

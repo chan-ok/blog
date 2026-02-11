@@ -145,13 +145,13 @@ blog/
 
 ## 문서
 
-| 문서                                                    | 설명                                                     |
-| ------------------------------------------------------- | -------------------------------------------------------- |
-| **[agents.md](./docs/agents.md)**                       | AI 코딩 에이전트를 위한 필수 가이드 (코딩 규칙, 테스팅)  |
-| **[agent-permissions.md](./docs/agent-permissions.md)** | 에이전트별 권한 분리 가이드                              |
-| **[development.md](./docs/development.md)**             | 개발자를 위한 환경 설정 및 워크플로우 가이드             |
-| **[architecture.md](./docs/architecture.md)**           | 프로젝트 구조 및 기술 선택 배경 (FSD, 콘텐츠 파이프라인) |
-| **[project-log.md](./docs/project-log.md)**             | 프로젝트 이력 및 주요 의사결정 로그                      |
+| 문서                                                              | 설명                                                     |
+| ----------------------------------------------------------------- | -------------------------------------------------------- |
+| **[agents.md](./docs/agents.md)**                                 | AI 코딩 에이전트를 위한 필수 가이드 (코딩 규칙, 테스팅)  |
+| **[agent-permissions.md](./docs/agent-permissions.md)**           | 에이전트별 권한 분리 가이드                              |
+| **[development.md](./docs/development.md)**                       | 개발자를 위한 환경 설정 및 워크플로우 가이드             |
+| **[architecture.md](./docs/architecture.md)**                     | 프로젝트 구조 및 기술 선택 배경 (FSD, 콘텐츠 파이프라인) |
+| **[retrospective/overview.md](./docs/retrospective/overview.md)** | 프로젝트 회고 및 의사결정 로그                           |
 
 ## 에이전트 시스템
 
@@ -167,6 +167,8 @@ blog/
 | doc-manager         | 문서 및 에이전트 프롬프트 관리      |
 | git-guardian        | Git 워크플로우 관리                 |
 | github-helper       | GitHub PR/Issue 관리                |
+| tech-architect      | 결과물 품질 검증 (읽기 전용)        |
+| retrospector        | 회고 분석 및 프롬프트 개선 제안     |
 
 자세한 내용은 [agents.md](./docs/agents.md)와 [agent-permissions.md](./docs/agent-permissions.md)를 참고하세요.
 

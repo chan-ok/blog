@@ -30,7 +30,7 @@
 
 - AI 코딩 에이전트를 위한 상세 규칙 → [agents.md](./agents.md) 참고
 - 프로젝트 구조 상세 이해 → [architecture.md](./architecture.md) 참고
-- 프로젝트 이력 확인 → [project-log.md](./project-log.md) 참고
+- 프로젝트 회고 및 의사결정 로그 확인 → [retrospective/overview.md](./retrospective/overview.md) 참고
 
 ## 빠른 시작
 
@@ -524,4 +524,4 @@ kill -9 <PID>
 
 - [agents.md](./agents.md) - AI 코딩 에이전트 가이드
 - [architecture.md](./architecture.md) - 프로젝트 구조 및 아키텍처
-- [project-log.md](./project-log.md) - 프로젝트 이력 및 의사결정
+- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그

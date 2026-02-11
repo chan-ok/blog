@@ -4,6 +4,7 @@
 
 - [개요](#개요)
 - [대상](#대상)
+- [기술 스택 현황](#기술-스택-현황)
 - [리포지터리 구조](#리포지터리-구조)
 - [FSD 아키텍처](#fsd-아키텍처)
 - [콘텐츠 파이프라인](#콘텐츠-파이프라인)
@@ -30,7 +31,68 @@
 
 - 개발 환경 설정 및 시작 방법 → [development.md](./development.md) 참고
 - AI 에이전트를 위한 코딩 규칙 → [agents.md](./agents.md) 참고
-- 프로젝트 이력 및 의사결정 로그 → [project-log.md](./project-log.md) 참고
+- 프로젝트 회고 및 의사결정 로그 → [retrospective/overview.md](./retrospective/overview.md) 참고
+
+## 기술 스택 현황
+
+### Framework
+
+- **React 19.2.3**: UI 라이브러리
+- **TanStack Router v1**: 타입 안전 라우팅
+- **Vite v7**: 빌드 도구 및 개발 서버
+- **TypeScript 5**: 정적 타입 검사
+
+### Styling
+
+- **Tailwind CSS v4**: 유틸리티 우선 CSS 프레임워크
+- **CSS Modules**: 로컬 스코프 CSS (일부 컴포넌트)
+
+### Content
+
+- **@mdx-js/mdx**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
+- **rehype-highlight**: 코드 하이라이팅
+- **remark/rehype**: 마크다운 처리 플러그인
+
+### Data
+
+- **Zod v4**: 런타임 데이터 검증
+- **Zustand**: 경량 상태 관리 (테마, 로케일)
+- **TanStack Query**: 서버 상태 관리
+- **Axios**: HTTP 클라이언트
+- **i18next**: UI 다국어 지원
+- **react-i18next**: React용 i18next 바인딩
+
+### UI
+
+- **@base-ui/react**: Headless UI 컴포넌트
+- **Lucide React**: 아이콘 라이브러리
+- **clsx**: 조건부 클래스 유틸리티
+
+### Testing
+
+- **Vitest**: 유닛/통합 테스트 러너
+- **Playwright**: E2E 테스트
+- **Testing Library**: React 컴포넌트 테스트
+- **Storybook 10**: 컴포넌트 문서화
+- **fast-check**: Property-Based 테스트
+
+### Code Quality
+
+- **ESLint 9**: 코드 린팅
+- **Prettier 3**: 코드 포맷팅
+- **Husky**: Git 훅 관리
+- **lint-staged**: 스테이징 파일 린팅
+
+### Deployment
+
+- **Netlify**: 정적 사이트 호스팅
+- **Netlify Functions**: 서버리스 함수 (이메일 발송)
+
+### External Services
+
+- **Cloudflare Turnstile**: 봇 방지
+- **Resend**: 이메일 발송
+- **Giscus**: GitHub Discussions 기반 댓글 시스템
 
 ## 리포지터리 구조
 
@@ -716,4 +778,4 @@ const { data } = useQuery({
 
 - [agents.md](./agents.md) - AI 코딩 에이전트 가이드
 - [development.md](./development.md) - 개발 환경 설정 및 시작 가이드
-- [project-log.md](./project-log.md) - 프로젝트 이력 및 의사결정 로그
+- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그
