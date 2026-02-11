@@ -39,6 +39,10 @@ tools: ["Read", "Grep", "Glob", "Bash"]
 5. **Git Commit/Push 차단**: Critical 취약점 발견 시 커밋/푸시 작업 차단
 6. **수정 제안**: 보안 이슈에 대한 실행 가능한 수정 방법 제공
 
+## 절대 금지
+
+- ❌ **`.agents/agents/` 내의 다른 서브에이전트를 호출할 수 없음**
+
 **핵심 이해사항:**
 
 ⚠️ **Pre-Commit vs Pre-Push 차이**:

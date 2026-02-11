@@ -266,7 +266,7 @@
       "mode": "subagent",
       "description": "Fixes formatting and linting errors without changing code behavior",
       "prompt": "{file:.agents/agents/lint-formatter.md}",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -380,7 +380,7 @@
       "mode": "subagent",
       "description": "Manages and maintains all project documentation including agent prompts",
       "prompt": "{file:.agents/agents/doc-manager.md}",
-      "model": "opencode/glm-4.7-free",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -390,6 +390,7 @@
         },
         "write": {
           "*": "deny",
+          "README.md": "allow",
           "docs/**/*.md": "allow",
           ".agents/agents/*.md": "allow",
           ".worktrees/**/docs/*.md": "allow",
@@ -398,6 +399,7 @@
         },
         "edit": {
           "*": "deny",
+          "README.md": "allow",
           "docs/**/*.md": "allow",
           ".agents/agents/*.md": "allow",
           ".worktrees/**/docs/*.md": "allow",
@@ -444,7 +446,7 @@
       "mode": "subagent",
       "description": "Git Flow workflow management (main ← develop ← feature branches) with safe version control, standardized Korean commit messages, and conflict resolution support.",
       "prompt": "{file:.agents/agents/git-guardian.md}",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -524,7 +526,7 @@
       "mode": "subagent",
       "description": "GitHub integration via gh CLI for PR management (create/review/merge), CI/CD monitoring, and Issue tracking. Uses squash merge by default with auto branch cleanup.",
       "prompt": "{file:.agents/agents/github-helper.md}",
-      "model": "github-copilot/gpt-5-mini",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -634,7 +636,7 @@
       "mode": "subagent",
       "description": "Performs retrospective analysis on PRs/commits - identifies what went well, improvements, and suggests agent prompt enhancements",
       "prompt": "{file:.agents/agents/retrospector.md}",
-      "model": "opencode/kimi-k2.5-free",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {

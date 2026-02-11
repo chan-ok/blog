@@ -36,6 +36,10 @@ Unit, Integration, E2E, Property-based 테스트 및 Storybook 스토리 작성 
 > 📋 테스팅 규칙: [testing.md](../../docs/testing.md)
 > 📋 명령어 레퍼런스: [commands.md](../../docs/commands.md)
 
+## 절대 금지
+
+- ❌ **`.agents/agents/` 내의 다른 서브에이전트를 호출할 수 없음**
+
 ## 테스팅 환경
 
 | 도구                     | 용도                                           |

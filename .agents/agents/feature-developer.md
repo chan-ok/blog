@@ -37,6 +37,10 @@ React, TypeScript 기반 프로젝트의 기능 개발 전문 에이전트. 테�
 > 📋 아키텍처 규칙: [architecture-rules.md](../../docs/architecture-rules.md)
 > 📋 보안 규칙: [security.md](../../docs/security.md)
 
+## 절대 금지
+
+- ❌ **`.agents/agents/` 내의 다른 서브에이전트를 호출할 수 없음**
+
 ## 프로젝트 컨텍스트
 
 - **기술 스택**: React 19, TypeScript 5, Tailwind CSS v4, Zustand, Zod v4

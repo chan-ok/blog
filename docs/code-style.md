@@ -184,12 +184,11 @@ export function PostCard({ title, excerpt, tags }: PostCardProps) {
 
 | 파일 종류    | 규칙                  | 예시                            |
 | ------------ | --------------------- | ------------------------------- |
-| 컴포넌트     | `PascalCase.tsx`      | `Button.tsx`, `PostCard.tsx`    |
+| 컴포넌트     | `kebab-case.tsx`      | `button.tsx`, `post-card.tsx`    |
 | 유틸리티     | `kebab-case.ts`       | `date-utils.ts`, `sanitize.ts`  |
-| 테스트       | `*.test.tsx`          | `button.test.tsx`               |
-| Storybook    | `*.stories.tsx`       | `button.stories.tsx`            |
-| 타입         | `*.types.ts`          | `post.types.ts`                 |
-| 스키마 (Zod) | `*.schema.ts`         | `contact-form.schema.ts`        |
-| 훅           | `use-*.ts`            | `use-theme.ts`, `use-resize.ts` |
-| 설정         | `*.config.ts`         | `vitest.config.ts`              |
+| 테스트       | `kebab-case.test.tsx`          | `button.test.tsx`               |
+| Storybook    | `kebab-case.stories.tsx`       | `button.stories.tsx`            |
+| 타입         | `kebab-case.types.ts`          | `post.types.ts`                 |
+| 스키마 (Zod) | `kebab-case.schema.ts`         | `contact-form.schema.ts`        |
+| 훅           | `use-*.ts (kebab-case)`            | `use-theme.ts`, `use-resize.ts` |
 | 인덱스       | `index.ts` (re-export만)                            |
