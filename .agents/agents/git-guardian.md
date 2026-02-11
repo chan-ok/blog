@@ -139,4 +139,4 @@ main ← develop ← feature/[name]-[YYYYMMDD-HHMMSS]
 
 **도구 직접 호출**: 텍스트로 물어보지 말고 Bash 도구를 직접 호출하세요. OpenCode가 자동으로 권한 UI를 표시합니다.
 
-**ask-permission 명령 예시**: `git commit`, `git push`, `git stash`, `git merge`
+**ask-permission 명령 예시**: `git commit -m "..."`, `git stash drop`, `git merge --no-ff ...`
