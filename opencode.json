@@ -66,7 +66,9 @@
       "mode": "primary",
       "description": "Primary orchestrator that analyzes requests and delegates to specialized subagents. Does NOT write code, tests, or documentation directly - only coordinates workflow via Task tool.",
       "prompt": "{file:.agents/agents/master-orchestrator.md}",
+      "model": "github-copilot/claude-opus-4.6",
       "permission": {
+        "webfetch": "allow",
         "task": {
           "*": "allow"
         },
@@ -83,6 +85,11 @@
         },
         "bash": {
           "*": "deny",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "sleep *": "allow",
           "mkdir .worktrees/*": "allow",
           "ls": "allow",
@@ -108,7 +115,7 @@
           "git branch --list": "allow",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "webfetch": "allow"
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -116,10 +123,35 @@
       "mode": "subagent",
       "description": "Develops new features and UI components following FSD architecture and project coding standards. Does NOT write test code - test-specialist handles testing.",
       "prompt": "{file:.agents/agents/feature-developer.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny",
+          "src/**": "allow",
+          "public/**": "allow",
+          "assets/**": "allow",
+          ".worktrees/**": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "src/**": "allow",
+          "public/**": "allow",
+          "assets/**": "allow",
+          ".worktrees/**": "allow"
+        },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
@@ -150,7 +182,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -158,10 +191,35 @@
       "mode": "subagent",
       "description": "Writes comprehensive tests including Unit (Vitest), Property-based (fast-check), E2E (Playwright), and Storybook stories. Ensures code quality through thorough testing coverage.",
       "prompt": "{file:.agents/agents/test-specialist.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny",
+          "src/**": "allow",
+          "public/**": "allow",
+          "assets/**": "allow",
+          ".worktrees/**": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "src/**": "allow",
+          "public/**": "allow",
+          "assets/**": "allow",
+          ".worktrees/**": "allow"
+        },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
@@ -173,6 +231,10 @@
           "pnpm test *": "allow",
           "pnpm coverage": "allow",
           "pnpm coverage *": "allow",
+          "pnpm e2e": "allow",
+          "pnpm e2e *": "allow",
+          "pnpm e2e:ui": "allow",
+          "pnpm e2e:ui *": "allow",
           "pnpm lint": "allow",
           "pnpm lint *": "allow",
           "pnpm tsc": "allow",
@@ -195,7 +257,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -203,6 +266,7 @@
       "mode": "subagent",
       "description": "Fixes formatting and linting errors without changing code behavior",
       "prompt": "{file:.agents/agents/lint-formatter.md}",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -221,6 +285,11 @@
         },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
@@ -255,6 +324,7 @@
       "mode": "subagent",
       "description": "Read-only security scanner that detects sensitive data exposure, dependency vulnerabilities, and insecure code patterns. Does NOT modify code - only reports findings.",
       "prompt": "{file:.agents/agents/security-scanner.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {
@@ -270,6 +340,11 @@
         },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
@@ -296,7 +371,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -304,6 +380,7 @@
       "mode": "subagent",
       "description": "Manages and maintains all project documentation including agent prompts",
       "prompt": "{file:.agents/agents/doc-manager.md}",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -313,18 +390,29 @@
         },
         "write": {
           "*": "deny",
+          "README.md": "allow",
           "docs/**/*.md": "allow",
           ".agents/agents/*.md": "allow",
-          ".worktrees/**/docs/**/*.md": "allow"
+          ".worktrees/**/docs/*.md": "allow",
+          ".worktrees/**/docs/**/*.md": "allow",
+          ".worktrees/**/.agents/agents/*.md": "allow"
         },
         "edit": {
           "*": "deny",
+          "README.md": "allow",
           "docs/**/*.md": "allow",
           ".agents/agents/*.md": "allow",
-          ".worktrees/**/docs/**/*.md": "allow"
+          ".worktrees/**/docs/*.md": "allow",
+          ".worktrees/**/docs/**/*.md": "allow",
+          ".worktrees/**/.agents/agents/*.md": "allow"
         },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
@@ -349,7 +437,8 @@
           "gh pr view *": "allow",
           "mkdir docs/*": "allow",
           "git branch --list": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -357,6 +446,7 @@
       "mode": "subagent",
       "description": "Git Flow workflow management (main ← develop ← feature branches) with safe version control, standardized Korean commit messages, and conflict resolution support.",
       "prompt": "{file:.agents/agents/git-guardian.md}",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -375,6 +465,11 @@
         },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "grep *": "allow",
@@ -431,6 +526,7 @@
       "mode": "subagent",
       "description": "GitHub integration via gh CLI for PR management (create/review/merge), CI/CD monitoring, and Issue tracking. Uses squash merge by default with auto branch cleanup.",
       "prompt": "{file:.agents/agents/github-helper.md}",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -446,6 +542,11 @@
         },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
@@ -478,7 +579,8 @@
           "gh run list": "allow",
           "gh run view *": "allow",
           "gh api repos/*/*/pulls/*/comments": "allow",
-          "git branch --list": "allow"
+          "git branch --list": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -486,6 +588,7 @@
       "mode": "subagent",
       "description": "Validates subagent output quality - FSD architecture compliance, code style, requirements accuracy, over-engineering detection",
       "prompt": "{file:.agents/agents/tech-architect.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": { "*": "allow", "*.env": "deny", "*.env.*": "deny" },
@@ -493,6 +596,11 @@
         "edit": { "*": "deny" },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
@@ -519,7 +627,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -527,6 +636,7 @@
       "mode": "subagent",
       "description": "Performs retrospective analysis on PRs/commits - identifies what went well, improvements, and suggests agent prompt enhancements",
       "prompt": "{file:.agents/agents/retrospector.md}",
+      "model": "github-copilot/gpt-5.2-codex",
       "hidden": true,
       "permission": {
         "read": {
@@ -544,6 +654,11 @@
         },
         "bash": {
           "*": "ask",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
           "ls": "allow",
           "ls *": "allow",
           "wc": "allow",
@@ -567,22 +682,23 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     }
   },
   "permission": {
-    "rm *": "deny",
-    "cp *": "deny",
-    "mv *": "deny",
-    "echo *": "deny",
-    "git add *": "deny",
-    "git commit *": "deny",
-    "git push *": "deny",
-    "git reset --hard *": "deny",
-    "git rebase *": "deny",
-    "pnpm exec *": "deny",
+    "task": "deny",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todowrite": "allow",
+    "todoread": "allow",
+    "grep": "allow",
+    "skill": "allow",
+    "glob": "allow",
+    "lsp": "allow",
+    "question": "allow",
     "read": {
       "*": "allow",
       "*.env": "deny",
@@ -605,67 +721,85 @@
       ".DS_Store": "deny",
       "Thumbs.db": "deny"
     },
-    "bash": "ask",
-    "zsh": "ask",
-    "task": "deny",
-    "webfetch": "allow",
-    "websearch": "allow",
-    "grep": "allow",
-    "glob": "allow",
-    "lsp": "allow",
-    "skill": "allow",
-    "todowrite": "allow",
-    "todoread": "allow",
-    "question": "allow",
-    "ls": "allow",
-    "ls *": "allow",
-    "wc": "allow",
-    "wc *": "allow",
-    "find *": "allow",
-    "find * | head *": "allow",
-    "find * | grep *": "allow",
-    "rm -f .git/index.lock": "allow",
-    "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
-    "pnpm test": "allow",
-    "pnpm test *": "allow",
-    "pnpm coverage": "allow",
-    "pnpm coverage *": "allow",
-    "pnpm lint": "allow",
-    "pnpm lint *": "allow",
-    "pnpm tsc": "allow",
-    "pnpm tsc *": "allow",
-    "git status": "allow",
-    "git status *": "allow",
-    "git diff": "allow",
-    "git diff *": "allow",
-    "git diff * | head *": "allow",
-    "git diff * | tail *": "allow",
-    "git diff * | grep *": "allow",
-    "git log": "allow",
-    "git log *": "allow",
-    "git log * | head *": "allow",
-    "git log * | tail *": "allow",
-    "git log * | grep *": "allow",
-    "git branch --show-current": "allow",
-    "git branch --list": "allow",
-    "git fetch *": "allow",
-    "git config --get *": "allow",
-    "git checkout -b *": "allow",
-    "git checkout develop": "allow",
-    "git checkout main": "allow",
-    "git reset HEAD *": "allow",
-    "git stash": "allow",
-    "git stash pop": "allow",
-    "git stash list": "allow",
-    "git worktree add *": "allow",
-    "git worktree list": "allow",
-    "git worktree remove *": "ask",
-    "git merge --no-ff *": "ask",
-    "git rm --cached .env*": "allow",
-    "git rm --cached node_modules/*": "allow",
-    "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
-    "gh pr view *": "allow",
-    "gh pr checks *": "allow"
+    "write": {
+      "*": "deny"
+    },
+    "edit": {
+      "*": "deny"
+    },
+    "bash": {
+      "*": "ask",
+      "rm *": "deny",
+      "cp *": "deny",
+      "mv *": "deny",
+      "echo *": "deny",
+      "* | echo *": "deny",
+      "* | * | echo *": "deny",
+      "cat * > *": "deny",
+      "cat * >> *": "deny",
+      "npm *": "deny",
+      "pnpm *": "deny",
+      "yarn *": "deny",
+      "python *": "deny",
+      "python3 *": "deny",
+      "git add *": "deny",
+      "git commit *": "deny",
+      "git push *": "deny",
+      "git reset --hard *": "deny",
+      "git rebase *": "deny",
+      "pnpm exec *": "deny",
+      "date *": "allow",
+      "ls": "allow",
+      "ls *": "allow",
+      "wc": "allow",
+      "wc *": "allow",
+      "find *": "allow",
+      "find * | head *": "allow",
+      "find * | grep *": "allow",
+      "rm -f .git/index.lock": "allow",
+      "bash .agents/skills/agent-identifier/scripts/validate-agent.sh *": "allow",
+      "pnpm test": "allow",
+      "pnpm test *": "allow",
+      "pnpm coverage": "allow",
+      "pnpm coverage *": "allow",
+      "pnpm lint": "allow",
+      "pnpm lint *": "allow",
+      "pnpm tsc": "allow",
+      "pnpm tsc *": "allow",
+      "git status": "allow",
+      "git status *": "allow",
+      "git diff": "allow",
+      "git diff *": "allow",
+      "git diff * | head *": "allow",
+      "git diff * | tail *": "allow",
+      "git diff * | grep *": "allow",
+      "git log": "allow",
+      "git log *": "allow",
+      "git log * | head *": "allow",
+      "git log * | tail *": "allow",
+      "git log * | grep *": "allow",
+      "git branch --show-current": "allow",
+      "git branch --list": "allow",
+      "git fetch *": "allow",
+      "git config --get *": "allow",
+      "git checkout -b *": "allow",
+      "git checkout develop": "allow",
+      "git checkout main": "allow",
+      "git reset HEAD *": "allow",
+      "git stash": "allow",
+      "git stash pop": "allow",
+      "git stash list": "allow",
+      "git worktree add *": "allow",
+      "git worktree list": "allow",
+      "git worktree remove *": "ask",
+      "git merge --no-ff *": "ask",
+      "git rm --cached .env*": "allow",
+      "git rm --cached node_modules/*": "allow",
+      "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
+      "gh pr view *": "allow",
+      "gh pr checks *": "allow",
+      "gh pr diff *": "allow"
+    }
   },
   "plugin": [
     "@mohak34/opencode-notifier@latest",

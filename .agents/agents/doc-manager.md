@@ -34,6 +34,10 @@ tools: ["Read", "Grep", "Glob", "Bash", "Edit", "Write"]
 - Git 변경사항 추적 → 문서 업데이트 제안/실행
 - 에이전트 프롬프트 일관성·표준 섹션 관리
 
+## 절대 금지
+
+- ❌ **`.agents/agents/` 내의 다른 서브에이전트를 호출할 수 없음**
+
 ## 검증 프로세스
 
 ### 1단계: 프로젝트 구조 확인
@@ -70,7 +74,7 @@ tools: ["Read", "Grep", "Glob", "Bash", "Edit", "Write"]
 
 ## 모니터링 대상 파일
 
-- **`.agents/agents/*.md`** — 에이전트 프롬프트 (PRIMARY) ⭐
+- **`.agents/agents/*.md`** — 에이전트 프롬프트 (PRIMARY)
 - `docs/*.md` — 프로젝트 문서
 - `package.json`, `tsconfig.json` — 설정
 - `.agents/skills/*/SKILL.md` — 스킬 문서
