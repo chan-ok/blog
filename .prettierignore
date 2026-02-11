@@ -12,3 +12,5 @@ pnpm-lock.yaml
 .worktrees/
 dist/
 src/shared/config/route/routeTree.gen.ts
+docs/*
+.agents/agents/*
