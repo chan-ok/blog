@@ -53,21 +53,29 @@
 
 - **Zod v4**: 런타임 데이터 검증
 - **Zustand**: 경량 상태 관리 (테마, 로케일)
+- **TanStack Query**: 서버 상태 관리
+- **Axios**: HTTP 클라이언트
 - **i18next**: UI 다국어 지원
 - **react-i18next**: React용 i18next 바인딩
+
+### UI
+
+- **@base-ui/react**: Headless UI 컴포넌트
+- **Lucide React**: 아이콘 라이브러리
+- **clsx**: 조건부 클래스 유틸리티
 
 ### Testing
 
 - **Vitest**: 유닛/통합 테스트 러너
 - **Playwright**: E2E 테스트
 - **Testing Library**: React 컴포넌트 테스트
-- **Storybook 9**: 컴포넌트 문서화
+- **Storybook 10**: 컴포넌트 문서화
 - **fast-check**: Property-Based 테스트
 
 ### Code Quality
 
 - **ESLint 9**: 코드 린팅
-- **Prettier 4**: 코드 포맷팅
+- **Prettier 3**: 코드 포맷팅
 - **Husky**: Git 훅 관리
 - **lint-staged**: 스테이징 파일 린팅
 
@@ -222,14 +230,14 @@
 
 **결과**:
 
-- 5개 레이어 구조 적용 (app, widgets, features, entities, shared)
+- 5개 레이어 구조 적용 (0-app, 3-widgets, 2-features, 1-entities, 5-shared)
 - UI 컴포넌트 디렉토리 재구성
 - MDX → markdown 엔티티로 단순화
 
 **시행착오**:
 
 - 초기 각 레이어에 무엇을 넣을지 고민으로 시간 소요
-- 결론: `features/`에서 시작 후 점진적 분리가 효율적
+- 결론: `2-features/`에서 시작 후 점진적 분리가 효율적
 
 #### Button 컴포넌트 구현
 
@@ -284,7 +292,7 @@
 **결과**:
 
 - @giscus/react 의존성 설치
-- shared/components에 Reply 컴포넌트 생성
+- 5-shared/components에 Reply 컴포넌트 생성
 - 포스트 상세 페이지에 locale 지원과 함께 통합
 - 다크 모드 테마 연동
 
@@ -299,7 +307,7 @@
 
 **결과**:
 
-- shared/components/ui/link에 Link 컴포넌트 생성
+- 5-shared/components/ui/link에 Link 컴포넌트 생성
 - locale 기반 URL 자동 처리
 - NextLinkProps 확장으로 타입 안전성
 - 외부 링크, 루트 경로 등 다양한 경로 타입 지원
@@ -318,7 +326,7 @@
 - heading(h1-h5)을 Typography 컴포넌트로 분리
 - 인라인/블록 코드를 Code 컴포넌트로 분리
 - 다크 모드 지원 및 스타일 개선
-- entities/markdown/ui에 배치하여 FSD 구조 일관성 유지
+- 1-entities/markdown/ui에 배치하여 FSD 구조 일관성 유지
 
 ### Phase 5: TanStack Router 마이그레이션 (2026-02-07 ~ 02-08)
 

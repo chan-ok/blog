@@ -174,16 +174,16 @@
 - ✅ Git rm 캐시 (`git rm --cached .env*`, `git rm --cached node_modules/*`)
 - ✅ `rm -f .git/index.lock` (잠금 파일 제거)
 - ✅ `ls`
+- ✅ **git push (사용자 확인 필요)**: `git push *` — **유일하게 git push가 가능한 에이전트** (global deny를 에이전트 레벨 override)
 
 **제한 권한**:
 
 - ❌ 파일 쓰기/수정 (읽기 전용, `write/edit: { "*": "deny" }`)
-- ❌ git push (global deny, 어떤 에이전트도 불가)
 - ❌ git reset --hard (global deny)
 - ❌ git rebase (global deny)
 - ❌ git config 쓰기 (커밋 위조 방지)
 
-**중요**: git-guardian은 **Git 작업 전용**이며, 파일 수정은 하지 않습니다. **git commit이 가능한 유일한 에이전트**입니다.
+**중요**: git-guardian은 **Git 작업 전용**이며, 파일 수정은 하지 않습니다. **git commit과 git push가 가능한 유일한 에이전트**입니다.
 
 ### 8. github-helper
 
@@ -203,7 +203,8 @@
 **제한 권한**:
 
 - ❌ 파일 쓰기/수정 (읽기 전용, `write/edit: { "*": "deny" }`)
-- ❌ Git add/commit/push (git-guardian에 위임)
+- ❌ Git add/commit (git-guardian에 위임)
+- ❌ Git push (git-guardian에 위임)
 - ❌ .env 파일 접근
 
 **중요**: github-helper는 **GitHub 작업 전용**이며, 로컬 Git 작업은 git-guardian에 위임합니다.
@@ -234,7 +235,7 @@
 | git commit             | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅ (ask)  | ❌       |
 | git checkout           | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅        | ❌       |
 | git merge              | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅ (ask)  | ❌       |
-| git push               | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ❌       |
+| git push               | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅ (ask)  | ❌       |
 | git stash              | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅        | ❌       |
 | git worktree           | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅        | ❌       |
 | **GitHub**             |
@@ -323,7 +324,7 @@ Task → github-helper (PR 생성)
 ### 4. 실행 제한
 
 - ❌ `pnpm exec *` 전역 차단 (임의 스크립트 실행 방지)
-- ❌ `git push *` 전역 차단 (어떤 에이전트도 push 불가)
+- ❌ `git push *` 전역 차단 (git-guardian만 에이전트 레벨 override로 허용, ask)
 - ❌ `task` 전역 차단 (순환 호출 방지, master-orchestrator만 개별 override로 허용)
 - ✅ `rm -f .git/index.lock`만 허용 (잠금 파일 제거)
 
@@ -332,7 +333,7 @@ Task → github-helper (PR 생성)
 - ✅ 각 에이전트는 자신의 역할에 필요한 최소 권한만 보유
 - ✅ master-orchestrator는 조율만, 실제 작업은 subagent에 위임
 - ✅ git-guardian과 github-helper로 Git/GitHub 작업 분리
-- ✅ git commit은 git-guardian만, git push는 모두 차단
+- ✅ git commit은 git-guardian만, git push도 git-guardian만 (ask)
 
 ## Global Permission (모든 에이전트 공통)
 
@@ -343,6 +344,7 @@ Task → github-helper (PR 생성)
     "cp *": "deny",
     "mv *": "deny",
     "echo *": "deny",
+    "git add *": "deny",
     "git commit *": "deny",
     "git push *": "deny",
     "git reset --hard *": "deny",
@@ -376,6 +378,13 @@ Task → github-helper (PR 생성)
 ```
 
 ## 변경 이력
+
+- **2026-02-11**: 에이전트 권한 정비 3차 갱신
+  - git-guardian git push: global deny → 에이전트 레벨 override (ask)
+  - Global Permission JSON에 `"git add *": "deny"` 추가 (opencode.json 반영)
+  - 권한 매트릭스 git push 열 수정 (git-guardian: ❌ → ✅ (ask))
+  - 보안 섹션 git push/commit 설명 수정
+  - github-helper 제한 권한에 git push 분리 명시
 
 - **2026-02-11**: 에이전트 권한 정비 2차 갱신
   - git add: git-guardian 전용으로 통합 (다른 에이전트에서 제거)

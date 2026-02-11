@@ -45,7 +45,7 @@
 - **상태 관리**: Zustand
 - **검증**: Zod v4
 - **콘텐츠**: MDX (gray-matter + rehype/remark)
-- **테스팅**: Vitest, Playwright, Storybook, fast-check
+- **테스팅**: Vitest, Playwright, Storybook 10, fast-check
 - **배포**: Netlify
 
 ### 아키텍처
@@ -53,7 +53,7 @@
 Feature-Sliced Design (FSD) 패턴 사용
 
 ```
-routes → widgets → features → entities → shared
+pages → widgets → features → entities → shared
 ```
 
 ### 리포지터리 구조
@@ -103,6 +103,7 @@ pnpm test --project=storybook
 ### E2E 테스트
 
 ```bash
+pnpm e2e              # Playwright E2E 테스트
 pnpm e2e:ui           # Playwright E2E 테스트 (UI 모드)
 ```
 
@@ -127,13 +128,13 @@ import { z } from 'zod';
 import { create } from 'zustand';
 
 // 3. 내부 모듈 (@/*)
-import { Button } from '@/shared/components/ui/button';
-import { formatDate } from '@/shared/util/date-utils';
-import { useTheme } from '@/shared/hooks/use-theme';
+import { Button } from '@/5-shared/components/ui/button';
+import { formatDate } from '@/5-shared/util/date-utils';
+import { useTheme } from '@/5-shared/hooks/use-theme';
 
 // 4. 타입 import
-import type { Post } from '@/shared/types';
-import type { Locale } from '@/shared/config/i18n';
+import type { Post } from '@/5-shared/types';
+import type { Locale } from '@/5-shared/config/i18n';
 ```
 
 ### TypeScript
@@ -300,30 +301,30 @@ export function PostCard({ title, excerpt, tags }: PostCardProps) {
 #### 지시사항
 
 ```
-routes → widgets → features → entities → shared
+pages → widgets → features → entities → shared
 ```
 
-- **routes/**: 라우팅, widgets/features/entities/shared import 가능
-- **widgets/**: 복합 UI, features/entities/shared import 가능
-- **features/**: 비즈니스 기능, entities/shared만 import 가능
-- **entities/**: 도메인 엔티티, shared만 import 가능
-- **shared/**: 공유 리소스, 다른 레이어 import 불가
+- **4-pages/**: 라우팅, widgets/features/entities/shared import 가능
+- **3-widgets/**: 복합 UI, features/entities/shared import 가능
+- **2-features/**: 비즈니스 기능, entities/shared만 import 가능
+- **1-entities/**: 도메인 엔티티, shared만 import 가능
+- **5-shared/**: 공유 리소스, 다른 레이어 import 불가
 
 #### 주의사항
 
-- ❌ **역방향 import 금지** (예: shared → features)
-- ❌ **features/ 간 import 금지** (예: features/post → features/contact)
+- ❌ **역방향 import 금지** (예: 5-shared → 2-features)
+- ❌ **features/ 간 import 금지** (예: 2-features/post → 2-features/contact)
 - ❌ **features/ 내부에서 widgets/ import 금지**
 
 ### 경로 별칭
 
 ```typescript
 // ✅ Good - 절대 경로 사용
-import { Button } from '@/shared/components/ui/button';
-import { formatDate } from '@/shared/util/date-utils';
+import { Button } from '@/5-shared/components/ui/button';
+import { formatDate } from '@/5-shared/util/date-utils';
 
 // ❌ Bad - 상대 경로
-import { Button } from '../../../shared/components/ui/button';
+import { Button } from '../../../5-shared/components/ui/button';
 ```
 
 ### 파일 명명
@@ -440,7 +441,7 @@ pnpm test --project=unit
 pnpm test --project=storybook
 
 # E2E 테스트
-pnpm e2e:ui
+pnpm e2e
 ```
 
 ### 테스트 커버리지 목표
@@ -489,7 +490,7 @@ const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
 
 ```typescript
 import { z } from 'zod';
-import { sanitizeInput } from '@/shared/util/sanitize';
+import { sanitizeInput } from '@/5-shared/util/sanitize';
 
 // Zod 스키마 + transform으로 sanitize
 export const ContactFormInputsSchema = z.object({
@@ -644,8 +645,8 @@ useEffect(() => {
 const result = a ? b ? c : d : e;
 
 // ❌ Bad - features/ 간 import
-// src/features/contact/ui/form.tsx
-import { PostCard } from '@/features/post/ui/card'; // 금지!
+// src/2-features/contact/ui/form.tsx
+import { PostCard } from '@/2-features/post/ui/card'; // 금지!
 
 // ❌ Bad - 하드코딩된 문자열 (i18n 사용해야 함)
 <button>Submit</button> // 다국어 지원 불가
@@ -658,17 +659,17 @@ import { PostCard } from '@/features/post/ui/card'; // 금지!
 
 ```typescript
 // ❌ Bad - shared에서 features import
-// src/shared/util/post-utils.ts
-import { PostCard } from '@/features/post'; // 금지!
+// src/5-shared/util/post-utils.ts
+import { PostCard } from '@/2-features/post'; // 금지!
 
 // ❌ Bad - entities에서 features import
-// src/entities/markdown/util.ts
-import { formatPost } from '@/features/post'; // 금지!
+// src/1-entities/markdown/util.ts
+import { formatPost } from '@/2-features/post'; // 금지!
 
 // ✅ Good - 올바른 방향
-// src/features/post/ui/card.tsx
-import { renderMDX } from '@/entities/markdown'; // OK
-import { Button } from '@/shared/components/ui/button'; // OK
+// src/2-features/post/ui/card.tsx
+import { renderMDX } from '@/1-entities/markdown'; // OK
+import { Button } from '@/5-shared/components/ui/button'; // OK
 ```
 
 ### 테스트 안티패턴
