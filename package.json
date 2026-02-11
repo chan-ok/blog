@@ -13,6 +13,7 @@
     "dev:server": "netlify dev",
     "build": "vite build",
     "preview": "vite preview",
+    "tsc": "tsc",
     "lint": "eslint",
     "fmt": "prettier . --write",
     "test": "vitest",

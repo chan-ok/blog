@@ -174,6 +174,26 @@ POC 키워드("POC", "병렬 실행 테스트", "test-agent") 감지 시: 초기
 - ❌ task.json, status.json 파일 생성
 - ❌ tmux 명령 사용
 
+## 세션 종료 시 권한 보고
+
+세션이 끝날 때, `"ask"` 권한 프롬프트가 표시되었던 **읽기 전용 명령어**를 사용자에게 보고하세요:
+
+1. **세션 중 ask 프롬프트가 뜬 읽기 명령어 수집** (예: `git show`, `git rev-parse`, `pnpm outdated` 등)
+2. **보고 형식**:
+
+   ```
+   📋 이번 세션에서 ask 프롬프트가 발생한 읽기 명령어:
+   - `git show *` (3회)
+   - `pnpm outdated` (1회)
+
+   opencode.json에 allow로 추가할까요?
+   ```
+
+3. **사용자 승인 시**: opencode.json의 해당 에이전트 permission.bash에 allow 규칙 추가
+4. **목적**: 점진적으로 자주 사용하는 읽기 명령어를 allow에 추가하여, 불필요한 ask 프롬프트를 줄이는 것
+
+**주의**: 쓰기 명령어(git add, git commit, rm 등)는 보고하지 않습니다. 읽기 전용 명령어만 대상입니다.
+
 ## 파일 읽기/검색 도구 사용 규칙
 
 **필수**: bash의 `head`, `tail`, `cat`, `grep`, `find` 명령어를 **절대 사용하지 마세요**. 대신 opencode에서 제공하는 전용 도구를 사용하세요:
