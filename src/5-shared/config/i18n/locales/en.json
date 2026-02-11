@@ -35,5 +35,15 @@
     "loadError": "Failed to load content",
     "loading": "Loading...",
     "retry": "Retry"
+  },
+  "error": {
+    "notFound": "Page Not Found",
+    "notFoundDesc": "The page you're looking for doesn't exist or has been moved.",
+    "forbidden": "Access Denied",
+    "forbiddenDesc": "You don't have permission to access this page.",
+    "serverError": "Something Went Wrong",
+    "serverErrorDesc": "An unexpected error occurred. Please try again later.",
+    "goHome": "Go Home",
+    "retry": "Try Again"
   }
 }

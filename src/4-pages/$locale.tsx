@@ -1,6 +1,13 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  ErrorComponentProps,
+  notFound,
+  Outlet,
+} from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { z } from 'zod';
+
+import { ErrorPage } from '@/5-shared/components/error-page';
 import { LocaleProvider } from '@/5-shared/providers/locale-provider';
 import { ThemeProvider } from '@/5-shared/providers/theme-provider';
 import Footer from '@/3-widgets/footer';
@@ -14,10 +21,24 @@ export const Route = createFileRoute('/$locale')({
   beforeLoad: ({ params }) => {
     const result = localeSchema.safeParse(params.locale);
     if (!result.success) {
-      throw new Error(`Invalid locale: ${params.locale}`);
+      throw notFound();
     }
   },
   component: LocaleLayout,
+  errorComponent: ({ reset }: ErrorComponentProps) => (
+    <ThemeProvider>
+      <LocaleProvider locale="en">
+        <ErrorPage statusCode={500} onRetry={reset} />
+      </LocaleProvider>
+    </ThemeProvider>
+  ),
+  notFoundComponent: () => (
+    <ThemeProvider>
+      <LocaleProvider locale="en">
+        <ErrorPage statusCode={404} />
+      </LocaleProvider>
+    </ThemeProvider>
+  ),
 });
 
 function LocaleLayout() {
