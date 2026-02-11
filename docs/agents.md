@@ -708,6 +708,14 @@ it('should apply styles', () => {
 
 이 프로젝트는 멀티 에이전트 시스템을 사용하여 복잡한 기능을 개발합니다. 각 에이전트는 특정 작업을 자율적으로 수행하는 전문화된 AI 도우미입니다.
 
+### 에이전트 호출 제약사항
+
+1. ❌ master-orchestrator는 master-orchestrator를 서브에이전트로 호출할 수 없습니다.
+
+- 현재 위치가 master-orchestrator인 경우, 다른 서브에이전트만 호출 가능
+
+2. ❌ 서브에이전트는 .agents/agents/ 내의 다른 서브에이전트를 호출할 수 없습니다
+
 ### 사용 가능한 에이전트
 
 #### master-orchestrator
