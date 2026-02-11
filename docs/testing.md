@@ -15,11 +15,12 @@
 ```typescript
 // 1. 실패하는 테스트 작성
 describe('Button', () => {
-  it('클릭 시 onClick 호출', () => {
+  it('클릭 시 onClick 호출', async () => {
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>클릭</Button>);
 
-    fireEvent.click(screen.getByRole('button'));
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalledOnce();
   });
 });
