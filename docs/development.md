@@ -30,7 +30,7 @@
 
 - AI 코딩 에이전트를 위한 상세 규칙 → [agents.md](./agents.md) 참고
 - 프로젝트 구조 상세 이해 → [architecture.md](./architecture.md) 참고
-- 프로젝트 이력 확인 → [project-log.md](./project-log.md) 참고
+- 프로젝트 회고 및 의사결정 로그 확인 → [retrospective/overview.md](./retrospective/overview.md) 참고
 
 ## 빠른 시작
 
@@ -117,11 +117,11 @@ pnpm dev:server
 Feature-Sliced Design 레이어 간 의존성 규칙 엄격히 준수:
 
 ```
-routes → widgets → features → entities → shared
+pages → widgets → features → entities → shared
 ```
 
-- **역방향 import 금지** (예: shared → features)
-- **features/ 간 import 금지** (예: features/post → features/contact)
+- **역방향 import 금지** (예: 5-shared → 2-features)
+- **features/ 간 import 금지** (예: 2-features/post → 2-features/contact)
 
 자세한 내용은 [architecture.md](./architecture.md)를 참고하세요.
 
@@ -143,7 +143,12 @@ pnpm lint             # ESLint 검사
 pnpm tsc --noEmit     # TypeScript 타입 체크
 ```
 
-Husky pre-commit 훅이 자동으로 lint-staged를 실행합니다.
+Husky pre-commit 훅이 자동으로 다음 4단계를 실행합니다:
+
+1. security-scanner (민감 정보 탐지)
+2. `tsc --noEmit` (타입 체크)
+3. lint-staged (린트/포맷)
+4. `vitest related --run` (관련 테스트)
 
 #### 5. 보안
 
@@ -192,7 +197,7 @@ pnpm test -t "클릭 시 onClick 호출"
 #### 3. E2E 테스트 (Playwright)
 
 - **대상**: 핵심 사용자 플로우
-- **실행**: `pnpm e2e:ui`
+- **실행**: `pnpm e2e` 또는 `pnpm e2e:ui` (둘 다 `playwright test` 실행)
 
 ### TDD 실전 예제
 
@@ -284,7 +289,7 @@ const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
 
 ```typescript
 import { z } from 'zod';
-import { sanitizeInput } from '@/shared/util/sanitize';
+import { sanitizeInput } from '@/5-shared/util/sanitize';
 
 // Zod 스키마 + transform으로 sanitize
 export const ContactFormInputsSchema = z.object({
@@ -391,11 +396,14 @@ git branch -d feat/dark-mode
 
 ### Pre-commit Hook
 
-커밋 시 자동 검사:
+커밋 시 자동으로 4단계 검사가 실행됩니다:
 
 ```bash
 # .husky/pre-commit
-pnpm lint-staged
+# 1. security-scanner: 민감 정보 탐지
+# 2. tsc --noEmit: 타입 체크
+# 3. lint-staged: 린트/포맷
+# 4. vitest related --run: 관련 테스트
 ```
 
 ## 배포
@@ -446,7 +454,7 @@ rm -rf node_modules
 pnpm install
 
 # 4. 캐시 삭제
-pnpm clean
+rm -rf dist .cache
 pnpm install
 pnpm build
 ```
@@ -484,7 +492,7 @@ pnpm tsc --noEmit
 
 ```bash
 # 포트 사용 중인 프로세스 확인
-lsof -i :3000
+lsof -i :5173
 
 # 프로세스 종료
 kill -9 <PID>
@@ -516,4 +524,4 @@ kill -9 <PID>
 
 - [agents.md](./agents.md) - AI 코딩 에이전트 가이드
 - [architecture.md](./architecture.md) - 프로젝트 구조 및 아키텍처
-- [project-log.md](./project-log.md) - 프로젝트 이력 및 의사결정
+- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그

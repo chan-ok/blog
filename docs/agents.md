@@ -33,7 +33,7 @@
 
 - 처음 프로젝트를 설정하는 개발자 → [development.md](./development.md) 참고
 - 프로젝트 구조를 이해하고 싶은 경우 → [architecture.md](./architecture.md) 참고
-- 프로젝트 이력을 확인하고 싶은 경우 → [project-log.md](./project-log.md) 참고
+- 프로젝트 회고 및 의사결정을 확인하고 싶은 경우 → [retrospective/overview.md](./retrospective/overview.md) 참고
 
 ## 프로젝트 정보
 
@@ -45,7 +45,7 @@
 - **상태 관리**: Zustand
 - **검증**: Zod v4
 - **콘텐츠**: MDX (gray-matter + rehype/remark)
-- **테스팅**: Vitest, Playwright, Storybook, fast-check
+- **테스팅**: Vitest, Playwright, Storybook 10, fast-check
 - **배포**: Netlify
 
 ### 아키텍처
@@ -53,7 +53,7 @@
 Feature-Sliced Design (FSD) 패턴 사용
 
 ```
-routes → widgets → features → entities → shared
+pages → widgets → features → entities → shared
 ```
 
 ### 리포지터리 구조
@@ -103,6 +103,7 @@ pnpm test --project=storybook
 ### E2E 테스트
 
 ```bash
+pnpm e2e              # Playwright E2E 테스트
 pnpm e2e:ui           # Playwright E2E 테스트 (UI 모드)
 ```
 
@@ -127,13 +128,13 @@ import { z } from 'zod';
 import { create } from 'zustand';
 
 // 3. 내부 모듈 (@/*)
-import { Button } from '@/shared/components/ui/button';
-import { formatDate } from '@/shared/util/date-utils';
-import { useTheme } from '@/shared/hooks/use-theme';
+import { Button } from '@/5-shared/components/ui/button';
+import { formatDate } from '@/5-shared/util/date-utils';
+import { useTheme } from '@/5-shared/hooks/use-theme';
 
 // 4. 타입 import
-import type { Post } from '@/shared/types';
-import type { Locale } from '@/shared/config/i18n';
+import type { Post } from '@/5-shared/types';
+import type { Locale } from '@/5-shared/config/i18n';
 ```
 
 ### TypeScript
@@ -300,30 +301,30 @@ export function PostCard({ title, excerpt, tags }: PostCardProps) {
 #### 지시사항
 
 ```
-routes → widgets → features → entities → shared
+pages → widgets → features → entities → shared
 ```
 
-- **routes/**: 라우팅, widgets/features/entities/shared import 가능
-- **widgets/**: 복합 UI, features/entities/shared import 가능
-- **features/**: 비즈니스 기능, entities/shared만 import 가능
-- **entities/**: 도메인 엔티티, shared만 import 가능
-- **shared/**: 공유 리소스, 다른 레이어 import 불가
+- **4-pages/**: 라우팅, widgets/features/entities/shared import 가능
+- **3-widgets/**: 복합 UI, features/entities/shared import 가능
+- **2-features/**: 비즈니스 기능, entities/shared만 import 가능
+- **1-entities/**: 도메인 엔티티, shared만 import 가능
+- **5-shared/**: 공유 리소스, 다른 레이어 import 불가
 
 #### 주의사항
 
-- ❌ **역방향 import 금지** (예: shared → features)
-- ❌ **features/ 간 import 금지** (예: features/post → features/contact)
+- ❌ **역방향 import 금지** (예: 5-shared → 2-features)
+- ❌ **features/ 간 import 금지** (예: 2-features/post → 2-features/contact)
 - ❌ **features/ 내부에서 widgets/ import 금지**
 
 ### 경로 별칭
 
 ```typescript
 // ✅ Good - 절대 경로 사용
-import { Button } from '@/shared/components/ui/button';
-import { formatDate } from '@/shared/util/date-utils';
+import { Button } from '@/5-shared/components/ui/button';
+import { formatDate } from '@/5-shared/util/date-utils';
 
 // ❌ Bad - 상대 경로
-import { Button } from '../../../shared/components/ui/button';
+import { Button } from '../../../5-shared/components/ui/button';
 ```
 
 ### 파일 명명
@@ -440,7 +441,7 @@ pnpm test --project=unit
 pnpm test --project=storybook
 
 # E2E 테스트
-pnpm e2e:ui
+pnpm e2e
 ```
 
 ### 테스트 커버리지 목표
@@ -467,7 +468,7 @@ pnpm e2e:ui
 const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
 // ✅ Good - 클라이언트에서 VITE_ 변수
-const siteKey = process.env.VITE_TURNSTILE_SITE_KEY;
+const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
 // ❌ Bad - 하드코딩
 const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
@@ -489,7 +490,7 @@ const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
 
 ```typescript
 import { z } from 'zod';
-import { sanitizeInput } from '@/shared/util/sanitize';
+import { sanitizeInput } from '@/5-shared/util/sanitize';
 
 // Zod 스키마 + transform으로 sanitize
 export const ContactFormInputsSchema = z.object({
@@ -644,8 +645,8 @@ useEffect(() => {
 const result = a ? b ? c : d : e;
 
 // ❌ Bad - features/ 간 import
-// src/features/contact/ui/form.tsx
-import { PostCard } from '@/features/post/ui/card'; // 금지!
+// src/2-features/contact/ui/form.tsx
+import { PostCard } from '@/2-features/post/ui/card'; // 금지!
 
 // ❌ Bad - 하드코딩된 문자열 (i18n 사용해야 함)
 <button>Submit</button> // 다국어 지원 불가
@@ -658,17 +659,17 @@ import { PostCard } from '@/features/post/ui/card'; // 금지!
 
 ```typescript
 // ❌ Bad - shared에서 features import
-// src/shared/util/post-utils.ts
-import { PostCard } from '@/features/post'; // 금지!
+// src/5-shared/util/post-utils.ts
+import { PostCard } from '@/2-features/post'; // 금지!
 
 // ❌ Bad - entities에서 features import
-// src/entities/markdown/util.ts
-import { formatPost } from '@/features/post'; // 금지!
+// src/1-entities/markdown/util.ts
+import { formatPost } from '@/2-features/post'; // 금지!
 
 // ✅ Good - 올바른 방향
-// src/features/post/ui/card.tsx
-import { renderMDX } from '@/entities/markdown'; // OK
-import { Button } from '@/shared/components/ui/button'; // OK
+// src/2-features/post/ui/card.tsx
+import { renderMDX } from '@/1-entities/markdown'; // OK
+import { Button } from '@/5-shared/components/ui/button'; // OK
 ```
 
 ### 테스트 안티패턴
@@ -733,6 +734,8 @@ it('should apply styles', () => {
 | test-writing        | test-specialist   | HIGH     |
 | security-check      | security-scanner  | MEDIUM   |
 | doc-validation      | doc-manager       | LOW      |
+| quality-validation  | tech-architect    | MEDIUM   |
+| retrospective       | retrospector      | LOW      |
 
 ---
 
@@ -821,6 +824,25 @@ Husky Hook (`.husky/pre-commit`, `.husky/pre-push`)을 통해 자동 실행됩�
 
 ---
 
+#### lint-formatter
+
+포매팅과 린트 에러만 수정하는 전문 에이전트. **코드 동작을 변경하지 않습니다**.
+
+- Prettier/ESLint 자동 수정 가능한 스타일 문제 해결
+- import 순서, 들여쓰기, 줄바꿈, 공백 등 코드 스타일 통일
+- 로직 변경이 필요한 에러는 feature-developer에게 위임
+
+**사용 시기**: ESLint/Prettier 에러 수정, 코드 스타일 통일, import 순서 정리
+
+**사용 예시**:
+
+```
+"린트 에러가 발생했어, 수정해줘"
+"import 순서를 정리해줘"
+```
+
+---
+
 #### git-guardian
 
 Git 워크플로우 관리 및 안전한 버전 관리 담당.
@@ -846,6 +868,44 @@ GitHub CLI (gh)를 사용한 GitHub 통합 작업 담당.
 **사용 시기**: PR 생성, CI 상태 확인, PR 코멘트 확인, Issue 생성/관리
 
 **브랜치 보호**: main은 직접 푸시 금지 (PR + 리뷰 필수), develop은 PR 권장
+
+---
+
+#### tech-architect
+
+서브에이전트 결과물의 품질을 검증하는 읽기 전용 에이전트. **코드를 수정하지 않고** 검증 보고서만 제출합니다.
+
+- FSD 아키텍처 준수 여부, 코드 스타일, 타입 안전성 검증
+- 오버엔지니어링, 중복 코드, 요구사항 정확성 검증
+- ✅ 통과 / ⚠️ 개선 필요 / 🚨 차단 3단계 보고서 출력
+
+**사용 시기**: 각 Phase 완료 후 결과물 품질 검증, PR 전 코드 리뷰
+
+**사용 예시**:
+
+```
+"feature-developer가 만든 컴포넌트를 검증해줘"
+"이 변경사항이 FSD 아키텍처를 준수하는지 확인해줘"
+```
+
+---
+
+#### retrospector
+
+PR/커밋에 대한 회고 분석을 수행하고 에이전트 프롬프트 개선을 제안하는 에이전트.
+
+- "잘한 점 / 개선점 / 에이전트 프롬프트 개선 제안" 3축 분석
+- `docs/retrospective/` 디렉토리에 회고 문서 작성
+- Serena 메모리에 회고 결과 이중 저장
+
+**사용 시기**: PR 생성 후 회고 분석, 에이전트 시스템 개선점 파악
+
+**사용 예시**:
+
+```
+"이번 PR의 회고 분석을 해줘"
+"최근 작업에서 에이전트 프롬프트 개선점을 찾아줘"
+```
 
 ### 에이전트 사용 방법
 
@@ -883,4 +943,4 @@ bash ../.agents/skills/agent-identifier/scripts/validate-agent.sh feature-develo
 
 - [development.md](./development.md) - 개발 시작 및 환경 설정
 - [architecture.md](./architecture.md) - FSD 구조 상세 설명
-- [project-log.md](./project-log.md) - 프로젝트 이력 및 의사결정
+- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그

@@ -4,6 +4,7 @@
 
 - [개요](#개요)
 - [대상](#대상)
+- [기술 스택 현황](#기술-스택-현황)
 - [리포지터리 구조](#리포지터리-구조)
 - [FSD 아키텍처](#fsd-아키텍처)
 - [콘텐츠 파이프라인](#콘텐츠-파이프라인)
@@ -30,7 +31,68 @@
 
 - 개발 환경 설정 및 시작 방법 → [development.md](./development.md) 참고
 - AI 에이전트를 위한 코딩 규칙 → [agents.md](./agents.md) 참고
-- 프로젝트 이력 및 의사결정 로그 → [project-log.md](./project-log.md) 참고
+- 프로젝트 회고 및 의사결정 로그 → [retrospective/overview.md](./retrospective/overview.md) 참고
+
+## 기술 스택 현황
+
+### Framework
+
+- **React 19.2.3**: UI 라이브러리
+- **TanStack Router v1**: 타입 안전 라우팅
+- **Vite v7**: 빌드 도구 및 개발 서버
+- **TypeScript 5**: 정적 타입 검사
+
+### Styling
+
+- **Tailwind CSS v4**: 유틸리티 우선 CSS 프레임워크
+- **CSS Modules**: 로컬 스코프 CSS (일부 컴포넌트)
+
+### Content
+
+- **@mdx-js/mdx**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
+- **rehype-highlight**: 코드 하이라이팅
+- **remark/rehype**: 마크다운 처리 플러그인
+
+### Data
+
+- **Zod v4**: 런타임 데이터 검증
+- **Zustand**: 경량 상태 관리 (테마, 로케일)
+- **TanStack Query**: 서버 상태 관리
+- **Axios**: HTTP 클라이언트
+- **i18next**: UI 다국어 지원
+- **react-i18next**: React용 i18next 바인딩
+
+### UI
+
+- **@base-ui/react**: Headless UI 컴포넌트
+- **Lucide React**: 아이콘 라이브러리
+- **clsx**: 조건부 클래스 유틸리티
+
+### Testing
+
+- **Vitest**: 유닛/통합 테스트 러너
+- **Playwright**: E2E 테스트
+- **Testing Library**: React 컴포넌트 테스트
+- **Storybook 10**: 컴포넌트 문서화
+- **fast-check**: Property-Based 테스트
+
+### Code Quality
+
+- **ESLint 9**: 코드 린팅
+- **Prettier 3**: 코드 포맷팅
+- **Husky**: Git 훅 관리
+- **lint-staged**: 스테이징 파일 린팅
+
+### Deployment
+
+- **Netlify**: 정적 사이트 호스팅
+- **Netlify Functions**: 서버리스 함수 (이메일 발송)
+
+### External Services
+
+- **Cloudflare Turnstile**: 봇 방지
+- **Resend**: 이메일 발송
+- **Giscus**: GitHub Discussions 기반 댓글 시스템
 
 ## 리포지터리 구조
 
@@ -94,7 +156,7 @@
 Feature-Sliced Design(FSD)는 단방향 의존성을 갖는 5개 레이어로 구성됩니다:
 
 ```
-routes → widgets → features → entities → shared
+pages → widgets → features → entities → shared
 ```
 
 각 레이어는 자신보다 하위 레이어만 import할 수 있습니다.
@@ -103,80 +165,84 @@ routes → widgets → features → entities → shared
 
 ```
 src/
-├── routes/ # 🗂️ Route Layer (라우팅)
+├── 0-app/ # 🏗️ App Layer (앱 진입점)
+│ ├── globals.css # 글로벌 스타일
+│ └── main.tsx # 앱 진입점
+│
+├── 4-pages/ # 🗂️ Pages Layer (라우팅)
 │ ├── __root.tsx # 루트 레이아웃
 │ ├── index.tsx # 홈 페이지
-│ ├── posts/ # 포스트 라우트
-│ └── about.tsx # About 페이지
+│ └── $locale/ # 로케일 동적 라우트
+│ ├── index.tsx # 로케일별 홈
+│ ├── about.tsx # About 페이지
+│ ├── contact.tsx # Contact 페이지
+│ └── posts/ # 포스트 라우트
 │
-├── widgets/ # 🧩 Widget Layer (복합 UI)
+├── 3-widgets/ # 🧩 Widget Layer (복합 UI)
 │ ├── footer.tsx
 │ └── header.tsx
 │
-├── features/ # 🎯 Feature Layer (비즈니스 기능)
+├── 2-features/ # 🎯 Feature Layer (비즈니스 기능)
 │ ├── about/
-│ │ ├── model/
-│ │ ├── ui/
-│ │ └── util/
+│ │ └── ui/
 │ ├── contact/
 │ │ ├── model/
 │ │ ├── ui/
 │ │ └── util/
 │ └── post/
+│ ├── model/
 │ ├── ui/
 │ └── util/
 │
-├── entities/ # 📦 Entity Layer (비즈니스 엔티티)
+├── 1-entities/ # 📦 Entity Layer (비즈니스 엔티티)
 │ └── markdown/
 │ ├── model/
 │ ├── ui/
 │ └── util/
 │
-├── shared/ # 🛠️ Shared Layer (공유 리소스)
-│ ├── components/ # 독립적인 복합 컴포넌트 (유기체 이상)
-│ │ ├── reply/
-│ │ ├── toggle/
-│ │ ├── turnstile/
-│ │ └── ui/ # 순수 UI 컴포넌트 (원자, 분자)
-│ ├── config/
-│ ├── hooks/
-│ ├── providers/
-│ ├── stores/
-│ ├── types/
-│ └── util/
-│
-└── main.tsx # 앱 진입점
+└── 5-shared/ # 🛠️ Shared Layer (공유 리소스)
+ ├── components/ # 독립적인 복합 컴포넌트 (유기체 이상)
+ │ ├── reply/
+ │ ├── toggle/
+ │ ├── turnstile/
+ │ └── ui/ # 순수 UI 컴포넌트 (원자, 분자)
+ ├── config/
+ ├── hooks/
+ ├── providers/
+ ├── stores/
+ ├── types/
+ └── util/
 ```
 
 #### 레이어별 역할
 
-**1️⃣ Route Layer (라우팅)**:
+**1️⃣ Pages Layer (4-pages/ — 라우팅)**:
 
 - TanStack Router의 파일 기반 라우팅
 - 페이지 컴포넌트는 최소한의 로직만 포함
 - 비즈니스 로직은 하위 레이어에 위임
 - import 가능: widgets, features, entities, shared
 
-**2️⃣ Widgets Layer (위젯)**:
+**2️⃣ Widgets Layer (3-widgets/ — 위젯)**:
 
 - 복합 UI 컴포넌트 (여러 features 조합)
 - Header, Footer 같은 레이아웃 컴포넌트
 - import 가능: features, entities, shared
 
-**3️⃣ Features Layer (기능)**:
+**3️⃣ Features Layer (2-features/ — 기능)**:
 
 - 독립적인 비즈니스 기능 단위
-- \`api/\`, \`ui/\`, \`util/\` 서브 디렉토리 구조
+- \`model/\`, \`ui/\`, \`util/\` 서브 디렉토리 구조
 - 다른 feature에 의존하지 않음
 - import 가능: entities, shared만
 
-**4️⃣ Entities Layer (엔티티)**:
+**4️⃣ Entities Layer (1-entities/ — 엔티티)**:
 
 - 비즈니스 도메인 엔티티
 - 재사용 가능한 도메인 로직
 - import 가능: shared만
 
-**5️⃣ Shared Layer (공유)**:
+**5️⃣ Shared Layer (5-shared/ — 공유)**:
 
 - 어디서든 사용 가능한 공통 코드
 - 다른 레이어에 의존하지 않음
@@ -191,25 +257,25 @@ src/
 
 #### 예제
 
-\`\`\`typescript
+```typescript
 // ✅ Good - 올바른 의존성 방향
-// src/features/post/ui/card.tsx
-import { renderMDX } from '@/entities/markdown'; // entities 사용 OK
-import { Button } from '@/shared/components/ui/button'; // shared 사용 OK
+// src/2-features/post/ui/card.tsx
+import { renderMDX } from '@/1-entities/markdown'; // entities 사용 OK
+import { Button } from '@/5-shared/components/ui/button'; // shared 사용 OK
 
 // ❌ Bad - 역방향 의존성
-// src/shared/util/post-utils.ts
-import { PostCard } from '@/features/post'; // ❌ shared → features 불가
+// src/5-shared/util/post-utils.ts
+import { PostCard } from '@/2-features/post'; // ❌ 5-shared → 2-features 불가
 
 // ❌ Bad - features 간 의존성
-// src/features/contact/ui/form.tsx
-import { PostCard } from '@/features/post'; // ❌ features 간 의존 불가
-\`\`\`
+// src/2-features/contact/ui/form.tsx
+import { PostCard } from '@/2-features/post'; // ❌ 2-features 간 의존 불가
+```
 
 #### 주의사항
 
-- ⚠️ 역방향 import 절대 금지 (예: shared → features)
-- ⚠️ features/ 간 import 절대 금지 (예: features/post → features/contact)
+- ⚠️ 역방향 import 절대 금지 (예: 5-shared → 2-features)
+- ⚠️ features/ 간 import 절대 금지 (예: 2-features/post → 2-features/contact)
 - ⚠️ 의존성 순환 발생 시 공통 로직을 하위 레이어로 이동
 
 ### 새 기능 추가 흐름
@@ -228,16 +294,16 @@ import { PostCard } from '@/features/post'; // ❌ features 간 의존 불가
 
 "태그 필터링" 기능 추가:
 
-\`\`\`typescript
+```typescript
 // 1. Shared - 재사용 가능한 Badge 컴포넌트
-// src/shared/components/ui/badge/badge.tsx
+// src/5-shared/components/ui/badge/badge.tsx
 export function Badge({ label, onClick }: BadgeProps) {
 return <button onClick={onClick}>{label}</button>;
 }
 
 // 2. Features - 태그 필터링 기능
-// src/features/post/ui/tag-filter.tsx
-import { Badge } from '@/shared/components/ui/badge';
+// src/2-features/post/ui/tag-filter.tsx
+import { Badge } from '@/5-shared/components/ui/badge';
 
 export function TagFilter({ tags, onFilter }: TagFilterProps) {
 return (
@@ -250,14 +316,14 @@ return (
 );
 }
 
-// 3. App - 페이지에서 사용
-// src/routes/posts/index.tsx
-import { TagFilter } from '@/features/post/ui/tag-filter';
+// 3. Pages - 페이지에서 사용
+// src/4-pages/$locale/posts/index.tsx
+import { TagFilter } from '@/2-features/post/ui/tag-filter';
 
 export default function PostsPage() {
 return <TagFilter tags={['react', 'nextjs']} onFilter={handleFilter} />;
 }
-\`\`\`
+```
 
 ## 콘텐츠 파이프라인
 
@@ -318,7 +384,7 @@ participant User as 사용자
 **목록 페이지에서 index.json fetch**:
 
 \`\`\`typescript
-// src/features/post/api/get-posts.ts
+// src/2-features/post/api/get-posts.ts
 const response = await fetch(
 \`\${import.meta.env.VITE_GIT_RAW_URL}/\${locale}/index.json\`
 );
@@ -328,7 +394,7 @@ const posts: PostMetadata[] = await response.json();
 **상세 페이지에서 MDX fetch 및 렌더링**:
 
 \`\`\`typescript
-// src/entities/markdown/util/render-mdx.ts
+// src/1-entities/markdown/util/render-mdx.ts
 import { compile } from '@mdx-js/mdx';
 import \* as runtime from 'react/jsx-runtime';
 
@@ -369,7 +435,7 @@ return Component;
 #### 예제
 
 \`\`\`typescript
-// src/features/post/util/paginate-posts.ts
+// src/2-features/post/util/paginate-posts.ts
 export function paginatePosts(posts: Post[], page: number, perPage = 10) {
 const start = (page - 1) \* perPage;
 const end = start + perPage;
@@ -430,7 +496,7 @@ blog-content/
 **언어 감지 프로바이더 (LocaleProvider)**:
 
 \`\`\`typescript
-// src/shared/providers/locale-provider.tsx
+// src/5-shared/providers/locale-provider.tsx
 export function LocaleProvider({ children }: Props) {
 const cookieLocale = getCookie('NEXT_LOCALE');
 const browserLocale = navigator.language.split('-')[0];
@@ -487,16 +553,6 @@ return <LocaleContext.Provider value={{ locale }}>{children}</LocaleContext.Prov
 - Git 히스토리 분리로 관리 용이성 증대
 - 콘텐츠 작성자와 개발자의 역할 분리 가능
 
-### 2. @mdx-js/mdx 채택
-
-**결정**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
-
-**배경**:
-
-- 콘텐츠가 외부 리포지터리에 있어 빌드 타임 접근 불가
-- 동적 콘텐츠 로딩 가능 (콘텐츠 수정 시 재배포 불필요)
-- 브라우저 캐시로 성능 보완
-
 ### 3. @mdx-js/mdx 채택
 
 **결정**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
@@ -537,8 +593,8 @@ return <LocaleContext.Provider value={{ locale }}>{children}</LocaleContext.Prov
 
 **보완**:
 
-- \`NEXT_LOCALE\` 쿠키로 사용자 선택 언어 저장 (영속성)
-- 쿠키가 없으면 브라우저 언어 자동 감지
+- Zustand store로 사용자 선택 언어 관리 (URL 경로 기반)
+- URL에 locale이 없으면 브라우저 언어 자동 감지
 
 ## 성능 최적화
 
@@ -552,9 +608,15 @@ export default defineConfig({
 build: {
 rollupOptions: {
 output: {
-manualChunks: {
-vendor: ['react', 'react-dom'],
-router: ['@tanstack/react-router'],
+manualChunks(id) {
+if (id.includes('node_modules')) {
+if (id.includes('react') || id.includes('react-dom')) return 'react-vendor';
+if (id.includes('@tanstack')) return 'tanstack';
+if (id.includes('rehype') || id.includes('remark') || id.includes('highlight.js')) return 'mdx';
+if (id.includes('i18next')) return 'i18n';
+if (id.includes('lucide-react') || id.includes('@base-ui')) return 'ui';
+if (id.includes('date-fns') || id.includes('zod') || id.includes('zustand')) return 'utils';
+}
 },
 },
 },
@@ -564,9 +626,7 @@ router: ['@tanstack/react-router'],
 
 **결과**:
 
-- 빌드 시간: 12s → 5s (60% 개선)
-- HMR: 2s → 100ms (95% 개선)
-- 번들 크기: 200KB → 150KB (25% 감소)
+성능 최적화 결과는 [TanStack Router + Vite 채택](#1-tanstack-router--vite-채택) 섹션을 참고하세요.
 
 ### 2. React Compiler
 
@@ -585,18 +645,17 @@ const sortedPosts = posts.sort((a, b) => b.createdAt - a.createdAt);
 
 ### 3. 폰트 최적화
 
-Google Fonts의 `preload: true` 설정과 서브셋 로딩:
+Google Fonts의 `preload` 설정과 서브셋 로딩:
 
-\`\`\`typescript
-// src/app/layout.tsx
-import { Noto_Sans_KR } from 'next/font/google';
-
-const notoSansKR = Noto_Sans_KR({
-subsets: ['latin'],
-weight: ['400', '700'],
-preload: true,
-});
-\`\`\`
+```html
+<!-- index.html -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap"
+  rel="stylesheet"
+/>
+```
 
 ### 4. 이미지 최적화
 
@@ -616,12 +675,12 @@ export default defineConfig({
 
 ### 5. 코드 스플리팅
 
-React의 lazy와 Suspense를 사용한 동적 import:
+TanStack Router의 `autoCodeSplitting`으로 라우트 기반 자동 코드 스플리팅을 적용하며, React의 lazy와 Suspense를 사용한 동적 import도 활용합니다:
 
 ```typescript
 import { lazy, Suspense } from 'react';
 
-const ContactForm = lazy(() => import('@/features/contact/ui/form'));
+const ContactForm = lazy(() => import('@/2-features/contact/ui/form'));
 
 <Suspense fallback={<p>Loading...</p>}>
   <ContactForm />
@@ -707,4 +766,4 @@ const { data } = useQuery({
 
 - [agents.md](./agents.md) - AI 코딩 에이전트 가이드
 - [development.md](./development.md) - 개발 환경 설정 및 시작 가이드
-- [project-log.md](./project-log.md) - 프로젝트 이력 및 의사결정 로그
+- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그

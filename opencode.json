@@ -57,7 +57,7 @@
       ]
     }
   },
-  "instructions": ["docs/*.md"],
+  "instructions": ["docs/agents.md"],
   "agent": {
     "build": {
       "disable": true
@@ -264,13 +264,15 @@
         },
         "write": {
           "*": "deny",
-          "docs/*.md": "allow",
-          ".agents/agents/*.md": "allow"
+          "docs/**/*.md": "allow",
+          ".agents/agents/*.md": "allow",
+          ".worktrees/**/docs/**/*.md": "allow"
         },
         "edit": {
           "*": "deny",
-          "docs/*.md": "allow",
-          ".agents/agents/*.md": "allow"
+          "docs/**/*.md": "allow",
+          ".agents/agents/*.md": "allow",
+          ".worktrees/**/docs/**/*.md": "allow"
         },
         "bash": {
           "*": "ask",
@@ -398,6 +400,67 @@
           "gh run view *": "allow",
           "gh api repos/*/*/pulls/*/comments": "allow",
           "git branch --list": "allow"
+        }
+      }
+    },
+    "tech-architect": {
+      "mode": "subagent",
+      "description": "Validates subagent output quality - FSD architecture compliance, code style, requirements accuracy, over-engineering detection",
+      "prompt": "{file:.agents/agents/tech-architect.md}",
+      "hidden": true,
+      "permission": {
+        "read": { "*": "allow", "*.env": "deny", "*.env.*": "deny" },
+        "write": { "*": "deny" },
+        "edit": { "*": "deny" },
+        "bash": {
+          "*": "ask",
+          "ls": "allow",
+          "ls *": "allow",
+          "wc": "allow",
+          "wc *": "allow",
+          "pnpm lint": "allow",
+          "pnpm lint *": "allow",
+          "pnpm tsc": "allow",
+          "pnpm tsc *": "allow",
+          "git status": "allow",
+          "git status *": "allow",
+          "git diff": "allow",
+          "git diff *": "allow",
+          "git log": "allow",
+          "git log *": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow",
+          "gh pr view *": "allow",
+          "gh pr checks *": "allow"
+        }
+      }
+    },
+    "retrospector": {
+      "mode": "subagent",
+      "description": "Performs retrospective analysis on PRs/commits - identifies what went well, improvements, and suggests agent prompt enhancements",
+      "prompt": "{file:.agents/agents/retrospector.md}",
+      "hidden": true,
+      "permission": {
+        "read": { "*": "allow", "*.env": "deny", "*.env.*": "deny" },
+        "write": { "*": "deny", "docs/retrospective/*.md": "allow" },
+        "edit": { "*": "deny", "docs/retrospective/*.md": "allow" },
+        "bash": {
+          "*": "ask",
+          "ls": "allow",
+          "ls *": "allow",
+          "wc": "allow",
+          "wc *": "allow",
+          "git status": "allow",
+          "git status *": "allow",
+          "git diff": "allow",
+          "git diff *": "allow",
+          "git log": "allow",
+          "git log *": "allow",
+          "git show *": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow",
+          "gh pr view *": "allow",
+          "gh pr checks *": "allow"
         }
       }
     }

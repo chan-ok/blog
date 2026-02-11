@@ -21,7 +21,7 @@ Deprecated 명령어, 잘못된 경로, 오래된 버전, 누락된 예제 탐�
 </example>
 
 model: inherit
-color: yellow
+color: "#FFA500"
 tools: ["Read", "Grep", "Glob", "Bash", "Edit", "Write"]
 ---
 

@@ -42,15 +42,15 @@ type(scope): 한국어 제목
 - 한국어 본문
 ```
 
-| Type     | 설명        | 예시                                   |
-| -------- | ----------- | -------------------------------------- |
-| feat     | 새 기능     | `feat(post): 태그 필터링 추가`         |
-| fix      | 버그 수정   | `fix(contact): 이메일 검증 오류 수정`  |
-| refactor | 리팩토링    | `refactor(header): 네비게이션 분리`    |
-| test     | 테스트      | `test(button): 클릭 테스트 추가`       |
-| docs     | 문서        | `docs(readme): 설치 가이드 업데이트`   |
-| style    | 코드 스타일 | `style: Prettier 포맷팅 적용`          |
-| chore    | 빌드/설정   | `chore(deps): Next.js 16.0.7 업데이트` |
+| Type     | 설명        | 예시                                  |
+| -------- | ----------- | ------------------------------------- |
+| feat     | 새 기능     | `feat(post): 태그 필터링 추가`        |
+| fix      | 버그 수정   | `fix(contact): 이메일 검증 오류 수정` |
+| refactor | 리팩토링    | `refactor(header): 네비게이션 분리`   |
+| test     | 테스트      | `test(button): 클릭 테스트 추가`      |
+| docs     | 문서        | `docs(readme): 설치 가이드 업데이트`  |
+| style    | 코드 스타일 | `style: Prettier 포맷팅 적용`         |
+| chore    | 빌드/설정   | `chore(deps): Vite 7.x.x 업데이트`    |
 
 **Scope**: 기능/컴포넌트명, `deps`, `config`, `vitest`, `storybook`
 

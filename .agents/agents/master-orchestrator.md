@@ -74,6 +74,8 @@ tools: ["Read", "Grep", "Glob", "Bash", "Task", "TodoRead", "TodoWrite"]
 - **순차 실행**: 의존적인 작업 → 여러 메시지로 분리
 - **각 agent에게 worktree 경로 전달**
 - **문서 작업 위임**: 문서 생성/수정/검증은 **무조건 doc-manager subagent에게 위임** (직접 처리 금지)
+- **결과물 검증 위임**: 각 Phase 완료 후 결과물 품질 검증은 **tech-architect subagent에게 위임** (직접 처리 금지)
+- **회고 분석 위임**: PR 생성 후 회고 분석은 **retrospector subagent에게 위임** (직접 처리 금지)
 
 ### 4. 결과 통합 및 PR
 
@@ -98,7 +100,18 @@ feature-developer와 test-specialist를 **단계별로 병렬 실행**하여, �
 - **Phase 2 (상태/이벤트)**: 이벤트 핸들러 + 상태 관리 ↔ 이벤트/상태 변경/에러 테스트
 - **Phase 3 (엣지 케이스)**: 다크 모드 + 반응형 + 엣지 케이스 ↔ Property-based 테스트 + Storybook
 
-각 Phase 완료 후: 테스트 실행 → 통과 시 다음 Phase, 실패 시 원인 분석 후 재할당 (최대 3회)
+각 Phase 완료 후: 테스트 실행 → **tech-architect 검증** → 통과 시 다음 Phase, 실패 시 원인 분석 후 재할당 (최대 3회)
+
+### tech-architect 검증 프로세스
+
+각 Phase의 worktree merge 후, tech-architect subagent에게 결과물 검증을 위임합니다:
+
+1. **검증 요청**: tech-architect에게 변경된 파일 목록 + 요구사항 전달
+2. **검증 항목**: FSD 아키텍처 준수, 코드 스타일, 타입 안전성, 중복 코드, 오버엔지니어링
+3. **검증 결과 처리**:
+   - ✅ 통과 → 다음 Phase 진행
+   - ⚠️ 개선 필요 → 해당 subagent에게 개선 사항 전달 후 재작업
+   - 🚨 차단 → 해당 subagent에게 수정 지시 (최대 2~3회 반복)
 
 ### 테스트 실패 시 원인 분석
 
@@ -133,9 +146,11 @@ feature-developer와 test-specialist를 **단계별로 병렬 실행**하여, �
 2. Worktrees 생성 (feature-dev + security)
 3. Phase 1 (병렬): feature-developer(구현) + security-scanner(보안 검증)
 4. Feature branch 통합 (merge --no-ff)
+   4-1. **tech-architect 검증**: 결과물 품질 검증 위임
 5. Phase 2 (순차): test-specialist worktree 생성 → 테스트 작성
 6. 최종 통합 + PR 생성 (develop ← feature)
-7. Worktrees 정리 (remove + branch -D)
+7. **회고 분석**: retrospector에게 PR 변경사항 회고 분석 위임
+8. Worktrees 정리 (remove + branch -D)
 
 ---
 

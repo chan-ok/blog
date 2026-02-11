@@ -6,15 +6,15 @@
 
 React 19와 TanStack Router 기반의 개인 개발 블로그로, **Feature-Sliced Design(FSD)** 아키텍처와 이중 리포지터리 구조를 특징으로 합니다.
 
-| 항목       | 내용                                    |
-| ---------- | --------------------------------------- |
-| 프레임워크 | React 19 + TanStack Router v1 + Vite v7 |
-| 스타일링   | Tailwind CSS v4                         |
-| 국제화     | i18next                                 |
-| 상태 관리  | Zustand                                 |
-| 검증       | Zod v4                                  |
-| 테스팅     | Vitest + Playwright + Storybook         |
-| 배포       | Netlify                                 |
+| 항목       | 내용                                                   |
+| ---------- | ------------------------------------------------------ |
+| 프레임워크 | React 19 + TanStack Router v1 + Vite v7 + TypeScript 5 |
+| 스타일링   | Tailwind CSS v4                                        |
+| 국제화     | i18next                                                |
+| 상태 관리  | Zustand                                                |
+| 검증       | Zod v4                                                 |
+| 테스팅     | Vitest + Playwright + Storybook                        |
+| 배포       | Netlify                                                |
 
 ### 목적
 
@@ -72,6 +72,9 @@ VITE_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
 VITE_TURNSTILE_SITE_KEY=your_site_key
 TURNSTILE_SECRET_KEY=your_secret_key
 
+# API 기본 URL (선택)
+VITE_API_BASE_URL=https://your-api-url
+
 # Resend (이메일 발송용)
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
 ```
@@ -95,6 +98,7 @@ pnpm tsc --noEmit     # TypeScript 타입 체크
 # 테스팅
 pnpm test             # Vitest 테스트 실행
 pnpm coverage         # 테스트 커버리지 확인
+pnpm e2e              # Playwright E2E 테스트
 pnpm e2e:ui           # Playwright E2E 테스트 (UI 모드)
 
 # Storybook
@@ -145,13 +149,13 @@ blog/
 
 ## 문서
 
-| 문서                                                    | 설명                                                     |
-| ------------------------------------------------------- | -------------------------------------------------------- |
-| **[agents.md](./docs/agents.md)**                       | AI 코딩 에이전트를 위한 필수 가이드 (코딩 규칙, 테스팅)  |
-| **[agent-permissions.md](./docs/agent-permissions.md)** | 에이전트별 권한 분리 가이드                              |
-| **[development.md](./docs/development.md)**             | 개발자를 위한 환경 설정 및 워크플로우 가이드             |
-| **[architecture.md](./docs/architecture.md)**           | 프로젝트 구조 및 기술 선택 배경 (FSD, 콘텐츠 파이프라인) |
-| **[project-log.md](./docs/project-log.md)**             | 프로젝트 이력 및 주요 의사결정 로그                      |
+| 문서                                                              | 설명                                                     |
+| ----------------------------------------------------------------- | -------------------------------------------------------- |
+| **[agents.md](./docs/agents.md)**                                 | AI 코딩 에이전트를 위한 필수 가이드 (코딩 규칙, 테스팅)  |
+| **[agent-permissions.md](./docs/agent-permissions.md)**           | 에이전트별 권한 분리 가이드                              |
+| **[development.md](./docs/development.md)**                       | 개발자를 위한 환경 설정 및 워크플로우 가이드             |
+| **[architecture.md](./docs/architecture.md)**                     | 프로젝트 구조 및 기술 선택 배경 (FSD, 콘텐츠 파이프라인) |
+| **[retrospective/overview.md](./docs/retrospective/overview.md)** | 프로젝트 회고 및 의사결정 로그                           |
 
 ## 에이전트 시스템
 
@@ -167,6 +171,8 @@ blog/
 | doc-manager         | 문서 및 에이전트 프롬프트 관리      |
 | git-guardian        | Git 워크플로우 관리                 |
 | github-helper       | GitHub PR/Issue 관리                |
+| tech-architect      | 결과물 품질 검증 (읽기 전용)        |
+| retrospector        | 회고 분석 및 프롬프트 개선 제안     |
 
 자세한 내용은 [agents.md](./docs/agents.md)와 [agent-permissions.md](./docs/agent-permissions.md)를 참고하세요.
 
@@ -185,6 +191,8 @@ blog/
 - 댓글 시스템 - Giscus (GitHub Discussions 기반)
 - 멀티 에이전트 시스템 - Git Worktree 기반 병렬 AI 에이전트 개발
 - 에이전트 권한 분리 - 최소 권한 원칙 적용
+- 포스트 페이지네이션 - 페이지 기반 포스트 목록
+- TanStack Query 캐싱 - API 응답 캐싱 및 재검증
 
 ### 예정 기능
 
@@ -192,7 +200,6 @@ blog/
 
 - SEO 최적화 - Open Graph, Twitter Card, Sitemap
 - 에러 페이지 - 404/500 커스텀 에러 페이지
-- 페이지네이션 - 포스트 목록 페이지네이션 또는 무한 스크롤
 
 **우선순위: 중간**
 
