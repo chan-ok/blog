@@ -317,6 +317,26 @@
 
 ## 최근 회고
 
+### 2026-02-12 — PR #46: refactor: 기술부채 개선 — 타입 안전성, i18n, 파일명 규칙, UI 개선
+
+#### ✅ 잘한 점
+
+- 기술부채 6건을 한 번에 정리하면서 타입 안전성(parseLocale), i18n 스키마/리소스, 파일명 규칙까지 함께 정합성 확보
+- MDX 에러/로딩 UI 개선과 i18n 적용으로 사용자 경험과 국제화 품질 동시 향상
+- 테스트 206/206 통과를 유지하면서 변경 범위를 명확히 문서화(변경 파일 25개, +239/-55)
+
+#### 🔧 개선점
+
+- 역할 분리로 인해 feature 변경 후 테스트 10건 실패가 발생 → 변경 시 테스트 영향 범위 사전 공유 필요
+- worktree 외 메인 디렉토리 수정 발생 → 작업 디렉토리 검증 체크가 부족
+- opencode.json 변경이 이전 세션 잔류분으로 포함됨 → 변경 원인/범위 분리 필요
+
+#### 🤖 에이전트 개선 제안
+
+- **feature-developer**: UI 문구/i18n/파일명 변경 시 테스트 영향 항목(모킹, 스냅샷, 하드코딩 값) 체크리스트 추가 (.agents/agents/feature-developer.md)
+- **test-specialist**: worktree 경로 검증(현재 git worktree 확인) 후 작업 시작 규칙 추가 (.agents/agents/test-specialist.md)
+- **git-guardian**: 머지 전 uncommitted 설정 파일(opencode.json) 잔류 탐지 및 분리 커밋 권고 (.agents/agents/git-guardian.md)
+
 ### 2026-02-11 — PR #40: 문서 구조 개편 - agents.md 분리 및 에이전트 프롬프트 최적화
 
 #### ✅ 잘한 점

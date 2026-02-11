@@ -81,7 +81,7 @@ export default function MDComponent({ path, baseUrl }: MDComponentProps) {
 
     try {
       // markdown을 다시 fetch
-      const data = await getMarkdown(path, baseUrl, router);
+      const data = await getMarkdown(path, baseUrl);
       setMarkdownData(data);
     } catch (err) {
       // fetch 실패 시 에러 상태 복구
