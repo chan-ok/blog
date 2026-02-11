@@ -36,9 +36,8 @@
 | ------------------- | ----------------- | -------- |
 | feature-development | feature-developer | HIGH     |
 | test-writing        | test-specialist   | HIGH     |
-| security-check      | security-scanner  | MEDIUM   |
 | doc-validation      | doc-manager       | LOW      |
-| quality-validation  | tech-architect    | MEDIUM   |
+| quality+security    | tech-architect    | MEDIUM   |
 | retrospective       | retrospector      | LOW      |
 
 ---
@@ -58,34 +57,6 @@
 "다크 모드를 지원하는 태그 필터 컴포넌트를 만들어줘"
 "Contact 폼에 이메일 검증과 XSS 방지 기능을 추가해줘"
 ```
-
----
-
-### security-scanner
-
-보안 취약점 탐지 및 민감 정보 노출 방지. **Git commit/push 전에 자동 실행**됩니다.
-
-- 민감 정보 탐지 (API 키, 토큰, 비밀번호, 개인정보)
-- 의존성 취약점 검사, 보안 코딩 패턴 검증 (XSS, Injection 방지)
-- Critical 이슈 발견 시 commit/push 차단
-
-**Pre-Commit vs Pre-Push**:
-
-| 단계           | 검사 항목      | 이유                                                |
-| -------------- | -------------- | --------------------------------------------------- |
-| **Pre-Commit** | 민감 정보 탐지 | 한 번이라도 커밋되면 Git 히스토리에 **영구 기록**됨 |
-| **Pre-Push**   | 의존성 취약점  | 로컬 커밋은 되었지만 원격에 **공개되기 전** 차단    |
-
-**검증 항목**:
-
-- Pre-Commit: API 키/토큰/비밀번호 하드코딩, AWS/Private 키 노출, `.env` 파일 커밋 시도
-- 환경 변수: `.gitignore` 포함 여부, 서버/클라이언트 적절한 사용
-- Pre-Push: `pnpm audit` 취약점 확인, Critical/High 우선 처리
-- 코드 보안: XSS/Injection 방지, Zod 스키마 검증 적용 여부
-
-**차단 규칙**: Pre-Commit은 민감 정보/`.env` 파일 무조건 차단. Pre-Push는 Critical 무조건 차단, High 3개 이상 차단 권장, Moderate/Low 경고 후 허용.
-
-Husky Hook (`.husky/pre-commit`, `.husky/pre-push`)을 통해 자동 실행됩니다.
 
 ---
 
@@ -177,9 +148,9 @@ GitHub CLI (gh)를 사용한 GitHub 통합 작업 담당.
 
 ### tech-architect
 
-서브에이전트 결과물의 품질을 검증하는 읽기 전용 에이전트. **코드를 수정하지 않고** 검증 보고서만 제출합니다.
+서브에이전트 결과물의 품질과 보안 취약점을 검증하는 읽기 전용 에이전트. **코드를 수정하지 않고** 검증 보고서만 제출합니다.
 
-- FSD 아키텍처 준수 여부, 코드 스타일, 타입 안전성 검증
+- FSD 아키텍처 준수 여부, 코드 스타일, 타입 안전성, 보안 취약점 검증
 - 오버엔지니어링, 중복 코드, 요구사항 정확성 검증
 - ✅ 통과 / ⚠️ 개선 필요 / 🚨 차단 3단계 보고서 출력
 
@@ -190,6 +161,7 @@ GitHub CLI (gh)를 사용한 GitHub 통합 작업 담당.
 ```
 "feature-developer가 만든 컴포넌트를 검증해줘"
 "이 변경사항이 FSD 아키텍처를 준수하는지 확인해줘"
+"보안 취약점이 있는지 확인해줘"
 ```
 
 ---
@@ -221,7 +193,7 @@ PR/커밋에 대한 회고 분석을 수행하고 에이전트 프롬프트 개�
 
 ```
 "태그 필터 컴포넌트를 만들고, 동시에 보안 취약점을 검사해줘"
-→ feature-developer + security-scanner 동시 실행
+→ feature-developer + tech-architect 동시 실행
 ```
 
 **순차 실행** (의존적인 작업 - 같은 파일 수정 시):

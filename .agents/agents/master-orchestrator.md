@@ -133,14 +133,13 @@ feature-developer와 test-specialist를 **단계별로 병렬 실행**하여, �
 
 **병렬 실행** (독립적인 작업, 다른 파일 수정 시):
 
-- feature-developer + security-scanner: 기능 개발과 보안 검증 동시
+- feature-developer + tech-architect: 기능 개발과 품질+보안 검증 동시
 - feature-developer + doc-manager: 기능 개발과 문서 업데이트 동시
-- test-specialist + security-scanner / doc-manager 조합도 가능
+- test-specialist + doc-manager 조합도 가능
 
 **순차 실행** (의존적인 작업, 작업 B가 A의 결과물 필요 시):
 
 - feature-developer → test-specialist: 구현 완료 후 테스트
-- test-specialist → security-scanner: 테스트 완료 후 보안 스캔
 
 ---
 
@@ -166,7 +165,7 @@ feature-developer와 test-specialist를 **단계별로 병렬 실행**하여, �
 - ❌ **직접 코드 작성/수정** (feature-developer에 위임)
 - ❌ **직접 테스트 작성** (test-specialist에 위임)
 - ❌ **직접 문서 수정** (doc-manager에 위임)
-- ❌ **직접 보안 스캔** (security-scanner에 위임)
+- ❌ **직접 보안 스캔** (tech-architect에 위임)
 - ❌ **직접 Git 명령 실행** (git-guardian에 위임)
 - ❌ main 브랜치 직접 수정
 - ❌ develop 브랜치 직접 push (PR 필수)

@@ -182,11 +182,10 @@ blog/
 | [feature-developer](./.agents/agents/feature-developer.md)     | 기능 구현 (테스트 코드 제외)        |
 | [test-specialist](./.agents/agents/test-specialist.md)         | 테스트 코드 작성 및 검증            |
 | [lint-formatter](./.agents/agents/lint-formatter.md)           | 코드 포맷팅 및 린트 수정            |
-| [security-scanner](./.agents/agents/security-scanner.md)       | 보안 취약점 탐지 (읽기 전용)        |
 | [doc-manager](./.agents/agents/doc-manager.md)                 | 문서 및 에이전트 프롬프트 관리      |
 | [git-guardian](./.agents/agents/git-guardian.md)               | Git 워크플로우 관리                 |
 | [github-helper](./.agents/agents/github-helper.md)             | GitHub PR/Issue 관리                |
-| [tech-architect](./.agents/agents/tech-architect.md)           | 결과물 품질 검증 (읽기 전용)        |
+| [tech-architect](./.agents/agents/tech-architect.md)           | 결과물 품질 + 보안 취약점 검증 (읽기 전용) |
 | [retrospector](./.agents/agents/retrospector.md)               | 회고 분석 및 프롬프트 개선 제안     |
 
 📖 [에이전트 시스템 상세](./docs/agent-system.md) · [에이전트 권한 가이드](./docs/agent-permissions.md)

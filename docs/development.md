@@ -145,7 +145,7 @@ pnpm tsc --noEmit     # TypeScript 타입 체크
 
 Husky pre-commit 훅이 자동으로 다음 4단계를 실행합니다:
 
-1. security-scanner (민감 정보 탐지)
+1. tech-architect (민감 정보 탐지)
 2. `tsc --noEmit` (타입 체크)
 3. lint-staged (린트/포맷)
 4. `vitest related --run` (관련 테스트)
@@ -400,7 +400,7 @@ git branch -d feat/dark-mode
 
 ```bash
 # .husky/pre-commit
-# 1. security-scanner: 민감 정보 탐지
+# 1. tech-architect: 민감 정보 탐지
 # 2. tsc --noEmit: 타입 체크
 # 3. lint-staged: 린트/포맷
 # 4. vitest related --run: 관련 테스트
