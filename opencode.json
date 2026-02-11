@@ -67,6 +67,7 @@
       "description": "Primary orchestrator that analyzes requests and delegates to specialized subagents. Does NOT write code, tests, or documentation directly - only coordinates workflow via Task tool.",
       "prompt": "{file:.agents/agents/master-orchestrator.md}",
       "permission": {
+        "webfetch": "allow",
         "task": {
           "*": "allow"
         },
@@ -113,7 +114,7 @@
           "git branch --list": "allow",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "webfetch": "allow"
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -179,7 +180,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -248,7 +250,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -359,7 +362,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -421,7 +425,8 @@
           "gh pr view *": "allow",
           "mkdir docs/*": "allow",
           "git branch --list": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -560,7 +565,8 @@
           "gh run list": "allow",
           "gh run view *": "allow",
           "gh api repos/*/*/pulls/*/comments": "allow",
-          "git branch --list": "allow"
+          "git branch --list": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -606,7 +612,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     },
@@ -659,7 +666,8 @@
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "gh pr view *": "allow",
-          "gh pr checks *": "allow"
+          "gh pr checks *": "allow",
+          "gh pr diff *": "allow"
         }
       }
     }
@@ -773,7 +781,8 @@
       "git rm --cached node_modules/*": "allow",
       "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
       "gh pr view *": "allow",
-      "gh pr checks *": "allow"
+      "gh pr checks *": "allow",
+      "gh pr diff *": "allow"
     }
   },
   "plugin": [
