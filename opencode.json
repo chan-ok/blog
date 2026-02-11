@@ -434,7 +434,7 @@
     },
     "bash": "ask",
     "zsh": "ask",
-    "task": "allow",
+    "task": "deny",
     "webfetch": "allow",
     "websearch": "allow",
     "grep": "allow",

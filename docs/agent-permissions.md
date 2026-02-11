@@ -258,8 +258,8 @@ master-orchestrator (조율)
   ├─ Task → lint-formatter (코드 포맷팅) - 선택적
   ├─ Task → security-scanner (보안 검증)
   ├─ Task → doc-manager (문서 업데이트) - 필요시
-  └─ Task → git-guardian (커밋 생성)
-       └─ Task → github-helper (PR 생성)
+  ├─ Task → git-guardian (커밋 생성)
+  └─ Task → github-helper (PR 생성)
 ```
 
 ### 예시 2: Git 충돌 해결
@@ -324,6 +324,7 @@ Task → github-helper (PR 생성)
 
 - ❌ `pnpm exec *` 전역 차단 (임의 스크립트 실행 방지)
 - ❌ `git push *` 전역 차단 (어떤 에이전트도 push 불가)
+- ❌ `task` 전역 차단 (순환 호출 방지, master-orchestrator만 개별 override로 허용)
 - ✅ `rm -f .git/index.lock`만 허용 (잠금 파일 제거)
 
 ### 5. 권한 분리
@@ -347,6 +348,7 @@ Task → github-helper (PR 생성)
     "git reset --hard *": "deny",
     "git rebase *": "deny",
     "pnpm exec *": "deny",
+    "task": "deny",
     "read": {
       "*": "allow",
       "*.env": "deny",

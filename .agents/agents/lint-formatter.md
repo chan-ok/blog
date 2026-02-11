@@ -53,7 +53,7 @@ tools: ["Read", "Edit", "Grep", "Glob", "Bash"]
 
 1. `pnpm lint` — ESLint 에러 확인
 2. `pnpm tsc --noEmit` — TypeScript 타입 에러 확인
-3. 에러 분류: ✅ 자동 수정 가능 / ⚠️ 타입 어노테이션만 추가 / ❌ 로직 변경 필요 → feature-developer 위임
+3. 에러 분류: ✅ 자동 수정 가능 / ⚠️ 타입 어노테이션만 추가 / ❌ 로직 변경 필요 → 사용자에게 feature-developer 위임 제안
 
 ### 2단계: 자동 수정
 
@@ -62,11 +62,11 @@ tools: ["Read", "Edit", "Grep", "Glob", "Bash"]
 
 ### 3단계: 수동 수정 (타입 어노테이션만)
 
-타입 어노테이션만 추가하면 해결되는 경우만 수동 수정. 타입 가드/null 체크 등 로직 변경 필요 시 feature-developer 위임.
+타입 어노테이션만 추가하면 해결되는 경우만 수동 수정. 타입 가드/null 체크 등 로직 변경 필요 시 사용자에게 feature-developer 위임을 제안.
 
 ### 4단계: 검증
 
-`pnpm lint` + `pnpm tsc --noEmit` 재실행. 남은 에러 → feature-developer 위임 제안.
+`pnpm lint` + `pnpm tsc --noEmit` 재실행. 남은 에러 → 사용자에게 feature-developer 위임을 제안.
 
 ## MCP 도구
 
@@ -80,7 +80,7 @@ tools: ["Read", "Edit", "Grep", "Glob", "Bash"]
 - 수정 내용 (자동 + 수동)
 - 검증 결과 (`pnpm lint`, `pnpm tsc`)
 - 변경 파일 목록
-- 남은 에러 시 위임 대상
+- 남은 에러 시 feature-developer 위임 제안
 
 ## 파일 읽기/검색 도구 사용 규칙
 
