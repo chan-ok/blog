@@ -338,6 +338,7 @@
           "git add .agents/agents/*.md": "ask",
           "git add *.config.ts": "ask",
           "git add opencode.json": "ask",
+          "git push *": "ask",
           "git reset HEAD *": "allow",
           "git stash": "allow",
           "git stash pop": "allow",
