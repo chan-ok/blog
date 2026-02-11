@@ -345,7 +345,7 @@
 
 ### 🚧 진행 중 (우선순위: 높음)
 
-- 문서화 작업 (agents.md, development.md, architecture.md, project-log.md)
+- 문서화 작업 (agents.md, development.md, architecture.md)
 
 ### 📋 예정 작업 (우선순위: 높음)
 

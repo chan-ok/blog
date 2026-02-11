@@ -454,7 +454,7 @@ rm -rf node_modules
 pnpm install
 
 # 4. 캐시 삭제
-pnpm clean
+rm -rf dist .cache
 pnpm install
 pnpm build
 ```

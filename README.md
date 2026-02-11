@@ -6,15 +6,15 @@
 
 React 19와 TanStack Router 기반의 개인 개발 블로그로, **Feature-Sliced Design(FSD)** 아키텍처와 이중 리포지터리 구조를 특징으로 합니다.
 
-| 항목       | 내용                                    |
-| ---------- | --------------------------------------- |
-| 프레임워크 | React 19 + TanStack Router v1 + Vite v7 |
-| 스타일링   | Tailwind CSS v4                         |
-| 국제화     | i18next                                 |
-| 상태 관리  | Zustand                                 |
-| 검증       | Zod v4                                  |
-| 테스팅     | Vitest + Playwright + Storybook         |
-| 배포       | Netlify                                 |
+| 항목       | 내용                                                   |
+| ---------- | ------------------------------------------------------ |
+| 프레임워크 | React 19 + TanStack Router v1 + Vite v7 + TypeScript 5 |
+| 스타일링   | Tailwind CSS v4                                        |
+| 국제화     | i18next                                                |
+| 상태 관리  | Zustand                                                |
+| 검증       | Zod v4                                                 |
+| 테스팅     | Vitest + Playwright + Storybook                        |
+| 배포       | Netlify                                                |
 
 ### 목적
 
@@ -72,6 +72,9 @@ VITE_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
 VITE_TURNSTILE_SITE_KEY=your_site_key
 TURNSTILE_SECRET_KEY=your_secret_key
 
+# API 기본 URL (선택)
+VITE_API_BASE_URL=https://your-api-url
+
 # Resend (이메일 발송용)
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
 ```
@@ -95,6 +98,7 @@ pnpm tsc --noEmit     # TypeScript 타입 체크
 # 테스팅
 pnpm test             # Vitest 테스트 실행
 pnpm coverage         # 테스트 커버리지 확인
+pnpm e2e              # Playwright E2E 테스트
 pnpm e2e:ui           # Playwright E2E 테스트 (UI 모드)
 
 # Storybook
@@ -187,6 +191,8 @@ blog/
 - 댓글 시스템 - Giscus (GitHub Discussions 기반)
 - 멀티 에이전트 시스템 - Git Worktree 기반 병렬 AI 에이전트 개발
 - 에이전트 권한 분리 - 최소 권한 원칙 적용
+- 포스트 페이지네이션 - 페이지 기반 포스트 목록
+- TanStack Query 캐싱 - API 응답 캐싱 및 재검증
 
 ### 예정 기능
 
@@ -194,7 +200,6 @@ blog/
 
 - SEO 최적화 - Open Graph, Twitter Card, Sitemap
 - 에러 페이지 - 404/500 커스텀 에러 페이지
-- 페이지네이션 - 포스트 목록 페이지네이션 또는 무한 스크롤
 
 **우선순위: 중간**
 

@@ -553,16 +553,6 @@ return <LocaleContext.Provider value={{ locale }}>{children}</LocaleContext.Prov
 - Git 히스토리 분리로 관리 용이성 증대
 - 콘텐츠 작성자와 개발자의 역할 분리 가능
 
-### 2. @mdx-js/mdx 채택
-
-**결정**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
-
-**배경**:
-
-- 콘텐츠가 외부 리포지터리에 있어 빌드 타임 접근 불가
-- 동적 콘텐츠 로딩 가능 (콘텐츠 수정 시 재배포 불필요)
-- 브라우저 캐시로 성능 보완
-
 ### 3. @mdx-js/mdx 채택
 
 **결정**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
@@ -603,8 +593,8 @@ return <LocaleContext.Provider value={{ locale }}>{children}</LocaleContext.Prov
 
 **보완**:
 
-- \`NEXT_LOCALE\` 쿠키로 사용자 선택 언어 저장 (영속성)
-- 쿠키가 없으면 브라우저 언어 자동 감지
+- Zustand store로 사용자 선택 언어 관리 (URL 경로 기반)
+- URL에 locale이 없으면 브라우저 언어 자동 감지
 
 ## 성능 최적화
 
@@ -636,9 +626,7 @@ if (id.includes('date-fns') || id.includes('zod') || id.includes('zustand')) ret
 
 **결과**:
 
-- 빌드 시간: 12s → 5s (60% 개선)
-- HMR: 2s → 100ms (95% 개선)
-- 번들 크기: 200KB → 150KB (25% 감소)
+성능 최적화 결과는 [TanStack Router + Vite 채택](#1-tanstack-router--vite-채택) 섹션을 참고하세요.
 
 ### 2. React Compiler
 

@@ -468,7 +468,7 @@ pnpm e2e
 const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
 // ✅ Good - 클라이언트에서 VITE_ 변수
-const siteKey = process.env.VITE_TURNSTILE_SITE_KEY;
+const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
 // ❌ Bad - 하드코딩
 const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
@@ -820,6 +820,25 @@ Husky Hook (`.husky/pre-commit`, `.husky/pre-push`)을 통해 자동 실행됩�
 ```
 "docs/agents.md 문서가 현재 프로젝트와 일치하는지 검증해줘"
 "최근 코드 변경사항을 확인해서 문서를 업데이트해야 할 부분이 있는지 알려줘"
+```
+
+---
+
+#### lint-formatter
+
+포매팅과 린트 에러만 수정하는 전문 에이전트. **코드 동작을 변경하지 않습니다**.
+
+- Prettier/ESLint 자동 수정 가능한 스타일 문제 해결
+- import 순서, 들여쓰기, 줄바꿈, 공백 등 코드 스타일 통일
+- 로직 변경이 필요한 에러는 feature-developer에게 위임
+
+**사용 시기**: ESLint/Prettier 에러 수정, 코드 스타일 통일, import 순서 정리
+
+**사용 예시**:
+
+```
+"린트 에러가 발생했어, 수정해줘"
+"import 순서를 정리해줘"
 ```
 
 ---

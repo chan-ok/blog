@@ -30,7 +30,7 @@ assistant: "코드 수정은 feature-developer 에이전트가 담당합니다. 
 </example>
 
 model: inherit
-color: magenta
+color: "#FF69B4"
 tools: ["Read", "Write", "Edit", "Grep", "Glob", "Bash"]
 ---
 

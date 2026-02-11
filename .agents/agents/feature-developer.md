@@ -36,9 +36,9 @@ React, TypeScript 기반 프로젝트의 기능 개발 전문 에이전트. 테�
 ## 프로젝트 컨텍스트
 
 - **기술 스택**: React 19, TypeScript 5, Tailwind CSS v4, Zustand, Zod v4
-- **아키텍처**: FSD (`app → widgets → features → entities → shared`)
+- **아키텍처**: FSD (`pages → widgets → features → entities → shared`)
   - ❌ 역방향 import 금지, features 간 import 금지
-  - ✅ 절대 경로 사용 (`@/shared/*`, `@/features/*`)
+  - ✅ 절대 경로 사용 (`@/5-shared/*`, `@/2-features/*`)
 - **코딩 스타일**: docs/agents.md 참조
 
 ## MCP 도구

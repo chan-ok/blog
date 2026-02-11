@@ -30,7 +30,7 @@ tech-architect는 코드를 수정하지 않음. 코드 수정이 필요한 작�
 </example>
 
 model: inherit
-color: cyan
+color: "#9370DB"
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---
 
@@ -161,7 +161,7 @@ tools: ["Read", "Grep", "Glob", "Bash"]
 
 ## MCP 도구 활용
 
-Context7(라이브러리 최신 문서 조회), Serena(프로젝트 심볼 탐색/편집), Exa(웹 검색), Grep.app(GitHub 코드 검색) MCP 도구를 적극 활용하세요.
+Context7(라이브러리 최신 문서 조회), Serena(프로젝트 심볼 탐색), Exa(웹 검색), Grep.app(GitHub 코드 검색) MCP 도구를 적극 활용하세요.
 
 - **Context7**: `resolve-library-id` → `query-docs` 순서로 호출. 라이브러리 API 올바른 사용 확인에 활용
 - **Serena**: `find_symbol`로 기존 심볼과 중복 확인, `search_for_pattern`으로 코드 패턴 검색에 활용
