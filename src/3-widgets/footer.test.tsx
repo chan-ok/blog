@@ -29,8 +29,9 @@ describe('Footer 위젯', () => {
       render(<Footer />);
 
       const footer = screen.getByRole('contentinfo');
+      const currentYear = new Date().getFullYear();
       expect(footer).toHaveTextContent(
-        "© 2025 Chanho Kim's dev Blog. All rights reserved."
+        `© ${currentYear} Chanho Kim's dev Blog. All rights reserved.`
       );
     });
   });

@@ -5,6 +5,21 @@ import MDComponent from './index';
 import getMarkdown from './util/get-markdown';
 import type { Frontmatter } from './model/markdown.schema';
 
+// react-i18next 모킹
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'markdown.loading': 'Loading...',
+        'markdown.loadError': 'Failed to load content',
+        'markdown.retry': 'Retry',
+      };
+      return translations[key] ?? key;
+    },
+    i18n: { language: 'ko', changeLanguage: vi.fn() },
+  }),
+}));
+
 // useRouter 훅 모킹
 vi.mock('@tanstack/react-router', () => ({
   useRouter: vi.fn(() => ({
