@@ -1,6 +1,6 @@
 import type { MDXComponents } from 'mdx/types';
-import Code from '../ui/Code';
-import Typography from '../ui/Typography';
+import Code from '../ui/code';
+import Typography from '../ui/typography';
 
 export default function setMdxComponents(
   components?: MDXComponents

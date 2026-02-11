@@ -1,4 +1,4 @@
-import { useResize } from './useResize';
+import { useResize } from './use-resize';
 
 const breakpoints = {
   sm: 640,
