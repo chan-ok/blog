@@ -61,7 +61,7 @@ export default function RecentPostBlock({
 
 export function RecentPostBlockSkeleton() {
   const { t } = useTranslation();
-  
+
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>

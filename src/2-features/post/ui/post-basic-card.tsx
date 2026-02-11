@@ -19,7 +19,7 @@ export default function PostBasicCard({
   summary,
 }: Props) {
   const { t } = useTranslation();
-  
+
   return (
     <article className="grid grid-cols-12 gap-y-4 gap-4 rounded-lg border border-zinc-100 bg-white p-6 shadow dark:border-zinc-800 dark:bg-gray-800">
       <div className="col-span-full md:col-span-6">

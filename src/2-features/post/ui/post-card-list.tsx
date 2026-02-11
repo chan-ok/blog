@@ -9,7 +9,7 @@ interface PostCardListProps {
 
 export default function PostCardList({ locale }: PostCardListProps) {
   const { t } = useTranslation();
-  
+
   // useSuspenseQuery로 데이터 가져오기
   const { data: pagingPosts } = useSuspenseQuery({
     queryKey: ['posts', locale],
