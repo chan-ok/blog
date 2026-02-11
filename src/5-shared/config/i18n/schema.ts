@@ -27,6 +27,17 @@ export const TranslationResourceSchema = z.object({
       invalidEmail: z.string().min(1),
     }),
   }),
+  post: z.object({
+    recentPosts: z.string().min(1),
+    noPosts: z.string().min(1),
+    readMore: z.string().min(1),
+    loading: z.string().min(1),
+  }),
+  markdown: z.object({
+    loadError: z.string().min(1),
+    loading: z.string().min(1),
+    retry: z.string().min(1),
+  }),
 });
 
 export type TranslationResourceFromSchema = z.infer<

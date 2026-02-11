@@ -5,11 +5,12 @@ import RecentPostBlock, {
   RecentPostBlockSkeleton,
 } from '@/2-features/post/ui/recent-post-block';
 import { getPosts } from '@/2-features/post/util/get-posts';
+import { parseLocale } from '@/5-shared/types/common.schema';
 
 export const Route = createFileRoute('/$locale/')({
   // loader: 데이터 prefetch (옵션)
   loader: async ({ params }) => {
-    const locale = params.locale as LocaleType;
+    const locale = parseLocale(params.locale);
     const postsPromise = getPosts({ locale, size: 3 });
     return { postsPromise };
   },
@@ -25,7 +26,7 @@ function HomePage() {
       <AboutBlock />
       <Suspense fallback={<RecentPostBlockSkeleton />}>
         <RecentPostBlock
-          locale={locale as LocaleType}
+          locale={parseLocale(locale)}
           postsPromise={postsPromise}
         />
       </Suspense>

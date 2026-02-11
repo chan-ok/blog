@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import MDComponent from '@/1-entities/markdown';
 import Reply from '@/5-shared/components/reply';
+import { parseLocale } from '@/5-shared/types/common.schema';
 
 export const Route = createFileRoute('/$locale/posts/$')({
   component: PostDetailPage,
@@ -20,7 +21,7 @@ function PostDetailPage() {
   return (
     <>
       <MDComponent path={path} />
-      <Reply locale={locale as LocaleType} />
+      <Reply locale={parseLocale(locale)} />
     </>
   );
 }

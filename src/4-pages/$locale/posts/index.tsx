@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
-import PostCardList from '@/2-features/post/ui/post-card-list';
+import PostCardList, {
+  PostCardListSkeleton,
+} from '@/2-features/post/ui/post-card-list';
+import { parseLocale } from '@/5-shared/types/common.schema';
 
 export const Route = createFileRoute('/$locale/posts/')({
   component: PostsPage,
@@ -11,8 +14,8 @@ function PostsPage() {
   const { locale } = Route.useParams();
 
   return (
-    <Suspense fallback={<div className="animate-pulse">Loading posts...</div>}>
-      <PostCardList locale={locale as LocaleType} />
+    <Suspense fallback={<PostCardListSkeleton />}>
+      <PostCardList locale={parseLocale(locale)} />
     </Suspense>
   );
 }
