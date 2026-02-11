@@ -2,13 +2,21 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Route } from './index';
 
-// PostCardList 모킹
+// PostCardList 및 PostCardListSkeleton 모킹
 vi.mock('@/2-features/post/ui/post-card-list', () => ({
-  default: ({ locale }: { locale: LocaleType }) => (
+  default: ({ locale }: { locale: string }) => (
     <div data-testid="post-card-list" data-locale={locale}>
       Post Card List
     </div>
   ),
+  PostCardListSkeleton: () => (
+    <div data-testid="post-card-list-skeleton">Loading...</div>
+  ),
+}));
+
+// parseLocale 모킹
+vi.mock('@/5-shared/types/common.schema', () => ({
+  parseLocale: (locale: string) => locale,
 }));
 
 // useParams 모킹
