@@ -73,10 +73,20 @@ export default function MDComponent({ path, baseUrl }: MDComponentProps) {
   const components = setMdxComponents();
 
   // 재시도 핸들러
-  const handleRetry = () => {
+  const handleRetry = async () => {
+    // 기존 상태 초기화
     setError(null);
     setMarkdownData(null);
     setMDXContent(null);
+
+    try {
+      // markdown을 다시 fetch
+      const data = await getMarkdown(path, baseUrl, router);
+      setMarkdownData(data);
+    } catch (err) {
+      // fetch 실패 시 에러 상태 복구
+      setError(err as Error);
+    }
   };
 
   // 에러 상태 (우선 체크)
