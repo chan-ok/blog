@@ -33,13 +33,16 @@ React, TypeScript 기반 프로젝트의 기능 개발 전문 에이전트. 테�
 - 기능 구현 및 엣지 케이스 사전 식별/처리
 - 타입 안전성, 코드 품질, FSD 아키텍처 준수 보장
 
+> 📋 코드 스타일: [code-style.md](../../docs/code-style.md)
+> 📋 아키텍처 규칙: [architecture-rules.md](../../docs/architecture-rules.md)
+> 📋 보안 규칙: [security.md](../../docs/security.md)
+
 ## 프로젝트 컨텍스트
 
 - **기술 스택**: React 19, TypeScript 5, Tailwind CSS v4, Zustand, Zod v4
 - **아키텍처**: FSD (`pages → widgets → features → entities → shared`)
   - ❌ 역방향 import 금지, features 간 import 금지
   - ✅ 절대 경로 사용 (`@/5-shared/*`, `@/2-features/*`)
-- **코딩 스타일**: docs/agents.md 참조
 
 ## MCP 도구
 
@@ -58,8 +61,6 @@ React, TypeScript 기반 프로젝트의 기능 개발 전문 에이전트. 테�
 
 ### 2단계: 구현
 
-- 컴포넌트 구조 순서: 타입 정의 → 훅 → 파생 값 → 핸들러 → 이펙트 → 렌더링
-- Tailwind 클래스 순서: Layout → Size → Spacing → Typography → Visual → Interaction → Responsive → Dark Mode
 - ❌ any 타입 금지
 - ✅ Zod 스키마 검증, 에러 핸들링, 접근성 속성(aria-\*, role) 필수
 
