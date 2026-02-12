@@ -339,66 +339,6 @@
         }
       }
     },
-    "security-scanner": {
-      "mode": "subagent",
-      "description": "Read-only security scanner that detects sensitive data exposure, dependency vulnerabilities, and insecure code patterns. Does NOT modify code - only reports findings.",
-      "prompt": "{file:.agents/agents/security-scanner.md}",
-      "model": "github-copilot/claude-sonnet-4.5",
-      "hidden": true,
-      "permission": {
-        "read": {
-          "*": "allow",
-          "*.env": "deny",
-          "*.env.*": "deny"
-        },
-        "write": {
-          "*": "deny"
-        },
-        "edit": {
-          "*": "deny"
-        },
-        "bash": {
-          "*": "ask",
-          "cat * > *": "deny",
-          "cat * >> *": "deny",
-          "npm *": "deny",
-          "pnpm *": "deny",
-          "yarn *": "deny",
-          "ls": "allow",
-          "ls *": "allow",
-          "wc": "allow",
-          "wc *": "allow",
-          "find *": "allow",
-          "find * | head *": "allow",
-          "find * | grep *": "allow",
-          "pnpm audit": "allow",
-          "pnpm audit --json": "allow",
-          "git status": "allow",
-          "git status *": "allow",
-          "git diff": "allow",
-          "git diff *": "allow",
-          "git diff * | head *": "allow",
-          "git diff * | tail *": "allow",
-          "git diff * | grep *": "allow",
-          "git log": "allow",
-          "git log *": "allow",
-          "git log * | head -*": "allow",
-          "git log * | tail -*": "allow",
-          "git log * | grep *": "allow",
-          "git log --oneline *": "allow",
-          "git log --oneline * | head -*": "allow",
-          "git show *": "allow",
-          "git show * --stat | head -*": "allow",
-          "git ls-tree -r HEAD --name-only": "allow",
-          "git branch --show-current": "allow",
-          "git branch --list": "allow",
-          "git worktree list": "allow",
-          "gh pr view *": "allow",
-          "gh pr checks *": "allow",
-          "gh pr diff *": "allow"
-        }
-      }
-    },
     "doc-manager": {
       "mode": "subagent",
       "description": "Manages and maintains all project documentation including agent prompts",
@@ -619,7 +559,7 @@
     },
     "tech-architect": {
       "mode": "subagent",
-      "description": "Validates subagent output quality - FSD architecture compliance, code style, requirements accuracy, over-engineering detection",
+      "description": "Validates subagent output quality - FSD architecture compliance, code style, requirements accuracy, over-engineering detection, security best practices, and provides feedback for improvement",
       "prompt": "{file:.agents/agents/tech-architect.md}",
       "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
@@ -646,6 +586,11 @@
           "pnpm lint | head *": "allow",
           "pnpm tsc": "allow",
           "pnpm tsc *": "allow",
+          "pnpm audit": "allow",
+          "pnpm audit --json": "allow",
+          "git show": "allow",
+          "git show *": "allow",
+          "git show * --stat | head -*": "allow",
           "git status": "allow",
           "git status *": "allow",
           "git diff": "allow",
@@ -660,7 +605,10 @@
           "git log * | grep *": "allow",
           "git log --oneline *": "allow",
           "git log --oneline * | head -*": "allow",
-          "git show * --stat | head -*": "allow",
+          "git ls-files": "allow",
+          "git ls-files *": "allow",
+          "git ls-tree -r HEAD": "allow",
+          "git ls-tree -r HEAD *": "allow",
           "git branch --show-current": "allow",
           "git branch --list": "allow",
           "git worktree list": "allow",

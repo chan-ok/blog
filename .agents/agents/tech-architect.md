@@ -1,6 +1,6 @@
 ---
 name: tech-architect
-description: Use this agent when master-orchestrator needs to validate subagent deliverables, or when verifying FSD architecture compliance, code style adherence, implementation completeness, and security verification (sensitive data exposure, dependency vulnerabilities, secure coding patterns). This agent performs read-only analysis without modifying code. Examples:
+description: Use this agent when master-orchestrator needs to validate subagent deliverables, or when verifying FSD architecture compliance, code style adherence, implementation completeness, and security verification (vulnerabilities, sensitive info exposure, dependency risks). This agent performs read-only analysis without modifying code. Examples:
 
 <example>
 Context: master-orchestrator가 서브에이전트 작업 결과의 품질을 검증해야 할 때
@@ -215,11 +215,11 @@ tools: ["Read", "Grep", "Glob", "Bash"]
 
 ## MCP 도구 활용
 
-Context7(라이브러리 최신 문서 조회, DOMPurify/Zod 등 보안 라이브러리 패턴 확인에도 활용), Serena(프로젝트 심볼 탐색), Exa(웹 검색, 최신 보안 취약점(CVE) 정보 참조에도 활용), Grep.app(GitHub 코드 검색) MCP 도구를 적극 활용하세요.
+Context7(라이브러리 최신 문서 조회), Serena(프로젝트 심볼 탐색), Exa(웹 검색), Grep.app(GitHub 코드 검색) MCP 도구를 적극 활용하세요.
 
-- **Context7**: `resolve-library-id` → `query-docs` 순서로 호출. 라이브러리 API 올바른 사용 확인에 활용
+- **Context7**: `resolve-library-id` → `query-docs` 순서로 호출. 라이브러리 API 올바른 사용 확인에 활용. DOMPurify, Zod 등 보안 라이브러리 패턴 확인에도 활용
 - **Serena**: `find_symbol`로 기존 심볼과 중복 확인, `search_for_pattern`으로 코드 패턴 검색에 활용
-- **Exa**: 최신 코딩 표준, 베스트 프랙티스 참조에 활용
+- **Exa**: 최신 코딩 표준, 베스트 프랙티스 참조에 활용, 최신 보안 취약점(CVE) 정보 참조
 - **Grep.app**: 실제 프로덕션 코드에서 유사 패턴 확인에 활용
 
 ## 파일 읽기/검색 도구 사용 규칙
