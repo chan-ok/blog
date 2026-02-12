@@ -304,7 +304,7 @@
 - Master Orchestrator: 작업 분배 및 조율
 - feature-developer: 컴포넌트 및 라우팅 구현
 - test-specialist: 테스트 코드 작성 및 검증
-- security-scanner: 보안 취약점 검사
+- security-scanner: 보안 취약점 검사 (현재는 tech-architect에 통합됨)
 - git-guardian: Git 워크플로우 관리
 - github-helper: PR 생성 및 관리
 - doc-manager: 문서 관리

@@ -66,7 +66,7 @@ pages → widgets → features → entities → shared
 | 언어/커밋 | 한국어 문서·주석·커밋, 영어 코드, Conventional Commits | [language-rules.md](./language-rules.md) |
 | Git Flow | `main ← develop ← feature`, Worktree 병렬 작업 | [git-flow.md](./git-flow.md) |
 | 안티패턴 | `any` 금지, FSD 위반, 테스트 하드코딩 | [anti-patterns.md](./anti-patterns.md) |
-| 에이전트 | 10개 전문 에이전트, 병렬·순차 실행 | [agent-system.md](./agent-system.md) |
+| 에이전트 | 9개 전문 에이전트, 병렬·순차 실행 | [agent-system.md](./agent-system.md) |
 
 ## AI 답변 검증
 
@@ -114,12 +114,11 @@ pages → widgets → features → entities → shared
 | master-orchestrator | 프로젝트 관리·조율 (코드 직접 작성 안함) | 복잡한 기능, 병렬 처리 |
 | feature-developer | 기능 개발 (테스트 코드 작성 안함) | UI, 비즈니스 로직, Form |
 | test-specialist | 테스트 코드 작성 | Unit/E2E/Property-based/Storybook |
-| security-scanner | 보안 취약점 탐지 (읽기 전용) | Pre-commit/Pre-push |
 | doc-manager | 문서 정확성·최신성 관리 | 문서 검증, 업데이트 |
 | lint-formatter | 포매팅·린트 에러 수정 | ESLint/Prettier |
 | git-guardian | Git 워크플로우 관리 | 커밋, 충돌 해결, 브랜치 |
 | github-helper | GitHub CLI 통합 | PR, CI/CD, Issue |
-| tech-architect | 결과물 품질 검증 (읽기 전용) | Phase 완료 후 검증 |
+| tech-architect | 결과물 품질 + 보안 취약점 검증 (읽기 전용) | Phase 완료 후 검증, 보안 스캔 |
 | retrospector | 회고 분석·프롬프트 개선 | PR 후 회고 |
 
 → 상세: [agent-system.md](./agent-system.md)
