@@ -317,6 +317,26 @@
 
 ## 최근 회고
 
+### 2026-02-12 — PR #50: feat: 404, 403, 500 에러 페이지 구현
+
+#### ✅ 잘한 점
+
+- feature-developer + test-specialist 병렬 실행으로 구현/테스트/스토리 병행 처리
+- TanStack Router error/notFound 처리와 i18n/다크모드/접근성까지 한 번에 완성
+- tech-architect 검증(94/100)과 개선사항 반영으로 품질 확보
+
+#### 🔧 개선점
+
+- named export vs default import 불일치로 통합 시점에 수정 반복 발생
+- Storybook args 타입 누락과 notFound 변경으로 기존 테스트 실패
+- pre-commit 훅(tsc+vitest)에서 3회 실패 → 사전 검증 체계 필요
+
+#### 🤖 에이전트 개선 제안
+
+- **feature-developer**: 새 컴포넌트 export 형태( default/named )를 작업 요약에 명시
+- **test-specialist**: 스토리 args 타입 체크리스트 추가 (required args 누락 방지)
+- **master-orchestrator**: 권한 제약(pnpm 미보유) 사전 고지 및 검증 위임 타이밍 명확화
+
 ### 2026-02-12 — PR #46: refactor: 기술부채 개선 — 타입 안전성, i18n, 파일명 규칙, UI 개선
 
 #### ✅ 잘한 점
