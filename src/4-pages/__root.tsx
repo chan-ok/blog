@@ -2,6 +2,7 @@ import {
   createRootRoute,
   ErrorComponentProps,
   Outlet,
+  useRouter,
 } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TanStackDevtools } from '@tanstack/react-devtools';
@@ -24,24 +25,29 @@ const queryClient = new QueryClient({
 
 export const Route = createRootRoute({
   component: RootLayout,
-  errorComponent: ({ reset }: ErrorComponentProps) => (
-    <ErrorPage
-      statusCode={500}
-      onRetry={reset}
-      onGoHome={() => {
-        window.location.href = '/';
-      }}
-    />
-  ),
-  notFoundComponent: () => (
-    <ErrorPage
-      statusCode={404}
-      onGoHome={() => {
-        window.location.href = '/';
-      }}
-    />
-  ),
+  errorComponent: RootErrorComponent,
+  notFoundComponent: RootNotFoundComponent,
 });
+
+function RootErrorComponent({ reset }: ErrorComponentProps) {
+  const router = useRouter();
+
+  const handleGoHome = () => {
+    router.navigate({ to: '/' });
+  };
+
+  return <ErrorPage statusCode={500} onRetry={reset} onGoHome={handleGoHome} />;
+}
+
+function RootNotFoundComponent() {
+  const router = useRouter();
+
+  const handleGoHome = () => {
+    router.navigate({ to: '/' });
+  };
+
+  return <ErrorPage statusCode={404} onGoHome={handleGoHome} />;
+}
 
 function RootLayout() {
   return (
