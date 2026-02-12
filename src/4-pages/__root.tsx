@@ -1,8 +1,15 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import {
+  createRootRoute,
+  ErrorComponentProps,
+  Outlet,
+  useRouter,
+} from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
+
+import { ErrorPage } from '@/5-shared/components/error-page';
 
 // QueryClient 인스턴스 생성
 const queryClient = new QueryClient({
@@ -18,7 +25,29 @@ const queryClient = new QueryClient({
 
 export const Route = createRootRoute({
   component: RootLayout,
+  errorComponent: RootErrorComponent,
+  notFoundComponent: RootNotFoundComponent,
 });
+
+function RootErrorComponent({ reset }: ErrorComponentProps) {
+  const router = useRouter();
+
+  const handleGoHome = () => {
+    router.navigate({ to: '/' });
+  };
+
+  return <ErrorPage statusCode={500} onRetry={reset} onGoHome={handleGoHome} />;
+}
+
+function RootNotFoundComponent() {
+  const router = useRouter();
+
+  const handleGoHome = () => {
+    router.navigate({ to: '/' });
+  };
+
+  return <ErrorPage statusCode={404} onGoHome={handleGoHome} />;
+}
 
 function RootLayout() {
   return (

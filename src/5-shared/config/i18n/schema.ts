@@ -38,6 +38,16 @@ export const TranslationResourceSchema = z.object({
     loading: z.string().min(1),
     retry: z.string().min(1),
   }),
+  error: z.object({
+    notFound: z.string().min(1),
+    notFoundDesc: z.string().min(1),
+    forbidden: z.string().min(1),
+    forbiddenDesc: z.string().min(1),
+    serverError: z.string().min(1),
+    serverErrorDesc: z.string().min(1),
+    goHome: z.string().min(1),
+    retry: z.string().min(1),
+  }),
 });
 
 export type TranslationResourceFromSchema = z.infer<
