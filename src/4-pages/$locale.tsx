@@ -3,6 +3,8 @@ import {
   ErrorComponentProps,
   notFound,
   Outlet,
+  useRouter,
+  useRouterState,
 } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { z } from 'zod';
@@ -26,38 +28,51 @@ export const Route = createFileRoute('/$locale')({
     }
   },
   component: LocaleLayout,
-  errorComponent: ({ reset }: ErrorComponentProps) => {
-    const urlLocale = parseLocale(window.location.pathname.split('/')[1]);
-    return (
-      <ThemeProvider>
-        <LocaleProvider locale={urlLocale}>
-          <ErrorPage
-            statusCode={500}
-            onRetry={reset}
-            onGoHome={() => {
-              window.location.href = `/${urlLocale}`;
-            }}
-          />
-        </LocaleProvider>
-      </ThemeProvider>
-    );
-  },
-  notFoundComponent: () => {
-    const urlLocale = parseLocale(window.location.pathname.split('/')[1]);
-    return (
-      <ThemeProvider>
-        <LocaleProvider locale={urlLocale}>
-          <ErrorPage
-            statusCode={404}
-            onGoHome={() => {
-              window.location.href = `/${urlLocale}`;
-            }}
-          />
-        </LocaleProvider>
-      </ThemeProvider>
-    );
-  },
+  errorComponent: ErrorComponent,
+  notFoundComponent: NotFoundComponent,
 });
+
+function ErrorComponent({ reset }: ErrorComponentProps) {
+  const router = useRouter();
+  const routerState = useRouterState();
+
+  // Extract locale from the URL pathname using router state
+  const pathSegments = routerState.location.pathname.split('/').filter(Boolean);
+  const locale = parseLocale(pathSegments[0]);
+
+  const handleGoHome = () => {
+    router.navigate({ to: `/${locale}` });
+  };
+
+  return (
+    <ThemeProvider>
+      <LocaleProvider locale={locale}>
+        <ErrorPage statusCode={500} onRetry={reset} onGoHome={handleGoHome} />
+      </LocaleProvider>
+    </ThemeProvider>
+  );
+}
+
+function NotFoundComponent() {
+  const router = useRouter();
+  const routerState = useRouterState();
+
+  // Extract locale from the URL pathname using router state
+  const pathSegments = routerState.location.pathname.split('/').filter(Boolean);
+  const locale = parseLocale(pathSegments[0]);
+
+  const handleGoHome = () => {
+    router.navigate({ to: `/${locale}` });
+  };
+
+  return (
+    <ThemeProvider>
+      <LocaleProvider locale={locale}>
+        <ErrorPage statusCode={404} onGoHome={handleGoHome} />
+      </LocaleProvider>
+    </ThemeProvider>
+  );
+}
 
 function LocaleLayout() {
   const { locale } = Route.useParams();
