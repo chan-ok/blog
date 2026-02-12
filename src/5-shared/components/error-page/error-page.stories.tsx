@@ -96,16 +96,18 @@ export const WithRetryButton: Story = {
   args: {
     statusCode: 500,
     onRetry: () => console.log('Retry clicked'),
+    onGoHome: () => console.log('Go Home clicked'),
   },
 };
 
 /**
- * Without Buttons: 버튼이 없는 에러 페이지
- * onGoHome과 onRetry를 전달하지 않으면 버튼이 표시되지 않습니다.
+ * Without Retry Button: onRetry 없는 에러 페이지
+ * onRetry를 전달하지 않으면 "Try Again" 버튼이 표시되지 않습니다.
  */
-export const WithoutButtons: Story = {
+export const WithoutRetryButton: Story = {
   args: {
     statusCode: 404,
+    onGoHome: () => console.log('Go Home clicked'),
   },
 };
 
@@ -116,6 +118,7 @@ export const WithoutButtons: Story = {
 export const DarkMode: Story = {
   args: {
     statusCode: 404,
+    onGoHome: () => console.log('Go Home clicked'),
   },
   parameters: {
     backgrounds: { default: 'dark' },
@@ -160,6 +163,7 @@ export const DarkMode: Story = {
 export const AllStates: Story = {
   args: {
     statusCode: 404,
+    onGoHome: () => console.log('Go Home clicked'),
   },
   render: () => (
     <div className="flex flex-col gap-12 p-8">

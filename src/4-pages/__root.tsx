@@ -25,9 +25,22 @@ const queryClient = new QueryClient({
 export const Route = createRootRoute({
   component: RootLayout,
   errorComponent: ({ reset }: ErrorComponentProps) => (
-    <ErrorPage statusCode={500} onRetry={reset} />
+    <ErrorPage
+      statusCode={500}
+      onRetry={reset}
+      onGoHome={() => {
+        window.location.href = '/';
+      }}
+    />
   ),
-  notFoundComponent: () => <ErrorPage statusCode={404} />,
+  notFoundComponent: () => (
+    <ErrorPage
+      statusCode={404}
+      onGoHome={() => {
+        window.location.href = '/';
+      }}
+    />
+  ),
 });
 
 function RootLayout() {

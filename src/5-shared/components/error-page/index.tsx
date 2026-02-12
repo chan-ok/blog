@@ -7,7 +7,7 @@ export interface ErrorPageProps {
   title?: string;
   description?: string;
   onRetry?: () => void;
-  onGoHome?: () => void;
+  onGoHome: () => void;
 }
 
 // 각 에러 코드별 기본 메시지
@@ -63,20 +63,14 @@ export function ErrorPage({
     title || t(i18nKeys[statusCode].title, defaultMessages[statusCode].title);
   const displayDescription =
     description ||
-    t(i18nKeys[statusCode].description, defaultMessages[statusCode].description);
-
-  const handleGoHome = () => {
-    if (onGoHome) {
-      onGoHome();
-    } else {
-      // 기본 동작: 루트로 이동
-      window.location.href = '/';
-    }
-  };
+    t(
+      i18nKeys[statusCode].description,
+      defaultMessages[statusCode].description
+    );
 
   return (
     <div
-      className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-6 py-12"
+      className="flex flex-col min-h-[60vh] items-center justify-center gap-6 px-6 py-12"
       role="alert"
       aria-label={`Error ${statusCode}: ${displayTitle}`}
     >
@@ -102,7 +96,7 @@ export function ErrorPage({
       <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
         <Button
           variant="primary"
-          onClick={handleGoHome}
+          onClick={onGoHome}
           aria-label={t('error.goHome', 'Go Home')}
         >
           {t('error.goHome', 'Go Home')}

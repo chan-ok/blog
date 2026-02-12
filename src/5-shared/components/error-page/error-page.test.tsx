@@ -76,7 +76,9 @@ describe('ErrorPage', () => {
      * 기대 결과: "Page Not Found" 제목과 기본 설명 표시
      */
     it('404 상태 코드와 기본 메시지를 올바르게 렌더링해야 한다', () => {
-      const { unmount } = render(<ErrorPage statusCode={404} />);
+      const { unmount } = render(
+        <ErrorPage statusCode={404} onGoHome={vi.fn()} />
+      );
 
       // 제목과 설명이 표시되는지 확인
       expect(screen.getByText('Page Not Found')).toBeInTheDocument();
@@ -96,7 +98,9 @@ describe('ErrorPage', () => {
      * 기대 결과: "Access Denied" 제목과 기본 설명 표시
      */
     it('403 상태 코드와 기본 메시지를 올바르게 렌더링해야 한다', () => {
-      const { unmount } = render(<ErrorPage statusCode={403} />);
+      const { unmount } = render(
+        <ErrorPage statusCode={403} onGoHome={vi.fn()} />
+      );
 
       expect(screen.getByText('Access Denied')).toBeInTheDocument();
       expect(
@@ -113,7 +117,9 @@ describe('ErrorPage', () => {
      * 기대 결과: "Something Went Wrong" 제목과 기본 설명 표시
      */
     it('500 상태 코드와 기본 메시지를 올바르게 렌더링해야 한다', () => {
-      const { unmount } = render(<ErrorPage statusCode={500} />);
+      const { unmount } = render(
+        <ErrorPage statusCode={500} onGoHome={vi.fn()} />
+      );
 
       expect(screen.getByText('Something Went Wrong')).toBeInTheDocument();
       expect(
@@ -140,6 +146,7 @@ describe('ErrorPage', () => {
           statusCode={404}
           title={customTitle}
           description={customDescription}
+          onGoHome={vi.fn()}
         />
       );
 
@@ -196,7 +203,7 @@ describe('ErrorPage', () => {
       const user = userEvent.setup();
 
       const { unmount } = render(
-        <ErrorPage statusCode={500} onRetry={handleRetry} />
+        <ErrorPage statusCode={500} onRetry={handleRetry} onGoHome={vi.fn()} />
       );
 
       // "Try Again" 버튼이 존재하는지 확인
@@ -219,7 +226,9 @@ describe('ErrorPage', () => {
      * 기대 결과: "Try Again" 버튼이 렌더링되지 않음
      */
     it('onRetry가 없으면 "Try Again" 버튼이 렌더링되지 않아야 한다', () => {
-      const { unmount } = render(<ErrorPage statusCode={500} />);
+      const { unmount } = render(
+        <ErrorPage statusCode={500} onGoHome={vi.fn()} />
+      );
 
       // "Try Again" 버튼이 존재하지 않는지 확인
       expect(
@@ -245,7 +254,9 @@ describe('ErrorPage', () => {
      * 즉시 알림으로 전달되는지 확인합니다.
      */
     it('role="alert"가 설정되어 있어야 한다', () => {
-      const { unmount } = render(<ErrorPage statusCode={404} />);
+      const { unmount } = render(
+        <ErrorPage statusCode={404} onGoHome={vi.fn()} />
+      );
 
       // role="alert" 요소가 존재하는지 확인
       const alertElement = screen.getByRole('alert');

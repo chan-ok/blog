@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { ErrorPage } from '@/5-shared/components/error-page';
 import { LocaleProvider } from '@/5-shared/providers/locale-provider';
 import { ThemeProvider } from '@/5-shared/providers/theme-provider';
+import { parseLocale } from '@/5-shared/types/common.schema';
 import Footer from '@/3-widgets/footer';
 import Header from '@/3-widgets/header';
 
@@ -25,20 +26,37 @@ export const Route = createFileRoute('/$locale')({
     }
   },
   component: LocaleLayout,
-  errorComponent: ({ reset }: ErrorComponentProps) => (
-    <ThemeProvider>
-      <LocaleProvider locale="en">
-        <ErrorPage statusCode={500} onRetry={reset} />
-      </LocaleProvider>
-    </ThemeProvider>
-  ),
-  notFoundComponent: () => (
-    <ThemeProvider>
-      <LocaleProvider locale="en">
-        <ErrorPage statusCode={404} />
-      </LocaleProvider>
-    </ThemeProvider>
-  ),
+  errorComponent: ({ reset }: ErrorComponentProps) => {
+    const urlLocale = parseLocale(window.location.pathname.split('/')[1]);
+    return (
+      <ThemeProvider>
+        <LocaleProvider locale={urlLocale}>
+          <ErrorPage
+            statusCode={500}
+            onRetry={reset}
+            onGoHome={() => {
+              window.location.href = `/${urlLocale}`;
+            }}
+          />
+        </LocaleProvider>
+      </ThemeProvider>
+    );
+  },
+  notFoundComponent: () => {
+    const urlLocale = parseLocale(window.location.pathname.split('/')[1]);
+    return (
+      <ThemeProvider>
+        <LocaleProvider locale={urlLocale}>
+          <ErrorPage
+            statusCode={404}
+            onGoHome={() => {
+              window.location.href = `/${urlLocale}`;
+            }}
+          />
+        </LocaleProvider>
+      </ThemeProvider>
+    );
+  },
 });
 
 function LocaleLayout() {
