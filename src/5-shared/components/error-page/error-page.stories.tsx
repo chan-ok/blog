@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
+import { fn } from 'storybook/test';
 import { ErrorPage } from '.';
 
 const meta = {
@@ -48,7 +49,7 @@ type Story = StoryObj<typeof meta>;
 export const NotFound: Story = {
   args: {
     statusCode: 404,
-    onGoHome: () => console.log('Go Home clicked'),
+    onGoHome: fn(),
   },
 };
 
@@ -58,7 +59,7 @@ export const NotFound: Story = {
 export const Forbidden: Story = {
   args: {
     statusCode: 403,
-    onGoHome: () => console.log('Go Home clicked'),
+    onGoHome: fn(),
   },
 };
 
@@ -69,8 +70,8 @@ export const Forbidden: Story = {
 export const ServerError: Story = {
   args: {
     statusCode: 500,
-    onRetry: () => console.log('Retry clicked'),
-    onGoHome: () => console.log('Go Home clicked'),
+    onRetry: fn(),
+    onGoHome: fn(),
   },
 };
 
@@ -84,7 +85,7 @@ export const CustomMessage: Story = {
     title: 'Oops! Something went wrong',
     description:
       'We could not find what you were looking for. Please check the URL or contact support.',
-    onGoHome: () => console.log('Go Home clicked'),
+    onGoHome: fn(),
   },
 };
 
@@ -95,8 +96,8 @@ export const CustomMessage: Story = {
 export const WithRetryButton: Story = {
   args: {
     statusCode: 500,
-    onRetry: () => console.log('Retry clicked'),
-    onGoHome: () => console.log('Go Home clicked'),
+    onRetry: fn(),
+    onGoHome: fn(),
   },
 };
 
@@ -107,7 +108,7 @@ export const WithRetryButton: Story = {
 export const WithoutRetryButton: Story = {
   args: {
     statusCode: 404,
-    onGoHome: () => console.log('Go Home clicked'),
+    onGoHome: fn(),
   },
 };
 
@@ -118,7 +119,7 @@ export const WithoutRetryButton: Story = {
 export const DarkMode: Story = {
   args: {
     statusCode: 404,
-    onGoHome: () => console.log('Go Home clicked'),
+    onGoHome: fn(),
   },
   parameters: {
     backgrounds: { default: 'dark' },
@@ -131,22 +132,22 @@ export const DarkMode: Story = {
             <h2 className="text-white text-xl font-bold mb-4">404 Error</h2>
             <ErrorPage
               statusCode={404}
-              onGoHome={() => console.log('Go Home clicked')}
+              onGoHome={fn()}
             />
           </div>
           <div>
             <h2 className="text-white text-xl font-bold mb-4">403 Error</h2>
             <ErrorPage
               statusCode={403}
-              onGoHome={() => console.log('Go Home clicked')}
+              onGoHome={fn()}
             />
           </div>
           <div>
             <h2 className="text-white text-xl font-bold mb-4">500 Error</h2>
             <ErrorPage
               statusCode={500}
-              onRetry={() => console.log('Retry clicked')}
-              onGoHome={() => console.log('Go Home clicked')}
+              onRetry={fn()}
+              onGoHome={fn()}
             />
           </div>
         </div>
@@ -163,7 +164,7 @@ export const DarkMode: Story = {
 export const AllStates: Story = {
   args: {
     statusCode: 404,
-    onGoHome: () => console.log('Go Home clicked'),
+    onGoHome: fn(),
   },
   render: () => (
     <div className="flex flex-col gap-12 p-8">
@@ -173,7 +174,7 @@ export const AllStates: Story = {
         </h3>
         <ErrorPage
           statusCode={404}
-          onGoHome={() => console.log('Go Home clicked')}
+          onGoHome={fn()}
         />
       </section>
       <section>
@@ -182,7 +183,7 @@ export const AllStates: Story = {
         </h3>
         <ErrorPage
           statusCode={403}
-          onGoHome={() => console.log('Go Home clicked')}
+          onGoHome={fn()}
         />
       </section>
       <section>
@@ -191,8 +192,8 @@ export const AllStates: Story = {
         </h3>
         <ErrorPage
           statusCode={500}
-          onRetry={() => console.log('Retry clicked')}
-          onGoHome={() => console.log('Go Home clicked')}
+          onRetry={fn()}
+          onGoHome={fn()}
         />
       </section>
       <section>
@@ -203,7 +204,7 @@ export const AllStates: Story = {
           statusCode={404}
           title="Custom Error"
           description="This is a custom error message."
-          onGoHome={() => console.log('Go Home clicked')}
+          onGoHome={fn()}
         />
       </section>
     </div>
