@@ -30,6 +30,9 @@ vi.mock('@tanstack/react-router', async () => {
   return {
     ...actual,
     Outlet: () => <div data-testid="outlet">Outlet Content</div>,
+    notFound: () => {
+      throw new Error('Not Found');
+    },
   };
 });
 
@@ -84,10 +87,8 @@ describe('$locale 레이아웃 라우트', () => {
       beforeLoad?.({ params: { locale: 'ja' } } as any)
     ).not.toThrow();
 
-    // 유효하지 않은 locale
-    expect(() => beforeLoad?.({ params: { locale: 'fr' } } as any)).toThrow(
-      'Invalid locale: fr'
-    );
+    // 유효하지 않은 locale - notFound() throw
+    expect(() => beforeLoad?.({ params: { locale: 'fr' } } as any)).toThrow();
   });
 
   it('레이아웃 구조가 올바른 클래스를 가져야 한다', () => {

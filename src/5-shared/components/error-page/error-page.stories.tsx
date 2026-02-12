@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
-import ErrorPage from '.';
+import { ErrorPage } from '.';
 
 const meta = {
   title: 'Components/ErrorPage',
@@ -114,11 +114,14 @@ export const WithoutButtons: Story = {
  * 모든 상태 코드의 에러 페이지를 다크 모드에서 표시합니다.
  */
 export const DarkMode: Story = {
+  args: {
+    statusCode: 404,
+  },
   parameters: {
     backgrounds: { default: 'dark' },
   },
   decorators: [
-    (Story: React.ComponentType) => (
+    () => (
       <div className="min-h-screen w-screen flex items-center justify-center dark bg-gray-900">
         <div className="flex flex-col gap-12">
           <div>
@@ -155,6 +158,9 @@ export const DarkMode: Story = {
  * 404, 403, 500 에러를 한 번에 확인할 수 있습니다.
  */
 export const AllStates: Story = {
+  args: {
+    statusCode: 404,
+  },
   render: () => (
     <div className="flex flex-col gap-12 p-8">
       <section>

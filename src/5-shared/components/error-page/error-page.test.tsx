@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import ErrorPage from '.';
+import { ErrorPage } from '.';
 
 /**
  * ============================================================================
@@ -51,8 +51,7 @@ vi.mock('react-i18next', () => ({
         'error.notFoundDesc':
           "The page you're looking for doesn't exist or has been moved.",
         'error.forbidden': 'Access Denied',
-        'error.forbiddenDesc':
-          "You don't have permission to access this page.",
+        'error.forbiddenDesc': "You don't have permission to access this page.",
         'error.serverError': 'Something Went Wrong',
         'error.serverErrorDesc':
           'An unexpected error occurred. Please try again later.',
@@ -274,8 +273,12 @@ describe('ErrorPage', () => {
       );
 
       // 모든 버튼이 접근 가능한 텍스트를 가지고 있는지 확인
-      expect(screen.getByRole('button', { name: /Go Home/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Try Again/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Go Home/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Try Again/i })
+      ).toBeInTheDocument();
 
       unmount();
     });
