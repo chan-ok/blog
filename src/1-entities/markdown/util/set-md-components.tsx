@@ -1,5 +1,8 @@
+import React from 'react';
 import type { MDXComponents } from 'mdx/types';
+
 import CodeBlock from '../ui/code-block';
+import MermaidDiagram from '../ui/mermaid-diagram';
 import Typography from '../ui/typography';
 
 export default function setMdxComponents(
@@ -40,7 +43,25 @@ export default function setMdxComponents(
         </a>
       );
     },
-    pre: CodeBlock,
+    pre: ({ children }) => {
+      // children에서 code 엘리먼트 추출
+      const codeElement = React.isValidElement(children) ? children : null;
+      const props = codeElement?.props as
+        | { className?: string; children?: React.ReactNode }
+        | undefined;
+      const className = props?.className || '';
+
+      // mermaid 다이어그램 감지
+      if (className.includes('language-mermaid')) {
+        const codeChildren = props?.children;
+        const mermaidCode =
+          typeof codeChildren === 'string' ? codeChildren : '';
+        return <MermaidDiagram code={mermaidCode} />;
+      }
+
+      // 일반 코드 블록
+      return <CodeBlock>{children}</CodeBlock>;
+    },
     code: ({ children, className }) => {
       // 코드 블록 내 code는 className이 있음 → 스타일링 없이 통과
       if (className) {
