@@ -2,7 +2,9 @@ import React from 'react';
 import type { MDXComponents } from 'mdx/types';
 
 import CodeBlock from '../ui/code-block';
+import ImageBlock from '../ui/image-block';
 import MermaidDiagram from '../ui/mermaid-diagram';
+import TableWrapper from '../ui/table-wrapper';
 import Typography from '../ui/typography';
 
 export default function setMdxComponents(
@@ -74,6 +76,10 @@ export default function setMdxComponents(
         </code>
       );
     },
+    img: ({ src, alt }) => <ImageBlock src={src || ''} alt={alt} />,
+    table: ({ children, ...rest }) => (
+      <TableWrapper {...rest}>{children}</TableWrapper>
+    ),
     ...components,
   };
 }
