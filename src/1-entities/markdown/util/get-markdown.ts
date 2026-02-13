@@ -1,16 +1,22 @@
-import { compile } from '@mdx-js/mdx';
-import { api } from '@/5-shared/config/api';
-import matter from 'gray-matter';
+import { evaluate } from '@mdx-js/mdx';
+import * as runtime from 'react/jsx-runtime';
 import remarkGfm from 'remark-gfm';
 import remarkFrontmatter from 'remark-frontmatter';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import matter from 'gray-matter';
+
+import { api } from '@/5-shared/config/api';
+
 import { Frontmatter } from '../model/markdown.schema';
 
 interface MarkdownElement {
   frontmatter: Frontmatter;
   content: string;
   source: string;
-  compiledSource: string; // 컴파일된 MDX 코드 (function body string)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  MDXContent: React.ComponentType<{ components?: any }>;
 }
 
 export default async function getMarkdown(
@@ -36,17 +42,39 @@ export default async function getMarkdown(
 
   const { content, data } = matter(stringData);
 
-  // MDX 컴파일 (outputFormat: 'function-body')
-  const compiled = await compile(content, {
-    outputFormat: 'function-body',
+  // MDX evaluate (1단계 처리)
+  const { default: MDXContent } = await evaluate(content, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(runtime as any),
     remarkPlugins: [remarkGfm, remarkFrontmatter],
-    rehypePlugins: [rehypeHighlight],
+    rehypePlugins: [
+      rehypeHighlight,
+      rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: 'prepend',
+          properties: {
+            className: ['anchor'],
+            ariaHidden: 'true',
+            tabIndex: -1,
+          },
+          content: {
+            type: 'element',
+            tagName: 'span',
+            properties: { className: ['anchor-icon'] },
+            children: [{ type: 'text', value: '#' }],
+          },
+        },
+      ],
+    ],
   });
 
   return {
     content,
     frontmatter: data as unknown as Frontmatter,
     source: response.data,
-    compiledSource: String(compiled),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    MDXContent: MDXContent as React.ComponentType<{ components?: any }>,
   };
 }

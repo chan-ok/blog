@@ -1,5 +1,5 @@
 import type { MDXComponents } from 'mdx/types';
-import Code from '../ui/code';
+import CodeBlock from '../ui/code-block';
 import Typography from '../ui/typography';
 
 export default function setMdxComponents(
@@ -11,25 +11,48 @@ export default function setMdxComponents(
     h3: Typography.h3,
     h4: Typography.h4,
     h5: Typography.h5,
+    h6: Typography.h6,
     p: ({ children }) => <p className="mb-6">{children}</p>,
     ul: ({ children }) => (
       <ul className="mb-6 list-inside list-disc">{children}</ul>
     ),
     li: ({ children }) => <li className="mb-1">{children}</li>,
-    a: ({ href, children }) => (
-      <a
-        href={href}
-        className="text-blue-600 hover:text-blue-800 underline underline-offset-2 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
-      >
-        {children}
-      </a>
-    ),
-    pre: ({ children }) => (
-      <pre className="mb-6 overflow-x-auto rounded-lg bg-gray-900 p-4">
-        {children}
-      </pre>
-    ),
-    code: Code,
+    a: ({ href, children, className, ...rest }) => {
+      // 앵커 링크 (rehype-autolink-headings가 생성)
+      if (typeof className === 'string' && className.includes('anchor')) {
+        return (
+          <a
+            href={href}
+            className="mr-2 no-underline text-gray-400 opacity-0 transition-opacity group-hover:opacity-70 hover:!opacity-100"
+            {...rest}
+          >
+            {children}
+          </a>
+        );
+      }
+      // 일반 링크
+      return (
+        <a
+          href={href}
+          className="text-blue-600 underline underline-offset-2 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          {children}
+        </a>
+      );
+    },
+    pre: CodeBlock,
+    code: ({ children, className }) => {
+      // 코드 블록 내 code는 className이 있음 → 스타일링 없이 통과
+      if (className) {
+        return <code className={className}>{children}</code>;
+      }
+      // 인라인 코드
+      return (
+        <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+          {children}
+        </code>
+      );
+    },
     ...components,
   };
 }
