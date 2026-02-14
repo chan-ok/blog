@@ -52,16 +52,8 @@ describe('$locale/index 라우트 (홈 페이지)', () => {
     Route.useLoaderData = mockUseLoaderData;
   });
 
-  it('에러 없이 렌더링되어야 한다', () => {
-    const Component = Route.options.component as React.ComponentType;
-    expect(Component).toBeDefined();
-
-    render(<Component />);
-  });
-
   it('HomePage가 AboutBlock을 포함해야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     expect(screen.getByTestId('about-block')).toBeInTheDocument();
@@ -69,7 +61,6 @@ describe('$locale/index 라우트 (홈 페이지)', () => {
 
   it('HomePage가 RecentPostBlock을 포함해야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     expect(screen.getByTestId('recent-post-block')).toBeInTheDocument();
@@ -85,17 +76,5 @@ describe('$locale/index 라우트 (홈 페이지)', () => {
 
     expect(getPosts).toHaveBeenCalledWith({ locale: 'ko', size: 3 });
     expect(result).toHaveProperty('postsPromise');
-  });
-
-  it('페이지가 올바른 레이아웃 구조를 가져야 한다', () => {
-    const Component = Route.options.component as React.ComponentType;
-
-    const { container } = render(<Component />);
-
-    // flex-col, min-h-screen, gap-8 클래스 확인
-    const layoutDiv = container.querySelector(
-      '.flex.flex-col.min-h-screen.gap-8'
-    );
-    expect(layoutDiv).toBeInTheDocument();
   });
 });

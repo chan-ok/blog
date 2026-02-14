@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
         routesDirectory: './src/4-pages',
         generatedRouteTree: './src/5-shared/config/route/routeTree.gen.ts',
         routeFileIgnorePattern: '\\.test\\.tsx?$',
-        autoCodeSplitting: true,
+        autoCodeSplitting: false,
       }),
       react(),
       tsconfigPaths(),
@@ -110,6 +110,7 @@ export default defineConfig(({ mode }) => {
             include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
             environment: 'jsdom',
             setupFiles: ['./vitest.setup.ts'],
+            typecheck: { enabled: true },
           },
         },
         {
