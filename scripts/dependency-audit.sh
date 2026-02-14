@@ -13,7 +13,13 @@ set -euo pipefail
 echo "🔍 Checking for dependency vulnerabilities..."
 
 # pnpm audit 실행 (High 이상만 체크)
-AUDIT_OUTPUT=$(pnpm audit --audit-level=high --json 2>/dev/null || echo '{}')
+AUDIT_OUTPUT=$(pnpm audit --audit-level=high --json 2>&1 || echo '{}')
+
+# Check if audit failed due to network/cloudflare issues
+if echo "$AUDIT_OUTPUT" | grep -q "ERR_PNPM_AUDIT_BAD_RESPONSE\|cloudflare\|400 Bad Request"; then
+  echo "⚠️  Unable to check vulnerabilities due to network issues. Proceeding with push."
+  exit 0
+fi
 
 # Critical 또는 High 취약점 개수 확인
 CRITICAL_COUNT=$(echo "$AUDIT_OUTPUT" | grep -o '"severity":"critical"' | wc -l)

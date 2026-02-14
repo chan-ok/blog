@@ -104,12 +104,12 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   const tocList = (
     <nav role="navigation" aria-label="Table of contents">
       <ul className="space-y-1">
-        {headings.map(({ id, text, level }) => {
+        {headings.map(({ id, text, level }, index) => {
           const isActive = activeId === id;
           const isH3 = level === 3;
 
           return (
-            <li key={id}>
+            <li key={`${id}-${index}`}>
               <button
                 onClick={() => handleHeadingClick(id)}
                 className={`
@@ -162,11 +162,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
         </button>
 
         {/* 접이식 콘텐츠 */}
-        {isOpen && (
-          <div className="mt-2 rounded-lg p-4">
-            {tocList}
-          </div>
-        )}
+        {isOpen && <div className="mt-2 rounded-lg p-4">{tocList}</div>}
       </div>
 
       {/* 데스크탑: 사이드바 (sticky) */}
