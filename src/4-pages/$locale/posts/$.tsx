@@ -68,10 +68,7 @@ function PostDetailPage() {
   }, [path]);
 
   return (
-    <div className="lg:grid lg:grid-cols-[250px_1fr] lg:gap-8">
-      {/* 데스크탑: 왼쪽 TOC 사이드바 */}
-      <TableOfContents headings={headings} />
-
+    <div className="lg:grid lg:grid-cols-[1fr_250px] lg:gap-8">
       {/* 메인 콘텐츠 */}
       <div>
         <div ref={contentRef}>
@@ -79,6 +76,9 @@ function PostDetailPage() {
         </div>
         <Reply locale={parseLocale(locale)} />
       </div>
+
+      {/* 데스크탑: 오른쪽 TOC 사이드바 */}
+      <TableOfContents headings={headings} />
     </div>
   );
 }
