@@ -36,10 +36,16 @@ export default function setMdxComponents(
         );
       }
       // 일반 링크
+      // target="_blank"인 경우 보안을 위해 rel="noopener noreferrer" 강제
+      const isExternalLink = rest.target === '_blank';
+      const secureRel = isExternalLink ? 'noopener noreferrer' : rest.rel;
+
       return (
         <a
           href={href}
           className="text-blue-600 underline underline-offset-2 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+          {...rest}
+          rel={secureRel}
         >
           {children}
         </a>
