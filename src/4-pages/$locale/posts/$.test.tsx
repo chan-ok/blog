@@ -19,6 +19,18 @@ vi.mock('@/5-shared/components/reply', () => ({
   ),
 }));
 
+// TableOfContents 모킹
+vi.mock('@/2-features/post/ui/table-of-contents', () => ({
+  default: ({ headings }: { headings: any[] }) => (
+    <div
+      data-testid="table-of-contents"
+      data-headings={JSON.stringify(headings)}
+    >
+      Table of Contents
+    </div>
+  ),
+}));
+
 // notFound 모킹 - 함수 선언을 바로 하지 않고 vi.fn()으로 생성
 vi.mock('@tanstack/react-router', async () => {
   const actual = await vi.importActual('@tanstack/react-router');
@@ -47,16 +59,8 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
     Route.useParams = mockUseParams;
   });
 
-  it('에러 없이 렌더링되어야 한다', () => {
-    const Component = Route.options.component as React.ComponentType;
-    expect(Component).toBeDefined();
-
-    render(<Component />);
-  });
-
   it('PostDetailPage가 MDComponent를 포함해야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     expect(screen.getByTestId('md-component')).toBeInTheDocument();
@@ -64,15 +68,20 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
 
   it('PostDetailPage가 Reply를 포함해야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     expect(screen.getByTestId('reply')).toBeInTheDocument();
   });
 
+  it('PostDetailPage가 TableOfContents를 포함해야 한다', () => {
+    const Component = Route.options.component as React.ComponentType;
+    render(<Component />);
+
+    expect(screen.getByTestId('table-of-contents')).toBeInTheDocument();
+  });
+
   it('MDComponent에 올바른 경로를 전달해야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     const mdComponent = screen.getByTestId('md-component');
@@ -81,7 +90,6 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
 
   it('Reply에 올바른 locale을 전달해야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     const reply = screen.getByTestId('reply');
@@ -92,7 +100,6 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
     mockUseParams.mockReturnValue({ locale: 'ko', _splat: '' });
 
     const Component = Route.options.component as React.ComponentType;
-
     expect(() => render(<Component />)).toThrow('Not Found');
     expect(notFound).toHaveBeenCalled();
   });
@@ -101,7 +108,6 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
     mockUseParams.mockReturnValue({ locale: 'ko', _splat: '   ' });
 
     const Component = Route.options.component as React.ComponentType;
-
     expect(() => render(<Component />)).toThrow('Not Found');
     expect(notFound).toHaveBeenCalled();
   });
@@ -110,7 +116,6 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
     mockUseParams.mockReturnValue({ locale: 'en', _splat: 'hello-world' });
 
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     const mdComponent = screen.getByTestId('md-component');
