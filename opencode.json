@@ -761,7 +761,7 @@
       "pnpm coverage *": "allow",
       "pnpm lint": "allow",
       "pnpm lint *": "allow",
-      "pnpm lint | head *": "allow",
+      "pnpm lint * | head -*": "allow",
       "pnpm tsc": "allow",
       "pnpm tsc *": "allow",
       "git status": "allow",
