@@ -8,13 +8,15 @@ import TableOfContents from './table-of-contents';
  *
  * 검증 항목:
  * 1. headings props로 TOC 항목이 올바르게 렌더링되는지
- * 2. h2와 h3의 들여쓰기 차이 확인
+ * 2. h2와 h3의 들여쓰기 차이 확인 (h3는 pl-6)
  * 3. 클릭 시 스크롤 동작 확인 (scrollIntoView 모킹)
  * 4. 빈 headings 배열 시 컴포넌트 비표시 또는 빈 상태
  * 5. IntersectionObserver 모킹하여 활성 섹션 변경 확인
  * 6. 모바일 토글 버튼 동작 확인 (열기/닫기)
  * 7. 접근성: role="navigation", aria-label 확인
  * 8. Property-based: 임의 headings 배열로 렌더링 안정성 확인
+ * 9. 프로그래밍 스크롤 중 Observer 콜백이 activeId를 변경하지 않는지 확인
+ * 10. 활성 항목에 왼쪽 보더 인디케이터 표시 확인
  */
 
 // IntersectionObserver 모킹
@@ -82,8 +84,8 @@ describe('TableOfContents', () => {
     expect(h2Item).toBeInTheDocument();
     expect(h3Item).toBeInTheDocument();
 
-    // h3는 pl- 또는 ml- 클래스를 가져야 함 (들여쓰기)
-    expect(h3Item?.className).toMatch(/pl-|ml-/);
+    // h3는 pl-6 클래스를 가져야 함 (들여쓰기)
+    expect(h3Item?.className).toMatch(/pl-6/);
   });
 
   it('TOC 항목 클릭 시 해당 요소로 스크롤되어야 함', () => {
@@ -151,9 +153,9 @@ describe('TableOfContents', () => {
 
     await waitFor(() => {
       const activeItem = screen.getByText('Introduction').closest('button');
-      // 활성 항목은 특정 클래스를 가져야 함 (예: text-primary, font-bold 등)
+      // 활성 항목은 특정 클래스를 가져야 함 (text-blue, font-semibold, border-l-2, border-blue 등)
       expect(activeItem?.className).toMatch(
-        /text-blue|font-semibold|font-bold/
+        /text-blue|font-semibold|font-bold|border-l-2|border-blue/
       );
     });
 
@@ -266,5 +268,124 @@ describe('TableOfContents', () => {
     expect(() => {
       render(<TableOfContents headings={mixedLevelHeadings} />);
     }).not.toThrow();
+  });
+
+  it('프로그래밍 스크롤 중에는 Observer 콜백이 activeId를 변경하지 않아야 함', async () => {
+    const heading1 = document.createElement('h2');
+    heading1.id = 'heading-1';
+    const heading2 = document.createElement('h2');
+    heading2.id = 'heading-2';
+    document.body.appendChild(heading1);
+    document.body.appendChild(heading2);
+
+    render(<TableOfContents headings={mockHeadings} />);
+
+    // 첫 번째 항목 클릭
+    const tocItem1 = screen.getByText('Introduction');
+    fireEvent.click(tocItem1);
+
+    // scrollIntoView가 호출되었는지 확인
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
+
+    // 클릭 직후 activeId가 heading-1로 설정됨
+    await waitFor(() => {
+      const activeItem = screen.getByText('Introduction').closest('button');
+      expect(activeItem?.className).toMatch(/text-blue|font-semibold/);
+    });
+
+    // 즉시 IntersectionObserver 콜백 트리거 (프로그래밍 스크롤 중)
+    // 이때 다른 섹션(heading-2)이 intersecting되더라도 activeId가 변경되지 않아야 함
+    if (intersectionObserverCallback) {
+      const mockRect = {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+        top: 0,
+        right: 100,
+        bottom: 100,
+        left: 0,
+        toJSON: () => ({}),
+      };
+
+      const entries = [
+        {
+          target: heading2,
+          isIntersecting: true,
+          intersectionRatio: 1,
+          boundingClientRect: mockRect,
+          intersectionRect: mockRect,
+          rootBounds: mockRect,
+          time: Date.now(),
+        } as IntersectionObserverEntry,
+      ];
+
+      // 프로그래밍 스크롤 중에 콜백 호출
+      intersectionObserverCallback(entries, {} as IntersectionObserver);
+    }
+
+    // activeId가 여전히 heading-1이어야 함 (heading-2로 변경되지 않음)
+    // 참고: 실제 구현에서는 isScrollingRef 플래그가 이를 방지함
+    // 이 테스트는 간접적으로 버그 수정을 검증함
+    const activeItem = screen.getByText('Introduction').closest('button');
+    expect(activeItem?.className).toMatch(/text-blue|font-semibold/);
+
+    document.body.removeChild(heading1);
+    document.body.removeChild(heading2);
+  });
+
+  it('활성 항목에 왼쪽 보더 인디케이터가 표시되어야 함', async () => {
+    const heading1 = document.createElement('h2');
+    heading1.id = 'heading-1';
+    const heading2 = document.createElement('h2');
+    heading2.id = 'heading-2';
+    document.body.appendChild(heading1);
+    document.body.appendChild(heading2);
+
+    render(<TableOfContents headings={mockHeadings} />);
+
+    // IntersectionObserver 콜백으로 heading-1을 활성화
+    if (intersectionObserverCallback) {
+      const mockRect = {
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+        top: 0,
+        right: 100,
+        bottom: 100,
+        left: 0,
+        toJSON: () => ({}),
+      };
+
+      const entries = [
+        {
+          target: heading1,
+          isIntersecting: true,
+          intersectionRatio: 1,
+          boundingClientRect: mockRect,
+          intersectionRect: mockRect,
+          rootBounds: mockRect,
+          time: Date.now(),
+        } as IntersectionObserverEntry,
+      ];
+
+      intersectionObserverCallback(entries, {} as IntersectionObserver);
+    }
+
+    await waitFor(() => {
+      const activeItem = screen.getByText('Introduction').closest('button');
+      // 활성 항목은 border-l-2 클래스를 가져야 함
+      expect(activeItem?.className).toMatch(/border-l-2/);
+      expect(activeItem?.className).toMatch(/border-blue/);
+    });
+
+    // 비활성 항목은 border-transparent 또는 border 관련 클래스가 없어야 함
+    const inactiveItem = screen.getByText('Getting Started').closest('button');
+    // 비활성 항목은 활성 스타일이 없어야 함
+    expect(inactiveItem?.className).not.toMatch(/border-l-2.*border-blue-600/);
+
+    document.body.removeChild(heading1);
+    document.body.removeChild(heading2);
   });
 });
