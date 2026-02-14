@@ -8,11 +8,11 @@ bash scripts/dependency-audit.sh
 
 # 통합 테스트 (선택사항)
 echo "Running integration test..."
-# npm run e2e  # Temporarily disabled
+pnpm e2e
 
 # 빌드 검증 (선택사항)
 echo "Running build check..."
-# npm run build  # Temporarily disabled
+pnpm build
 
 echo ""
 echo "✅ Pre-push checks passed. Pushing to remote..."

@@ -9,12 +9,12 @@ bash scripts/security-scan.sh
 # TypeScript 타입 체크
 echo ""
 echo "Running TypeScript type check..."
-# npm run tsc --noEmit || true  # Temporarily disabled due to pre-existing errors
+pnpm tsc --noEmit
 
 # 스테이징 파일 검사 (format, lint)
 echo "Running lint-staged..."
-npm exec lint-staged
+pnpm exec lint-staged
 
 # 유닛 테스트 / 기능 테스트
 echo "Running unit test / function test..."
-# npm test run  # Temporarily disabled
+pnpm test run
