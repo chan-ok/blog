@@ -16,12 +16,16 @@ echo "🔍 Checking for dependency vulnerabilities..."
 AUDIT_OUTPUT=$(pnpm audit --audit-level=high --json 2>/dev/null || echo '{}')
 
 # Critical 또는 High 취약점 개수 확인
-CRITICAL_COUNT=$(echo "$AUDIT_OUTPUT" | grep -o '"severity":"critical"' | wc -l | xargs)
-HIGH_COUNT=$(echo "$AUDIT_OUTPUT" | grep -o '"severity":"high"' | wc -l | xargs)
+CRITICAL_COUNT=$(echo "$AUDIT_OUTPUT" | grep -o '"severity":"critical"' | wc -l)
+HIGH_COUNT=$(echo "$AUDIT_OUTPUT" | grep -o '"severity":"high"' | wc -l)
 
 # Default to 0 if empty
 CRITICAL_COUNT=${CRITICAL_COUNT:-0}
 HIGH_COUNT=${HIGH_COUNT:-0}
+
+# Trim whitespace
+CRITICAL_COUNT=$(echo "$CRITICAL_COUNT" | xargs)
+HIGH_COUNT=$(echo "$HIGH_COUNT" | xargs)
 
 if [ "$CRITICAL_COUNT" != "0" ] || [ "$HIGH_COUNT" != "0" ]; then
   echo "🚨 WARNING: Dependency vulnerabilities detected!"
