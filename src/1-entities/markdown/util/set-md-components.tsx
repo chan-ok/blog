@@ -38,7 +38,9 @@ export default function setMdxComponents(
       // 일반 링크
       // target="_blank"인 경우 보안을 위해 rel="noopener noreferrer" 강제
       const isExternalLink = rest.target === '_blank';
-      const secureRel = isExternalLink ? 'noopener noreferrer' : rest.rel;
+      const secureRel = isExternalLink
+        ? `${rest.rel || ''} noopener noreferrer`.trim()
+        : rest.rel;
 
       return (
         <a
