@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface MermaidDiagramProps {
   code: string;
@@ -29,11 +30,11 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
         const mermaidModule: MermaidModule = await import('mermaid');
         const mermaid = mermaidModule.default;
 
-        // mermaid 초기화 (다크 테마 고정)
+        // mermaid 초기화 (다크 테마 고정, strict 보안 레벨)
         mermaid.initialize({
           startOnLoad: false,
           theme: 'dark',
-          securityLevel: 'loose',
+          securityLevel: 'strict',
         });
 
         if (cancelled) return;
@@ -43,7 +44,12 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
 
         if (cancelled) return;
 
-        setSvg(renderedSvg);
+        // SVG 출력을 DOMPurify로 sanitize (XSS 방지)
+        const sanitizedSvg = DOMPurify.sanitize(renderedSvg, {
+          USE_PROFILES: { svg: true, svgFilters: true },
+        });
+
+        setSvg(sanitizedSvg);
       } catch (err) {
         if (cancelled) return;
 
