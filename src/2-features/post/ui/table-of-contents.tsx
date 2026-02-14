@@ -18,6 +18,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
   // ref: IntersectionObserver 관리
   const observerRef = useRef<IntersectionObserver | null>(null);
+  // ref: 프로그래밍 스크롤 중 Observer 콜백 무시용 플래그
+  const isScrollingRef = useRef(false);
 
   // useEffect: IntersectionObserver 설정
   useEffect(() => {
@@ -31,6 +33,9 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
     // IntersectionObserver 콜백
     const handleObserve = (entries: IntersectionObserverEntry[]) => {
+      // 프로그래밍 스크롤 중이면 무시 (무한 루프 방지)
+      if (isScrollingRef.current) return;
+
       // 화면에 보이는 섹션들 필터링
       const visibleEntries = entries.filter((entry) => entry.isIntersecting);
 
@@ -47,7 +52,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
     // IntersectionObserver 생성
     observerRef.current = new IntersectionObserver(handleObserve, {
-      rootMargin: '-80px 0px -80% 0px', // 상단 80px 오프셋, 하단 80% 마진
+      rootMargin: '0px 0px -70% 0px', // 상단 30% 영역에서 감지
       threshold: 0,
     });
 
@@ -71,9 +76,17 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
   const handleHeadingClick = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // 프로그래밍 스크롤 플래그 설정 (Observer 콜백 무시)
+      isScrollingRef.current = true;
       setActiveId(id);
       setIsOpen(false); // 모바일에서 클릭 시 메뉴 닫기
+
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // smooth 스크롤 완료 후 플래그 해제
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 1000);
     }
   };
 
@@ -100,12 +113,13 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
               <button
                 onClick={() => handleHeadingClick(id)}
                 className={`
-                  block w-full text-left transition-colors
-                  ${isH3 ? 'pl-4 text-sm' : 'text-sm'}
+                  block w-full text-left transition-colors py-1
+                  border-l-2
+                  ${isH3 ? 'pl-6 text-sm' : 'pl-2 text-sm'}
                   ${
                     isActive
-                      ? 'font-semibold text-blue-600 dark:text-blue-400'
-                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+                      ? 'font-semibold text-blue-600 border-blue-600 dark:text-blue-400 dark:border-blue-400'
+                      : 'text-gray-600 border-transparent hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
                   }
                 `}
                 type="button"
@@ -125,7 +139,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       <div className="mb-8 lg:hidden">
         <button
           onClick={handleToggle}
-          className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+          className="flex w-full items-center justify-between rounded-lg bg-white px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
           aria-expanded={isOpen}
           type="button"
         >
@@ -149,7 +163,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
         {/* 접이식 콘텐츠 */}
         {isOpen && (
-          <div className="mt-2 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+          <div className="mt-2 rounded-lg p-4">
             {tocList}
           </div>
         )}
@@ -157,7 +171,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
       {/* 데스크탑: 사이드바 (sticky) */}
       <aside className="sticky top-24 hidden max-h-[calc(100vh-8rem)] overflow-y-auto lg:block">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+        <div className="p-4">
           <h2 className="mb-3 font-semibold text-gray-900 dark:text-gray-100">
             Table of Contents
           </h2>
