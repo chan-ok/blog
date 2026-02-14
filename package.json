@@ -22,7 +22,9 @@
     "e2e:ui": "playwright test --ui",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "security-scan": "bash scripts/security-scan.sh",
+    "dependency-audit": "bash scripts/dependency-audit.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
