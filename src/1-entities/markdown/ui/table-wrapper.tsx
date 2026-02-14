@@ -31,16 +31,28 @@ export default function TableWrapper({
           if (React.isValidElement(child)) {
             // thead 스타일링
             if (child.type === 'thead') {
-              return React.cloneElement(child, {
-                className: 'bg-gray-50 dark:bg-gray-800',
-              } as React.HTMLAttributes<HTMLTableSectionElement>);
+              return React.cloneElement(
+                child,
+                {
+                  className: [child.props.className, 'bg-gray-50 dark:bg-gray-800']
+                    .filter(Boolean)
+                    .join(' '),
+                } as React.HTMLAttributes<HTMLTableSectionElement>,
+              );
             }
             // tbody 스타일링
             if (child.type === 'tbody') {
-              return React.cloneElement(child, {
-                className:
-                  'divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900',
-              } as React.HTMLAttributes<HTMLTableSectionElement>);
+              return React.cloneElement(
+                child,
+                {
+                  className: [
+                    child.props.className,
+                    'divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900',
+                  ]
+                    .filter(Boolean)
+                    .join(' '),
+                } as React.HTMLAttributes<HTMLTableSectionElement>,
+              );
             }
           }
           return child;
