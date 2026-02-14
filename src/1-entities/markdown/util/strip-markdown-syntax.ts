@@ -5,8 +5,8 @@
  * @returns 순수 텍스트 문자열
  */
 export function stripMarkdownSyntax(content: string): string {
-  // 1. Frontmatter 제거 (---...---)
-  let text = content.replace(/^---[\s\S]*?---\n*/m, '');
+  // 1. Frontmatter 제거 (파일 맨 앞의 --- ... --- 블록만)
+  let text = content.replace(/^---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*\r?\n?/, '');
   // 2. 코드 블록 제거 (```...```)
   text = text.replace(/```[\s\S]*?```/g, '');
   // 3. 인라인 코드 제거 (`...`)
