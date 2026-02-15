@@ -20,22 +20,7 @@ export default function setMdxComponents(
     h4: Typography.h4,
     h5: Typography.h5,
     h6: Typography.h6,
-    p: ({ children }) => {
-      // 자식이 img 태그만 있는 경우 <p> 태그 없이 렌더링
-      const childArray = React.Children.toArray(children);
-
-      // 자식이 1개이고 img 태그인 경우 (MDX는 img를 전달, 이후 ImageBlock으로 변환됨)
-      if (
-        childArray.length === 1 &&
-        React.isValidElement(childArray[0]) &&
-        childArray[0].type === 'img'
-      ) {
-        return <>{children}</>;
-      }
-
-      // 일반 텍스트/혼합 컨텐츠는 <p> 태그로 감싸기
-      return <p className="mb-6">{children}</p>;
-    },
+    p: ({ children }) => <p className="mb-6">{children}</p>,
     ul: ({ children }) => (
       <ul className="mb-6 list-inside list-disc">{children}</ul>
     ),

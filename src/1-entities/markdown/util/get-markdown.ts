@@ -11,6 +11,7 @@ import { api } from '@/5-shared/config/api';
 
 import { Frontmatter } from '../model/markdown.schema';
 import remarkObsidianImage from './remark-obsidian-image';
+import rehypeUnwrapImages from './rehype-unwrap-images';
 
 interface MarkdownElement {
   frontmatter: Frontmatter;
@@ -68,6 +69,7 @@ export default async function getMarkdown(
           },
         },
       ],
+      rehypeUnwrapImages,
     ],
   });
 
