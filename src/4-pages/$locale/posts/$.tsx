@@ -71,11 +71,15 @@ function PostDetailPage() {
   }, [path]);
 
   return (
-    <div className="lg:grid lg:grid-cols-[1fr_250px] lg:gap-8">
+    <div className={mdxStatus === 'success' ? 'lg:grid lg:grid-cols-[1fr_250px] lg:gap-8' : ''}>
       {/* 메인 콘텐츠 */}
       <div>
         <div ref={contentRef}>
-          <MDComponent path={path} onParseStatus={setMdxStatus} />
+          <MDComponent 
+            path={path} 
+            baseUrl="https://raw.githubusercontent.com/chan-ok/blog-content/main"
+            onParseStatus={setMdxStatus} 
+          />
         </div>
         {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
       </div>
