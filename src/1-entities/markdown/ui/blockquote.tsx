@@ -59,13 +59,14 @@ function parseCallout(children: React.ReactNode): {
   const childArray = React.Children.toArray(children);
   if (childArray.length === 0) return null;
 
-  // 첫 번째 유효한 child 찾기 (공백 제외)
-  const firstChild = childArray.find((child) => {
+  // 첫 번째 유효한 child의 인덱스 찾기 (공백 제외)
+  const firstChildIndex = childArray.findIndex((child) => {
     if (typeof child === 'string') return child.trim() !== '';
     return true;
   });
 
-  if (!firstChild) return null;
+  if (firstChildIndex === -1) return null;
+  const firstChild = childArray[firstChildIndex];
 
   // children이 React Element인 경우 (p 태그)
   let textContent = '';
@@ -95,13 +96,15 @@ function parseCallout(children: React.ReactNode): {
   const type = calloutMatch[1] as CalloutType;
   const titleText = calloutMatch[2].trim() || type;
 
-  // [!TYPE] 이후의 나머지 children을 content로 사용
-  const remainingChildren = childArray.slice(1);
+  // [!TYPE] 이후의 content 추출
+  // 첫 번째 child는 [!TYPE] 또는 [!TYPE] Title을 포함하므로 항상 제거
+  // Title은 이미 titleText에 저장되어 있음
+  const contentChildren = childArray.slice(firstChildIndex + 1);
 
   return {
     type,
     title: titleText,
-    content: remainingChildren.length > 0 ? remainingChildren : null,
+    content: contentChildren.length > 0 ? contentChildren : null,
   };
 }
 
