@@ -48,6 +48,8 @@ export default function ImageBlock({
     return src;
   }, [src, baseUrl, contentPath]);
 
+  console.log('ImageBlock resolved URL:', resolvedSrc); // 추가
+
   const handleError = () => {
     setHasError(true);
   };
