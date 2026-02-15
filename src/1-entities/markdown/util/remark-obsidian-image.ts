@@ -1,3 +1,5 @@
+import { visit } from 'unist-util-visit';
+
 /**
  * Obsidian 이미지 문법을 표준 마크다운으로 변환하는 remark 플러그인
  *
@@ -16,7 +18,6 @@
 const remarkObsidianImage = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (tree: any) => {
-    const { visit } = require('unist-util-visit');
 
     visit(
       tree,
