@@ -20,3 +20,7 @@ pnpm exec lint-staged
 # 유닛 테스트 / 기능 테스트
 echo "Running unit test / function test..."
 pnpm test run
+
+# audit fix (취약점 자동 수정)
+echo "Running pnpm audit fix..."
+pnpm audit fix --audit-level=moderate
