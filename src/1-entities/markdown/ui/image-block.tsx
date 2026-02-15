@@ -4,6 +4,8 @@ import { ImageOff } from 'lucide-react';
 interface ImageBlockProps {
   src: string;
   alt?: string;
+  baseUrl?: string;
+  contentPath?: string;
 }
 
 /**
@@ -12,9 +14,37 @@ interface ImageBlockProps {
  * - 이미지 로드 실패 시 placeholder 표시
  * - alt 텍스트 제공 시 figcaption 렌더링
  * - 다크모드 및 접근성 지원
+ * - 상대 경로 이미지를 baseUrl 기준으로 절대 경로로 변환
  */
-export default function ImageBlock({ src, alt }: ImageBlockProps) {
+export default function ImageBlock({
+  src,
+  alt,
+  baseUrl,
+  contentPath,
+}: ImageBlockProps) {
   const [hasError, setHasError] = useState(false);
+
+  // 상대 경로 → 절대 경로 변환
+  const resolvedSrc = React.useMemo(() => {
+    // 이미 절대 경로(http/https)면 그대로 사용
+    if (src.startsWith('http')) {
+      return src;
+    }
+
+    // 상대 경로면 baseUrl + contentPath 디렉토리 + src로 조합
+    if (baseUrl && contentPath) {
+      const contentDir = contentPath.replace(/[^/]+$/, ''); // 파일명 제거
+      return `${baseUrl}/${contentDir}${src}`;
+    }
+
+    // baseUrl만 있으면 baseUrl + src
+    if (baseUrl) {
+      return `${baseUrl}/${src}`;
+    }
+
+    // 둘 다 없으면 src 그대로 (fallback)
+    return src;
+  }, [src, baseUrl, contentPath]);
 
   const handleError = () => {
     setHasError(true);
@@ -46,7 +76,7 @@ export default function ImageBlock({ src, alt }: ImageBlockProps) {
   return (
     <figure role="img" aria-label={alt} className="my-6">
       <img
-        src={src}
+        src={resolvedSrc}
         alt={alt || ''}
         loading="lazy"
         onError={handleError}
