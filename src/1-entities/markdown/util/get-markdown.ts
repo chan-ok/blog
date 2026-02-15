@@ -10,6 +10,7 @@ import matter from 'gray-matter';
 import { api } from '@/5-shared/config/api';
 
 import { Frontmatter } from '../model/markdown.schema';
+import remarkObsidianImage from './remark-obsidian-image';
 
 interface MarkdownElement {
   frontmatter: Frontmatter;
@@ -46,7 +47,7 @@ export default async function getMarkdown(
   const { default: MDXContent } = await evaluate(content, {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(runtime as any),
-    remarkPlugins: [remarkGfm, remarkFrontmatter],
+    remarkPlugins: [remarkObsidianImage, remarkGfm, remarkFrontmatter],
     rehypePlugins: [
       rehypeHighlight,
       rehypeSlug,

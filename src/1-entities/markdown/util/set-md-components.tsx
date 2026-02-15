@@ -6,9 +6,12 @@ import ImageBlock from '../ui/image-block';
 import MermaidDiagram from '../ui/mermaid-diagram';
 import TableWrapper from '../ui/table-wrapper';
 import Typography from '../ui/typography';
+import Blockquote from '../ui/blockquote';
 
 export default function setMdxComponents(
-  components?: MDXComponents
+  components?: MDXComponents,
+  baseUrl?: string,
+  contentPath?: string
 ): MDXComponents {
   return {
     h1: Typography.h1,
@@ -76,10 +79,18 @@ export default function setMdxComponents(
         </code>
       );
     },
-    img: ({ src, alt }) => <ImageBlock src={src || ''} alt={alt} />,
+    img: ({ src, alt }) => (
+      <ImageBlock
+        src={src || ''}
+        alt={alt}
+        baseUrl={baseUrl}
+        contentPath={contentPath}
+      />
+    ),
     table: ({ children, ...rest }) => (
       <TableWrapper {...rest}>{children}</TableWrapper>
     ),
+    blockquote: ({ children }) => <Blockquote>{children}</Blockquote>,
     ...components,
   };
 }

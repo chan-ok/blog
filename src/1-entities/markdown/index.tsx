@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 
@@ -22,7 +22,10 @@ export default function MDComponent({ path, baseUrl }: MDComponentProps) {
   const [error, setError] = useState<Error | null>(null);
 
   // 파생 값: MDX 컴포넌트 설정
-  const components = setMdxComponents();
+  const components = useMemo(
+    () => setMdxComponents(undefined, baseUrl, path),
+    [baseUrl, path]
+  );
 
   // 이펙트: 마크다운 페칭 및 evaluate
   useEffect(() => {
