@@ -4,12 +4,14 @@ import remarkGfm from 'remark-gfm';
 import remarkFrontmatter from 'remark-frontmatter';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import matter from 'gray-matter';
 
 import { api } from '@/5-shared/config/api';
 
 import { Frontmatter } from '../model/markdown.schema';
 import remarkObsidianImage from './remark-obsidian-image';
+import rehypeUnwrapImages from './rehype-unwrap-images';
 
 interface MarkdownElement {
   frontmatter: Frontmatter;
@@ -47,7 +49,28 @@ export default async function getMarkdown(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(runtime as any),
     remarkPlugins: [remarkObsidianImage, remarkGfm, remarkFrontmatter],
-    rehypePlugins: [rehypeHighlight, rehypeSlug],
+    rehypePlugins: [
+      rehypeHighlight,
+      rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: 'prepend',
+          properties: {
+            className: ['anchor'],
+            ariaHidden: 'true',
+            tabIndex: -1,
+          },
+          content: {
+            type: 'element',
+            tagName: 'span',
+            properties: { className: ['anchor-icon'] },
+            children: [{ type: 'text', value: '#' }],
+          },
+        },
+      ],
+      rehypeUnwrapImages,
+    ],
   });
 
   return {

@@ -1,13 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-// MDComponent 모킹
+// MDComponent 모킹 - onParseStatus를 'success'로 호출
 vi.mock('@/1-entities/markdown', () => ({
-  default: ({ path }: { path: string }) => (
-    <div data-testid="md-component" data-path={path}>
-      MDX Content for {path}
-    </div>
-  ),
+  default: ({
+    path,
+    onParseStatus,
+  }: {
+    path: string;
+    onParseStatus?: (status: 'loading' | 'success' | 'error') => void;
+  }) => {
+    // 즉시 success 상태로 변경
+    if (onParseStatus) {
+      setTimeout(() => onParseStatus('success'), 0);
+    }
+    return (
+      <div data-testid="md-component" data-path={path}>
+        MDX Content for {path}
+      </div>
+    );
+  },
 }));
 
 // Reply 모킹
@@ -66,18 +78,22 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
     expect(screen.getByTestId('md-component')).toBeInTheDocument();
   });
 
-  it('PostDetailPage가 Reply를 포함해야 한다', () => {
+  it('PostDetailPage가 Reply를 포함해야 한다', async () => {
     const Component = Route.options.component as React.ComponentType;
     render(<Component />);
 
-    expect(screen.getByTestId('reply')).toBeInTheDocument();
+    // mdxStatus가 'success'로 변경될 때까지 대기
+    const reply = await screen.findByTestId('reply');
+    expect(reply).toBeInTheDocument();
   });
 
-  it('PostDetailPage가 TableOfContents를 포함해야 한다', () => {
+  it('PostDetailPage가 TableOfContents를 포함해야 한다', async () => {
     const Component = Route.options.component as React.ComponentType;
     render(<Component />);
 
-    expect(screen.getByTestId('table-of-contents')).toBeInTheDocument();
+    // mdxStatus가 'success'로 변경될 때까지 대기
+    const toc = await screen.findByTestId('table-of-contents');
+    expect(toc).toBeInTheDocument();
   });
 
   it('MDComponent에 올바른 경로를 전달해야 한다', () => {
@@ -88,11 +104,11 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
     expect(mdComponent.getAttribute('data-path')).toBe('ko/example-post.mdx');
   });
 
-  it('Reply에 올바른 locale을 전달해야 한다', () => {
+  it('Reply에 올바른 locale을 전달해야 한다', async () => {
     const Component = Route.options.component as React.ComponentType;
     render(<Component />);
 
-    const reply = screen.getByTestId('reply');
+    const reply = await screen.findByTestId('reply');
     expect(reply.getAttribute('data-locale')).toBe('ko');
   });
 
@@ -112,7 +128,7 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
     expect(notFound).toHaveBeenCalled();
   });
 
-  it('다른 locale과 _splat 조합도 동작해야 한다', () => {
+  it('다른 locale과 _splat 조합도 동작해야 한다', async () => {
     mockUseParams.mockReturnValue({ locale: 'en', _splat: 'hello-world' });
 
     const Component = Route.options.component as React.ComponentType;
@@ -121,7 +137,7 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
     const mdComponent = screen.getByTestId('md-component');
     expect(mdComponent.getAttribute('data-path')).toBe('en/hello-world.mdx');
 
-    const reply = screen.getByTestId('reply');
+    const reply = await screen.findByTestId('reply');
     expect(reply.getAttribute('data-locale')).toBe('en');
   });
 });
