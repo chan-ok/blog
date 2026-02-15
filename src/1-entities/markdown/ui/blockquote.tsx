@@ -56,26 +56,38 @@ function parseCallout(children: React.ReactNode): {
   title: string;
   content: React.ReactNode;
 } | null {
-  // children이 paragraph를 포함한 구조인지 확인
   const childArray = React.Children.toArray(children);
   if (childArray.length === 0) return null;
 
-  const firstChild = childArray[0];
+  // 첫 번째 유효한 child 찾기 (공백 제외)
+  const firstChild = childArray.find((child) => {
+    if (typeof child === 'string') return child.trim() !== '';
+    return true;
+  });
 
-  // paragraph 내 텍스트 추출
+  if (!firstChild) return null;
+
+  // children이 React Element인 경우 (p 태그)
   let textContent = '';
-  if (React.isValidElement(firstChild) && firstChild.type === 'p') {
-    const pChildren = React.Children.toArray(
-      (firstChild.props as { children?: React.ReactNode }).children
-    );
-    const firstText = pChildren[0];
-    textContent = typeof firstText === 'string' ? firstText : '';
+  if (React.isValidElement(firstChild)) {
+    const props = firstChild.props as { children?: React.ReactNode };
+    const pChildren = props.children;
+    
+    // p 태그 children이 문자열인 경우
+    if (typeof pChildren === 'string') {
+      textContent = pChildren;
+    } else if (Array.isArray(pChildren)) {
+      // p 태그 children이 배열인 경우 첫 번째 문자열 찾기
+      const firstText = pChildren.find((c) => typeof c === 'string');
+      textContent = typeof firstText === 'string' ? firstText : '';
+    }
   } else if (typeof firstChild === 'string') {
+    // children이 직접 문자열인 경우
     textContent = firstChild;
   }
 
   // 패턴 매칭: [!TYPE] 또는 [!TYPE] Title
-  const calloutMatch = /^\s*\[!(INFO|WARNING|DANGER|SUCCESS)\]\s*(.*)/.exec(
+  const calloutMatch = /^\s*\[!(INFO|WARNING|DANGER|SUCCESS)\]\s*(.*)$/m.exec(
     textContent
   );
   if (!calloutMatch) return null;
@@ -83,30 +95,13 @@ function parseCallout(children: React.ReactNode): {
   const type = calloutMatch[1] as CalloutType;
   const titleText = calloutMatch[2].trim() || type;
 
-  // 콜아웃 제목 제거 후 나머지 content 추출
-  const remainingContent = childArray.slice(1);
-
-  // 첫 paragraph에서 [!TYPE] 이후 텍스트가 있으면 content에 포함
-  let firstParagraphRemaining = null;
-  if (React.isValidElement(firstChild) && firstChild.type === 'p') {
-    const pChildren = React.Children.toArray(
-      (firstChild.props as { children?: React.ReactNode }).children
-    );
-    const afterTitle = pChildren.slice(1); // [!TYPE] 제거
-    if (afterTitle.length > 0) {
-      firstParagraphRemaining = <p>{afterTitle}</p>;
-    }
-  }
+  // [!TYPE] 이후의 content 추출
+  const contentText = textContent.split('\n').slice(1).join('\n').trim();
 
   return {
     type,
     title: titleText,
-    content: (
-      <>
-        {firstParagraphRemaining}
-        {remainingContent}
-      </>
-    ),
+    content: contentText || null,
   };
 }
 
@@ -117,24 +112,7 @@ function parseCallout(children: React.ReactNode): {
  * - 콜아웃: `> [!INFO]`, `> [!WARNING]`, `> [!DANGER]`, `> [!SUCCESS]` 감지 시 Notion 스타일 렌더링
  */
 export default function Blockquote({ children }: BlockquoteProps) {
-  const childArray = React.Children.toArray(children);
-  
-  console.log('=== Blockquote Debug ===');
-  console.log('Total children:', childArray.length);
-  
-  childArray.forEach((child, index) => {
-    console.log(`Child ${index}:`, {
-      type: typeof child,
-      isElement: React.isValidElement(child),
-      value: typeof child === 'string' ? child : null,
-      elementType: React.isValidElement(child) ? child.type : null,
-      elementProps: React.isValidElement(child) ? child.props : null,
-    });
-  });
-  
   const callout = parseCallout(children);
-  console.log('Parsed callout:', callout);
-  console.log('======================');
 
   // 콜아웃 렌더링
   if (callout) {
