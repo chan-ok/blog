@@ -117,7 +117,11 @@ function parseCallout(children: React.ReactNode): {
  * - 콜아웃: `> [!INFO]`, `> [!WARNING]`, `> [!DANGER]`, `> [!SUCCESS]` 감지 시 Notion 스타일 렌더링
  */
 export default function Blockquote({ children }: BlockquoteProps) {
+  // 디버깅: children 구조 확인
+  console.log('Blockquote children:', children);
+  
   const callout = parseCallout(children);
+  console.log('Parsed callout:', callout); // 디버깅용
 
   // 콜아웃 렌더링
   if (callout) {
