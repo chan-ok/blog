@@ -23,32 +23,29 @@ export default function ImageBlock({
   contentPath,
 }: ImageBlockProps) {
   console.log('ImageBlock props:', { src, alt, baseUrl, contentPath }); // 디버깅 추가
-  
+
   const [hasError, setHasError] = useState(false);
 
   // 상대 경로 → 절대 경로 변환
   const resolvedSrc = React.useMemo(() => {
+    console.log('ImageBlock resolving:', { src, baseUrl, contentPath }); // 디버깅
+
     // 이미 절대 경로(http/https)면 그대로 사용
     if (src.startsWith('http')) {
       return src;
     }
 
-    // 상대 경로면 baseUrl + contentPath 디렉토리 + src로 조합
-    if (baseUrl && contentPath) {
-      const contentDir = contentPath.replace(/[^/]+$/, ''); // 파일명 제거
-      return `${baseUrl}/${contentDir}${src}`;
-    }
-
-    // baseUrl만 있으면 baseUrl + src
+    // 상대 경로면 baseUrl + src로 조합
+    // (contentPath는 MDX 파일 위치이고, 이미지는 루트 images/ 디렉토리에 있음)
     if (baseUrl) {
-      return `${baseUrl}/${src}`;
+      const resolved = `${baseUrl}/${src}`;
+      console.log('ImageBlock resolved URL:', resolved); // 디버깅
+      return resolved;
     }
 
-    // 둘 다 없으면 src 그대로 (fallback)
+    // baseUrl이 없으면 src 그대로 (fallback)
     return src;
   }, [src, baseUrl, contentPath]);
-
-  console.log('ImageBlock resolved URL:', resolvedSrc); // 추가
 
   const handleError = () => {
     setHasError(true);
