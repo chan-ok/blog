@@ -23,14 +23,16 @@ export default function PostBasicCard({
   return (
     <article className="grid grid-cols-12 gap-y-4 gap-4 rounded-lg border border-zinc-100 bg-white p-6 shadow dark:border-zinc-800 dark:bg-gray-800">
       <div className="col-span-full md:col-span-6">
-        <OptimizedImage
-          src={thumbnail || '/image/context.png'}
-          alt={title}
-          width={200}
-          height={200}
-          className="h-full w-full object-cover"
-          priority
-        />
+        <div className="aspect-video w-full overflow-hidden rounded-lg">
+          <OptimizedImage
+            src={thumbnail || '/image/context.png'}
+            alt={title}
+            width={400}
+            height={225}
+            className="h-full w-full object-cover"
+            priority
+          />
+        </div>
       </div>
       <div className="col-span-full flex flex-col gap-0.5 md:col-span-6">
         <div className="text-lg font-bold">{title}</div>
