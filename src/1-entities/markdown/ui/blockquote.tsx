@@ -117,11 +117,25 @@ function parseCallout(children: React.ReactNode): {
  * - 콜아웃: `> [!INFO]`, `> [!WARNING]`, `> [!DANGER]`, `> [!SUCCESS]` 감지 시 Notion 스타일 렌더링
  */
 export default function Blockquote({ children }: BlockquoteProps) {
-  // 디버깅: children 구조 확인
-  console.log('Blockquote children:', children);
+  // 디버깅: children 구조 상세 확인
+  const childArray = React.Children.toArray(children);
+  console.log('Blockquote children detail:', {
+    length: childArray.length,
+    types: childArray.map((child) => {
+      if (typeof child === 'string') return `string: "${child}"`;
+      if (React.isValidElement(child)) {
+        const props = child.props as { children?: React.ReactNode };
+        return {
+          type: child.type,
+          children: props.children,
+        };
+      }
+      return typeof child;
+    }),
+  });
   
   const callout = parseCallout(children);
-  console.log('Parsed callout:', callout); // 디버깅용
+  console.log('Parsed callout:', callout);
 
   // 콜아웃 렌더링
   if (callout) {
