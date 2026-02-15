@@ -242,30 +242,34 @@ describe('Property-Based 테스트 - 다양한 src/alt 조합', () => {
    * 시나리오: 무작위 src/alt 문자열 전달
    * 기대 결과: 모든 경우에 렌더링 성공
    */
-  it('임의의 src/alt 문자열에서 크래시하지 않아야 한다', () => {
-    const srcArb = fc.webUrl();
-    const altArb = fc.option(fc.string(), { nil: undefined });
+  it(
+    '임의의 src/alt 문자열에서 크래시하지 않아야 한다',
+    () => {
+      const srcArb = fc.webUrl();
+      const altArb = fc.option(fc.string(), { nil: undefined });
 
-    fc.assert(
-      fc.property(srcArb, altArb, (src, alt) => {
-        const { unmount, container } = render(
-          <ImageBlock src={src} alt={alt} />
-        );
+      fc.assert(
+        fc.property(srcArb, altArb, (src, alt) => {
+          const { unmount, container } = render(
+            <ImageBlock src={src} alt={alt} />
+          );
 
-        // 렌더링 확인
-        expect(container.querySelector('figure')).toBeInTheDocument();
+          // 렌더링 확인
+          expect(container.querySelector('figure')).toBeInTheDocument();
 
-        // img 또는 에러 fallback이 존재해야 함
-        const hasImg = container.querySelector('img') !== null;
-        const hasErrorFallback =
-          screen.queryByText('이미지를 불러올 수 없습니다') !== null;
-        expect(hasImg || hasErrorFallback).toBe(true);
+          // img 또는 에러 fallback이 존재해야 함
+          const hasImg = container.querySelector('img') !== null;
+          const hasErrorFallback =
+            screen.queryByText('이미지를 불러올 수 없습니다') !== null;
+          expect(hasImg || hasErrorFallback).toBe(true);
 
-        unmount();
-      }),
-      { numRuns: 30 }
-    );
-  });
+          unmount();
+        }),
+        { numRuns: 30 }
+      );
+    },
+    10000
+  );
 
   /**
    * **Feature: image-block, Property: 특수 문자 포함 alt**

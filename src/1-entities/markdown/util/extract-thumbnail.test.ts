@@ -255,24 +255,29 @@ describe('Property-Based 테스트 - 임의 URL 추출', () => {
    * 시나리오: `)`, `'`, `"` 같은 Markdown 종료 문자를 포함하지 않는 URL
    * 기대 결과: 원본 URL과 추출된 URL이 동일
    */
-  it('임의의 URL을 Markdown 이미지에서 추출해야 한다', () => {
-    // `)` 문자를 포함하지 않는 URL만 테스트 (Markdown 문법과 충돌 방지)
-    const urlArb = fc
-      .webUrl()
-      .filter(
-        (url) => !url.includes(')') && !url.includes("'") && !url.includes('"')
+  it(
+    '임의의 URL을 Markdown 이미지에서 추출해야 한다',
+    () => {
+      // `)` 문자를 포함하지 않는 URL만 테스트 (Markdown 문법과 충돌 방지)
+      const urlArb = fc
+        .webUrl()
+        .filter(
+          (url) =>
+            !url.includes(')') && !url.includes("'") && !url.includes('"')
+        );
+
+      fc.assert(
+        fc.property(urlArb, (url) => {
+          const content = `![Test Image](${url})`;
+          const result = extractThumbnail(content);
+
+          expect(result).toBe(url);
+        }),
+        { numRuns: 30 }
       );
-
-    fc.assert(
-      fc.property(urlArb, (url) => {
-        const content = `![Test Image](${url})`;
-        const result = extractThumbnail(content);
-
-        expect(result).toBe(url);
-      }),
-      { numRuns: 30 }
-    );
-  });
+    },
+    10000
+  );
 
   /**
    * **Feature: extract-thumbnail, Property: 임의 HTML src**

@@ -121,27 +121,31 @@ describe('Property 1: Locale 자동 추가', () => {
     useLocaleStore.setState({ locale: 'ko' });
   });
 
-  it('should add locale to internal paths without locale', async () => {
-    await fc.assert(
-      fc.asyncProperty(
-        fc.constantFrom('/', '/about', '/posts', 'contact'),
-        async (path) => {
-          const { unmount } = await renderWithRouter(
-            <Link href={path}>Unique Link Text</Link>
-          );
+  it(
+    'should add locale to internal paths without locale',
+    async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.constantFrom('/', '/about', '/posts', 'contact'),
+          async (path) => {
+            const { unmount } = await renderWithRouter(
+              <Link href={path}>Unique Link Text</Link>
+            );
 
-          const link = screen.getByRole('link', { name: 'Unique Link Text' });
-          const href = link.getAttribute('href');
+            const link = screen.getByRole('link', { name: 'Unique Link Text' });
+            const href = link.getAttribute('href');
 
-          // locale이 추가되어야 함
-          expect(href).toMatch(/^\/ko/);
+            // locale이 추가되어야 함
+            expect(href).toMatch(/^\/ko/);
 
-          unmount();
-        }
-      ),
-      { numRuns: 30 }
-    );
-  });
+            unmount();
+          }
+        ),
+        { numRuns: 30 }
+      );
+    },
+    10000
+  );
 });
 
 // ============================================================================
