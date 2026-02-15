@@ -96,15 +96,29 @@ function parseCallout(children: React.ReactNode): {
   const type = calloutMatch[1] as CalloutType;
   const titleText = calloutMatch[2].trim() || type;
 
-  // [!TYPE] 이후의 content 추출
-  // 첫 번째 child는 [!TYPE] 또는 [!TYPE] Title을 포함하므로 항상 제거
-  // Title은 이미 titleText에 저장되어 있음
-  const contentChildren = childArray.slice(firstChildIndex + 1);
+  // [!TYPE] Title 이후의 텍스트 추출 (같은 줄 또는 다음 줄)
+  const matchEndIndex = (calloutMatch.index || 0) + calloutMatch[0].length;
+  const remainingText = textContent.slice(matchEndIndex).trim();
+
+  // Content 구성
+  const contentChildren: React.ReactNode[] = [];
+
+  if (remainingText) {
+    // [!TYPE] 이후에 본문이 있으면, 첫 번째 p 태그를 본문으로 교체
+    if (React.isValidElement(firstChild)) {
+      contentChildren.push(React.cloneElement(firstChild, {}, remainingText));
+    } else {
+      contentChildren.push(remainingText);
+    }
+  }
+
+  // 나머지 children 추가
+  contentChildren.push(...childArray.slice(firstChildIndex + 1));
 
   return {
     type,
     title: titleText,
-    content: contentChildren.length > 0 ? contentChildren : null,
+    content: contentChildren.length > 0 ? <>{contentChildren}</> : null,
   };
 }
 
