@@ -13,7 +13,15 @@ set -euo pipefail
 echo "🔍 Checking for dependency vulnerabilities..."
 
 # pnpm audit 실행 (High 이상만 체크)
-AUDIT_OUTPUT=$(pnpm audit --audit-level=high --json 2>/dev/null || echo '{}')
+# pipefail 일시 해제: audit가 취약점을 발견하면 non-zero exit code를 반환하기 때문
+set +e
+AUDIT_OUTPUT=$(pnpm audit --audit-level=high --json 2>/dev/null)
+AUDIT_EXIT_CODE=$?
+set -e
+# audit가 실패하면 빈 JSON으로 처리
+if [ $AUDIT_EXIT_CODE -ne 0 ]; then
+  AUDIT_OUTPUT='{}'
+fi
 
 # Critical 또는 High 취약점 개수 확인
 CRITICAL_COUNT=$(echo "$AUDIT_OUTPUT" | grep -o '"severity":"critical"' | wc -l)
