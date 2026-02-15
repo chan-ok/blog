@@ -27,6 +27,9 @@ function PostDetailPage() {
   // 경로 생성: ko/posts/example.mdx
   const path = `${locale}/${_splat}.mdx`;
 
+  // MDX 파싱 상태
+  const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>('loading');
+
   // DOM에서 h2, h3 추출
   const contentRef = useRef<HTMLDivElement>(null);
   const [headings, setHeadings] = useState<Heading[]>([]);
@@ -68,17 +71,21 @@ function PostDetailPage() {
   }, [path]);
 
   return (
-    <div className="lg:grid lg:grid-cols-[1fr_250px] lg:gap-8">
+    <div className={mdxStatus === 'success' ? 'lg:grid lg:grid-cols-[1fr_250px] lg:gap-8' : ''}>
       {/* 메인 콘텐츠 */}
       <div>
         <div ref={contentRef}>
-          <MDComponent path={path} />
+          <MDComponent 
+            path={path} 
+            baseUrl="https://raw.githubusercontent.com/chan-ok/blog-content/main"
+            onParseStatus={setMdxStatus} 
+          />
         </div>
-        <Reply locale={parseLocale(locale)} />
+        {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
       </div>
 
       {/* 데스크탑: 오른쪽 TOC 사이드바 */}
-      <TableOfContents headings={headings} />
+      {mdxStatus === 'success' && <TableOfContents headings={headings} />}
     </div>
   );
 }

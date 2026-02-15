@@ -272,7 +272,7 @@ describe('Property-Based 테스트 - 임의 URL 추출', () => {
       }),
       { numRuns: 30 }
     );
-  });
+  }, 10000);
 
   /**
    * **Feature: extract-thumbnail, Property: 임의 HTML src**

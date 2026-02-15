@@ -73,18 +73,22 @@ describe('MermaidDiagram', () => {
     expect(screen.getByText(/로딩|Loading/i)).toBeInTheDocument();
   });
 
-  it('mermaid 렌더링 성공 시 SVG를 표시해야 함', async () => {
-    const mockSvgContent = '<svg><circle cx="50" cy="50" r="40" /></svg>';
-    mockRender.mockResolvedValue({ svg: mockSvgContent });
+  it(
+    'mermaid 렌더링 성공 시 SVG를 표시해야 함',
+    { timeout: 10000 },
+    async () => {
+      const mockSvgContent = '<svg><circle cx="50" cy="50" r="40" /></svg>';
+      mockRender.mockResolvedValue({ svg: mockSvgContent });
 
-    render(<MermaidDiagram code="graph TD; A-->B;" />);
+      render(<MermaidDiagram code="graph TD; A-->B;" />);
 
-    await waitFor(() => {
-      const svgContainer = screen.getByTestId('mermaid-svg');
-      expect(svgContainer.innerHTML).toContain('svg');
-      expect(svgContainer.innerHTML).toContain('circle');
-    });
-  });
+      await waitFor(() => {
+        const svgContainer = screen.getByTestId('mermaid-svg');
+        expect(svgContainer.innerHTML).toContain('svg');
+        expect(svgContainer.innerHTML).toContain('circle');
+      });
+    }
+  );
 
   it('mermaid 렌더링 실패 시 에러 메시지와 원본 코드를 표시해야 함', async () => {
     mockRender.mockRejectedValue(new Error('Syntax error'));

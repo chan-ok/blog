@@ -66,7 +66,7 @@
       "mode": "primary",
       "description": "Primary orchestrator that analyzes requests and delegates to specialized subagents. Does NOT write code, tests, or documentation directly - only coordinates workflow via Task tool.",
       "prompt": "{file:.agents/agents/master-orchestrator.md}",
-      "model": "github-copilot/claude-opus-4.6",
+      "model": "github-copilot/claude-sonnet-4.5",
       "permission": {
         "webfetch": "allow",
         "task": {
@@ -292,7 +292,7 @@
       "mode": "subagent",
       "description": "Fixes formatting and linting errors without changing code behavior",
       "prompt": "{file:.agents/agents/lint-formatter.md}",
-      "model": "github-copilot/gpt-5.2-codex",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {
@@ -355,7 +355,7 @@
       "mode": "subagent",
       "description": "Manages and maintains all project documentation including agent prompts",
       "prompt": "{file:.agents/agents/doc-manager.md}",
-      "model": "github-copilot/gpt-5.2-codex",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {
@@ -425,7 +425,7 @@
       "mode": "subagent",
       "description": "Git Flow workflow management (main ← develop ← feature branches) with safe version control, standardized Korean commit messages, and conflict resolution support.",
       "prompt": "{file:.agents/agents/git-guardian.md}",
-      "model": "github-copilot/gpt-5.2-codex",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {
@@ -508,7 +508,7 @@
       "mode": "subagent",
       "description": "GitHub integration via gh CLI for PR management (create/review/merge), CI/CD monitoring, and Issue tracking. Uses squash merge by default with auto branch cleanup.",
       "prompt": "{file:.agents/agents/github-helper.md}",
-      "model": "github-copilot/gpt-5.2-codex",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {
@@ -634,7 +634,7 @@
       "mode": "subagent",
       "description": "Performs retrospective analysis on PRs/commits - identifies what went well, improvements, and suggests agent prompt enhancements",
       "prompt": "{file:.agents/agents/retrospector.md}",
-      "model": "github-copilot/gpt-5.2-codex",
+      "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
         "read": {

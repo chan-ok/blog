@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 
@@ -8,9 +8,10 @@ import setMdxComponents from './util/set-md-components';
 interface MDComponentProps {
   path: string;
   baseUrl?: string;
+  onParseStatus?: (status: 'loading' | 'success' | 'error') => void;
 }
 
-export default function MDComponent({ path, baseUrl }: MDComponentProps) {
+export default function MDComponent({ path, baseUrl, onParseStatus }: MDComponentProps) {
   const { t } = useTranslation();
 
   // 상태: MDX 데이터
@@ -22,12 +23,16 @@ export default function MDComponent({ path, baseUrl }: MDComponentProps) {
   const [error, setError] = useState<Error | null>(null);
 
   // 파생 값: MDX 컴포넌트 설정
-  const components = setMdxComponents();
+  const components = useMemo(
+    () => setMdxComponents(undefined, baseUrl, path),
+    [baseUrl, path]
+  );
 
   // 이펙트: 마크다운 페칭 및 evaluate
   useEffect(() => {
     setError(null);
     setData(null);
+    onParseStatus?.('loading');
 
     getMarkdown(path, baseUrl)
       .then((result) => {
@@ -35,25 +40,30 @@ export default function MDComponent({ path, baseUrl }: MDComponentProps) {
           MDXContent: result.MDXContent,
           frontmatter: result.frontmatter,
         });
+        onParseStatus?.('success');
       })
       .catch((err) => {
         setError(err);
+        onParseStatus?.('error');
         console.error('Failed to fetch markdown:', err);
       });
-  }, [path, baseUrl]);
+  }, [path, baseUrl, onParseStatus]);
 
   // 이벤트 핸들러: 재시도
   const handleRetry = async () => {
     setError(null);
     setData(null);
+    onParseStatus?.('loading');
     try {
       const result = await getMarkdown(path, baseUrl);
       setData({
         MDXContent: result.MDXContent,
         frontmatter: result.frontmatter,
       });
+      onParseStatus?.('success');
     } catch (err) {
       setError(err as Error);
+      onParseStatus?.('error');
     }
   };
 

@@ -6,7 +6,8 @@
   "pnpm": {
     "overrides": {
       "@opentelemetry/api": "^1.9.0",
-      "qs@>=6.7.0 <=6.14.1": ">=6.14.2"
+      "qs@>=6.7.0 <=6.14.1": ">=6.14.2",
+      "lodash-es@>=4.0.0 <=4.17.22": ">=4.17.23"
     }
   },
   "scripts": {
@@ -28,16 +29,16 @@
     "dependency-audit": "bash scripts/dependency-audit.sh"
   },
   "dependencies": {
-    "@base-ui/react": "^1.1.0",
+    "@base-ui/react": "^1.2.0",
     "@giscus/react": "^3.1.0",
-    "@tanstack/react-query": "^5.90.20",
-    "@tanstack/react-router": "^1.158.4",
+    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-router": "^1.159.14",
     "axios": "^1.13.5",
     "buffer": "^6.0.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "highlight.js": "^11.11.1",
-    "i18next": "^25.8.5",
+    "i18next": "^25.8.7",
     "isomorphic-dompurify": "^2.36.0",
     "lucide-react": "^0.561.0",
     "mermaid": "^11.12.2",
@@ -50,6 +51,7 @@
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
     "resend": "^6.9.2",
+    "unist-util-visit": "^5.1.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
   },
@@ -68,8 +70,8 @@
     "@tanstack/devtools-vite": "^0.5.1",
     "@tanstack/react-devtools": "^0.9.5",
     "@tanstack/react-query-devtools": "^5.91.3",
-    "@tanstack/react-router-devtools": "^1.159.5",
-    "@tanstack/router-vite-plugin": "^1.159.5",
+    "@tanstack/react-router-devtools": "^1.159.14",
+    "@tanstack/router-vite-plugin": "^1.159.14",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -81,7 +83,7 @@
     "@vitejs/plugin-react": "^5.1.4",
     "@vitest/browser-playwright": "4.0.18",
     "@vitest/coverage-v8": "4.0.18",
-    "@vitest/eslint-plugin": "^1.6.7",
+    "@vitest/eslint-plugin": "^1.6.9",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.5",
@@ -103,7 +105,7 @@
     "typescript-eslint": "^8.55.0",
     "vite": "^7.3.1",
     "vite-plugin-image-optimizer": "^2.0.3",
-    "vite-tsconfig-paths": "^6.1.0",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18"
   }
 }

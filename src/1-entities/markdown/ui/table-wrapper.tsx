@@ -28,31 +28,32 @@ export default function TableWrapper({
         {...rest}
       >
         {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
+          if (
+            React.isValidElement<React.HTMLAttributes<HTMLTableSectionElement>>(
+              child
+            )
+          ) {
             // thead 스타일링
             if (child.type === 'thead') {
-              return React.cloneElement(
-                child,
-                {
-                  className: [child.props.className, 'bg-gray-50 dark:bg-gray-800']
-                    .filter(Boolean)
-                    .join(' '),
-                } as React.HTMLAttributes<HTMLTableSectionElement>,
-              );
+              return React.cloneElement(child, {
+                className: [
+                  child.props.className,
+                  'bg-gray-50 dark:bg-gray-800',
+                ]
+                  .filter(Boolean)
+                  .join(' '),
+              } as React.HTMLAttributes<HTMLTableSectionElement>);
             }
             // tbody 스타일링
             if (child.type === 'tbody') {
-              return React.cloneElement(
-                child,
-                {
-                  className: [
-                    child.props.className,
-                    'divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900',
-                  ]
-                    .filter(Boolean)
-                    .join(' '),
-                } as React.HTMLAttributes<HTMLTableSectionElement>,
-              );
+              return React.cloneElement(child, {
+                className: [
+                  child.props.className,
+                  'divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900',
+                ]
+                  .filter(Boolean)
+                  .join(' '),
+              } as React.HTMLAttributes<HTMLTableSectionElement>);
             }
           }
           return child;
