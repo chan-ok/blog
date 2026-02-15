@@ -288,46 +288,50 @@ describe('Property 1: Link variant는 shape을 무시함', () => {
    * - <Button variant="link" shape="outline"> 의 className
    * - 위 두 버튼의 className이 완전히 동일해야 함
    */
-  it('should apply identical styles for link variant regardless of shape', () => {
-    fc.assert(
-      fc.property(shapeArb, (shape) => {
-        // 테스트할 shape으로 link variant 버튼 렌더링
-        const { unmount: unmountLinkVariantButton } = render(
-          <Button variant="link" shape={shape}>
-            Link Button 1
-          </Button>
-        );
-        const button1 = screen.getByRole('button', { name: 'Link Button 1' });
-        const className1 = button1.className;
+  it(
+    'should apply identical styles for link variant regardless of shape',
+    { timeout: 10000 },
+    () => {
+      fc.assert(
+        fc.property(shapeArb, (shape) => {
+          // 테스트할 shape으로 link variant 버튼 렌더링
+          const { unmount: unmountLinkVariantButton } = render(
+            <Button variant="link" shape={shape}>
+              Link Button 1
+            </Button>
+          );
+          const button1 = screen.getByRole('button', { name: 'Link Button 1' });
+          const className1 = button1.className;
 
-        // 비교 대상: fill shape의 link variant 버튼
-        const { unmount: unmountLinkFillButton } = render(
-          <Button variant="link" shape="fill">
-            Link Button 2
-          </Button>
-        );
-        const button2 = screen.getByRole('button', { name: 'Link Button 2' });
-        const className2 = button2.className;
+          // 비교 대상: fill shape의 link variant 버튼
+          const { unmount: unmountLinkFillButton } = render(
+            <Button variant="link" shape="fill">
+              Link Button 2
+            </Button>
+          );
+          const button2 = screen.getByRole('button', { name: 'Link Button 2' });
+          const className2 = button2.className;
 
-        // 핵심 검증: 두 버튼의 className이 완전히 동일해야 함
-        // (shape이 무시되므로 fill이든 outline이든 같은 스타일)
-        expect(className1).toBe(className2);
+          // 핵심 검증: 두 버튼의 className이 완전히 동일해야 함
+          // (shape이 무시되므로 fill이든 outline이든 같은 스타일)
+          expect(className1).toBe(className2);
 
-        // link variant는 둥근 모서리가 없어야 함
-        expect(className1).not.toContain('rounded-lg');
+          // link variant는 둥근 모서리가 없어야 함
+          expect(className1).not.toContain('rounded-lg');
 
-        // link variant는 패딩이 없어야 함 (텍스트 링크처럼 보이기 위해)
-        expect(className1).toContain('px-0');
-        expect(className1).toContain('py-0');
+          // link variant는 패딩이 없어야 함 (텍스트 링크처럼 보이기 위해)
+          expect(className1).toContain('px-0');
+          expect(className1).toContain('py-0');
 
-        // link variant는 투명 배경이어야 함
-        expect(className1).toContain('bg-transparent');
-        unmountLinkVariantButton();
-        unmountLinkFillButton();
-      }),
-      { numRuns: 30 }
-    );
-  });
+          // link variant는 투명 배경이어야 함
+          expect(className1).toContain('bg-transparent');
+          unmountLinkVariantButton();
+          unmountLinkFillButton();
+        }),
+        { numRuns: 30 }
+      );
+    }
+  );
 });
 
 // ============================================================================

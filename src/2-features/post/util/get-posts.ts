@@ -41,6 +41,14 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
     }
 
     const filteredPosts = response.data
+      .map((post) => ({
+        ...post,
+        // 상대 경로인 thumbnail을 절대 URL로 변환
+        thumbnail:
+          post.thumbnail && !post.thumbnail.startsWith('http')
+            ? `${baseURL}/${post.thumbnail}`
+            : post.thumbnail,
+      }))
       .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))
       .filter((post) => post.published)
       .filter(

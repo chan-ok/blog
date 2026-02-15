@@ -1,5 +1,4 @@
 {
-  "extends": "./tsconfig.base.json",
   "include": [
     "vitest.shims.d.ts",
     "src/**/*.ts",
@@ -8,7 +7,24 @@
     "src/**/*.mdx",
     "contents/**/*.mdx"
   ],
+  "exclude": [
+    "node_modules",
+    ".husky",
+    ".netlify",
+    ".storybook",
+    ".next",
+    "dist",
+    "e2e-report"
+  ],
   "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": true,
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",

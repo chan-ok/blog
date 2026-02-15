@@ -24,5 +24,26 @@
       "required": "필수 항목입니다",
       "invalidEmail": "올바른 이메일 형식이 아닙니다"
     }
+  },
+  "post": {
+    "recentPosts": "최근 포스트",
+    "noPosts": "포스트가 없습니다. 콘텐츠 저장소를 확인해주세요.",
+    "readMore": "더 보기",
+    "loading": "포스트 로딩 중..."
+  },
+  "markdown": {
+    "loadError": "콘텐츠를 불러오지 못했습니다",
+    "loading": "로딩 중...",
+    "retry": "다시 시도"
+  },
+  "error": {
+    "notFound": "페이지를 찾을 수 없습니다",
+    "notFoundDesc": "요청하신 페이지가 존재하지 않거나 이동되었습니다.",
+    "forbidden": "접근이 거부되었습니다",
+    "forbiddenDesc": "이 페이지에 접근할 권한이 없습니다.",
+    "serverError": "문제가 발생했습니다",
+    "serverErrorDesc": "예기치 않은 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+    "goHome": "홈으로 돌아가기",
+    "retry": "다시 시도"
   }
 }

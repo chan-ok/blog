@@ -1,4 +1,5 @@
 import { use } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PagingPosts } from '../model/post.schema';
 import PostBasicCard from './post-basic-card';
 import PostSimpleCard from './post-simple-card';
@@ -12,6 +13,7 @@ export default function RecentPostBlock({
   locale,
   postsPromise,
 }: RecentPostBlockProps) {
+  const { t } = useTranslation();
   const pagingPosts = use(postsPromise);
   const posts = pagingPosts.posts;
 
@@ -19,10 +21,10 @@ export default function RecentPostBlock({
   if (!posts || posts.length === 0) {
     return (
       <div>
-        <h2 className="mb-4 text-2xl font-bold">Recent Posts</h2>
+        <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
         <div className="rounded-lg border border-gray-200 p-6 text-center dark:border-gray-700">
           <p className="text-gray-600 dark:text-gray-400">
-            No posts found. Please check your content repository.
+            {t('post.noPosts')}
           </p>
         </div>
       </div>
@@ -31,7 +33,7 @@ export default function RecentPostBlock({
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Recent Posts</h2>
+      <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
       <div className="flex flex-col gap-4">
         {posts.map((post, i) => {
           if (i === 0) {
@@ -58,9 +60,11 @@ export default function RecentPostBlock({
 }
 
 export function RecentPostBlockSkeleton() {
+  const { t } = useTranslation();
+
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Recent Posts</h2>
+      <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
       <div className="flex flex-col gap-4">
         <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
         <div className="h-24 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />

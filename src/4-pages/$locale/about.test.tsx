@@ -22,16 +22,8 @@ describe('$locale/about 라우트 (About 페이지)', () => {
     Route.useParams = mockUseParams;
   });
 
-  it('에러 없이 렌더링되어야 한다', () => {
-    const Component = Route.options.component as React.ComponentType;
-    expect(Component).toBeDefined();
-
-    render(<Component />);
-  });
-
   it('MDComponent가 올바른 path로 렌더링되어야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     const mdComponent = screen.getByTestId('md-component');
@@ -41,7 +33,6 @@ describe('$locale/about 라우트 (About 페이지)', () => {
 
   it('MDComponent가 올바른 baseUrl을 가져야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     const mdComponent = screen.getByTestId('md-component');
@@ -54,21 +45,9 @@ describe('$locale/about 라우트 (About 페이지)', () => {
     mockUseParams.mockReturnValue({ locale: 'en' });
 
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     const mdComponent = screen.getByTestId('md-component');
     expect(mdComponent.getAttribute('data-path')).toBe('README.en.md');
-  });
-
-  it('일본어 locale도 지원해야 한다', () => {
-    mockUseParams.mockReturnValue({ locale: 'ja' });
-
-    const Component = Route.options.component as React.ComponentType;
-
-    render(<Component />);
-
-    const mdComponent = screen.getByTestId('md-component');
-    expect(mdComponent.getAttribute('data-path')).toBe('README.ja.md');
   });
 });

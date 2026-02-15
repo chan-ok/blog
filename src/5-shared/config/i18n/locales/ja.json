@@ -24,5 +24,26 @@
       "required": "必須項目です",
       "invalidEmail": "メールアドレスの形式が正しくありません"
     }
+  },
+  "post": {
+    "recentPosts": "最近の投稿",
+    "noPosts": "投稿が見つかりません。コンテンツリポジトリを確認してください。",
+    "readMore": "続きを読む",
+    "loading": "投稿を読み込み中..."
+  },
+  "markdown": {
+    "loadError": "コンテンツの読み込みに失敗しました",
+    "loading": "読み込み中...",
+    "retry": "再試行"
+  },
+  "error": {
+    "notFound": "ページが見つかりません",
+    "notFoundDesc": "お探しのページは存在しないか、移動された可能性があります。",
+    "forbidden": "アクセスが拒否されました",
+    "forbiddenDesc": "このページへのアクセス権限がありません。",
+    "serverError": "問題が発生しました",
+    "serverErrorDesc": "予期しないエラーが発生しました。しばらくしてからもう一度お試しください。",
+    "goHome": "ホームに戻る",
+    "retry": "再試行"
   }
 }

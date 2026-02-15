@@ -717,7 +717,7 @@ const { data } = useQuery({
 
 - ✅ TanStack Router v1 + Vite v7로 전환
 - ✅ 빌드 시간 60% 개선, HMR 95% 개선, 번들 크기 25% 감소
-- ✅ 멀티 에이전트 시스템 활용 (Master Orchestrator, feature-developer, test-specialist, security-scanner, git-guardian, github-helper, doc-manager)
+- ✅ 멀티 에이전트 시스템 활용 (Master Orchestrator, feature-developer, test-specialist, git-guardian, github-helper, doc-manager, tech-architect)
 
 ### 2. Contact 봇 스팸 문제
 

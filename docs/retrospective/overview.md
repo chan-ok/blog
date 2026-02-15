@@ -304,7 +304,7 @@
 - Master Orchestrator: 작업 분배 및 조율
 - feature-developer: 컴포넌트 및 라우팅 구현
 - test-specialist: 테스트 코드 작성 및 검증
-- security-scanner: 보안 취약점 검사
+- security-scanner: 보안 취약점 검사 (현재는 tech-architect에 통합됨)
 - git-guardian: Git 워크플로우 관리
 - github-helper: PR 생성 및 관리
 - doc-manager: 문서 관리
@@ -316,6 +316,69 @@
 - 작업 완료 후 feature branch로 통합 → PR 생성
 
 ## 최근 회고
+
+### 2026-02-15 — PR #60: feat: MDX 이미지 블록 및 콜아웃 기능 추가
+
+#### ✅ 잘한 점
+
+- TDD 프로세스 준수: 테스트 먼저 작성(.skip) → 구현 → 활성화 순서로 요구사항 명확화
+- Git Worktree 병렬 작업: feature-dev와 test-spec을 분리하여 기능/테스트 동시 진행
+- MDX 파싱 동작 학습: remark/rehype 플러그인 체인 직접 구현하며 AST 변환 과정 이해
+- 시맨틱 HTML 개선: rehype-unwrap-images로 `<p><figure>` 중첩 제거
+
+#### 🔧 개선점
+
+- 이미지 경로 해결 로직 4회 반복 수정 → 요구사항 미명확 (이미지 디렉토리 규칙 사전 정의 필요)
+- 콜아웃 파싱 로직 3회 수정 → MDX가 마크다운 블록을 하나의 p 태그에 개행으로 파싱하는 동작 미파악
+- 디버깅 커밋 5회 잔류 → 커밋 히스토리 가독성 저하
+- Property-based 테스트 타임아웃 발생 → 비동기 컴포넌트 타임아웃 설정 필요
+
+#### 🤖 에이전트 개선 제안
+
+- **feature-developer**: MDX/remark/rehype 플러그인 개발 체크리스트 (MDX 파싱 동작 사전 확인, ESM import 사용, 디렉토리 규칙 명확화)
+- **test-specialist**: Property-based 테스트 타임아웃 가이드라인 (비동기 로직 시 5s → 10s)
+- **git-guardian**: 디버깅 커밋 감지 및 squash 권장 (연속 3회 이상 동일 파일 수정 시 경고)
+- **master-orchestrator**: 복잡한 파싱 로직 요구사항 사전 명확화 단계 (입력 → 출력 명세 먼저 작성)
+
+### 2026-02-12 — PR #50: feat: 404, 403, 500 에러 페이지 구현
+
+#### ✅ 잘한 점
+
+- feature-developer + test-specialist 병렬 실행으로 구현/테스트/스토리 병행 처리
+- TanStack Router error/notFound 처리와 i18n/다크모드/접근성까지 한 번에 완성
+- tech-architect 검증(94/100)과 개선사항 반영으로 품질 확보
+
+#### 🔧 개선점
+
+- named export vs default import 불일치로 통합 시점에 수정 반복 발생
+- Storybook args 타입 누락과 notFound 변경으로 기존 테스트 실패
+- pre-commit 훅(tsc+vitest)에서 3회 실패 → 사전 검증 체계 필요
+
+#### 🤖 에이전트 개선 제안
+
+- **feature-developer**: 새 컴포넌트 export 형태( default/named )를 작업 요약에 명시
+- **test-specialist**: 스토리 args 타입 체크리스트 추가 (required args 누락 방지)
+- **master-orchestrator**: 권한 제약(pnpm 미보유) 사전 고지 및 검증 위임 타이밍 명확화
+
+### 2026-02-12 — PR #46: refactor: 기술부채 개선 — 타입 안전성, i18n, 파일명 규칙, UI 개선
+
+#### ✅ 잘한 점
+
+- 기술부채 6건을 한 번에 정리하면서 타입 안전성(parseLocale), i18n 스키마/리소스, 파일명 규칙까지 함께 정합성 확보
+- MDX 에러/로딩 UI 개선과 i18n 적용으로 사용자 경험과 국제화 품질 동시 향상
+- 테스트 206/206 통과를 유지하면서 변경 범위를 명확히 문서화(변경 파일 25개, +239/-55)
+
+#### 🔧 개선점
+
+- 역할 분리로 인해 feature 변경 후 테스트 10건 실패가 발생 → 변경 시 테스트 영향 범위 사전 공유 필요
+- worktree 외 메인 디렉토리 수정 발생 → 작업 디렉토리 검증 체크가 부족
+- opencode.json 변경이 이전 세션 잔류분으로 포함됨 → 변경 원인/범위 분리 필요
+
+#### 🤖 에이전트 개선 제안
+
+- **feature-developer**: UI 문구/i18n/파일명 변경 시 테스트 영향 항목(모킹, 스냅샷, 하드코딩 값) 체크리스트 추가 (.agents/agents/feature-developer.md)
+- **test-specialist**: worktree 경로 검증(현재 git worktree 확인) 후 작업 시작 규칙 추가 (.agents/agents/test-specialist.md)
+- **git-guardian**: 머지 전 uncommitted 설정 파일(opencode.json) 잔류 탐지 및 분리 커밋 권고 (.agents/agents/git-guardian.md)
 
 ### 2026-02-11 — PR #40: 문서 구조 개편 - agents.md 분리 및 에이전트 프롬프트 최적화
 

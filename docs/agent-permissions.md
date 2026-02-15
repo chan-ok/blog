@@ -105,30 +105,7 @@
 
 **중요**: lint-formatter는 **코드 동작을 변경하지 않고** 포맷팅과 린트 오류만 수정합니다.
 
-### 5. security-scanner
-
-**역할**: 보안 감사관
-**책임**: 보안 취약점 탐지 및 민감 정보 노출 방지
-
-**허용 권한**:
-
-- ✅ 모든 파일 읽기 (`.env` 제외)
-- ✅ `pnpm audit`, `pnpm audit --json` 실행
-- ✅ Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
-- ✅ Git 추가 읽기 (`git show *`, `git ls-tree -r HEAD --name-only`)
-- ✅ GitHub 읽기 (`gh pr view`, `gh pr checks`)
-- ✅ `ls`, `wc`
-- ✅ 민감 정보 패턴 검색
-
-**제한 권한**:
-
-- ❌ 모든 파일 쓰기/수정 (읽기 전용, `write/edit: { "*": "deny" }`)
-- ❌ Git add/commit
-- ❌ .env 파일 읽기 (보안상 접근 불가)
-
-**중요**: security-scanner는 **읽기 전용** 모드로 동작하며, 문제 발견 시 보고만 합니다.
-
-### 6. doc-manager
+### 5. doc-manager
 
 **역할**: 문서 관리자
 **책임**: 프로젝트 문서 및 에이전트 프롬프트(.agents/agents/\*.md)의 정확성과 최신성을 관리
@@ -152,7 +129,7 @@
 - ❌ GitHub PR 작업 (github-helper에 위임)
 - ❌ .env 파일 접근
 
-### 7. git-guardian
+### 6. git-guardian
 
 **역할**: Git 워크플로우 관리자
 **책임**: 안전한 Git 작업 수행
@@ -187,7 +164,7 @@
 
 **중요**: git-guardian은 **Git 작업 전용**이며, 파일 수정은 하지 않습니다. **git commit과 git push가 가능한 유일한 에이전트**입니다.
 
-### 8. github-helper
+### 7. github-helper
 
 **역할**: GitHub 통합 관리자
 **책임**: PR, Issue, CI/CD 관리
@@ -211,18 +188,21 @@
 
 **중요**: github-helper는 **GitHub 작업 전용**이며, 로컬 Git 작업은 git-guardian에 위임합니다.
 
-### 9. tech-architect
+### 8. tech-architect
 
-**역할**: 기술 검증자 (Read-only Validator)
-**책임**: subagent 출력물의 품질 검증 — FSD 아키텍처 준수, 코드 스타일, 요구사항 정확성, 오버엔지니어링 탐지
+**역할**: 기술 검증자 + 보안 감사관 (Read-only Validator)
+**책임**: subagent 출력물의 품질/보안 검증 — FSD 아키텍처 준수, 코드 스타일, 요구사항 정확성, 오버엔지니어링 탐지, 보안 취약점 탐지 및 민감 정보 노출 방지, 의존성 취약점 검사
 
 **허용 권한**:
 
 - ✅ 파일 읽기 (`"*": "allow"`, `.env/.env.*` 제외)
 - ✅ 린트/타입체크 실행 (`pnpm lint`, `pnpm tsc`)
+- ✅ `pnpm audit`, `pnpm audit --json` 실행
 - ✅ Git 읽기 명령 (`git status`, `git diff`, `git log`, `git branch --show-current`, `git branch --list`)
+- ✅ Git 추가 읽기 (`git show *`, `git ls-tree -r HEAD --name-only`)
 - ✅ GitHub 읽기 (`gh pr view`, `gh pr checks`)
 - ✅ `ls`, `wc`
+- ✅ 민감 정보 패턴 검색
 - ✅ 기타 bash 명령 (사용자 확인 필요, `"*": "ask"`)
 
 **제한 권한**:
@@ -232,9 +212,9 @@
 - ❌ Git add/commit (git-guardian에 위임)
 - ❌ .env 파일 접근
 
-**중요**: tech-architect는 **읽기 전용 검증** 모드로 동작하며, 코드 품질 문제 발견 시 보고만 합니다.
+**중요**: tech-architect는 **읽기 전용 검증** 모드로 동작하며, 코드 품질/보안 문제 발견 시 보고만 합니다.
 
-### 10. retrospector
+### 9. retrospector
 
 **역할**: 회고 분석가
 **책임**: PR/커밋에 대한 회고 분석 — 잘된 점, 개선점 식별 및 에이전트 프롬프트 개선 제안
@@ -259,27 +239,27 @@
 
 ## 권한 매트릭스
 
-| 권한                   | master | feature-dev | test-spec | lint-fmt | security | doc-mgr | git-guard | github   | tech-arch | retro |
-| ---------------------- | ------ | ----------- | --------- | -------- | -------- | ------- | --------- | -------- | --------- | ----- |
+| 권한                   | master | feature-dev | test-spec | lint-fmt | doc-mgr | git-guard | github   | tech-arch | retro |
+| ---------------------- | ------ | ----------- | --------- | -------- | ------- | --------- | -------- | --------- | ----- |
 | **파일 작업**          |
-| 소스 코드 읽기         | ✅     | ✅          | ✅        | ✅       | ✅       | ✅      | ✅        | ✅       | ✅        | ✅    |
-| 소스 코드 쓰기         | ❌     | ✅          | ✅        | ❌       | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
-| 소스 코드 수정 (Edit)  | ❌     | ✅          | ✅        | ✅ (ask) | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
-| 문서 쓰기/수정         | ❌     | ❌          | ❌        | ❌       | ❌       | ✅      | ❌        | ❌       | ❌        | ❌    |
-| 회고 문서 쓰기/수정    | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ❌       | ❌        | ✅    |
-| 에이전트 프롬프트 쓰기 | ❌     | ❌          | ❌        | ❌       | ❌       | ✅      | ❌        | ❌       | ❌        | ❌    |
-| .env 읽기              | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
+| 소스 코드 읽기         | ✅     | ✅          | ✅        | ✅       | ✅      | ✅        | ✅       | ✅        | ✅    |
+| 소스 코드 쓰기         | ❌     | ✅          | ✅        | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
+| 소스 코드 수정 (Edit)  | ❌     | ✅          | ✅        | ✅ (ask) | ❌      | ❌        | ❌       | ❌        | ❌    |
+| 문서 쓰기/수정         | ❌     | ❌          | ❌        | ❌       | ✅      | ❌        | ❌       | ❌        | ❌    |
+| 회고 문서 쓰기/수정    | ❌     | ❌          | ❌        | ❌       | ❌      | ❌        | ❌       | ❌        | ✅    |
+| 에이전트 프롬프트 쓰기 | ❌     | ❌          | ❌        | ❌       | ✅      | ❌        | ❌       | ❌        | ❌    |
+| .env 읽기              | ❌     | ❌          | ❌        | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
 | **테스트/빌드**        |
-| pnpm test/coverage     | ❌     | ✅          | ✅        | ❌       | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
-| pnpm fmt               | ❌     | ❌          | ❌        | ✅       | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
-| pnpm lint/tsc          | ❌     | ✅          | ✅        | ✅       | ❌       | ❌      | ❌        | ❌       | ✅        | ❌    |
-| pnpm audit             | ❌     | ❌          | ❌        | ❌       | ✅       | ❌      | ❌        | ❌       | ❌        | ❌    |
-| pnpm storybook         | ❌     | ❌          | ✅        | ❌       | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
+| pnpm test/coverage     | ❌     | ✅          | ✅        | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
+| pnpm fmt               | ❌     | ❌          | ❌        | ✅       | ❌      | ❌        | ❌       | ❌        | ❌    |
+| pnpm lint/tsc          | ❌     | ✅          | ✅        | ✅       | ❌      | ❌        | ❌       | ✅        | ❌    |
+| pnpm audit             | ❌     | ❌          | ❌        | ❌       | ❌      | ❌        | ❌       | ✅        | ❌    |
+| pnpm storybook         | ❌     | ❌          | ✅        | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
 | **Git 읽기**           |
-| git status/diff        | ✅     | ✅          | ✅        | ✅       | ✅       | ✅      | ✅        | ✅       | ✅        | ✅    |
-| git log                | ✅     | ✅          | ✅        | ❌       | ✅       | ✅      | ✅        | ✅       | ✅        | ✅    |
-| git show               | ❌     | ❌          | ❌        | ❌       | ✅       | ❌      | ❌        | ❌       | ❌        | ✅    |
-| git ls-tree            | ❌     | ❌          | ❌        | ❌       | ✅       | ❌      | ❌        | ❌       | ❌        | ❌    |
+| git status/diff        | ✅     | ✅          | ✅        | ✅       | ✅      | ✅        | ✅       | ✅        | ✅    |
+| git log                | ✅     | ✅          | ✅        | ❌       | ✅      | ✅        | ✅       | ✅        | ✅    |
+| git show               | ❌     | ❌          | ❌        | ❌       | ❌      | ❌        | ❌       | ✅        | ✅    |
+| git ls-tree            | ❌     | ❌          | ❌        | ❌       | ❌      | ❌        | ❌       | ✅        | ❌    |
 | **Git 쓰기**           |
 | git add                | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅ (ask)  | ❌       | ❌        | ❌    |
 | git commit             | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ✅ (ask)  | ❌       | ❌        | ❌    |
@@ -294,7 +274,7 @@
 | gh pr comment          | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ✅ (ask) | ❌        | ❌    |
 | gh pr merge            | ❌     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ✅ (ask) | ❌        | ❌    |
 | **Task Tool**          |
-| task \*                | ✅     | ❌          | ❌        | ❌       | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
+| task \*                | ✅     | ❌          | ❌        | ❌       | ❌      | ❌        | ❌       | ❌        | ❌    |
 
 ## 워크플로우 예시
 
@@ -307,8 +287,7 @@ master-orchestrator (조율)
   ├─ Task → feature-developer (컴포넌트 구현)
   ├─ Task → test-specialist (테스트 작성)
   ├─ Task → lint-formatter (코드 포맷팅) - 선택적
-  ├─ Task → tech-architect (품질 검증) - 선택적
-  ├─ Task → security-scanner (보안 검증)
+  ├─ Task → tech-architect (품질 + 보안 검증) - 선택적
   ├─ Task → doc-manager (문서 업데이트) - 필요시
   ├─ Task → git-guardian (커밋 생성)
   └─ Task → github-helper (PR 생성)
@@ -383,7 +362,7 @@ Task → retrospector (회고 분석)
 - ❌ `.ssh/**`, `id_rsa*`, `id_ed25519*` 접근 차단
 - ❌ `.git/**`, `.idea/**`, `.vscode/**` 접근 차단
 - ❌ `dist/**`, `node_modules/**`, `pnpm-lock.yaml` 접근 차단
-- ✅ security-scanner가 민감 정보 탐지
+- ✅ tech-architect가 민감 정보 탐지
 - ✅ Git add 시 .env 파일 스테이징 방지
 
 ### 4. 실행 제한
@@ -444,6 +423,12 @@ Task → retrospector (회고 분석)
 ```
 
 ## 변경 이력
+
+- **2026-02-12**: security-scanner를 tech-architect에 통합
+  - security-scanner 에이전트 삭제 (5번 섹션 제거)
+  - tech-architect에 보안 감사 역할 통합 (pnpm audit, git show, git ls-tree 권한 추가)
+  - 권한 매트릭스에서 security 열 제거, tech-arch 열에 보안 권한 반영
+  - 에이전트 수 10→9
 
 - **2026-02-11**: 에이전트 권한 정비 4차 갱신
   - tech-architect (9번) 추가: 읽기 전용 검증 에이전트 (FSD 아키텍처, 코드 품질 검증)

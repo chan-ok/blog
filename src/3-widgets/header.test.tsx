@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { useRouterState } from '@tanstack/react-router';
 
 import Header from './header';
-import { useDetectScrolled } from '@/5-shared/hooks/useDetectScrolled';
+import { useDetectScrolled } from '@/5-shared/hooks/use-detect-scrolled';
 
 /**
  * ============================================================================
@@ -28,7 +28,7 @@ vi.mock('@tanstack/react-router', () => ({
 }));
 
 // useDetectScrolled 모킹
-vi.mock('@/5-shared/hooks/useDetectScrolled', () => ({
+vi.mock('@/5-shared/hooks/use-detect-scrolled', () => ({
   useDetectScrolled: vi.fn(),
 }));
 

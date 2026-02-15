@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Link from '@/5-shared/components/ui/link';
 import LocaleToggle from '@/5-shared/components/toggle/locale-toggle';
 import ThemeToggle from '@/5-shared/components/toggle/theme-toggle';
-import { useDetectScrolled } from '@/5-shared/hooks/useDetectScrolled';
+import { useDetectScrolled } from '@/5-shared/hooks/use-detect-scrolled';
 
 import { Book, Mail, User } from 'lucide-react';
 import clsx from 'clsx';

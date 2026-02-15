@@ -1,8 +1,18 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  ErrorComponentProps,
+  notFound,
+  Outlet,
+  useRouter,
+  useRouterState,
+} from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { z } from 'zod';
+
+import { ErrorPage } from '@/5-shared/components/error-page';
 import { LocaleProvider } from '@/5-shared/providers/locale-provider';
 import { ThemeProvider } from '@/5-shared/providers/theme-provider';
+import { parseLocale } from '@/5-shared/types/common.schema';
 import Footer from '@/3-widgets/footer';
 import Header from '@/3-widgets/header';
 
@@ -14,11 +24,55 @@ export const Route = createFileRoute('/$locale')({
   beforeLoad: ({ params }) => {
     const result = localeSchema.safeParse(params.locale);
     if (!result.success) {
-      throw new Error(`Invalid locale: ${params.locale}`);
+      throw notFound();
     }
   },
   component: LocaleLayout,
+  errorComponent: ErrorComponent,
+  notFoundComponent: NotFoundComponent,
 });
+
+function ErrorComponent({ reset }: ErrorComponentProps) {
+  const router = useRouter();
+  const routerState = useRouterState();
+
+  // Extract locale from the URL pathname using router state
+  const pathSegments = routerState.location.pathname.split('/').filter(Boolean);
+  const locale = parseLocale(pathSegments[0]);
+
+  const handleGoHome = () => {
+    router.navigate({ to: `/${locale}` });
+  };
+
+  return (
+    <ThemeProvider>
+      <LocaleProvider locale={locale}>
+        <ErrorPage statusCode={500} onRetry={reset} onGoHome={handleGoHome} />
+      </LocaleProvider>
+    </ThemeProvider>
+  );
+}
+
+function NotFoundComponent() {
+  const router = useRouter();
+  const routerState = useRouterState();
+
+  // Extract locale from the URL pathname using router state
+  const pathSegments = routerState.location.pathname.split('/').filter(Boolean);
+  const locale = parseLocale(pathSegments[0]);
+
+  const handleGoHome = () => {
+    router.navigate({ to: `/${locale}` });
+  };
+
+  return (
+    <ThemeProvider>
+      <LocaleProvider locale={locale}>
+        <ErrorPage statusCode={404} onGoHome={handleGoHome} />
+      </LocaleProvider>
+    </ThemeProvider>
+  );
+}
 
 function LocaleLayout() {
   const { locale } = Route.useParams();

@@ -30,6 +30,9 @@ vi.mock('@tanstack/react-router', async () => {
   return {
     ...actual,
     Outlet: () => <div data-testid="outlet">Outlet Content</div>,
+    notFound: () => {
+      throw new Error('Not Found');
+    },
   };
 });
 
@@ -45,16 +48,8 @@ describe('$locale 레이아웃 라우트', () => {
     Route.useParams = mockUseParams;
   });
 
-  it('에러 없이 렌더링되어야 한다', () => {
-    const Component = Route.options.component as React.ComponentType;
-    expect(Component).toBeDefined();
-
-    render(<Component />);
-  });
-
   it('LocaleLayout이 모든 주요 요소를 포함해야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     render(<Component />);
 
     // Provider 확인
@@ -84,15 +79,12 @@ describe('$locale 레이아웃 라우트', () => {
       beforeLoad?.({ params: { locale: 'ja' } } as any)
     ).not.toThrow();
 
-    // 유효하지 않은 locale
-    expect(() => beforeLoad?.({ params: { locale: 'fr' } } as any)).toThrow(
-      'Invalid locale: fr'
-    );
+    // 유효하지 않은 locale - notFound() throw
+    expect(() => beforeLoad?.({ params: { locale: 'fr' } } as any)).toThrow();
   });
 
   it('레이아웃 구조가 올바른 클래스를 가져야 한다', () => {
     const Component = Route.options.component as React.ComponentType;
-
     const { container } = render(<Component />);
 
     // 최상위 div가 flex-col, min-h-screen을 가지는지
