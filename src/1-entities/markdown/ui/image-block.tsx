@@ -22,6 +22,8 @@ export default function ImageBlock({
   baseUrl,
   contentPath,
 }: ImageBlockProps) {
+  console.log('ImageBlock props:', { src, alt, baseUrl, contentPath }); // 디버깅 추가
+  
   const [hasError, setHasError] = useState(false);
 
   // 상대 경로 → 절대 경로 변환
