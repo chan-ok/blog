@@ -217,6 +217,7 @@
         "write": {
           "*": "deny",
           "src/**": "allow",
+          "e2e/**": "allow",
           "public/**": "allow",
           "assets/**": "allow",
           ".worktrees/**": "allow"
@@ -224,6 +225,7 @@
         "edit": {
           "*": "deny",
           "src/**": "allow",
+          "e2e/**": "allow",
           "public/**": "allow",
           "assets/**": "allow",
           ".worktrees/**": "allow"

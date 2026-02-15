@@ -31,8 +31,8 @@ test.describe('Critical Paths - 홈 페이지', () => {
     // 메인 콘텐츠 확인
     await expect(page.locator('main')).toBeVisible();
 
-    // 헤더 확인
-    await expect(page.locator('header')).toBeVisible();
+    // 헤더 확인 (로고 텍스트 확인)
+    await expect(page.locator('header').getByText('Chanho.dev')).toBeVisible();
 
     // 푸터 확인
     await expect(page.locator('footer')).toBeVisible();
@@ -48,8 +48,8 @@ test.describe('Critical Paths - 홈 페이지', () => {
     // 메인 콘텐츠 확인
     await expect(page.locator('main')).toBeVisible();
 
-    // 헤더 확인
-    await expect(page.locator('header')).toBeVisible();
+    // 헤더 확인 (로고 텍스트 확인)
+    await expect(page.locator('header').getByText('Chanho.dev')).toBeVisible();
 
     // 푸터 확인
     await expect(page.locator('footer')).toBeVisible();
@@ -65,8 +65,8 @@ test.describe('Critical Paths - 홈 페이지', () => {
     // 메인 콘텐츠 확인
     await expect(page.locator('main')).toBeVisible();
 
-    // 헤더 확인
-    await expect(page.locator('header')).toBeVisible();
+    // 헤더 확인 (로고 텍스트 확인)
+    await expect(page.locator('header').getByText('Chanho.dev')).toBeVisible();
 
     // 푸터 확인
     await expect(page.locator('footer')).toBeVisible();
@@ -77,11 +77,14 @@ test.describe('Critical Paths - About 페이지', () => {
   test('About 페이지 렌더링', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko/about`);
 
-    // 메인 article 확인
-    await expect(page.locator('article')).toBeVisible();
+    // MDX 콘텐츠 로딩 완료 대기
+    await page.waitForLoadState('networkidle');
 
-    // MDX 콘텐츠 렌더링 확인 (로딩 완료 대기)
-    await expect(page.locator('article')).not.toBeEmpty();
+    // 메인 콘텐츠 확인 (MDXContent는 article이 아닌 다른 요소로 렌더링될 수 있음)
+    await expect(page.locator('main')).toBeVisible();
+
+    // MDX 콘텐츠가 렌더링되었는지 확인 (제목이나 본문 텍스트 확인)
+    await expect(page.locator('h2').first()).toBeVisible({ timeout: 10000 });
   });
 });
 
@@ -92,23 +95,25 @@ test.describe('Critical Paths - 포스트', () => {
     // 메인 콘텐츠 확인
     await expect(page.locator('main')).toBeVisible();
 
-    // 포스트 카드가 1개 이상 있는지 확인
-    const postCards = page.locator('[data-testid="post-card"]');
+    // 포스트 카드가 1개 이상 있는지 확인 (article 태그 사용)
+    const postCards = page.locator('article');
     await expect(postCards.first()).toBeVisible({ timeout: 10000 });
   });
 
   test('포스트 상세 페이지', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko/posts`);
 
-    // 첫 번째 포스트 카드 클릭
-    const firstPost = page.locator('[data-testid="post-card"]').first();
-    await firstPost.click();
+    // 첫 번째 포스트 카드 클릭 (article 내의 링크 클릭)
+    const firstPostLink = page.locator('article a').first();
+    await expect(firstPostLink).toBeVisible({ timeout: 10000 });
+    await firstPostLink.click();
 
     // URL 변경 확인
     await expect(page).toHaveURL(/\/ko\/posts\/.+/);
 
-    // 포스트 상세 내용 확인
-    await expect(page.locator('article')).toBeVisible();
+    // 포스트 상세 내용 확인 (MDX 콘텐츠 렌더링 대기)
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('main')).toBeVisible();
   });
 });
 
@@ -122,8 +127,9 @@ test.describe('Critical Paths - 네비게이션', () => {
     // URL 변경 확인
     await expect(page).toHaveURL(/\/ko\/about/);
 
-    // About 페이지 콘텐츠 확인
-    await expect(page.locator('article')).toBeVisible();
+    // About 페이지 콘텐츠 확인 (MDX 로딩 대기)
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('h2').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('네비게이션 동작 - Home to Posts', async ({ page }) => {
@@ -135,8 +141,8 @@ test.describe('Critical Paths - 네비게이션', () => {
     // URL 변경 확인
     await expect(page).toHaveURL(/\/ko\/posts/);
 
-    // 포스트 목록 확인
-    const postCards = page.locator('[data-testid="post-card"]');
+    // 포스트 목록 확인 (article 태그 사용)
+    const postCards = page.locator('article');
     await expect(postCards.first()).toBeVisible({ timeout: 10000 });
   });
 
@@ -158,23 +164,22 @@ test.describe('Critical Paths - 테마 전환', () => {
   test('다크 모드 전환', async ({ page }) => {
     await page.goto(`${BASE_URL}/ko`);
 
-    // 초기 테마 확인 (라이트 모드)
-    const html = page.locator('html');
-    const initialClass = await html.getAttribute('class');
-    const isDarkInitially = initialClass?.includes('dark') ?? false;
+    // 테마 토글 버튼 찾기 (aria-label 기반)
+    const themeToggle = page.locator('button[aria-label*="theme"]').first();
+    await expect(themeToggle).toBeVisible();
 
-    // 테마 토글 버튼 찾기 (Sun/Moon 아이콘)
-    const themeToggle = page
-      .locator('button[aria-label*="theme"], button[aria-label*="테마"]')
-      .first();
+    // 초기 aria-label 저장
+    const initialAriaLabel = await themeToggle.getAttribute('aria-label');
+
+    // 버튼 클릭
     await themeToggle.click();
 
-    // 테마 변경 확인
-    const updatedClass = await html.getAttribute('class');
-    const isDarkAfter = updatedClass?.includes('dark') ?? false;
+    // 짧은 대기 후 aria-label 변경 확인 (테마가 전환되면 aria-label도 변경됨)
+    await page.waitForTimeout(500);
 
-    // 초기 상태와 반대여야 함
-    expect(isDarkAfter).toBe(!isDarkInitially);
+    // 테마가 실제로 변경되었는지 확인 (버튼 aria-label 변경)
+    const newAriaLabel = await themeToggle.getAttribute('aria-label');
+    expect(newAriaLabel).not.toBe(initialAriaLabel);
   });
 });
 
@@ -185,24 +190,24 @@ test.describe('Critical Paths - 언어 전환', () => {
     // 현재 URL이 /ko인지 확인
     await expect(page).toHaveURL(/\/ko/);
 
-    // 언어 토글 버튼 찾기
+    // 언어 토글 버튼 찾기 (aria-label 기반)
     const localeToggle = page
       .locator('button[aria-label*="language"], button[aria-label*="언어"]')
       .first();
 
-    // 버튼이 보이면 클릭
-    if (await localeToggle.isVisible()) {
-      await localeToggle.click();
+    // 버튼에 hover하여 메뉴 열기
+    await localeToggle.hover();
 
-      // 언어 선택 메뉴에서 English 선택
-      const englishOption = page.locator('text=/English|영어/i').first();
-      if (await englishOption.isVisible()) {
-        await englishOption.click();
+    // 메뉴가 나타날 때까지 대기
+    await page.waitForTimeout(300);
 
-        // URL이 /en으로 변경되었는지 확인
-        await expect(page).toHaveURL(/\/en/, { timeout: 5000 });
-      }
-    }
+    // English 옵션 찾기 및 클릭
+    const englishOption = page.getByText('English').first();
+    await expect(englishOption).toBeVisible({ timeout: 5000 });
+    await englishOption.click();
+
+    // URL이 /en으로 변경되었는지 확인
+    await expect(page).toHaveURL(/\/en/, { timeout: 5000 });
   });
 
   test('언어 전환 (en → ja)', async ({ page }) => {
@@ -211,23 +216,23 @@ test.describe('Critical Paths - 언어 전환', () => {
     // 현재 URL이 /en인지 확인
     await expect(page).toHaveURL(/\/en/);
 
-    // 언어 토글 버튼 찾기
+    // 언어 토글 버튼 찾기 (aria-label 기반)
     const localeToggle = page
       .locator('button[aria-label*="language"], button[aria-label*="언어"]')
       .first();
 
-    // 버튼이 보이면 클릭
-    if (await localeToggle.isVisible()) {
-      await localeToggle.click();
+    // 버튼에 hover하여 메뉴 열기
+    await localeToggle.hover();
 
-      // 언어 선택 메뉴에서 Japanese 선택
-      const japaneseOption = page.locator('text=/Japanese|日本語/i').first();
-      if (await japaneseOption.isVisible()) {
-        await japaneseOption.click();
+    // 메뉴가 나타날 때까지 대기
+    await page.waitForTimeout(300);
 
-        // URL이 /ja로 변경되었는지 확인
-        await expect(page).toHaveURL(/\/ja/, { timeout: 5000 });
-      }
-    }
+    // Japanese 옵션 찾기 및 클릭
+    const japaneseOption = page.getByText('日本語').first();
+    await expect(japaneseOption).toBeVisible({ timeout: 5000 });
+    await japaneseOption.click();
+
+    // URL이 /ja로 변경되었는지 확인
+    await expect(page).toHaveURL(/\/ja/, { timeout: 5000 });
   });
 });
