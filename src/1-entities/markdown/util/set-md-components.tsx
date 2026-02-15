@@ -21,14 +21,14 @@ export default function setMdxComponents(
     h5: Typography.h5,
     h6: Typography.h6,
     p: ({ children }) => {
-      // 자식이 ImageBlock만 있는 경우 <p> 태그 없이 렌더링
+      // 자식이 img 태그만 있는 경우 <p> 태그 없이 렌더링
       const childArray = React.Children.toArray(children);
 
-      // 자식이 1개이고 ImageBlock인 경우
+      // 자식이 1개이고 img 태그인 경우 (MDX는 img를 전달, 이후 ImageBlock으로 변환됨)
       if (
         childArray.length === 1 &&
         React.isValidElement(childArray[0]) &&
-        childArray[0].type === ImageBlock
+        childArray[0].type === 'img'
       ) {
         return <>{children}</>;
       }
