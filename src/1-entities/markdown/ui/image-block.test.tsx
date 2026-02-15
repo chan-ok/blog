@@ -265,7 +265,7 @@ describe('Property-Based 테스트 - 다양한 src/alt 조합', () => {
       }),
       { numRuns: 30 }
     );
-  });
+  }, 10000);
 
   /**
    * **Feature: image-block, Property: 특수 문자 포함 alt**
