@@ -11,7 +11,7 @@ import { AxiosResponse } from 'axios';
  * ============================================================================
  *
  * ## 테스트 목적
- * GitHub Raw URL에서 MDX 콘텐츠를 fetch하고, @mdx-js/mdx로 컴파일하는
+ * GitHub Raw URL에서 MDX 콘텐츠를 fetch하고, @mdx-js/mdx로 evaluate하는
  * getMarkdown 함수의 정확성을 검증합니다.
  *
  * ## 테스트 종류
@@ -20,11 +20,11 @@ import { AxiosResponse } from 'axios';
  * 3. 통합 테스트: API 모킹을 통한 실제 플로우 시뮬레이션
  *
  * ## 검증 항목
- * - ✅ MDX 컴파일 성공
+ * - ✅ MDX evaluate 성공
  * - ✅ frontmatter 파싱 (title, description, tags, createdAt)
- * - ✅ compiledSource 반환 (문자열)
+ * - ✅ MDXContent 반환 (React.ComponentType)
  * - ✅ remarkPlugins 적용 확인 (GFM)
- * - ✅ rehypePlugins 적용 확인 (Highlight)
+ * - ✅ rehypePlugins 적용 확인 (Highlight, Slug, Autolink Headings)
  * - ✅ 빈 MDX 처리
  * - ✅ 잘못된 MDX 에러 처리
  * - ✅ fetch 실패 에러 처리
@@ -94,6 +94,20 @@ vi.mock('@/5-shared/config/api', () => ({
   },
 }));
 
+/**
+ * @mdx-js/mdx의 evaluate 모킹
+ * MDXContent 컴포넌트를 반환하도록 설정
+ */
+vi.mock('@mdx-js/mdx', () => {
+  const MockMDXComponent = () => null;
+
+  return {
+    evaluate: vi.fn().mockResolvedValue({
+      default: MockMDXComponent,
+    }),
+  };
+});
+
 // ============================================================================
 // 테스트 전/후 처리
 // ============================================================================
@@ -145,9 +159,8 @@ describe('Unit 테스트 - 정상 케이스', () => {
     // 검증: source (원본 MDX)
     expect(result.source).toBe(mockMDX);
 
-    // 검증: compiledSource (컴파일된 MDX 코드)
-    expect(typeof result.compiledSource).toBe('string');
-    expect(result.compiledSource.length).toBeGreaterThan(0);
+    // 검증: MDXContent (React 컴포넌트)
+    expect(typeof result.MDXContent).toBe('function');
   });
 
   it('baseUrl을 직접 전달할 수 있어야 한다', async () => {
@@ -215,8 +228,8 @@ describe('Unit 테스트 - 엣지 케이스', () => {
     // 검증: content는 빈 문자열 또는 공백만 포함
     expect(result.content.trim()).toBe('');
 
-    // 검증: compiledSource는 여전히 생성됨
-    expect(typeof result.compiledSource).toBe('string');
+    // 검증: MDXContent는 여전히 생성됨
+    expect(typeof result.MDXContent).toBe('function');
   });
 
   it('frontmatter에 선택적 필드가 없어도 처리할 수 있어야 한다', async () => {
@@ -273,9 +286,8 @@ createdAt: 2024-01-01
     expect(result.content).toContain('~~strikethrough~~');
     expect(result.content).toContain('- [ ] Task list');
 
-    // 검증: 컴파일 성공
-    expect(typeof result.compiledSource).toBe('string');
-    expect(result.compiledSource.length).toBeGreaterThan(0);
+    // 검증: evaluate 성공
+    expect(typeof result.MDXContent).toBe('function');
   });
 });
 
@@ -287,7 +299,7 @@ describe('Unit 테스트 - 에러 케이스', () => {
   it('API 응답이 200이 아니면 에러를 던져야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: '',
-      axios: { status: 404 } as any,
+      axios: { status: 404 } as AxiosResponse<string>,
     });
 
     // 검증: 에러 발생
@@ -304,15 +316,20 @@ describe('Unit 테스트 - 에러 케이스', () => {
     await expect(getMarkdown('error/Post.md')).rejects.toThrow('Network error');
   });
 
-  it('잘못된 MDX 문법은 컴파일 에러를 발생시켜야 한다', async () => {
+  it('잘못된 MDX 문법은 evaluate 에러를 발생시켜야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockInvalidMDX,
       axios: { status: 200 } as AxiosResponse,
     });
 
-    // 검증: MDX 컴파일 에러 발생
-    // compile 함수가 실제로 에러를 던지므로 getMarkdown도 에러를 던짐
-    await expect(getMarkdown('invalid/Post.md')).rejects.toThrow();
+    // evaluate를 에러를 던지도록 모킹
+    const { evaluate } = await import('@mdx-js/mdx');
+    vi.mocked(evaluate).mockRejectedValueOnce(new Error('MDX syntax error'));
+
+    // 검증: MDX evaluate 에러 발생
+    await expect(getMarkdown('invalid/Post.md')).rejects.toThrow(
+      'MDX syntax error'
+    );
   });
 
   it('frontmatter가 없으면 빈 객체로 파싱되어야 한다', async () => {
@@ -415,18 +432,18 @@ Test content.
         expect(result.frontmatter.path).toEqual(frontmatter.path);
         expect(result.frontmatter.published).toBe(frontmatter.published);
 
-        // 검증: compiledSource는 항상 문자열
-        expect(typeof result.compiledSource).toBe('string');
+        // 검증: MDXContent는 항상 함수
+        expect(typeof result.MDXContent).toBe('function');
       }),
       { numRuns: 30 }
     );
   });
 
   /**
-   * Property: compiledSource는 항상 비어있지 않은 문자열
+   * Property: MDXContent는 항상 함수
    * 주의: MDX 문법을 위반하지 않도록 유효한 Markdown만 생성
    */
-  it('compiledSource는 항상 비어있지 않은 문자열이어야 한다', async () => {
+  it('MDXContent는 항상 함수여야 한다', async () => {
     await fc.assert(
       fc.asyncProperty(
         // 안전한 Markdown 콘텐츠만 생성 (MDX 특수문자 제외)
@@ -457,9 +474,8 @@ ${content}
 
           const result = await getMarkdown('test/Post.md');
 
-          // 검증: compiledSource는 문자열이고 길이 > 0
-          expect(typeof result.compiledSource).toBe('string');
-          expect(result.compiledSource.length).toBeGreaterThan(0);
+          // 검증: MDXContent는 함수
+          expect(typeof result.MDXContent).toBe('function');
         }
       ),
       { numRuns: 30 }
@@ -492,10 +508,9 @@ createdAt: 2024-01-01
 
     const result = await getMarkdown('test/GFM-Table.md');
 
-    // 검증: compiledSource에 테이블 관련 JSX가 포함됨
-    // MDX 컴파일 시 GFM 테이블은 <table>, <thead>, <tbody> 등으로 변환
-    expect(result.compiledSource).toBeTruthy();
-    expect(typeof result.compiledSource).toBe('string');
+    // 검증: MDXContent가 생성됨
+    expect(result.MDXContent).toBeTruthy();
+    expect(typeof result.MDXContent).toBe('function');
   });
 
   it('rehypeHighlight 플러그인이 적용되어야 한다', async () => {
@@ -519,10 +534,57 @@ console.log(hello);
 
     const result = await getMarkdown('test/Code-Block.md');
 
-    // 검증: compiledSource에 코드 블록 관련 JSX가 포함됨
-    // rehypeHighlight는 코드 블록에 하이라이트 클래스를 추가
-    expect(result.compiledSource).toBeTruthy();
-    expect(typeof result.compiledSource).toBe('string');
+    // 검증: MDXContent가 생성됨
+    expect(result.MDXContent).toBeTruthy();
+    expect(typeof result.MDXContent).toBe('function');
+  });
+
+  it('rehypeSlug 플러그인이 적용되어야 한다', async () => {
+    // heading이 포함된 MDX
+    const headingMDX = `---
+title: Heading Test
+path: ['test']
+createdAt: 2024-01-01
+---
+
+# Hello World
+## Section 1
+`;
+
+    vi.mocked(api.get).mockResolvedValue({
+      data: headingMDX,
+      axios: { status: 200 } as AxiosResponse,
+    });
+
+    const result = await getMarkdown('test/Heading.md');
+
+    // 검증: MDXContent가 생성됨 (rehypeSlug는 heading에 id 자동 추가)
+    expect(result.MDXContent).toBeTruthy();
+    expect(typeof result.MDXContent).toBe('function');
+  });
+
+  it('rehypeAutolinkHeadings 플러그인이 적용되어야 한다', async () => {
+    // heading이 포함된 MDX
+    const headingMDX = `---
+title: Autolink Test
+path: ['test']
+createdAt: 2024-01-01
+---
+
+# Introduction
+## Getting Started
+`;
+
+    vi.mocked(api.get).mockResolvedValue({
+      data: headingMDX,
+      axios: { status: 200 } as AxiosResponse,
+    });
+
+    const result = await getMarkdown('test/Autolink.md');
+
+    // 검증: MDXContent가 생성됨 (rehypeAutolinkHeadings는 heading에 링크 추가)
+    expect(result.MDXContent).toBeTruthy();
+    expect(typeof result.MDXContent).toBe('function');
   });
 
   it('remarkFrontmatter 플러그인이 적용되어야 한다', async () => {
@@ -542,26 +604,21 @@ console.log(hello);
 });
 
 // ============================================================================
-// 통합 테스트: 실제 MDX 컴파일 검증
+// 통합 테스트: 실제 MDX evaluate 검증
 // ============================================================================
 
-describe('통합 테스트 - MDX 컴파일', () => {
-  it('컴파일된 MDX는 function-body 형식이어야 한다', async () => {
+describe('통합 테스트 - MDX Evaluate', () => {
+  it('MDXContent는 React 컴포넌트여야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDX,
       axios: { status: 200 } as AxiosResponse,
     });
 
-    const result = await getMarkdown('test/Function-Body.md');
+    const result = await getMarkdown('test/Component.md');
 
-    // 검증: compiledSource는 function-body 형식
-    // @mdx-js/mdx의 outputFormat: 'function-body'는 함수 본문만 반환
-    // 따라서 "function" 키워드가 없고 바로 실행 가능한 코드 형태
-    expect(result.compiledSource).toBeTruthy();
-    expect(typeof result.compiledSource).toBe('string');
-
-    // function-body 형식은 일반적으로 return 문이나 JSX 코드를 포함
-    // (정확한 형식은 @mdx-js/mdx 버전에 따라 다를 수 있음)
+    // 검증: MDXContent는 함수 (React 컴포넌트)
+    expect(result.MDXContent).toBeTruthy();
+    expect(typeof result.MDXContent).toBe('function');
   });
 
   it('여러 플러그인이 동시에 적용되어야 한다', async () => {
@@ -602,6 +659,7 @@ const test = 'complex';
     expect(result.content).toContain('# Complex Example');
     expect(result.content).toContain('| Feature | Supported |');
     expect(result.content).toContain('```typescript');
-    expect(result.compiledSource).toBeTruthy();
+    expect(result.MDXContent).toBeTruthy();
+    expect(typeof result.MDXContent).toBe('function');
   });
 });
