@@ -11,8 +11,14 @@ export function stripMarkdownSyntax(content: string): string {
   text = text.replace(/```[\s\S]*?```/g, '');
   // 3. 인라인 코드 제거 (`...`)
   text = text.replace(/`[^`]+`/g, '');
-  // 4. HTML 태그 제거
-  text = text.replace(/<[^>]+>/g, '');
+  // 4. HTML 태그 제거 (변형을 고려하여 반복 적용)
+  {
+    let previous: string;
+    do {
+      previous = text;
+      text = text.replace(/<[^>]+>/g, '');
+    } while (text !== previous);
+  }
   // 5. 이미지 제거 (![alt](url))
   text = text.replace(/!\[.*?\]\(.*?\)/g, '');
   // 6. 링크 제거 ([text](url) -> text)
