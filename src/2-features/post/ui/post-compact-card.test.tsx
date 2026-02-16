@@ -205,7 +205,7 @@ describe('PostCompactCard - Unit 테스트', () => {
     // 썸네일 이미지를 통해 높이 검증
     const img = screen.getByRole('img', { name: '썸네일 높이 테스트' });
     const thumbnailContainer = img.parentElement;
-    expect(thumbnailContainer?.className).toContain('h-48');
+    expect(thumbnailContainer?.className).toContain('h-40');
   });
 
   it('수직 레이아웃(flex-col)을 사용해야 한다', async () => {
