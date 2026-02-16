@@ -19,9 +19,9 @@ export default function PostCompactCard({
   const thumbnailUrl = thumbnail || '/image/context.png';
 
   return (
-    <article className="group flex h-72 flex-col overflow-hidden rounded-lg border border-zinc-100 bg-white shadow transition-shadow hover:shadow-lg dark:border-zinc-800 dark:bg-gray-800 md:h-72">
+    <article className="group flex h-96 flex-col overflow-hidden rounded-lg border border-zinc-100 bg-white shadow transition-shadow hover:shadow-lg dark:border-zinc-800 dark:bg-gray-800 md:h-96">
       {/* 썸네일 - 상단 */}
-      <div className="h-48 w-full shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-700 md:h-48">
+      <div className="h-32 w-full shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-700 md:h-32">
         <img
           src={thumbnailUrl}
           alt={title}

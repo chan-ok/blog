@@ -53,9 +53,9 @@ export function RecentPostBlockSkeleton() {
     <div>
       <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="h-40 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-36" />
-        <div className="h-40 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-36" />
-        <div className="h-40 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-36" />
+        <div className="h-96 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-96" />
+        <div className="h-96 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-96" />
+        <div className="h-96 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-96" />
       </div>
     </div>
   );
