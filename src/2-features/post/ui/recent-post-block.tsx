@@ -1,7 +1,6 @@
 import { use } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PagingPosts } from '../model/post.schema';
-import PostBasicCard from './post-basic-card';
 import PostSimpleCard from './post-simple-card';
 
 interface RecentPostBlockProps {
@@ -34,26 +33,14 @@ export default function RecentPostBlock({
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
-      <div className="flex flex-col gap-4">
-        {posts.map((post, i) => {
-          if (i === 0) {
-            return (
-              <PostBasicCard
-                key={post.path.join('/')}
-                locale={locale}
-                {...post}
-              />
-            );
-          } else {
-            return (
-              <PostSimpleCard
-                key={post.path.join('/')}
-                locale={locale}
-                {...post}
-              />
-            );
-          }
-        })}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {posts.map((post) => (
+          <PostSimpleCard
+            key={post.path.join('/')}
+            locale={locale}
+            {...post}
+          />
+        ))}
       </div>
     </div>
   );
@@ -65,10 +52,10 @@ export function RecentPostBlockSkeleton() {
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
-      <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-        <div className="h-24 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-        <div className="h-24 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
       </div>
     </div>
   );
