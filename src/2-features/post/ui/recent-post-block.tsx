@@ -1,7 +1,7 @@
 import { use } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PagingPosts } from '../model/post.schema';
-import PostSimpleCard from './post-simple-card';
+import PostCompactCard from './post-compact-card';
 
 interface RecentPostBlockProps {
   locale: LocaleType;
@@ -35,7 +35,7 @@ export default function RecentPostBlock({
       <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {posts.map((post) => (
-          <PostSimpleCard
+          <PostCompactCard
             key={post.path.join('/')}
             locale={locale}
             {...post}
@@ -53,9 +53,9 @@ export function RecentPostBlockSkeleton() {
     <div>
       <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-        <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-        <div className="h-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <div className="h-40 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-36" />
+        <div className="h-40 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-36" />
+        <div className="h-40 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 md:h-36" />
       </div>
     </div>
   );
