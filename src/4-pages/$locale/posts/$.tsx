@@ -1,7 +1,8 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 import MDComponent from '@/1-entities/markdown';
+import { Frontmatter } from '@/1-entities/markdown/model/markdown.schema';
 import TableOfContents from '@/2-features/post/ui/table-of-contents';
 import Reply from '@/5-shared/components/reply';
 import { parseLocale } from '@/5-shared/types/common.schema';
@@ -28,7 +29,14 @@ function PostDetailPage() {
   const path = `${locale}/${_splat}.mdx`;
 
   // MDX 파싱 상태
-  const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>(
+    'loading'
+  );
+  const [tags, setTags] = useState<string[]>([]);
+
+  const handleFrontmatter = useCallback((frontmatter: Frontmatter) => {
+    setTags(frontmatter.tags ?? []);
+  }, []);
 
   // DOM에서 h2, h3 추출
   const contentRef = useRef<HTMLDivElement>(null);
@@ -71,16 +79,35 @@ function PostDetailPage() {
   }, [path]);
 
   return (
-    <div className={mdxStatus === 'success' ? 'lg:grid lg:grid-cols-[1fr_250px] lg:gap-8' : ''}>
+    <div
+      className={
+        mdxStatus === 'success'
+          ? 'lg:grid lg:grid-cols-[1fr_250px] lg:gap-8'
+          : ''
+      }
+    >
       {/* 메인 콘텐츠 */}
       <div>
         <div ref={contentRef}>
-          <MDComponent 
-            path={path} 
+          <MDComponent
+            path={path}
             baseUrl="https://raw.githubusercontent.com/chan-ok/blog-content/main"
-            onParseStatus={setMdxStatus} 
+            onParseStatus={setMdxStatus}
+            onFrontmatter={handleFrontmatter}
           />
         </div>
+        {mdxStatus === 'success' && tags.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-1">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-gray-100 px-2.5 py-1 text-sm text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
         {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
       </div>
 

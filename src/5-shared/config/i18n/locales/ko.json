@@ -2,6 +2,7 @@
   "nav": {
     "about": "소개",
     "posts": "포스트",
+    "tag": "태그",
     "contact": "연락하기"
   },
   "about": {

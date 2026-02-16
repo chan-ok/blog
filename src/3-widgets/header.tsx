@@ -6,7 +6,7 @@ import LocaleToggle from '@/5-shared/components/toggle/locale-toggle';
 import ThemeToggle from '@/5-shared/components/toggle/theme-toggle';
 import { useDetectScrolled } from '@/5-shared/hooks/use-detect-scrolled';
 
-import { Book, Mail, User } from 'lucide-react';
+import { Book, Mail, Tag, User } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function Header() {
@@ -68,6 +68,14 @@ export default function Header() {
           >
             <Book size={16} />
             <span className="hidden md:inline">{t('nav.posts')}</span>
+          </Link>
+          <Link
+            href="/tag"
+            aria-label={t('nav.tag')}
+            className={getNavButtonClasses('/tag')}
+          >
+            <Tag size={16} />
+            <span className="hidden md:inline">{t('nav.tag')}</span>
           </Link>
           <Link
             href="/contact"

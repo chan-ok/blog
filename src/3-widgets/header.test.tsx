@@ -39,6 +39,7 @@ vi.mock('react-i18next', () => ({
       const translations: Record<string, string> = {
         'nav.about': 'About',
         'nav.posts': 'Posts',
+        'nav.tag': 'Tag',
         'nav.contact': 'Contact',
       };
       return translations[key] || key;

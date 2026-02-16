@@ -5,13 +5,21 @@ import { AlertCircle, RotateCcw } from 'lucide-react';
 import getMarkdown from './util/get-markdown';
 import setMdxComponents from './util/set-md-components';
 
+import { Frontmatter } from './model/markdown.schema';
+
 interface MDComponentProps {
   path: string;
   baseUrl?: string;
   onParseStatus?: (status: 'loading' | 'success' | 'error') => void;
+  onFrontmatter?: (frontmatter: Frontmatter) => void;
 }
 
-export default function MDComponent({ path, baseUrl, onParseStatus }: MDComponentProps) {
+export default function MDComponent({
+  path,
+  baseUrl,
+  onParseStatus,
+  onFrontmatter,
+}: MDComponentProps) {
   const { t } = useTranslation();
 
   // 상태: MDX 데이터
@@ -40,6 +48,7 @@ export default function MDComponent({ path, baseUrl, onParseStatus }: MDComponen
           MDXContent: result.MDXContent,
           frontmatter: result.frontmatter,
         });
+        onFrontmatter?.(result.frontmatter as Frontmatter);
         onParseStatus?.('success');
       })
       .catch((err) => {
@@ -60,6 +69,7 @@ export default function MDComponent({ path, baseUrl, onParseStatus }: MDComponen
         MDXContent: result.MDXContent,
         frontmatter: result.frontmatter,
       });
+      onFrontmatter?.(result.frontmatter as Frontmatter);
       onParseStatus?.('success');
     } catch (err) {
       setError(err as Error);

@@ -15,7 +15,8 @@ type RouteConfig = {
     | '/$locale/about'
     | '/$locale/contact'
     | '/$locale/posts'
-    | '/$locale/posts/$';
+    | '/$locale/posts/$'
+    | '/$locale/tag';
   params: { locale: string; _splat?: string };
 };
 
@@ -43,6 +44,10 @@ function parseInternalLink(href: string, locale: string): RouteConfig {
 
   if (path === '/contact') {
     return { to: '/$locale/contact', params: { locale: detectedLocale } };
+  }
+
+  if (path === '/tag') {
+    return { to: '/$locale/tag', params: { locale: detectedLocale } };
   }
 
   if (path === '/posts') {

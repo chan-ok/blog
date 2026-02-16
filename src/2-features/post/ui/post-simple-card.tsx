@@ -13,6 +13,7 @@ export default function PostSimpleCard({
   createdAt,
   path,
   summary,
+  tags,
 }: Props) {
   return (
     <article className="grid grid-cols-12 gap-y-4 gap-4 p-6 rounded-lg border border-zinc-100 bg-white shadow dark:border-zinc-800 dark:bg-gray-800">
@@ -22,6 +23,18 @@ export default function PostSimpleCard({
           {format(createdAt, 'yyyy-MM-dd')}
         </div>
       </div>
+      {tags && tags.length > 0 && (
+        <div className="col-span-full flex flex-wrap gap-1">
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="col-span-9 flex flex-col gap-0.5">{summary}</div>
       <div className="col-span-3 flex-1 place-self-end">
         <Button

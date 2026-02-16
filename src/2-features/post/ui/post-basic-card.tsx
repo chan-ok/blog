@@ -17,6 +17,7 @@ export default function PostBasicCard({
   createdAt,
   path,
   summary,
+  tags,
 }: Props) {
   const { t } = useTranslation();
 
@@ -39,6 +40,18 @@ export default function PostBasicCard({
         <div className="mb-2 text-sm text-gray-500 dark:text-gray-400">
           {format(createdAt, 'yyyy-MM-dd')}
         </div>
+        {tags && tags.length > 0 && (
+          <div className="mb-2 flex flex-wrap gap-1">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="flex-1">{summary}</div>
         <div className="">
           <Button
