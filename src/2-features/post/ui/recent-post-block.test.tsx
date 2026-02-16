@@ -4,10 +4,10 @@
  * 검증 항목:
  * 1. 기본 렌더링: 제목, 3개 포스트 (모든 카드가 PostCompactCard로 렌더링)
  * 2. 썸네일: 모든 카드에 썸네일(img) 포함, 기본 이미지 처리
- * 3. 반응형 레이아웃: grid grid-cols-1 md:grid-cols-3 클래스, 컴팩트한 높이 (h-40 md:h-36)
+ * 3. 반응형 레이아웃: grid grid-cols-1 md:grid-cols-3 클래스, 카드 높이 (h-96)
  * 4. 카드 통일성: article 태그, border/rounded-lg 클래스, hover 효과
  * 5. 빈 포스트 처리: fallback UI, "포스트가 없습니다" 메시지
- * 6. 스켈레톤: 동일한 레이아웃 구조, 3개 박스, 동일한 높이 (h-40 md:h-36), animate-pulse
+ * 6. 스켈레톤: 동일한 레이아웃 구조, 3개 박스, 동일한 높이 (h-96), animate-pulse
  */
 
 import { render, screen } from '@testing-library/react';
@@ -104,8 +104,7 @@ describe('RecentPostBlock', () => {
       
       // 모든 카드가 동일한 높이 클래스를 가짐
       articles.forEach((article) => {
-        expect(article.className).toMatch(/h-40/);
-        expect(article.className).toMatch(/md:h-36/);
+        expect(article.className).toMatch(/h-96/);
       });
     });
 
@@ -197,7 +196,7 @@ describe('RecentPostBlock', () => {
       expect(gridContainer).toBeInTheDocument();
     });
 
-    it('모든 카드가 컴팩트한 높이를 가진다 (h-40 md:h-36)', async () => {
+    it('모든 카드가 카드 높이를 가진다 (h-96)', async () => {
       const postsPromise = Promise.resolve(mockPosts);
       const { container } = render(
         <RecentPostBlock locale="ko" postsPromise={postsPromise} />
@@ -208,8 +207,7 @@ describe('RecentPostBlock', () => {
       const articles = container.querySelectorAll('article');
       
       articles.forEach((article) => {
-        expect(article.className).toMatch(/h-40/);
-        expect(article.className).toMatch(/md:h-36/);
+        expect(article.className).toMatch(/h-96/);
       });
     });
   });
@@ -327,14 +325,13 @@ describe('RecentPostBlockSkeleton', () => {
     expect(skeletonBoxes).toHaveLength(3);
   });
 
-  it('모든 스켈레톤이 동일한 높이를 가진다 (h-40 md:h-36)', () => {
+  it('모든 스켈레톤이 동일한 높이를 가진다 (h-96)', () => {
     const { container } = render(<RecentPostBlockSkeleton />);
 
     const skeletonBoxes = container.querySelectorAll('.animate-pulse');
     
     skeletonBoxes.forEach((box) => {
-      expect(box.className).toMatch(/h-40/);
-      expect(box.className).toMatch(/md:h-36/);
+      expect(box.className).toMatch(/h-96/);
     });
   });
 
