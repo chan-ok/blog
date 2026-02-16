@@ -16,12 +16,12 @@ export default function PostCompactCard({
   thumbnail,
 }: Props) {
   // 썸네일이 없을 경우 기본 이미지 사용
-  const thumbnailUrl = thumbnail || '/images/default-thumbnail.jpg';
+  const thumbnailUrl = thumbnail || '/image/context.png';
 
   return (
-    <article className="group flex h-40 flex-col overflow-hidden rounded-lg border border-zinc-100 bg-white shadow transition-shadow hover:shadow-lg dark:border-zinc-800 dark:bg-gray-800 md:h-36 md:flex-row">
-      {/* 썸네일 - 모바일: 상단, 데스크톱: 좌측 */}
-      <div className="h-32 w-full shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-700 md:h-full md:w-40">
+    <article className="group flex h-72 flex-col overflow-hidden rounded-lg border border-zinc-100 bg-white shadow transition-shadow hover:shadow-lg dark:border-zinc-800 dark:bg-gray-800 md:h-72">
+      {/* 썸네일 - 상단 */}
+      <div className="h-48 w-full shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-700 md:h-48">
         <img
           src={thumbnailUrl}
           alt={title}
