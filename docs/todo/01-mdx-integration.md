@@ -4,62 +4,104 @@
 - 별도 저장소 `chan-ok/mdx-blog-parser`(private)에서 개발한 MDX 렌더링 기능 8가지를 현재 블로그에 통합한다.
 - 현재 블로그의 MDX 렌더링은 기본적인 수준이며, mdx-blog-parser가 모든 면에서 우수하다.
 
-## 통합 대상 기능 (8가지)
-1. **코드 블록 (CodeBlock)**: 복사 버튼, 줄번호, 언어 뱃지, 다크모드 고정 (highlight.js github-dark)
-2. **목차 (TableOfContents)**: IntersectionObserver 기반 활성 섹션 추적, 모바일 반응형 (접이식), 데스크탑 사이드바
-3. **Mermaid 다이어그램**: `mermaid` lazy import, 코드블록 내 ```mermaid 감지, 다크모드 고정
-4. **테이블**: 반응형 가로 스크롤, overflow 처리
-5. **이미지 (ImageBlock)**: `<figure>` + `<figcaption>`, lazy loading, 에러 fallback
-6. **유틸리티**: 썸네일 추출, 발췌문(excerpt) 추출, 읽기 시간(readingTime) 계산
-7. **타이포그래피**: h1-h6에 `id` + 앵커 링크 자동 생성 (`rehype-slug`, `rehype-autolink-headings`)
-8. **MDX 컴파일 단순화**: `evaluate()` 기반 1단계 컴파일+실행 (현재 2단계 compile→run)
+## ✅ 완료된 작업
 
-## 적응 필요 사항
-- mdx-blog-parser는 shadcn/ui 사용 → 현재 블로그는 Base UI 또는 자체 컴포넌트 사용
-- mdx-blog-parser는 @phosphor-icons 사용 → 현재 블로그는 lucide-react 사용
-- 다크모드 고정: 코드블록, Mermaid 다이어그램은 다크모드 고정
-- FSD 구조 준수: 모든 새 컴포넌트는 FSD 레이어에 맞게 배치
+### 1. ✅ 코드 블록 (CodeBlock)
+- 복사 버튼, 줄번호, 언어 뱃지, 다크모드 고정 구현 완료
+- 파일: `src/1-entities/markdown/ui/code-block.tsx`
+- 테스트: `code-block.test.tsx` 존재
 
-## 추가 필요 패키지
-- `mermaid` (lazy import)
-- `rehype-slug`
-- `rehype-autolink-headings`
+### 2. ✅ 목차 (TableOfContents)
+- IntersectionObserver 기반 활성 섹션 추적 구현 완료
+- 모바일 반응형 (접이식), 데스크탑 사이드바 완료
+- 파일: `src/2-features/post/ui/table-of-contents.tsx`
+- 테스트: `table-of-contents.test.tsx` 존재
+- **주의**: 현재 h2, h3만 포함 (`level: number; // 2 or 3`)
+- **⚠️ TODO**: h1도 TOC에 포함하도록 수정 필요 (사용자 보고)
 
-## 예상 파일 구조
+### 3. ✅ Mermaid 다이어그램
+- lazy import, 코드블록 내 ```mermaid 감지, 다크모드 고정 완료
+- 파일: `src/1-entities/markdown/ui/mermaid-diagram.tsx`
+- 테스트: `mermaid-diagram.test.tsx` 존재
+
+### 4. ✅ 테이블
+- 반응형 가로 스크롤, overflow 처리 완료
+- 파일: `src/1-entities/markdown/ui/table-wrapper.tsx`
+- 테스트: `table-wrapper.test.tsx` 존재
+
+### 5. ✅ 이미지 (ImageBlock)
+- `<figure>` + `<figcaption>`, lazy loading, 에러 fallback 완료
+- 파일: `src/1-entities/markdown/ui/image-block.tsx`
+- 테스트: `image-block.test.tsx` 존재
+
+### 6. ✅ 유틸리티
+- 썸네일 추출: `extract-thumbnail.ts` + 테스트 완료
+- 발췌문 추출: `extract-excerpt.ts` + 테스트 완료
+- 읽기 시간: `reading-time.ts` + 테스트 완료
+
+### 7. ✅ 타이포그래피
+- h1-h6에 `id` 자동 생성 완료
+- 파일: `src/1-entities/markdown/ui/typography.tsx`
+- 테스트: `typography.test.tsx` 존재
+- **⚠️ TODO**: 현재 포스트 헤더의 # 제거 필요 (사용자 보고)
+
+### 8. ✅ MDX 컴파일 단순화
+- `evaluate()` 기반 1단계 컴파일+실행 완료
+- 파일: `src/1-entities/markdown/index.tsx`, `get-markdown.ts`
+
+## 🔧 남은 작업
+
+### A. TOC에 h1, h2, h3 모두 포함
+**현재 상태**: `src/4-pages/$locale/posts/$.tsx`의 `extractHeadings()`가 h2, h3만 선택
+```tsx
+// 현재
+const elements = contentRef.current.querySelectorAll('h2, h3');
+
+// 수정 필요
+const elements = contentRef.current.querySelectorAll('h1, h2, h3');
 ```
-src/1-entities/markdown/
-├── index.tsx                    # MDXRenderer (evaluate 기반 1단계)
-├── ui/
-│   ├── code-block.tsx           # 코드 블록 (복사/줄번호/언어뱃지/다크모드고정)
-│   ├── mermaid-diagram.tsx      # Mermaid (lazy/다크모드고정)
-│   ├── image-block.tsx          # figure + figcaption + lazy
-│   ├── table-wrapper.tsx        # 반응형 테이블
-│   └── typography.tsx           # h1-h6 (id + 앵커)
-├── util/
-│   ├── get-markdown.ts          # MDX fetch + gray-matter + evaluate
-│   ├── set-md-components.tsx    # 컴포넌트 매핑
-│   ├── extract-thumbnail.ts     # 썸네일 추출
-│   ├── extract-excerpt.ts       # 발췌문 추출
-│   └── reading-time.ts          # 읽기 시간 계산
-└── model/
-    └── markdown.schema.ts       # Frontmatter Zod 스키마 (유지)
 
-src/2-features/post/ui/
-└── table-of-contents.tsx        # TOC (feature 레벨)
+**영향 파일**:
+- `src/4-pages/$locale/posts/$.tsx` (line 41)
+- `src/2-features/post/ui/table-of-contents.tsx` (interface 주석 수정)
 
-src/4-pages/$locale/posts/
-└── $.tsx                        # PostDetail 레이아웃에 TOC 추가
+### B. 포스트 헤더의 # 제거
+**현재 상태**: `$.tsx`의 46번 라인에서 `textContent?.replace('#', '')` 처리 중
+```tsx
+text: el.textContent?.replace('#', '').trim() || '',
 ```
+
+**문제**: Markdown 파일에 `# 제목` 형식으로 작성된 경우 TOC에 `#` 기호가 남을 수 있음
+
+**해결 방법**:
+1. MDX 컴파일 시 rehype 플러그인으로 제거
+2. 또는 `textContent` 추출 시 정규식으로 모든 `#` 제거
+
+### C. MDX 컴포넌트 매핑 재확인
+**파일**: `src/1-entities/markdown/util/set-md-components.tsx`
+
+**확인 사항**:
+- 모든 HTML 요소가 올바른 커스텀 컴포넌트로 매핑되었는지
+- blockquote, code 등 추가 컴포넌트 확인
 
 ## Phase별 작업 계획
-- **Phase 1**: 코드 블록 + 타이포그래피 + MDX 컴파일 단순화
-- **Phase 2**: TOC + Mermaid
-- **Phase 3**: 이미지 블록 + 테이블 + 유틸리티
-- **Phase 4**: PostDetail 페이지 레이아웃 통합 + 전체 스타일 조정
 
-## 과제 2와의 관계
-- `get-markdown.ts`의 Zod 검증, MDComponent 404 에러 처리는 이 과제에서 함께 개선한다.
-- `src/shared/` 레거시 폴더 정리는 과제 2에서 처리한다.
+### ✅ Phase 1 완료
+- ✅ 코드 블록 + 타이포그래피 + MDX 컴파일 단순화
+
+### ✅ Phase 2 완료
+- ✅ TOC + Mermaid
+
+### ✅ Phase 3 완료
+- ✅ 이미지 블록 + 테이블 + 유틸리티
+
+### ✅ Phase 4 완료
+- ✅ PostDetail 페이지 레이아웃 통합 + 전체 스타일 조정
+
+### 🔧 Phase 5: 마이너 수정
+- ⏳ TOC에 h1 포함 (현재 h2, h3만)
+- ⏳ 포스트 헤더의 # 제거 로직 개선
+- ⏳ MDX 컴포넌트 매핑 재확인
 
 ## 공통 참고사항
 - 코드 스타일: `docs/code-style.md` 준수
