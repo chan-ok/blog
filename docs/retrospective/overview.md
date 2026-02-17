@@ -317,6 +317,30 @@
 
 ## 최근 회고
 
+### 2026-02-16 — PR #63: feat: 홈 화면 최근 포스트 레이아웃 개선
+
+#### ✅ 잘한 점
+
+- **테스트 커버리지 확보**: PostCompactCard 컴포넌트에 432줄의 포괄적 테스트 (기본 렌더링 + 반응형 + 접근성 + Property-based) 작성
+- **반응형 디자인 완성도**: 모바일 1열 → 데스크톱 3열 그리드 레이아웃, 카드 높이 비율 조정으로 다양한 디바이스 지원
+- **재사용 가능한 컴포넌트 설계**: PostCompactCard를 features 레이어에 배치하여 다른 위젯에서도 활용 가능
+- **다크 모드 지원**: 컴포넌트 설계 단계부터 다크 모드 스타일 포함
+- **접근성 고려**: ARIA 속성, 키보드 네비게이션, alt 텍스트 제공
+
+#### 🔧 개선점
+
+- **요구사항 변경 3회 반복**: 기본 레이아웃 → 썸네일 추가 → 크기 조정으로 인한 불필요한 커밋 증가 (10개 커밋)
+- **테스트 코드 반복 수정**: PostCompactCard 높이 변경으로 test-specialist가 2회 테스트 재작성
+- **Phase 1 통합 실패**: 첫 번째 Phase에서 feature-developer와 test-specialist 통합 시 테스트 파일 누락, 재작업 필요
+- **중복 커밋 잔류**: 동일한 제목의 `refactor: PostCompactCard 레이아웃 개선` 커밋이 3회(00fa815, 36cdb5b, 4d5ef99) 연속 발생
+
+#### 🤖 에이전트 개선 제안
+
+- **master-orchestrator**: 요구사항 최종 확정 후 작업 시작 규칙 추가 — 사용자에게 "레이아웃 변경 요청 전 최종 스펙 확인 (카드 높이, 썸네일 크기, 그리드 열 수 등)" 질문
+- **feature-developer**: UI 크기 조정 시 테스트 영향 범위 사전 고지 — "PostCompactCard 높이 변경 → test-specialist가 테스트 코드 업데이트 필요" 명시
+- **git-guardian**: 동일 커밋 메시지 연속 3회 감지 시 squash 경고 강화 — "refactor: PostCompactCard 레이아웃 개선" 패턴 탐지
+- **test-specialist**: 컴포넌트 크기 검증을 하드코딩 대신 변수화 권장 — `const EXPECTED_HEIGHT = 'h-72'` 형태로 관리하여 수정 최소화
+
 ### 2026-02-15 — PR #61: release: 블로그 썸네일 기능 및 Markdown 렌더링 개선
 
 #### ✅ 잘한 점
