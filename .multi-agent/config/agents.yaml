@@ -1,0 +1,61 @@
+# .multi-agent/config/agents.yaml
+agents:
+  consultant:
+    pane: 0
+    role: "사람 대면 인터페이스"
+    permissions:
+      read: ["**/*"]
+      write: [".multi-agent/specs/", ".multi-agent/queue/"]
+      code: false
+      git: false
+  
+  task-manager:
+    pane: 1
+    role: "beads 태스크 관리"
+    permissions:
+      read: ["**/*"]
+      write: [".multi-agent/queue/", ".beads/"]
+      code: false
+      git: false
+  
+  spec-manager:
+    pane: 2
+    role: "명세서 검증"
+    permissions:
+      read: ["**/*"]
+      write: [".multi-agent/specs/", ".multi-agent/queue/"]
+      code: false
+      git: false
+  
+  worker-1:
+    pane: 3
+    role: "코드 작성"
+    permissions:
+      read: ["**/*"]
+      write: ["src/", "tests/", "docs/", ".multi-agent/queue/"]
+      code: true
+      git: ["branch", "commit"]  # push 금지
+  
+  worker-2:
+    pane: 4
+    role: "테스트 작성"
+    permissions:
+      read: ["**/*"]
+      write: ["tests/", ".multi-agent/queue/"]
+      code: true
+      git: ["branch", "commit"]
+  
+  worker-3:
+    pane: 5
+    role: "리팩토링"
+    permissions:
+      read: ["**/*"]
+      write: ["src/", "docs/", ".multi-agent/queue/"]
+      code: true
+      git: ["branch", "commit"]
+
+global:
+  max_workers: 3
+  beads_sync_interval: 60  # seconds
+  watchman_enabled: true
+  message_retention: 3600  # 1 hour

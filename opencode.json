@@ -40,24 +40,18 @@
         "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
       }
     },
-    "serena": {
-      "type": "local",
-      "command": [
-        "uvx",
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server",
-        "--context",
-        "ide-assistant",
-        "--project",
-        ".",
-        "--open-web-dashboard",
-        "false"
+    "sequential-thinking": {
+      "command": "local",
+      "args": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
       ]
     }
   },
-  "instructions": ["docs/agents.md"],
+  "instructions": [
+    "docs/agents.md"
+  ],
   "agent": {
     "build": {
       "disable": true
@@ -85,6 +79,7 @@
         },
         "bash": {
           "*": "deny",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -156,6 +151,7 @@
         },
         "bash": {
           "*": "ask",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -232,6 +228,7 @@
         },
         "bash": {
           "*": "ask",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -313,6 +310,7 @@
         },
         "bash": {
           "*": "ask",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -385,6 +383,7 @@
         },
         "bash": {
           "*": "ask",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -446,6 +445,7 @@
         },
         "bash": {
           "*": "ask",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -527,6 +527,7 @@
         },
         "bash": {
           "*": "ask",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -579,11 +580,20 @@
       "model": "github-copilot/claude-sonnet-4.5",
       "hidden": true,
       "permission": {
-        "read": { "*": "allow", "*.env": "deny", "*.env.*": "deny" },
-        "write": { "*": "deny" },
-        "edit": { "*": "deny" },
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny"
+        },
+        "edit": {
+          "*": "deny"
+        },
         "bash": {
           "*": "ask",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -655,6 +665,7 @@
         },
         "bash": {
           "*": "ask",
+          "bd *": "allow",
           "cat * > *": "deny",
           "cat * >> *": "deny",
           "npm *": "deny",
@@ -689,6 +700,218 @@
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
           "gh pr diff *": "allow"
+        }
+      }
+    },
+    "consultant": {
+      "mode": "subagent",
+      "description": "사람과 대면하는 인터페이스. 요구사항 수집/구체화, 명세서 초안 작성, 최종 보고, 에스컬레이션 처리.",
+      "prompt": "{file:.agents/agents/consultant.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny",
+          ".multi-agent/specs/**": "allow",
+          ".multi-agent/queue/**": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          ".multi-agent/specs/**": "allow",
+          ".multi-agent/queue/**": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "bd *": "allow",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
+          "git add *": "deny",
+          "git commit *": "deny",
+          "git push *": "deny",
+          "ls": "allow",
+          "ls *": "allow",
+          "wc": "allow",
+          "wc *": "allow",
+          "find *": "allow",
+          "git status": "allow",
+          "git status *": "allow",
+          "git diff": "allow",
+          "git diff *": "allow",
+          "git log": "allow",
+          "git log *": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow"
+        }
+      }
+    },
+    "task-manager": {
+      "mode": "subagent",
+      "description": "beads 기반 태스크 관리 및 작업자 조율. 명세서→태스크 분해, 의존성 설정, 작업 할당, 진행 추적.",
+      "prompt": "{file:.agents/agents/task-manager.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny",
+          ".multi-agent/queue/**": "allow",
+          ".multi-agent/status/**": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          ".multi-agent/queue/**": "allow",
+          ".multi-agent/status/**": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "bd *": "allow",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
+          "git add *": "deny",
+          "git commit *": "deny",
+          "git push *": "deny",
+          "ls": "allow",
+          "ls *": "allow",
+          "wc": "allow",
+          "wc *": "allow",
+          "find *": "allow",
+          "git status": "allow",
+          "git status *": "allow",
+          "git diff": "allow",
+          "git diff *": "allow",
+          "git log": "allow",
+          "git log *": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow"
+        }
+      }
+    },
+    "spec-manager": {
+      "mode": "subagent",
+      "description": "명세서 품질 검증 및 변경 감지 조율. 명세서 초안 검증(포맷/완전성/실행가능성), watchman 감지, 품질 게이트.",
+      "prompt": "{file:.agents/agents/spec-manager.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny",
+          ".multi-agent/specs/**": "allow",
+          ".multi-agent/queue/**": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          ".multi-agent/specs/**": "allow",
+          ".multi-agent/queue/**": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "bd *": "allow",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
+          "git add *": "deny",
+          "git commit *": "deny",
+          "git push *": "deny",
+          "ls": "allow",
+          "ls *": "allow",
+          "wc": "allow",
+          "wc *": "allow",
+          "find *": "allow",
+          "git status": "allow",
+          "git status *": "allow",
+          "git diff": "allow",
+          "git diff *": "allow",
+          "git log": "allow",
+          "git log *": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow"
+        }
+      }
+    },
+    "worker": {
+      "mode": "subagent",
+      "description": "실제 코드 작성, 테스트, 리팩토링. beads 태스크 실행, 코드/테스트 작성(FSD 준수), Git commit(로컬), 진행 상황 업데이트.",
+      "prompt": "{file:.agents/agents/worker.md}",
+      "model": "github-copilot/claude-sonnet-4.5",
+      "hidden": true,
+      "permission": {
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny"
+        },
+        "write": {
+          "*": "deny",
+          "src/**": "allow",
+          "tests/**": "allow",
+          "e2e/**": "allow",
+          "docs/**": "allow",
+          ".multi-agent/queue/**": "allow",
+          ".worktrees/**": "allow"
+        },
+        "edit": {
+          "*": "deny",
+          "src/**": "allow",
+          "tests/**": "allow",
+          "e2e/**": "allow",
+          "docs/**": "allow",
+          ".multi-agent/queue/**": "allow",
+          ".worktrees/**": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "bd *": "allow",
+          "cat * > *": "deny",
+          "cat * >> *": "deny",
+          "npm *": "deny",
+          "pnpm *": "deny",
+          "yarn *": "deny",
+          "git push *": "deny",
+          "ls": "allow",
+          "ls *": "allow",
+          "wc": "allow",
+          "wc *": "allow",
+          "find *": "allow",
+          "pnpm test": "allow",
+          "pnpm test *": "allow",
+          "pnpm coverage": "allow",
+          "pnpm lint": "allow",
+          "pnpm lint *": "allow",
+          "pnpm tsc": "allow",
+          "pnpm tsc *": "allow",
+          "git status": "allow",
+          "git status *": "allow",
+          "git diff": "allow",
+          "git diff *": "allow",
+          "git log": "allow",
+          "git log *": "allow",
+          "git branch --show-current": "allow",
+          "git branch --list": "allow",
+          "git checkout -b *": "allow",
+          "git worktree add *": "allow",
+          "git worktree list": "allow"
         }
       }
     }
@@ -754,6 +977,7 @@
       "git rebase *": "deny",
       "pnpm exec *": "deny",
       "date *": "allow",
+      "bd *": "allow",
       "ls": "allow",
       "ls *": "allow",
       "wc": "allow",

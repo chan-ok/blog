@@ -1,3 +1,5 @@
+우리는 작업을 마크다운 대신 Beads로 관리해. `bd quickstart` 실행해서 어떻게 하는지 알아봐.
+
 # AI 코딩 에이전트 가이드
 
 ## 📋 목차
@@ -138,3 +140,39 @@ pages → widgets → features → entities → shared
 - [anti-patterns.md](./anti-patterns.md) - 안티패턴 목록
 - [agent-system.md](./agent-system.md) - 에이전트 시스템 상세
 - [agent-permissions.md](./agent-permissions.md) - 에이전트별 권한 분리 가이드
+
+---
+
+## v4 멀티 에이전트 시스템 (추가)
+
+> **Note**: 위 9개 에이전트(master-orchestrator 등)는 v3 시스템입니다.  
+> v4는 **tmux 기반 경량 아키텍처**로 전환하여 **4종 에이전트**만 사용합니다.
+
+### v4 에이전트 역할 요약
+
+| 에이전트 | 역할 | 사용 시기 |
+|----------|------|-----------|
+| **컨설턴트** | 사람 대면, 요구사항 수집 및 최종 보고 | 프로젝트 시작, 요구사항 변경 |
+| **작업관리자** | beads 태스크 관리 (분해/할당/추적) | 작업 할당, 블로커 해결 |
+| **명세서관리자** | spec 파일 검증 (FSD/보안/테스트) | 명세서 생성 후, 품질 게이트 |
+| **작업자** | 코드/테스트 작성 (최대 3개 동시) | 실제 구현, Git commit |
+
+### v4 아키텍처 특징
+
+- **경량화**: tmux + opencode + watchman + beads만 사용 (K8s 불필요)
+- **즉시 시작**: 터미널 pane 생성만으로 에이전트 실행
+- **투명성**: 모든 에이전트 동작을 tmux에서 실시간 확인
+- **파일 기반 통신**: 명세서 파일 + beads 태스크 + 상태 파일
+
+### 시작 방법
+
+```bash
+# tmux 세션 시작 (6-pane 레이아웃)
+bash scripts/start-multi-agent.sh
+
+# watchman 트리거 설정
+bash scripts/setup-watchman.sh
+```
+
+→ 상세: [agent-system.md#v4-멀티-에이전트-시스템-tmux-기반](./agent-system.md#v4-멀티-에이전트-시스템-tmux-기반)  
+→ 전체 설계: [architecture/multi-agent-system.md](./architecture/multi-agent-system.md)
