@@ -109,7 +109,9 @@
           "git worktree list": "allow",
           "gh pr view *": "allow",
           "gh pr checks *": "allow",
-          "gh pr diff *": "allow"
+          "gh pr diff *": "allow",
+          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && echo \"Timestamp: $TIMESTAMP\" && git worktree add .worktrees/*": "allow",
+          "git merge --no-ff worktree/* -m *": "allow"
         }
       }
     },
@@ -493,7 +495,9 @@
           "git rm --cached .env*": "allow",
           "git rm --cached node_modules/*": "allow",
           "git commit -m *": "ask",
-          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow"
+          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
+          "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && echo \"Timestamp: $TIMESTAMP\" && git worktree add .worktrees/*": "allow",
+          "git merge --no-ff worktree/* -m *": "allow"
         }
       }
     },

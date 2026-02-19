@@ -68,7 +68,7 @@ pages → widgets → features → entities → shared
 | 언어/커밋 | 한국어 문서·주석·커밋, 영어 코드, Conventional Commits | [language-rules.md](./language-rules.md) |
 | Git Flow | `main ← develop ← feature`, Worktree 병렬 작업 | [git-flow.md](./git-flow.md) |
 | 안티패턴 | `any` 금지, FSD 위반, 테스트 하드코딩 | [anti-patterns.md](./anti-patterns.md) |
-| 에이전트 | 9개 전문 에이전트, 병렬·순차 실행 | [agent-system.md](./agent-system.md) |
+| 에이전트 | v4 멀티 에이전트 (4종, tmux 기반) | [agent-system.md](./agent-system.md) |
 
 ## AI 답변 검증
 
@@ -99,54 +99,7 @@ pages → widgets → features → entities → shared
 
 ## 에이전트 시스템
 
-이 프로젝트는 멀티 에이전트 시스템을 사용합니다. 각 에이전트는 특정 작업을 자율적으로 수행하는 전문화된 AI 도우미입니다.
-
-### 에이전트 호출 제약사항
-
-1. ❌ master-orchestrator는 master-orchestrator를 서브에이전트로 호출할 수 없습니다.
-
-- 현재 위치가 master-orchestrator인 경우, 다른 서브에이전트만 호출 가능
-
-2. ❌ 서브에이전트는 .agents/agents/ 내의 다른 서브에이전트를 호출할 수 없습니다
-
-### 에이전트 역할 요약
-
-| 에이전트 | 역할 | 사용 시기 |
-|----------|------|-----------|
-| master-orchestrator | 프로젝트 관리·조율 (코드 직접 작성 안함) | 복잡한 기능, 병렬 처리 |
-| feature-developer | 기능 개발 (테스트 코드 작성 안함) | UI, 비즈니스 로직, Form |
-| test-specialist | 테스트 코드 작성 | Unit/E2E/Property-based/Storybook |
-| doc-manager | 문서 정확성·최신성 관리 | 문서 검증, 업데이트 |
-| lint-formatter | 포매팅·린트 에러 수정 | ESLint/Prettier |
-| git-guardian | Git 워크플로우 관리 | 커밋, 충돌 해결, 브랜치 |
-| github-helper | GitHub CLI 통합 | PR, CI/CD, Issue |
-| tech-architect | 결과물 품질 + 보안 취약점 검증 (읽기 전용) | Phase 완료 후 검증, 보안 스캔 |
-| retrospector | 회고 분석·프롬프트 개선 | PR 후 회고 |
-
-→ 상세: [agent-system.md](./agent-system.md)
-
-## 참고 문서
-
-- [development.md](./development.md) - 개발 시작 및 환경 설정
-- [architecture.md](./architecture.md) - FSD 구조 상세 설명
-- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그
-- [code-style.md](./code-style.md) - 코드 스타일 가이드
-- [architecture-rules.md](./architecture-rules.md) - 아키텍처 규칙
-- [testing.md](./testing.md) - 테스팅 가이드
-- [security.md](./security.md) - 보안 가이드
-- [commands.md](./commands.md) - 명령어 레퍼런스
-- [language-rules.md](./language-rules.md) - 언어 및 커밋 규칙
-- [git-flow.md](./git-flow.md) - Git Flow 가이드
-- [anti-patterns.md](./anti-patterns.md) - 안티패턴 목록
-- [agent-system.md](./agent-system.md) - 에이전트 시스템 상세
-- [agent-permissions.md](./agent-permissions.md) - 에이전트별 권한 분리 가이드
-
----
-
-## v4 멀티 에이전트 시스템 (추가)
-
-> **Note**: 위 9개 에이전트(master-orchestrator 등)는 v3 시스템입니다.  
-> v4는 **tmux 기반 경량 아키텍처**로 전환하여 **4종 에이전트**만 사용합니다.
+이 프로젝트는 v4 멀티 에이전트 시스템을 사용합니다. tmux 기반 경량 아키텍처로 4종 에이전트만 사용합니다.
 
 ### v4 에이전트 역할 요약
 
@@ -174,5 +127,25 @@ bash scripts/start-multi-agent.sh
 bash scripts/setup-watchman.sh
 ```
 
-→ 상세: [agent-system.md#v4-멀티-에이전트-시스템-tmux-기반](./agent-system.md#v4-멀티-에이전트-시스템-tmux-기반)  
+→ 상세: [agent-system.md](./agent-system.md)  
 → 전체 설계: [architecture/multi-agent-system.md](./architecture/multi-agent-system.md)
+
+## 참고 문서
+
+- [development.md](./development.md) - 개발 시작 및 환경 설정
+- [architecture.md](./architecture.md) - FSD 구조 상세 설명
+- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그
+- [code-style.md](./code-style.md) - 코드 스타일 가이드
+- [architecture-rules.md](./architecture-rules.md) - 아키텍처 규칙
+- [testing.md](./testing.md) - 테스팅 가이드
+- [security.md](./security.md) - 보안 가이드
+- [commands.md](./commands.md) - 명령어 레퍼런스
+- [language-rules.md](./language-rules.md) - 언어 및 커밋 규칙
+- [git-flow.md](./git-flow.md) - Git Flow 가이드
+- [anti-patterns.md](./anti-patterns.md) - 안티패턴 목록
+- [agent-system.md](./agent-system.md) - 에이전트 시스템 상세
+- [architecture/multi-agent-system.md](./architecture/multi-agent-system.md) - v4 멀티 에이전트 시스템 전체 설계
+
+---
+
+> **Note**: v3 에이전트 시스템 (master-orchestrator 등 9개 에이전트)은 `docs/archive/v3-agent-permissions.md`에 아카이브되었습니다.

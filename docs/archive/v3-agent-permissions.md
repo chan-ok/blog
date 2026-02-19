@@ -1,6 +1,9 @@
-> 이 문서의 상위 문서: [agents.md](./agents.md)
+> ⚠️ **DEPRECATED**: 이 문서는 v3 에이전트 시스템용입니다.  
+> v4 시스템 문서는 [architecture/multi-agent-system.md](../architecture/multi-agent-system.md)를 참조하세요.
 
-# 에이전트별 권한 분리 가이드
+> 이 문서의 상위 문서: [agents.md](../agents.md)
+
+# 에이전트별 권한 분리 가이드 (v3 아카이브)
 
 ## 개요
 
