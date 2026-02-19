@@ -39,19 +39,9 @@
       "headers": {
         "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
       }
-    },
-    "sequential-thinking": {
-      "command": "local",
-      "args": [
-        "npx",
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
     }
   },
-  "instructions": [
-    "docs/agents.md"
-  ],
+  "instructions": ["docs/agents.md"],
   "agent": {
     "build": {
       "disable": true

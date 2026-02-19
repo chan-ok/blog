@@ -165,3 +165,92 @@ tmux send-keys -t 0 "opencode --agent consultant" C-m
 - [beads 공식 문서](https://github.com/jamsocket/beads)
 - [watchman 공식 문서](https://facebook.github.io/watchman/)
 - [tmux 공식 문서](https://github.com/tmux/tmux/wiki)
+
+## test-watchman-triggers.sh
+
+watchman 트리거의 동작을 자동으로 검증하는 테스트 스크립트입니다.
+
+### 기능
+
+- 사전 요구사항 확인 (watchman, tmux 세션)
+- watchman watch 목록 확인
+- 트리거 목록 확인 (7개 트리거)
+- 파일 생성으로 트리거 동작 테스트
+- 테스트 결과 리포트 생성 (`test-results.txt`)
+
+### 실행
+
+```bash
+./scripts/test-watchman-triggers.sh
+```
+
+### 테스트 항목
+
+1. **사전 요구사항**:
+   - watchman 설치 여부
+   - tmux 세션 'multi-agent' 존재 여부
+
+2. **Watch 목록**:
+   - `.multi-agent/specs` 감시 중
+   - `.multi-agent/queue` 감시 중
+
+3. **트리거 목록** (7개):
+   - `spec-changed`
+   - `task-mgr-msg`
+   - `spec-mgr-msg`
+   - `consultant-msg`
+   - `worker-1-msg`
+   - `worker-2-msg`
+   - `worker-3-msg`
+
+4. **파일 생성 테스트** (7개):
+   - `test-spec.yaml` → Pane 2
+   - `task-manager-test.json` → Pane 1
+   - `spec-manager-test.json` → Pane 2
+   - `consultant-test.json` → Pane 0
+   - `worker-1-test.json` → Pane 3
+   - `worker-2-test.json` → Pane 4
+   - `worker-3-test.json` → Pane 5
+
+### 결과 파일
+
+- `scripts/test-results.txt` — 테스트 결과 상세 리포트
+
+### 예상 출력
+
+```
+🧪 watchman 트리거 테스트 시작
+=================================
+
+1️⃣  사전 요구사항 확인...
+✅ watchman 설치됨
+✅ tmux 세션 존재
+
+2️⃣  watchman watch 목록 확인...
+✅ .multi-agent 디렉토리 감시 중 (2개)
+
+3️⃣  트리거 목록 확인...
+✅ spec-changed
+✅ task-mgr-msg
+✅ spec-mgr-msg
+✅ consultant-msg
+✅ worker-1-msg
+✅ worker-2-msg
+✅ worker-3-msg
+
+트리거 결과: 7 성공, 0 실패
+
+4️⃣  트리거 동작 테스트 (파일 생성)...
+   테스트: test-spec.yaml
+✅ test-spec.yaml 생성/삭제 완료
+   (각 테스트 항목 반복...)
+
+=================================
+🎉 테스트 완료!
+
+📊 결과 요약:
+   - 트리거 설정: 7/7
+   - 파일 생성 테스트: 7개 완료
+
+✅ watchman 트리거 검증 완료
+```
