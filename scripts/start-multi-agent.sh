@@ -49,16 +49,12 @@ tmux new-session -d -s $SESSION_NAME -c $PROJECT_ROOT
 
 # Pane 1, 2: 작업관리자, 명세서관리자 (수평 분할)
 tmux split-window -h -t $SESSION_NAME:0 -c $PROJECT_ROOT
-tmux select-pane -t 0
 tmux split-window -v -t $SESSION_NAME:0.0 -c $PROJECT_ROOT
 
 # Pane 3, 4, 5: 작업자 (3분할)
-tmux select-pane -t 2
-tmux split-window -v -t $SESSION_NAME:0.2 -c $PROJECT_ROOT
-tmux select-pane -t 2
-tmux split-window -h -t $SESSION_NAME:0.2 -c $PROJECT_ROOT
-tmux select-pane -t 3
+tmux split-window -v -t $SESSION_NAME:0.1 -c $PROJECT_ROOT
 tmux split-window -h -t $SESSION_NAME:0.3 -c $PROJECT_ROOT
+tmux split-window -h -t $SESSION_NAME:0.4 -c $PROJECT_ROOT
 
 # 레이아웃 조정
 tmux select-layout -t $SESSION_NAME:0 main-horizontal
