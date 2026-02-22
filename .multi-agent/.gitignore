@@ -4,10 +4,7 @@
 logs/
 
 # 큐 파일 (런타임 상태)
-queue/*.queue
-queue/*.lock
-queue/*.tmp
-queue/processed/
+queue/
 
 # 에이전트 상태 파일
 status/
