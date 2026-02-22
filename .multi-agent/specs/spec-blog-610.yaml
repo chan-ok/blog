@@ -2,9 +2,9 @@ metadata:
   id: 'spec-blog-610'
   title: 'dashboard.sh v2.0.0 개선사항 4가지 구현'
   created_at: '2026-02-22T08:00:00Z'
-  updated_at: '2026-02-22T09:00:00Z'
+  updated_at: '2026-02-22T10:00:00Z'
   created_by: 'spec-manager'
-  status: 'active'
+  status: 'completed'
   parent_task: 'blog-8ps'
   file_path: '.multi-agent/scripts/dashboard.sh'
   completed_tasks:
@@ -17,6 +17,9 @@ metadata:
     - beads_id: 'blog-yjm'
       commit: '4836fac'
       title: 'SPEC_HEADER: overview 헤더 아래 스펙 설명 표시'
+    - beads_id: 'blog-d1z'
+      commit: 'd41b407'
+      title: 'AGENT_FILTER: 에이전트 pane spec 필터 연동'
 
 requirements:
   functional:
@@ -169,7 +172,8 @@ tasks:
 
   - beads_id: 'blog-d1z'
     title: 'AGENT_FILTER: dashboard.sh 에이전트 pane spec 필터 연동'
-    status: 'open'
+    status: 'completed'
+    commit: 'd41b407'
     description: |
       draw_agent_pane()에서 매 사이클마다 ACTIVE_SPEC 값을 반영하여
       bd list 쿼리에 --label 조건부 추가, spec 필터 적용.

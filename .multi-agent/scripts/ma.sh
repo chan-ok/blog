@@ -103,13 +103,31 @@ case "$CMD" in
       printf "  tmux 세션: ${RED}중단됨${RESET}\n"
     fi
 
-    printf "\n${CYAN}${BOLD}── beads 태스크 ────────────────────────────────────${RESET}\n"
-    (
-      cd "$PROJECT_ROOT"
-      bd list --status open 2>/dev/null \
-        | head -20 \
-        || printf "  ${DIM}(조회 실패 또는 없음)${RESET}\n"
-    )
+    # state.json 캐시에서 태스크 상태 읽기 (bd list 직접 호출 없음)
+    CACHE_FILE="$PROJECT_ROOT/.multi-agent/cache/state.json"
+    printf "\n${CYAN}${BOLD}── 태스크 현황 ─────────────────────────────────────${RESET}\n"
+    if command -v jq >/dev/null 2>&1 && [ -f "$CACHE_FILE" ]; then
+      jq -r '
+        "  갱신: " + (.updated_at // "알 수 없음"),
+        "  진행: " + (.summary.in_progress // 0 | tostring) +
+        "  대기: " + (.summary.open        // 0 | tostring) +
+        "  블록: " + (.summary.blocked     // 0 | tostring) +
+        "  완료: " + (.summary.closed      // 0 | tostring),
+        "",
+        "  에이전트별:",
+        (.agents // {} | to_entries[] |
+          "    " + .key + ": " +
+          "진행 " + (.value.in_progress // [] | length | tostring) +
+          "  대기 " + (.value.open // [] | length | tostring) +
+          "  블록 " + (.value.blocked // [] | length | tostring)
+        )
+      ' "$CACHE_FILE" 2>/dev/null \
+        || printf "  ${DIM}(캐시 읽기 실패)${RESET}\n"
+      printf "\n  ${DIM}(캐시 기반 — dispatcher가 매 순환마다 갱신)${RESET}\n"
+    else
+      printf "  ${DIM}(state.json 없음 — dispatcher를 먼저 시작하세요)${RESET}\n"
+      printf "  ${DIM}캐시 경로: %s${RESET}\n" "$CACHE_FILE"
+    fi
     ;;
 
   logs)

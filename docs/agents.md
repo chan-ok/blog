@@ -126,6 +126,26 @@ bash .multi-agent/scripts/start.sh
 
 → 전체 설계: [architecture/multi-agent-system.md](./architecture/multi-agent-system.md)
 
+### beads LOCK 규칙 (필수)
+
+beads는 내부적으로 Dolt DB를 사용하며, 동시 접근 시 LOCK 충돌로 오류가 발생할 수 있습니다.
+
+> 🚨 **LOCK 파일은 어떤 상황에서도 절대 수동 삭제하지 마세요.**
+> stale LOCK처럼 보여도, 다른 프로세스가 사용 중일 수 있습니다.
+> **`find ... | xargs rm -f` 패턴은 영구 금지입니다.**
+>
+> LOCK은 반드시 자동으로 해제됩니다. **재시도(최대 10회)만으로 충분합니다.**
+> bd 명령이 응답하지 않는 것처럼 보여도 이것은 **정상 동작**입니다. 기다리세요.
+
+```bash
+# 오류 발생 시 재시도 패턴 (최대 10회 / 2초 간격)
+for i in $(seq 1 10); do
+  sleep 2
+  bd <명령어>
+  break
+done
+```
+
 ## 참고 문서
 
 - [development.md](./development.md) - 개발 시작 및 환경 설정

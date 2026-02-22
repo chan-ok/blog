@@ -5,6 +5,11 @@ logs/
 
 # 큐 파일 (런타임 상태)
 queue/
+# 빈 디렉토리 추적용 .gitkeep은 예외
+!queue/**/.gitkeep
+
+# 캐시 파일 (dispatcher가 런타임에 갱신)
+cache/state.json
 
 # 에이전트 상태 파일
 status/
@@ -13,7 +18,9 @@ status/
 scripts/.ma-install-record
 
 # ── 추적 유지 ──────────────────────────────────────────────────────────────────
-# specs/        ← 명세서 파일 (git 추적 필요)
-# config/       ← 에이전트 설정 (git 추적 필요)
-# templates/    ← 명세서 템플릿 (git 추적 필요)
-# scripts/      ← 실행 스크립트 (git 추적 필요)
+# specs/                  ← 명세서 파일 (git 추적 필요)
+# config/                 ← 에이전트 설정 (git 추적 필요)
+# templates/              ← 명세서 템플릿 (git 추적 필요)
+# scripts/                ← 실행 스크립트 (git 추적 필요)
+# cache/.gitkeep          ← 빈 디렉토리 추적용 (git 추적 필요)
+# queue/instructions/.gitkeep ← 빈 디렉토리 추적용 (git 추적 필요)

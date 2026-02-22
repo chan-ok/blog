@@ -10,10 +10,16 @@
 #   task-manager : 할당 bd + 현재 분해 중 태스크
 #   spec-manager : 할당 bd + 검증 대기/진행 spec
 #   worker-1/2   : 할당 bd + 현재 작업 + 최근 로그
+#
+# v3.1.0 변경: bd list 직접 호출 완전 제거 → state.json 읽기 전용
+#   - dispatcher.sh가 매 순환마다 .multi-agent/cache/state.json 갱신
+#   - dashboard.sh는 state.json만 읽어 beads LOCK 충돌 근본 해소
+#   - state.json 없을 때: 조용히 빈 값으로 처리 (graceful fallback)
 
 AGENT=${1:-"unknown"}
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 LOG_DIR="$PROJECT_ROOT/.multi-agent/logs"
+CACHE_FILE="$PROJECT_ROOT/.multi-agent/cache/state.json"
 
 # spec 필터 전역 상태 (빈 문자열 = 전체 표시)
 # /tmp/multi-agent-active-spec 파일에서 초기값 로드
@@ -61,8 +67,100 @@ case "$AGENT" in
   *)            LABEL="UNKNOWN"   ; CLR=$GRY ; ASSIGNEE=""              ; ROLE=""                         ;;
 esac
 
+# ── state.json 읽기 헬퍼 ─────────────────────────────────────────────────────
+# dispatcher.sh가 매 순환마다 state.json을 갱신합니다.
+# jq 없거나 state.json 없을 경우 빈 값 반환 (graceful fallback).
+
+# state.json에서 요약 통계 읽기
+# 출력: "<in_progress> <open> <blocked> <closed>"
+cache_get_stats() {
+  if ! command -v jq >/dev/null 2>&1 || [ ! -f "$CACHE_FILE" ]; then
+    echo "0 0 0 0"
+    return
+  fi
+  jq -r '
+    (.summary.in_progress // 0) as $ip |
+    (.summary.open        // 0) as $op |
+    (.summary.blocked     // 0) as $bl |
+    (.summary.closed      // 0) as $cl |
+    "\($ip) \($op) \($bl) \($cl)"
+  ' "$CACHE_FILE" 2>/dev/null || echo "0 0 0 0"
+}
+
+# state.json에서 특정 에이전트·상태의 태스크 제목 목록 읽기
+# 사용법: cache_get_titles <agent|"all"> <status> [label_filter]
+# 출력: 줄당 "◐ <id> - <title>" 형식 (bd list 출력과 호환)
+# status 값: in_progress | open | blocked | closed
+cache_get_titles() {
+  local agent="$1" status="$2" label_filter="${3:-}"
+  if ! command -v jq >/dev/null 2>&1 || [ ! -f "$CACHE_FILE" ]; then
+    return
+  fi
+
+  local jq_filter
+  if [ "$agent" = "all" ]; then
+    # 전체 에이전트 합산
+    jq_filter='.all_tasks // []'
+  else
+    jq_filter=".agents[\"${agent}\"][\"${status}\"] // []"
+  fi
+
+  # label 필터 적용 (빈 문자열이면 전체)
+  local label_expr=""
+  if [ -n "$label_filter" ]; then
+    label_expr="| map(select(.labels != null and (.labels | index(\"$label_filter\") != null)))"
+  fi
+
+  # status별 아이콘 결정
+  local icon
+  case "$status" in
+    in_progress) icon="◐" ;;
+    open)        icon="○" ;;
+    blocked)     icon="●" ;;
+    closed)      icon="✓" ;;
+    *)           icon="·" ;;
+  esac
+
+  jq -r --arg icon "$icon" --arg st "$status" "
+    ${jq_filter}${label_expr}
+    | map(select(.status == \$st))
+    | .[]
+    | \"\($icon) \\(.id) - \\(.title)\"
+  " "$CACHE_FILE" 2>/dev/null || true
+}
+
+# state.json에서 특정 에이전트의 모든 상태 태스크 수 읽기
+# 출력: "<in_progress> <open> <blocked> <closed>"
+cache_get_agent_counts() {
+  local agent="$1"
+  if ! command -v jq >/dev/null 2>&1 || [ ! -f "$CACHE_FILE" ]; then
+    echo "0 0 0 0"
+    return
+  fi
+  jq -r --arg ag "$agent" '
+    (.agents[$ag].in_progress // [] | length) as $ip |
+    (.agents[$ag].open        // [] | length) as $op |
+    (.agents[$ag].blocked     // [] | length) as $bl |
+    (.agents[$ag].closed      // [] | length) as $cl |
+    "\($ip) \($op) \($bl) \($cl)"
+  ' "$CACHE_FILE" 2>/dev/null || echo "0 0 0 0"
+}
+
+# state.json에서 label 필터를 적용한 pending(open) 수 읽기
+cache_count_label() {
+  local label="$1"
+  if ! command -v jq >/dev/null 2>&1 || [ ! -f "$CACHE_FILE" ]; then
+    echo "0"
+    return
+  fi
+  jq -r --arg lbl "$label" '
+    (.all_tasks // [])
+    | map(select(.status == "open" and .labels != null and (.labels | index($lbl) != null)))
+    | length
+  ' "$CACHE_FILE" 2>/dev/null || echo "0"
+}
+
 count_lines() {
-  # 주어진 문자열에서 비어있지 않은 줄 수를 안전하게 반환
   local text="$1"
   if [ -z "$text" ]; then
     echo 0
@@ -75,18 +173,9 @@ count_lines() {
 }
 
 # ── 공통: 전체 통계 ───────────────────────────────────────────────────────────
+# state.json 캐시에서 읽기 (bd list 직접 호출 없음)
 get_stats() {
-  local ip_raw op_raw bl_raw cl_raw
-  ip_raw=$(bd list -s in_progress 2>/dev/null | grep "^◐" || true)
-  op_raw=$(bd list -s open        2>/dev/null | grep "^○"  || true)
-  bl_raw=$(bd list -s blocked     2>/dev/null | grep "^●"  || true)
-  cl_raw=$(bd list -s closed      2>/dev/null | grep "^✓"  || true)
-  local ip op bl cl
-  ip=$(count_lines "$ip_raw")
-  op=$(count_lines "$op_raw")
-  bl=$(count_lines "$bl_raw")
-  cl=$(count_lines "$cl_raw")
-  echo "${ip} ${op} ${bl} ${cl}"
+  cache_get_stats
 }
 
 # ── 진행도 바 ─────────────────────────────────────────────────────────────────
@@ -114,10 +203,16 @@ draw_overview() {
   begin_frame
 
   # ① 헤더
+  local cache_age=""
+  if command -v jq >/dev/null 2>&1 && [ -f "$CACHE_FILE" ]; then
+    local updated_at
+    updated_at=$(jq -r '.updated_at // ""' "$CACHE_FILE" 2>/dev/null || true)
+    [ -n "$updated_at" ] && cache_age="  ${D}캐시: ${updated_at}${R}"
+  fi
   if [ -z "$ACTIVE_SPEC" ]; then
-    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')${R}"
+    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')${R}${cache_age}"
   else
-    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')  [${CYN}${ACTIVE_SPEC}${R}${D}]${R}"
+    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')  [${CYN}${ACTIVE_SPEC}${R}${D}]${R}${cache_age}"
   fi
   sep "$W"
 
@@ -167,8 +262,8 @@ draw_overview() {
   for ag in $agents; do
     local ag_ip ag_bl icon task_title
     local _ip_raw _bl_raw
-    _ip_raw=$(bd list --assignee "$ag" -s in_progress 2>/dev/null | grep "^◐" || true)
-    _bl_raw=$(bd list --assignee "$ag" -s blocked     2>/dev/null | grep "^●" || true)
+    _ip_raw=$(cache_get_titles "$ag" "in_progress" || true)
+    _bl_raw=$(cache_get_titles "$ag" "blocked"     || true)
     ag_ip=$(count_lines "$_ip_raw")
     ag_bl=$(count_lines "$_bl_raw")
 
@@ -200,13 +295,13 @@ draw_overview() {
   pln "${B} Todos${R}"
   local todo_shown=0
   local _todo_ip _todo_pd
-  # ACTIVE_SPEC 필터: 설정된 경우 --label 옵션으로 해당 spec 태스크만 표시
+  # ACTIVE_SPEC 필터: 설정된 경우 label 필터로 해당 spec 태스크만 표시
   if [ -n "$ACTIVE_SPEC" ]; then
-    _todo_ip=$(bd list -s in_progress --label "$ACTIVE_SPEC" 2>/dev/null | grep "^◐" || true)
-    _todo_pd=$(bd list -s open        --label "$ACTIVE_SPEC" 2>/dev/null | grep "^○" || true)
+    _todo_ip=$(cache_get_titles "all" "in_progress" "$ACTIVE_SPEC" || true)
+    _todo_pd=$(cache_get_titles "all" "open"        "$ACTIVE_SPEC" || true)
   else
-    _todo_ip=$(bd list -s in_progress 2>/dev/null | grep "^◐" || true)
-    _todo_pd=$(bd list -s open        2>/dev/null | grep "^○" || true)
+    _todo_ip=$(cache_get_titles "all" "in_progress" || true)
+    _todo_pd=$(cache_get_titles "all" "open"        || true)
   fi
   if [ -n "$_todo_ip" ]; then
     while IFS= read -r line; do
@@ -231,7 +326,7 @@ draw_overview() {
 
   # ⑥ 블로커 강조 (있을 때만)
   local blocked_list
-  blocked_list=$(bd list -s blocked 2>/dev/null | grep "^●" | head -3 || true)
+  blocked_list=$(cache_get_titles "all" "blocked" | head -3 || true)
   if [ -n "$blocked_list" ]; then
     pln "${RED}${B} ■ BLOCKED${R}"
     while IFS= read -r line; do
@@ -249,11 +344,11 @@ draw_overview() {
   [ $n_done -gt 5 ] && n_done=5
   pln "${B} Done${R}"
   local recent
-  # ACTIVE_SPEC 필터: 설정된 경우 --label 옵션으로 해당 spec 태스크만 표시
+  # ACTIVE_SPEC 필터: 설정된 경우 label 필터로 해당 spec 태스크만 표시
   if [ -n "$ACTIVE_SPEC" ]; then
-    recent=$(bd list -s closed --sort updated -r -n "$n_done" --label "$ACTIVE_SPEC" 2>/dev/null | grep "^✓" || true)
+    recent=$(cache_get_titles "all" "closed" "$ACTIVE_SPEC" | head -"$n_done" || true)
   else
-    recent=$(bd list -s closed --sort updated -r -n "$n_done" 2>/dev/null | grep "^✓" || true)
+    recent=$(cache_get_titles "all" "closed" | head -"$n_done" || true)
   fi
   if [ -z "$recent" ]; then
     pln "  ${D}없음${R}"
@@ -522,13 +617,11 @@ draw_agent_pane() {
 
   # ① 상태 집계 (ACTIVE_SPEC 필터 적용)
   local _active_spec; _active_spec=$(get_active_spec)
-  local _spec_filter=""
-  [ -n "$_active_spec" ] && _spec_filter="--label $_active_spec"
   local _ip_raw _op_raw _bl_raw _cl_raw
-  _ip_raw=$(bd list --assignee "$ASSIGNEE" -s in_progress $_spec_filter 2>/dev/null | grep "^." || true)
-  _op_raw=$(bd list --assignee "$ASSIGNEE" -s open        $_spec_filter 2>/dev/null | grep "^." || true)
-  _bl_raw=$(bd list --assignee "$ASSIGNEE" -s blocked     $_spec_filter 2>/dev/null | grep "^." || true)
-  _cl_raw=$(bd list --assignee "$ASSIGNEE" -s closed      $_spec_filter 2>/dev/null | grep "^." || true)
+  _ip_raw=$(cache_get_titles "$ASSIGNEE" "in_progress" "$_active_spec" || true)
+  _op_raw=$(cache_get_titles "$ASSIGNEE" "open"        "$_active_spec" || true)
+  _bl_raw=$(cache_get_titles "$ASSIGNEE" "blocked"     "$_active_spec" || true)
+  _cl_raw=$(cache_get_titles "$ASSIGNEE" "closed"      "$_active_spec" || true)
   local ag_ip ag_op ag_bl ag_cl
   ag_ip=$(count_lines "$_ip_raw")
   ag_op=$(count_lines "$_op_raw")
@@ -588,9 +681,8 @@ draw_agent_pane() {
 
   # ⑥ spec-manager 전용: 검증 대기 수 + 최신 spec 파일
   if [ "$AGENT" = "spec-manager" ]; then
-    local spec_pending_raw
-    spec_pending_raw=$(bd list --label request_spec --assignee spec-manager 2>/dev/null | grep "^○" || true)
-    local spec_pending; spec_pending=$(count_lines "$spec_pending_raw")
+    local spec_pending
+    spec_pending=$(cache_count_label "request_spec")
     [ "$spec_pending" -gt 0 ] && \
       pln "  ${BLU}▸${R} ${D}검증 대기 ${spec_pending}건${R}"
     local spec_file
