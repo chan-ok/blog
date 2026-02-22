@@ -240,6 +240,83 @@ draw_overview() {
     fi
   fi
 
+  # ② SPECS 섹션 (통계 전 상시 표시)
+  pln "${B} Specs${R}  ${D}[s: spec선택]${R}"
+  local specs_dir="$PROJECT_ROOT/.multi-agent/specs"
+  local spec_files=""
+  if [ -d "$specs_dir" ]; then
+    for sf in "$specs_dir"/spec-*.yaml; do
+      [ -f "$sf" ] || continue
+      # archive 디렉토리 하위 제외
+      case "$sf" in
+        *archive*) continue ;;
+      esac
+      spec_files="$spec_files $sf"
+    done
+  fi
+
+  if [ -z "$spec_files" ]; then
+    pln "  ${D}없음${R}"
+  else
+    # state.json에서 closed 태스크 id 목록 추출 (jq 사용 가능 시)
+    local closed_ids=""
+    if command -v jq >/dev/null 2>&1 && [ -f "$CACHE_FILE" ]; then
+      closed_ids=$(jq -r '(.all_tasks // []) | map(select(.status == "closed")) | .[].id' "$CACHE_FILE" 2>/dev/null || true)
+    fi
+
+    for sf in $spec_files; do
+      local sf_name
+      sf_name=$(basename "$sf")
+
+      # beads_id 줄 수 = total_tasks
+      local total_tasks
+      total_tasks=$(grep "^ *beads_id:" "$sf" 2>/dev/null | wc -l | tr -dc '0-9')
+      total_tasks=$(printf "%d" "${total_tasks:-0}")
+
+      # closed 수 계산: closed_ids 목록에서 이 spec의 beads_id와 교집합 수
+      local closed_tasks=0
+      if [ -n "$closed_ids" ] && [ "$total_tasks" -gt 0 ]; then
+        local bid
+        while IFS= read -r bid_line; do
+          bid=$(printf "%s" "$bid_line" | sed "s/^ *beads_id: *//" | tr -d "'\"" | tr -d '[:space:]')
+          [ -z "$bid" ] && continue
+          if printf "%s\n" "$closed_ids" | grep -qx "$bid" 2>/dev/null; then
+            closed_tasks=$(( closed_tasks + 1 ))
+          fi
+        done < <(grep "^ *beads_id:" "$sf" 2>/dev/null || true)
+      fi
+
+      # ACTIVE_SPEC 마커
+      local marker="  "
+      if [ "$sf_name" = "$ACTIVE_SPEC" ]; then
+        marker="${CYN}▶${R} "
+      fi
+
+      # 완료율 바 (bw=10 고정)
+      local bar_str
+      bar_str=$(
+        local bw=10
+        if [ "$total_tasks" -le 0 ]; then
+          printf "${D}[%-10s]${R} ${B}--%%${R}" ""
+        else
+          local dl=$(( bw * closed_tasks / total_tasks ))
+          local rl=$(( bw - dl ))
+          [ $rl -lt 0 ] && rl=0
+          local pct=$(( closed_tasks * 100 / total_tasks ))
+          printf "${D}[${R}"
+          [ $dl -gt 0 ] && printf "${GRN}%${dl}s${R}" | tr ' ' '█'
+          [ $rl -gt 0 ] && printf "${D}%${rl}s${R}"   | tr ' ' '░'
+          printf "${D}]${R} ${B}%3d%%${R} ${D}(%d/%d)${R}" "$pct" "$closed_tasks" "$total_tasks"
+        fi
+      )
+
+      local sf_display
+      sf_display=$(trunc_title "$sf_name" $(( W - 28 )))
+      printf "  %b${D}%-s${R}  %b\033[K\n" "$marker" "$sf_display" "$bar_str"
+    done
+  fi
+  sep "$W"
+
   # ② 통계 수치 (2줄)
   read -r ip op bl cl <<< "$(get_stats)"
   local total=$(( ip + op + bl + cl ))
@@ -338,27 +415,77 @@ draw_overview() {
     sep "$W"
   fi
 
-  # ⑦ 최근 완료 (남은 화면에 맞게 동적 표시)
-  local n_done=$(( H - 20 ))
-  [ $n_done -lt 1 ] && n_done=1
-  [ $n_done -gt 5 ] && n_done=5
-  pln "${B} Done${R}"
-  local recent
-  # ACTIVE_SPEC 필터: 설정된 경우 label 필터로 해당 spec 태스크만 표시
-  if [ -n "$ACTIVE_SPEC" ]; then
-    recent=$(cache_get_titles "all" "closed" "$ACTIVE_SPEC" | head -"$n_done" || true)
+  # ⑦ ACTIVITY FEED (최근 closed 태스크 타임라인)
+  local n_feed=$(( H - 20 ))
+  [ $n_feed -lt 1 ] && n_feed=1
+  [ $n_feed -gt 10 ] && n_feed=10
+  pln "${B} Activity${R}"
+  if command -v jq >/dev/null 2>&1 && [ -f "$CACHE_FILE" ]; then
+    # ACTIVE_SPEC 필터: 해당 spec yaml의 beads_id 목록 파싱
+    local spec_ids=""
+    if [ -n "$ACTIVE_SPEC" ]; then
+      local spec_path="$PROJECT_ROOT/.multi-agent/specs/$ACTIVE_SPEC"
+      if [ -f "$spec_path" ]; then
+        spec_ids=$(grep "^ *beads_id:" "$spec_path" | awk -F"'" '{print $2}' | tr '\n' ' ')
+      fi
+    fi
+    # state.json에서 closed 태스크 id/title/updated_at 추출 → 최신순 정렬
+    local feed_raw
+    feed_raw=$(jq -r '
+      (.all_tasks // [])
+      | map(select(.status == "closed"))
+      | sort_by(.updated_at) | reverse
+      | .[]
+      | "\(.updated_at // "") \(.id // "") \(.title // "")"
+    ' "$CACHE_FILE" 2>/dev/null || true)
+    local feed_count=0
+    while IFS= read -r entry; do
+      [ -z "$entry" ] && continue
+      [ "$feed_count" -ge "$n_feed" ] && break
+      local ts id title
+      ts=$(printf "%s" "$entry" | awk '{print $1}')
+      id=$(printf "%s" "$entry" | awk '{print $2}')
+      title=$(printf "%s" "$entry" | cut -d' ' -f3-)
+      # ACTIVE_SPEC 필터 적용
+      if [ -n "$spec_ids" ]; then
+        local matched=0
+        for sid in $spec_ids; do
+          if [ "$id" = "$sid" ]; then
+            matched=1
+            break
+          fi
+        done
+        [ "$matched" -eq 0 ] && continue
+      fi
+      # updated_at → HH:MM 변환 (macOS date -j 호환)
+      local hhmm="--:--"
+      if [ -n "$ts" ]; then
+        hhmm=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$ts" "+%H:%M" 2>/dev/null || printf "%s" "$ts" | cut -c12-16)
+        [ -z "$hhmm" ] && hhmm="--:--"
+      fi
+      title=$(trunc_title "$title" $(( W - 22 )))
+      pln "  ${GRN}✓${R} ${D}%s${R}  ${CYN}%s${R}  %s" "$hhmm" "$id" "$title"
+      feed_count=$(( feed_count + 1 ))
+    done <<< "$feed_raw"
+    [ "$feed_count" -eq 0 ] && pln "  ${D}없음${R}"
   else
-    recent=$(cache_get_titles "all" "closed" | head -"$n_done" || true)
-  fi
-  if [ -z "$recent" ]; then
-    pln "  ${D}없음${R}"
-  else
-    while IFS= read -r line; do
-      [ -z "$line" ] && continue
-      local t; t=$(printf "%s" "$line" | sed 's/.*[[:space:]]-[[:space:]]//')
-      t=$(trunc_title "$t" $(( W - 6 )))
-      pln "  ${GRN}■${R} ${D}%s${R}" "$t"
-    done <<< "$recent"
+    # jq 없으면 기존 Done 섹션 방식으로 fallback
+    local recent
+    if [ -n "$ACTIVE_SPEC" ]; then
+      recent=$(cache_get_titles "all" "closed" "$ACTIVE_SPEC" | head -"$n_feed" || true)
+    else
+      recent=$(cache_get_titles "all" "closed" | head -"$n_feed" || true)
+    fi
+    if [ -z "$recent" ]; then
+      pln "  ${D}없음${R}"
+    else
+      while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        local t; t=$(printf "%s" "$line" | sed 's/.*[[:space:]]-[[:space:]]//')
+        t=$(trunc_title "$t" $(( W - 6 )))
+        pln "  ${GRN}■${R} ${D}%s${R}" "$t"
+      done <<< "$recent"
+    fi
   fi
 
   printf '\033[J'
