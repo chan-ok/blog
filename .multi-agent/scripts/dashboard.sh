@@ -209,10 +209,30 @@ draw_overview() {
     updated_at=$(jq -r '.updated_at // ""' "$CACHE_FILE" 2>/dev/null || true)
     [ -n "$updated_at" ] && cache_age="  ${D}캐시: ${updated_at}${R}"
   fi
+  # git 브랜치
+  local git_branch_str=""
+  local _gb
+  _gb=$(git -C "$PROJECT_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+  [ -n "$_gb" ] && git_branch_str="  ${D}⎇ ${_gb}${R}"
+  # 세션 경과 시간
+  local elapsed_str=""
+  local SESSION_START_FILE="/tmp/multi-agent-session-start"
+  if [ -f "$SESSION_START_FILE" ]; then
+    local _start _now _elapsed _elapsed_min
+    _start=$(cat "$SESSION_START_FILE" 2>/dev/null || true)
+    if [ -n "$_start" ]; then
+      _now=$(date +%s)
+      _elapsed=$(( _now - _start ))
+      _elapsed_min=$(( _elapsed / 60 ))
+      elapsed_str="  ${D}+${_elapsed_min}m${R}"
+    fi
+  fi
+  # 키 힌트 (항상 표시)
+  local hint_str="  ${D}[s: spec선택]${R}"
   if [ -z "$ACTIVE_SPEC" ]; then
-    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')${R}${cache_age}"
+    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')${R}${git_branch_str}${elapsed_str}${hint_str}${cache_age}"
   else
-    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')  [${CYN}${ACTIVE_SPEC}${R}${D}]${R}${cache_age}"
+    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')${R}${git_branch_str}${elapsed_str}${hint_str}  ${D}[${CYN}${ACTIVE_SPEC}${R}${D}]${R}${cache_age}"
   fi
   sep "$W"
 
