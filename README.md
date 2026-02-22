@@ -172,31 +172,11 @@ blog/
 - **포스트 페이지네이션** — 페이지 기반 포스트 목록
 - **TanStack Query 캐싱** — API 응답 캐싱 및 재검증
 
-## 에이전트 시스템
-
-이 프로젝트는 멀티 에이전트 시스템을 사용하여 복잡한 기능을 개발합니다. 각 에이전트는 독립적인 Git Worktree에서 병렬로 작업하며, 결과를 안전하게 통합합니다.
-
-| 에이전트                                                       | 역할                                |
-| -------------------------------------------------------------- | ----------------------------------- |
-| [master-orchestrator](./.agents/agents/master-orchestrator.md) | 작업 분석, 에이전트 조율, 결과 통합 |
-| [feature-developer](./.agents/agents/feature-developer.md)     | 기능 구현 (테스트 코드 제외)        |
-| [test-specialist](./.agents/agents/test-specialist.md)         | 테스트 코드 작성 및 검증            |
-| [lint-formatter](./.agents/agents/lint-formatter.md)           | 코드 포맷팅 및 린트 수정            |
-| [doc-manager](./.agents/agents/doc-manager.md)                 | 문서 및 에이전트 프롬프트 관리      |
-| [git-guardian](./.agents/agents/git-guardian.md)               | Git 워크플로우 관리                 |
-| [github-helper](./.agents/agents/github-helper.md)             | GitHub PR/Issue 관리                |
-| [tech-architect](./.agents/agents/tech-architect.md)           | 결과물 품질 + 보안 취약점 검증 (읽기 전용) |
-| [retrospector](./.agents/agents/retrospector.md)               | 회고 분석 및 프롬프트 개선 제안     |
-
-📖 [에이전트 시스템 상세](./docs/agent-system.md) · [에이전트 권한 가이드](./docs/agent-permissions.md)
-
 ## 문서
 
 | 문서                                                          | 설명                            |
 | ------------------------------------------------------------- | ------------------------------- |
 | [agents.md](./docs/agents.md)                                 | AI 코딩 에이전트 가이드         |
-| [agent-system.md](./docs/agent-system.md)                     | 에이전트 시스템 상세            |
-| [agent-permissions.md](./docs/agent-permissions.md)           | 에이전트별 권한 분리 가이드     |
 | [development.md](./docs/development.md)                       | 개발 환경 설정 및 워크플로우    |
 | [architecture.md](./docs/architecture.md)                     | 프로젝트 구조 및 기술 선택 배경 |
 | [architecture-rules.md](./docs/architecture-rules.md)         | FSD 아키텍처 규칙               |
