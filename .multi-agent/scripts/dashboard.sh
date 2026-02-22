@@ -608,7 +608,7 @@ draw_worker()        { draw_agent_pane; }
 
 # ── 종료 처리 ─────────────────────────────────────────────────────────────────
 _EXIT=0
-trap '_EXIT=1' INT TERM
+trap 'stty icanon min 1 time 0 echo 2>/dev/null; _EXIT=1' INT TERM
 
 # ── 메인 루프 ──────────────────────────────────────────────────────────────────
 while [ "$_EXIT" -eq 0 ]; do
@@ -638,6 +638,5 @@ while [ "$_EXIT" -eq 0 ]; do
     worker-*)     draw_worker       ;;
     *)            draw_worker       ;;
   esac
-  sleep 5 &
-  wait $!
+  read -t 5 </dev/null || true
 done
