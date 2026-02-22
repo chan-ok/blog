@@ -1,12 +1,13 @@
 #!/bin/bash
-# ma — 멀티 에이전트 CLI 툴 (v1.1.0)
+# ma — 멀티 에이전트 CLI 툴 (v1.2.0)
 #
 # 사용법:
 #   ma <command> [options]
 #
 # 명령어:
 #   start       tmux 세션 시작 및 모든 에이전트 실행
-#   stop        tmux 세션 종료 (대화 기록 자동 저장)
+#   stop        tmux 세션 종료
+#   export      opencode 세션 대화 기록 내보내기
 #   pause       에이전트 일시중단 (dispatcher + 에이전트 창 정지)
 #   resume      일시중단된 에이전트 재시작
 #   attach      실행 중인 tmux 세션에 진입
@@ -42,7 +43,8 @@ usage() {
   printf "  ma <command>\n\n"
   printf "${BOLD}명령어:${RESET}\n"
   printf "  ${GREEN}start${RESET}       tmux 세션 시작 및 모든 에이전트 실행\n"
-  printf "  ${RED}stop${RESET}        tmux 세션 종료 (대화 기록 자동 저장)\n"
+  printf "  ${RED}stop${RESET}        tmux 세션 종료\n"
+  printf "  ${CYAN}export${RESET}      opencode 세션 대화 기록 내보내기\n"
   printf "  ${YELLOW}pause${RESET}       에이전트 일시중단\n"
   printf "  ${GREEN}resume${RESET}      일시중단된 에이전트 재시작\n"
   printf "  ${CYAN}attach${RESET}      실행 중인 tmux 세션에 진입\n"
@@ -53,9 +55,10 @@ usage() {
   printf "  ${DIM}help${RESET}        이 도움말 출력\n\n"
   printf "${BOLD}예시:${RESET}\n"
   printf "  ma start\n"
+  printf "  ma export\n"
+  printf "  ma stop\n"
   printf "  ma pause\n"
   printf "  ma resume\n"
-  printf "  ma stop\n"
 }
 
 # ── 세션 상태 확인 헬퍼 ──────────────────────────────────────────────────────
@@ -74,6 +77,10 @@ case "$CMD" in
 
   stop)
     bash "$SCRIPT_DIR/stop.sh"
+    ;;
+
+  export)
+    bash "$SCRIPT_DIR/export.sh" "${2:-}"
     ;;
 
   pause)
