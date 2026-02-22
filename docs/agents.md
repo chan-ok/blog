@@ -68,7 +68,7 @@ pages → widgets → features → entities → shared
 | 언어/커밋 | 한국어 문서·주석·커밋, 영어 코드, Conventional Commits | [language-rules.md](./language-rules.md) |
 | Git Flow | `main ← develop ← feature`, Worktree 병렬 작업 | [git-flow.md](./git-flow.md) |
 | 안티패턴 | `any` 금지, FSD 위반, 테스트 하드코딩 | [anti-patterns.md](./anti-patterns.md) |
-| 에이전트 | v4 멀티 에이전트 (4종, tmux 기반) | [agent-system.md](./agent-system.md) |
+| 에이전트 | v4 멀티 에이전트 (4종, tmux 기반) | [multi-agent-system.md](./architecture/multi-agent-system.md) |
 
 ## AI 답변 검증
 
@@ -121,13 +121,9 @@ pages → widgets → features → entities → shared
 
 ```bash
 # tmux 세션 시작 (6-pane 레이아웃)
-bash scripts/start-multi-agent.sh
-
-# watchman 트리거 설정
-bash scripts/setup-watchman.sh
+bash .multi-agent/scripts/start.sh
 ```
 
-→ 상세: [agent-system.md](./agent-system.md)  
 → 전체 설계: [architecture/multi-agent-system.md](./architecture/multi-agent-system.md)
 
 ## 참고 문서
@@ -143,7 +139,6 @@ bash scripts/setup-watchman.sh
 - [language-rules.md](./language-rules.md) - 언어 및 커밋 규칙
 - [git-flow.md](./git-flow.md) - Git Flow 가이드
 - [anti-patterns.md](./anti-patterns.md) - 안티패턴 목록
-- [agent-system.md](./agent-system.md) - 에이전트 시스템 상세
 - [architecture/multi-agent-system.md](./architecture/multi-agent-system.md) - v4 멀티 에이전트 시스템 전체 설계
 
 ---

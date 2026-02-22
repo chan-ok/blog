@@ -1,0 +1,22 @@
+# 런타임 파일 — git 추적 제외
+
+# 로그 (날짜 폴더 + 내부 파일 전체)
+logs/
+
+# 큐 파일 (런타임 상태)
+queue/*.queue
+queue/*.lock
+queue/*.tmp
+queue/processed/
+
+# 에이전트 상태 파일
+status/
+
+# ma install 기록 파일 (로컬 전용)
+scripts/.ma-install-record
+
+# ── 추적 유지 ──────────────────────────────────────────────────────────────────
+# specs/        ← 명세서 파일 (git 추적 필요)
+# config/       ← 에이전트 설정 (git 추적 필요)
+# templates/    ← 명세서 템플릿 (git 추적 필요)
+# scripts/      ← 실행 스크립트 (git 추적 필요)
