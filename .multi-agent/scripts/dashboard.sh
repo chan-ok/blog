@@ -861,13 +861,17 @@ while [ "$_EXIT" -eq 0 ]; do
       fi
     fi
     # s / f / 스페이스 / 엔터 → 모달 오픈
-    stty min 0 time 0 -echo 2>/dev/null || true
-    _key=""
-    read -rn1 _key 2>/dev/null || true
-    stty icanon min 1 time 0 echo 2>/dev/null || true
-    case "$_key" in
-      s|f|" "|$'\r'|$'\n') show_spec_modal ;;
-    esac
+    # [ -t 0 ]: stdin이 실제 TTY일 때만 실행
+    # read -t 0.1: 0.1초 타임아웃으로 블로킹 방지 (에이전트 모니터와 동일하게 non-blocking)
+    if [ -t 0 ]; then
+      stty min 0 time 0 -echo 2>/dev/null || true
+      _key=""
+      read -t 0.1 -rn1 _key 2>/dev/null || true
+      stty icanon min 1 time 0 echo 2>/dev/null || true
+      case "$_key" in
+        s|f|" "|$'\r'|$'\n') show_spec_modal ;;
+      esac
+    fi
   fi
 
   case "$AGENT" in

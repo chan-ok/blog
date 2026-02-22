@@ -123,8 +123,7 @@ _OV_W=$(( _TOTAL_W * 60 / 100 ))
 tmux resize-pane -t "${SESSION_NAME}:monitor.0" -x "$_OV_W"
 
 # 각 pane에 대시보드 실행
-tmux send-keys -t "${SESSION_NAME}:monitor.0" \
-  "bash $SCRIPTS_DIR/dashboard.sh overview" C-m
+# monitor.0 (Overview): 모든 window 생성 후 마지막에 실행 (아래로 이동)
 tmux send-keys -t "${SESSION_NAME}:monitor.1" \
   "bash $SCRIPTS_DIR/dashboard.sh task-manager" C-m
 tmux send-keys -t "${SESSION_NAME}:monitor.2" \
@@ -191,6 +190,28 @@ tmux pipe-pane -t "${SESSION_NAME}:dispatcher" \
 
 # ── Window 0 (monitor)로 포커스 ───────────────────────────────────────────────
 tmux select-window -t "${SESSION_NAME}:monitor"
+
+# overview는 모든 window 생성 완료 후 마지막에 실행
+# pane.0의 zsh가 완전히 초기화될 때까지 대기 (프롬프트가 나타날 때까지 폴링)
+_wait_for_prompt() {
+  local target="$1"
+  local tries=0
+  while [ $tries -lt 20 ]; do
+    # capture-pane에서 프롬프트 문자(❯ 또는 $ 또는 %)가 보이면 준비 완료
+    local out
+    out=$(tmux capture-pane -t "$target" -p 2>/dev/null || true)
+    if printf "%s" "$out" | grep -qE '[$%❯#]\s*$'; then
+      return 0
+    fi
+    sleep 0.3
+    tries=$(( tries + 1 ))
+  done
+  # 타임아웃: 그냥 진행
+  return 0
+}
+_wait_for_prompt "${SESSION_NAME}:monitor.0"
+tmux send-keys -t "${SESSION_NAME}:monitor.0" \
+  "bash $SCRIPTS_DIR/dashboard.sh overview" C-m
 
 echo -e "${GREEN}✅ tmux 세션이 생성되었습니다!${NC}"
 echo ""
