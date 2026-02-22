@@ -82,6 +82,7 @@ if tmux has-session -t $SESSION_NAME 2>/dev/null; then
 fi
 
 echo "🚀 tmux 세션 생성 중..."
+date +%s > /tmp/multi-agent-session-start
 
 # ── ANSI 제거 + UTF-8 고정 pipe 명령 ──────────────────────────────────────────
 # sed: ANSI CSI 시퀀스([...m 등) + ESC 단독 시퀀스 제거
