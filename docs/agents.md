@@ -108,7 +108,8 @@ pages → widgets → features → entities → shared
 - [language-rules.md](./language-rules.md) - 언어 및 커밋 규칙
 - [git-flow.md](./git-flow.md) - Git Flow 가이드
 - [anti-patterns.md](./anti-patterns.md) - 안티패턴 목록
+- [multi-agent-system.md](./multi-agent-system.md) - 멀티 에이전트 시스템 아키텍처
 
 ---
 
-> **Note**: v3 에이전트 시스템 (master-orchestrator 등 9개 에이전트)은 `docs/archive/v3-agent-permissions.md`에 아카이브되었습니다.
+> **Note**: tmux 기반 멀티 에이전트 시스템(consultant, task-manager, spec-manager, worker)은 [multi-agent-system.md](./multi-agent-system.md)를 참고하세요.

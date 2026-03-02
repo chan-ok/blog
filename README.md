@@ -139,7 +139,8 @@ blog/
 ├── netlify/functions/     # 서버리스 함수 (Contact 폼 등)
 ├── e2e/                   # Playwright E2E 테스트
 ├── docs/                  # 개발 문서
-└── .agents/               # AI 에이전트 설정
+├── .opencode/             # opencode 에이전트 설정
+└── .multi-agent/          # tmux 기반 멀티 에이전트 시스템 (ma start)
 ```
 
 📖 [아키텍처 가이드](./docs/architecture.md)
@@ -188,6 +189,7 @@ blog/
 | [language-rules.md](./docs/language-rules.md)                 | 언어 및 커밋 규칙               |
 | [anti-patterns.md](./docs/anti-patterns.md)                   | 안티패턴 목록                   |
 | [retrospective/overview.md](./docs/retrospective/overview.md) | 프로젝트 회고 및 의사결정 로그  |
+| [multi-agent-system.md](./docs/multi-agent-system.md)       | tmux 멀티 에이전트 시스템      |
 
 ## 관련 리소스
 

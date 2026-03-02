@@ -1,9 +1,9 @@
 # tmux 기반 멀티 에이전트 시스템 아키텍처
 
-> **버전**: v4.1.0  
-> **최종 업데이트**: 2026-02-20  
+> **버전**: v4.9.0  
+> **최종 업데이트**: 2026-03-02  
 > **아키텍처 전환**: K8s → tmux 기반 경량 아키텍처  
-> **v4.1.0 변경사항**: 파일 기반 MQ → beads 메시지 기반 에이전트 간 통신 전환
+> **현재 구현**: dispatcher 기반 beads 직접 폴링 + state.json 캐시 (watchman 미사용)
 
 ## 📋 목차
 
@@ -33,92 +33,123 @@
 
 **v4 아키텍처 (tmux 기반)의 장점:**
 
-1. **경량화** — tmux + opencode + watchman + beads만 사용
+1. **경량화** — tmux + opencode + beads만 사용
 2. **즉시 시작** — 터미널 pane 생성만으로 에이전트 실행
 3. **투명성** — 모든 에이전트 동작을 tmux에서 실시간 확인
 4. **단순성** — 복잡한 K8s 설정 불필요, beads 메시지 기반 통신
 
-**v4.1.0 추가 개선 (beads 메시지 전환):**
+**dispatcher 기반 폴링 (v4.0.0+):**
 
 1. **통일된 인터페이스** — 태스크와 메시지 모두 beads로 관리
-2. **파일 시스템 오염 없음** — `.multi-agent/queue/` JSON 파일 제거
-3. **메시지 히스토리** — git-backed JSONL로 모든 메시지 추적 가능
-4. **watchman 단순화** — 트리거 7개 → 2개
+2. **파일 시스템 오염 없음** — `.multi-agent/queue/` JSON 파일 제거, `cache/state.json`만 사용
+3. **beads LOCK 회피** — dispatcher가 `bd list` 1회 호출 후 state.json 갱신, dashboard/ma status는 state.json만 읽음
+4. **중앙 집중형 폴링** — dispatcher.sh가 beads 직접 폴링 → tmux send-keys로 에이전트 pane에 프롬프트 전달
 
 **설계 원칙:**
 
 - ✅ **beads 기반 통신** — 태스크 + 메시지 모두 beads 이슈로 관리
-- ✅ **비동기 통신** — watchman 파일 감지 + beads 메시지
+- ✅ **dispatcher 폴링** — 중앙 dispatcher가 bd list로 open 메시지 조회 후 에이전트에 전달
 - ✅ **DB 없음** — beads(Dolt 기반 git-backed DB)가 대체
-- ✅ **에이전트 간소화** — 4종만 운영 (컨설턴트, 작업관리자, 명세서관리자, 작업자)
+- ✅ **에이전트 간소화** — 4종만 운영 (컨설턴트, 작업관리자, 명세서관리자, 작업자 2명)
 
 ### 핵심 컨셉
 
 ```
-사람 ↔ 컨설턴트 ↔ [작업관리자 + 명세서관리자] ↔ 작업자(최대 3)
+사람 ↔ 컨설턴트 ↔ [작업관리자 + 명세서관리자] ↔ 작업자(2명)
 ```
 
 - **사람**: 요구사항 입력, 최종 보고 수신
 - **컨설턴트**: 요구사항 구체화, 명세서 초안 작성, 최종 보고
 - **작업관리자**: 태스크 분해/할당/추적 (beads 핵심 사용자)
 - **명세서관리자**: spec 파일 생성/검증, 품질 게이트
-- **작업자**: 실제 코드 작성/테스트/리팩토링 (최대 3개 동시 실행)
+- **작업자**: 실제 코드 작성/테스트/리팩토링 (2명 동시 실행)
 
 ---
 
 ## 시스템 아키텍처
 
-### tmux 레이아웃
+### 진입점
+
+**`ma start`** (또는 `.multi-agent/scripts/ma.sh start`)가 메인 진입점입니다.
+`ma start`는 `start.sh`를 호출하여 tmux 세션을 생성합니다.
+
+### tmux Window 구조 (7개)
+
+| Window | 이름 | 내용 |
+|--------|------|------|
+| 0 | monitor | 5-pane 대시보드 (좌: Overview 60%, 우: Task-Mgr / Spec-Mgr / Worker-1 / Worker-2) |
+| 1 | consultant | opencode TUI — 사람과 직접 대화 |
+| 2 | task-manager | bash 대기 — dispatcher가 opencode run 트리거 |
+| 3 | spec-manager | bash 대기 — dispatcher가 opencode run 트리거 |
+| 4 | worker-1 | bash 대기 — dispatcher가 opencode run 트리거 |
+| 5 | worker-2 | bash 대기 — dispatcher가 opencode run 트리거 |
+| 6 | dispatcher | 중앙 beads 폴러 — open 메시지 조회 후 에이전트 pane에 프롬프트 전달 |
+
+### monitor 레이아웃 (Window 0)
 
 ```
-┌──────────────────────────────────────────────────┐
-│  Pane 0: 컨설턴트 (opencode)                      │
-│  — 사람과 대면, 요구사항 수집 및 최종 보고        │
-├─────────────────────┬────────────────────────────┤
-│  Pane 1: 작업관리자  │  Pane 2: 명세서관리자      │
-│  (opencode)         │  (opencode)                │
-│  — beads 태스크 관리│  — spec 파일 검증          │
-├───────┬─────────────┼────────────────────────────┤
-│  W1   │  W2         │  W3                        │
-│(open) │  (opencode) │  (opencode)                │
-│코드   │  테스트     │  리팩토링                  │
-└───────┴─────────────┴────────────────────────────┘
+┌────────────────────────────────┬─────────────────────┐
+│                                │  pane1 Task-Mgr     │
+│   pane0 Overview (좌 60%)       ├─────────────────────┤
+│   - Specs, 통계, Todos          │  pane2 Spec-Mgr     │
+│   - Agents, Activity           ├─────────────────────┤
+│                                │  pane3 Worker-1    │
+│                                ├─────────────────────┤
+│                                │  pane4 Worker-2    │
+└────────────────────────────────┴─────────────────────┘
 ```
 
-**총 구성**: 최대 6개 pane
-- **상단 (Pane 0)**: 컨설턴트 (사람 대면)
-- **중간 좌측 (Pane 1)**: 작업관리자 (beads)
-- **중간 우측 (Pane 2)**: 명세서관리자 (spec 검증)
-- **하단 (Pane 3~5)**: 작업자 3명 (W1, W2, W3)
+**총 구성**: 5개 pane (monitor)
+- **좌측 (pane0)**: Overview — Specs 진행률, 통계, Todos, Agents 상태, Activity 타임라인
+- **우측 (pane1~4)**: task-manager, spec-manager, worker-1, worker-2 각각 역할별 상태
+
+### dashboard Overview 구성 (pane0)
+
+1. **헤더** — git 브랜치, 세션 경과시간, [s: spec선택] 힌트, 캐시 시각
+2. **선택 spec** — s 키로 spec 필터 선택 시, 제목 + functional 요구사항 표시
+3. **Specs** — spec별 진행률 바 (beads_id closed 수 / total)
+4. **통계** — 진행/대기/블록/완료 수
+5. **Agents** — 에이전트별 in_progress/blocked 요약
+6. **Todos** — in_progress + open (선택 spec 필터 적용 가능)
+7. **BLOCKED** — 블로커 태스크 강조
+8. **Activity** — 최근 closed 태스크 타임라인
 
 ### 전체 아키텍처 흐름
 
 ```mermaid
 graph TB
-    User[사용자] -->|요구사항| Consultant[컨설턴트 Pane 0]
-    Consultant -->|명세서 초안 + bd validate_spec| SpecMgr[명세서관리자 Pane 2]
-    SpecMgr -->|bd spec_validated| TaskMgr[작업관리자 Pane 1]
-    TaskMgr -->|bd assign_task| W1[작업자1 Pane 3]
-    TaskMgr -->|bd assign_task| W2[작업자2 Pane 4]
-    TaskMgr -->|bd assign_task| W3[작업자3 Pane 5]
+    User[사용자] -->|요구사항| Consultant[컨설턴트 Window 1]
+    Consultant -->|명세서 초안 + bd validate_spec| SpecMgr[명세서관리자 Window 3]
+    SpecMgr -->|bd spec_validated| TaskMgr[작업관리자 Window 2]
+    TaskMgr -->|bd assign_task| W1[작업자1 Window 4]
+    TaskMgr -->|bd assign_task| W2[작업자2 Window 5]
     W1 -->|bd task_completed| TaskMgr
     W2 -->|bd task_completed| TaskMgr
-    W3 -->|bd task_completed| TaskMgr
     TaskMgr -->|bd all_tasks_done| Consultant
     Consultant -->|최종 보고| User
 
-    style Consultant fill:#e1f5ff
-    style TaskMgr fill:#fff4e1
-    style SpecMgr fill:#ffe1f5
-    style W1 fill:#e1ffe1
-    style W2 fill:#e1ffe1
-    style W3 fill:#e1ffe1
+    Disp[dispatcher Window 6]
+    Disp -->|bd list 폴링 후 tmux send-keys| TaskMgr
+    Disp -->|open 메시지 전달| SpecMgr
+    Disp -->|open 메시지 전달| W1
+    Disp -->|open 메시지 전달| W2
+```
+
+### 데이터 흐름 (state.json 캐시)
+
+```mermaid
+flowchart LR
+    beads[beads bd list] -->|폴링| dispatcher[dispatcher.sh]
+    dispatcher -->|갱신| state[cache/state.json]
+    dispatcher -->|tmux send-keys| agents[task-manager, spec-manager, worker-1/2]
+    state -->|읽기전용| dashboard[dashboard.sh]
+    state -->|읽기전용| ma[ma status]
 ```
 
 **설계 근거:**
-- **컨설턴트를 최상단에 배치** — 사람과 상호작용하는 에이전트는 항상 보이도록
-- **작업관리자와 명세서관리자 분리** — 태스크 관리(beads)와 품질 검증(spec)은 독립적 책임
-- **작업자 최대 3명** — 로컬 PC 리소스 고려 (메모리, CPU)
+- **dispatcher 단일 폴링** — beads 직접 호출은 dispatcher만 수행, dashboard/ma status는 state.json만 읽어 beads LOCK 충돌 방지
+- **컨설턴트 별도 Window** — 사람과 상호작용, dispatcher 트리거 대상 아님
+- **작업자 2명** — 맥북 등 로컬 PC 리소스 고려
 
 ---
 
@@ -201,15 +232,14 @@ bd create "모든 작업 완료" --type message --tag all_tasks_done --assign co
 
 ---
 
-### 3. 명세서관리자 (Spec Manager) — Pane 2
+### 3. 명세서관리자 (Spec Manager) — Window 3
 
-**역할**: 명세서 품질 검증 및 변경 감지 조율
+**역할**: 명세서 품질 검증
 
 **책임**:
 - 명세서 초안 검증 (포맷, 완전성, 실행 가능성)
-- spec 파일 변경 감지 (watchman)
 - 품질 게이트 적용 (체크리스트)
-- 검증 통과 시 작업관리자에게 전달
+- 검증 통과 시 작업관리자에게 전달 (dispatcher가 validate_spec 메시지 전달)
 
 **입력**:
 - `.multi-agent/specs/draft-{timestamp}.yaml` — 명세서 초안
@@ -227,7 +257,7 @@ bd create "모든 작업 완료" --type message --tag all_tasks_done --assign co
 
 ---
 
-### 4. 작업자 (Worker) — Pane 3~5
+### 4. 작업자 (Worker) — Window 4, 5
 
 **역할**: 실제 코드 작성, 테스트, 리팩토링
 
@@ -318,22 +348,23 @@ bd close <id>
 | `all_tasks_done` | task-manager | consultant | 모든 작업 완료 |
 | `escalate` | task-manager | consultant | 에스컬레이션 |
 
-### watchman 기반 실시간 감지 (v4.1.0)
+### dispatcher 기반 폴링 (현재 구현)
 
-**v4.1.0에서는 트리거가 2개로 단순화됩니다 (기존 7개 → 2개):**
+**dispatcher.sh**가 `bd list --json`로 open 메시지를 주기적으로 폴링(config.json의 `dispatcher_poll_interval`초 간격)합니다.
 
-```
-파일 변경 감지
-  ├── .multi-agent/specs/*.yaml  →  notify-spec-manager.sh  →  SpecManager(Pane 2)
-  └── .beads/issues.jsonl        →  notify-all-agents.sh    →  모든 에이전트(Pane 0~5)
-```
+**동작 순서:**
+1. `bd list --json` 1회 호출 → `cache/state.json` 갱신 (dashboard/ma status가 읽음)
+2. task-manager, spec-manager, worker-1, worker-2 순으로 각 에이전트의 open 메시지 조회
+3. 전송 전 `bd update <id> --status in_progress`로 중복 전송 방지
+4. label별 `make_prompt`로 자연어 지시 생성 → `tmux send-keys`로 해당 pane에 전달
 
-각 에이전트는 알림을 받으면 `bd list --tag <자신의_태그> --assign <자신>` 으로 새 메시지를 필터링합니다.
+**지원 label** (dispatcher.sh make_prompt):
+
+`assign_task`, `task_completed`, `blocker_found`, `validate_spec`, `spec_validated`, `spec_rejected`, `escalate`, `all_tasks_done`, `permission_needed`, `request_spec`, `update_spec`, `spec_ready`
 
 **설계 근거:**
-- **단일 beads 트리거**로 모든 에이전트 간 메시지 감지
-- 에이전트별 별도 트리거 불필요 (각 에이전트가 `bd list`로 자신의 메시지만 필터)
-- `.multi-agent/queue/` 디렉토리 완전 제거
+- **단일 beads 호출자** — dispatcher만 bd 호출, dashboard는 state.json만 읽어 beads LOCK 방지
+- **watchman 미사용** — 파일 기반 트리거 제거, beads 폴링으로 통일
 
 ---
 
@@ -385,19 +416,16 @@ graph TD
     A[명세서 검증 완료] --> B[작업관리자: bd create 태스크들]
     B --> C[bd dep add 의존성 설정]
     C --> D[bd create assign_task 메시지 발송]
-    D --> E[worker-1: bd update --claim]
-    D --> F[worker-2: bd update --claim]
-    D --> G[worker-3: bd update --claim]
-    E --> H[코드 작성 + commit]
-    F --> I[테스트 작성 + commit]
-    G --> J[문서 업데이트 + commit]
-    H --> K[bd close + bd create task_completed]
-    I --> K
-    J --> K
-    K --> L[작업관리자: bd list task_completed]
-    L --> M{모든 작업 완료?}
-    M -->|Yes| N[bd create all_tasks_done 컨설턴트에게]
-    M -->|No| D
+    D --> E[worker-1: dispatcher가 프롬프트 전달]
+    D --> F[worker-2: dispatcher가 프롬프트 전달]
+    E --> G[코드 작성 + commit]
+    F --> H[테스트 작성 + commit]
+    G --> I[bd close + bd create task_completed]
+    H --> I
+    I --> J[작업관리자: bd list task_completed]
+    J --> K{모든 작업 완료?}
+    K -->|Yes| L[bd create all_tasks_done 컨설턴트에게]
+    K -->|No| D
 ```
 
 ---
@@ -469,6 +497,24 @@ technical_notes:
   - "다크 모드는 Tailwind dark: 접두사 사용"
 ```
 
+### spec과 beads 매핑 (spec-blog-*.yaml)
+
+실제 spec 파일(`spec-blog-49a.yaml` 등)은 `tasks` 배열에 `beads_id`로 beads 이슈와 1:1 매핑합니다:
+
+```yaml
+tasks:
+  - beads_id: 'blog-kib'
+    title: 'DOCS: docs/agents.md 에이전트 섹션 삭제'
+    status: 'completed'
+    description: |
+      구체적인 작업 지시...
+  - beads_id: 'blog-wfd'
+    title: 'DOCS: README.md 에이전트 섹션 삭제'
+    status: 'blocked'
+```
+
+dashboard Overview의 Specs 섹션은 `closed_ids`와 spec 내 `beads_id` 교집합으로 진행률을 계산합니다.
+
 ### 검증 체크리스트
 
 ```yaml
@@ -531,38 +577,39 @@ git worktree remove ../blog-worktree-w3
 ### 사전 요구사항
 
 ```bash
-brew install tmux watchman
+brew install tmux jq
 # beads, opencode는 이미 설치되어 있다고 가정
 ```
+
+- **tmux** — pane/window 관리
+- **jq** — state.json 파싱 (없으면 대시보드 일부 기능 제한)
+- **beads (bd)** — 이슈 트래커
+- **opencode** — 에이전트 TUI
 
 ### 프로젝트 초기화
 
 ```bash
 bd init
 
-# 멀티 에이전트 디렉토리 (queue 불필요 — beads 메시지 사용)
+# 멀티 에이전트 디렉토리
 mkdir -p .multi-agent/specs/archive
 mkdir -p .multi-agent/config
 mkdir -p .multi-agent/templates
+mkdir -p .multi-agent/cache
 ```
 
 ### tmux 세션 시작
 
 ```bash
-chmod +x scripts/start-multi-agent.sh
-./scripts/start-multi-agent.sh
+# ma 명령어 등록 후 (ma install)
+ma start
+
+# 또는 직접 실행
+./.multi-agent/scripts/ma.sh start
 ```
 
-### watchman 트리거 설정 (v4.1.0 — 2개만)
-
-```bash
-chmod +x scripts/setup-watchman.sh
-./scripts/setup-watchman.sh
-```
-
-등록되는 트리거:
-- `spec-changed`: `.multi-agent/specs/*.yaml` → `notify-spec-manager.sh` → SpecManager(Pane 2)
-- `beads-changed`: `.beads/issues.jsonl` → `notify-all-agents.sh` → 모든 에이전트(Pane 0~5)
+`ma start`는 `start.sh`를 호출하여 7개 window(tmux 세션 `multi-agent`)를 생성합니다.
+진입: `ma attach` 또는 `tmux attach -t multi-agent`.
 
 ---
 
@@ -574,22 +621,11 @@ chmod +x scripts/setup-watchman.sh
 ### Phase 2: tmux + 파일 기반 MQ (완료 → v4.0.0)
 멀티 에이전트, `.multi-agent/queue/` JSON 파일 통신, watchman 트리거 7개.
 
-### Phase 3: beads 메시징 통합 (현재 → v4.1.0) ✅
-
-**변경사항**:
-```bash
-# Before (v4.0.0 파일 기반)
-echo '{"from":"worker-1","to":"task-manager","type":"task_completed"}' \
-  > .multi-agent/queue/task-manager-123.json
-
-# After (v4.1.0 beads 메시지)
-bd create "task-001 완료" --type message --tag task_completed --assign task-manager \
-  --description '{"task_id":"task-001","commit_sha":"abc123"}'
-```
+### Phase 3: beads 메시징 + dispatcher 폴링 (현재) ✅
 
 **달성한 개선**:
 - `.multi-agent/queue/` 디렉토리 제거
-- watchman 트리거 7개 → 2개
+- dispatcher가 beads 직접 폴링, state.json 캐시로 dashboard LOCK 회피
 - 모든 통신이 beads 하나로 통일
 
 ### Phase 4: 에이전트 자동 스케일링 (선택적)
@@ -602,13 +638,15 @@ bd create "task-001 완료" --type message --tag task_completed --assign task-ma
 ### Q1. 에이전트가 메시지를 받지 못함
 
 ```bash
-# watchman 트리거 확인
-watchman trigger-list $PROJECT_ROOT
+# dispatcher가 실행 중인지 확인 (Window 6)
+tmux attach -t multi-agent
+# Ctrl-b 6 으로 dispatcher window로 이동
 
-# 재설정
-./scripts/setup-watchman.sh
+# state.json 갱신 여부 확인
+ls -la .multi-agent/cache/state.json
+# dispatcher가 갱신함. 수동으로 bd 호출은 LOCK 충돌 유발
 
-# 수동으로 메시지 확인
+# 수동으로 메시지 확인 (세션 밖에서)
 bd list --tag assign_task --assign worker-1
 ```
 
@@ -656,37 +694,53 @@ bd sync
 bd compact
 ```
 
+### Q7. beads LOCK / panic: nil pointer dereference
+
+beads는 Dolt DB를 사용하며 동시 접근 시 LOCK 충돌이 발생할 수 있습니다.
+
+**해결**: dispatcher가 `bd list`를 유일하게 호출하고, dashboard/ma status는 `cache/state.json`만 읽습니다. `bd` 명령을 여러 터미널에서 동시에 실행하지 마세요. AGENTS.md의 LOCK 재시도 규칙을 따르세요.
+
+### Q8. state.json이 비어있음
+
+dispatcher가 아직 한 번도 폴링하지 않았거나, jq가 없을 수 있습니다. dispatcher window(6)를 확인하고 `config.json`의 `dispatcher_poll_interval`(기본 10초) 후 재확인하세요.
+
+### Q9. dispatcher가 멈춤
+
+`ma pause`로 일시중단했을 수 있습니다. `ma resume`으로 재개하세요.
+
 ---
 
 ## 부록
 
-### A. 프로젝트 구조 (v4.1.0)
+### A. 프로젝트 구조 (v4.9.0)
 
 ```
-/Users/chanhokim/myFiles/0_Project/blog/
+프로젝트 루트/
 ├── .multi-agent/
-│   ├── specs/                # 명세서
-│   │   ├── draft-*.yaml
-│   │   ├── validated-*.yaml
-│   │   └── archive/
+│   ├── config.json           # dispatcher_poll_interval, agent_gap 등
 │   ├── config/
 │   │   ├── agents.yaml
 │   │   └── validation-checklist.yaml
-│   └── templates/
-│       └── spec-template.yaml
-├── .beads/                   # beads DB — 태스크 + 메시지 모두 여기
+│   ├── specs/                # spec-blog-*.yaml (tasks.beads_id ↔ beads 매핑)
+│   │   ├── spec-blog-*.yaml
+│   │   └── archive/
+│   ├── templates/spec-template.yaml
+│   ├── scripts/
+│   │   ├── ma.sh             # 메인 CLI (start, stop, pause, resume 등)
+│   │   ├── start.sh          # tmux 7윈도우 생성
+│   │   ├── dispatcher.sh     # beads 폴링 → state.json → tmux send-keys
+│   │   ├── dashboard.sh      # 5-pane 모니터
+│   │   ├── pause.sh, resume.sh, stop.sh
+│   │   ├── export.sh, cleanup.sh, archive-spec.sh
+│   └── cache/
+│       └── state.json        # dispatcher 갱신, dashboard/ma status 읽기 전용
+├── .beads/                   # beads DB — 태스크 + 메시지
 │   ├── issues.jsonl
 │   └── metadata.json
-├── scripts/
-│   ├── start-multi-agent.sh
-│   ├── setup-watchman.sh     # 2개 트리거만 등록
-│   └── watchman/
-│       ├── notify-spec-manager.sh   # specs/*.yaml → Pane 2
-│       └── notify-all-agents.sh     # .beads/issues.jsonl → Pane 0~5
 └── src/ tests/ docs/
 ```
 
-> **제거됨**: `.multi-agent/queue/` (v4.1.0에서 beads 메시지로 대체)
+> **제거됨**: `.multi-agent/queue/`, `scripts/start-multi-agent.sh`, `scripts/setup-watchman.sh`
 
 ### B. beads 의존성 타입
 
@@ -720,24 +774,21 @@ Ctrl-b [    # 스크롤 모드
 | 명세서관리자 | 명세서 검증 에이전트 |
 | 작업자 | 코드 작성 에이전트 |
 | beads 메시지 | `--type message`로 생성하는 에이전트 간 통신 단위 |
-| watchman | Facebook의 파일 변경 감지 도구 |
+| dispatcher | beads 폴링 후 에이전트 pane에 프롬프트 전달하는 중앙 프로세스 |
 | pane | tmux 분할 창 |
 
 ---
 
 ## 버전 정보
 
-**v4.1.0** (2026-02-20)
-- 파일 기반 MQ (`.multi-agent/queue/`) → beads 메시지 전환
-- watchman 트리거 7개 → 2개 (`spec-changed` + `beads-changed`)
-- 에이전트 권한에서 `.multi-agent/queue/` 제거
-- `notify-all-agents.sh` 추가, 구식 notify 스크립트 5개 제거
-- Phase 3 완료
+**v4.9.0** (2026-03)
+- dispatcher 단일 프로세스로 beads 직접 폴링
+- state.json 캐시 — dashboard/ma status는 bd 직접 호출 없음 (beads LOCK 해소)
+- `ma.sh` 메인 CLI, `start.sh` 7윈도우 생성
 
-**v4.0.0** (2026-02-19)
-- K8s → tmux 기반 전환
-- 에이전트 9종 → 4종
-- 파일 기반 MQ + watchman 7개 트리거
+**v4.0.0** (2026-02)
+- 파일 기반 MQ 제거, beads 직접 폴링
+- 에이전트 4종 (작업자 2명)
 
 **이전 버전**: v3.0.0 K8s+NATS+PostgreSQL, v2.0.0 단일 에이전트
 
@@ -745,8 +796,7 @@ Ctrl-b [    # 스크롤 모드
 
 ## 참고 문서
 
-- [agents.md](../agents.md)
-- [agent-system.md](../agent-system.md)
-- [git-flow.md](../git-flow.md)
+- [.multi-agent/README.md](../.multi-agent/README.md) — 퀵스타트 및 ma 명령어
+- [multi-agent-changelog.md](./multi-agent-changelog.md) — 구축 이력 (git 기반)
+- [AGENTS.md](../AGENTS.md) — beads 사용 규칙, LOCK 재시도
 - [beads 공식 문서](https://github.com/jamsocket/beads)
-- [watchman 공식 문서](https://facebook.github.io/watchman/)

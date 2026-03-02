@@ -13,8 +13,6 @@ agents:
     permissions:
       read:
       - '**/*'
-      write:
-      - .multi-agent/queue/
       code: false
       git: 
       - stat
