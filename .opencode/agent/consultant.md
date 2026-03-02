@@ -16,11 +16,11 @@ permission:
     '*.env': deny
     '*.env.*': deny
   write:
-    '*': ask
+    '*': deny
     '.opencode/agent/**': ask
     '.multi-agent/**': allow
   edit:
-    '*': ask
+    '*': deny
     '.opencode/agent/**': ask
     '.multi-agent/**': allow
   bash:

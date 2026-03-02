@@ -23,6 +23,7 @@ permission:
     'tests/**': allow
     'e2e/**': allow
     'docs/**': allow
+    'README.md': allow
     '.worktrees/**': allow
     '.multi-agent/**': allow
   edit:
@@ -31,6 +32,7 @@ permission:
     'tests/**': allow
     'e2e/**': allow
     'docs/**': allow
+    'README.md': allow
     '.worktrees/**': allow
     '.multi-agent/**': allow
   bash:
