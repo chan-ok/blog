@@ -1,0 +1,217 @@
+metadata:
+  id: 'spec-blog-irz'
+  title: '파일 기반 MQ 연동 — dispatcher.sh 및 에이전트 프롬프트 업데이트'
+  created_at: '2026-02-22T00:00:00Z'
+  created_by: 'spec-manager'
+  status: 'active'
+
+requirements:
+  functional:
+    - 'dispatcher.sh에서 bd list 폴링 방식을 제거하고 mq.sh의 mq_claim 기반 파일 큐 폴링 방식으로 교체해야 함'
+    - 'dispatcher.sh가 source mq.sh를 통해 mq_claim/mq_done/mq_fail 함수를 사용해야 함'
+    - 'dispatcher.sh의 에이전트 inbox 파일 큐 폴링 루프가 에이전트별로 순회하며 메시지를 처리해야 함'
+    - '에이전트 프롬프트 4개(.opencode/agent/{task-manager,spec-manager,worker,consultant}.md)에서 bd create --type message 사용 부분을 mq_send/mq_claim/mq_done 방식으로 교체해야 함'
+    - '각 에이전트 프롬프트의 bash permission에서 bd create --type message 항목을 제거해야 함'
+
+  non_functional:
+    - '파일 큐 전환 후 dispatcher.sh가 beads DB에 접근하지 않아야 함 (bd list/bd update 제거)'
+    - 'mq.sh의 멱등성(동일 bead_id 중복 전송 방지)이 dispatcher.sh 측에서도 보장되어야 함'
+    - '에이전트 프롬프트 변경 후 기존 beads 태스크 조회(bd list, bd show, bd close) 동작은 유지되어야 함'
+
+  constraints:
+    - 'bash 3.2 호환 필수 (macOS 기본 bash)'
+    - 'mq.sh는 source로 로드 (경로: .multi-agent/scripts/mq.sh)'
+    - 'blog-5pq는 blog-xbi의 선행 작업이 아님 — 병렬 진행 가능'
+    - 'dispatcher.sh의 에이전트 실행/재시작 로직(tmux send-keys 방식) 유지'
+    - 'mq.sh의 함수 시그니처(mq_send/mq_claim/mq_done/mq_fail/mq_cleanup/mq_recover) 변경 금지'
+
+tasks:
+  - beads_id: 'blog-5pq'
+    title: 'MQ-DISPATCHER: dispatcher.sh beads 접근 제거 및 파일 큐 연동'
+    description: |
+      dispatcher.sh(현재 377줄, beads 폴링 방식)에서 bd list 기반 폴링을 제거하고
+      mq.sh의 파일 큐 방식으로 전면 교체.
+
+      파일: .multi-agent/scripts/dispatcher.sh
+
+      ## 현재 구조 (제거 대상)
+      - `bd_poll()` 함수: bd list --assignee <agent> --status open 폴링
+      - `bd_update_status()` 함수: bd update <id> --status in_progress
+      - `check_stale()` 함수: in_progress 태스크 stale 감지 (LOCK_DIR, RETRY_DIR)
+      - `get_retry_count()` / `inc_retry_count()`: RETRY_DIR 기반 재시도 추적
+      - 메인 루프의 stale 체크 블록 (bd list --status in_progress)
+      - 메인 루프의 bd_poll() 호출 블록
+
+      ## 변경 후 구조 (도입 대상)
+      1. 파일 상단에 `source "$(dirname "$0")/mq.sh"` 추가
+      2. mq.sh 환경변수 설정 (필요시):
+         - `_MQ_ROOT` 기본값 유지 (.multi-agent/queue)
+         - `_MQ_STALE_MINUTES` = STALE_TIMEOUT / 60 환산
+      3. 에이전트별 inbox 폴링 루프 구현:
+         ```bash
+         for agent in "${AGENTS[@]}"; do
+           proc_file=$(mq_claim "$agent")
+           [ -z "$proc_file" ] && continue
+
+           # 파일에서 bead_id, label 추출 (JSON 파싱)
+           bead_id=$(...)  # proc_file에서 "bead_id" 필드 추출
+           label=$(...)    # proc_file에서 "label" 필드 추출
+           retry_count=$(_mq_retry_count "$proc_file")
+
+           # 프롬프트 생성 (make_prompt 함수 재활용)
+           prompt=$(make_prompt "$bead_id" "$label" "$retry_count")
+
+           # opencode interactive 세션에 프롬프트 전송
+           tmux send-keys -t "${SESSION_NAME}:${agent}" -l "${prompt}"
+           tmux send-keys -t "${SESSION_NAME}:${agent}" "" Enter
+
+           # 전송 완료 → mq_done으로 processing 파일 아카이브
+           mq_done "$proc_file"
+
+           set_last_sent "$agent" "$bead_id"
+           sleep "$AGENT_GAP"
+         done
+         ```
+      4. stale 복구: mq_recover는 에이전트 재시작 시 runner.sh에서 호출하므로
+         dispatcher.sh 내에서는 mq_recover 호출 불필요 (선택적 추가 가능)
+      5. 제거되는 bd 관련 변수/상수:
+         - BD_MAX_RETRY, LOCK_DIR, RETRY_DIR, _ip_tasks, _stale_count
+      6. JSON 필드 추출 헬퍼: jq 사용 (이미 _cfg 함수에서 jq 의존), 없으면 grep/sed fallback
+         ```bash
+         _mq_json_field() {
+           local file="$1" field="$2"
+           if command -v jq >/dev/null 2>&1; then
+             jq -r ".$field // empty" "$file" 2>/dev/null
+           else
+             grep -o "\"$field\": *\"[^\"]*\"" "$file" | sed 's/.*": *"\(.*\)"/\1/'
+           fi
+         }
+         ```
+      7. 버전 헤더: v2.0.0 → v3.0.0 으로 갱신
+    priority: 0
+    depends_on: []
+
+  - beads_id: 'blog-xbi'
+    title: 'MQ-AGENTS: 에이전트 프롬프트 mq_send/mq_claim 사용법으로 업데이트'
+    description: |
+      .opencode/agent/ 내 4개 프롬프트 파일에서 beads 메시지 전송 방식을
+      bd create --type message → mq_send 방식으로 교체.
+
+      대상 파일:
+        - .opencode/agent/task-manager.md
+        - .opencode/agent/spec-manager.md
+        - .opencode/agent/worker.md
+        - .opencode/agent/consultant.md
+
+      ## 변경 사항 상세
+
+      ### 1. bash permission 섹션 (각 파일 상단 YAML frontmatter)
+      제거:
+        'bd create --type message *': allow
+      (bd create * allow는 유지 — 태스크 생성에 필요)
+
+      ### 2. 입출력 / 메시지 전송 섹션 교체
+
+      #### 기존 패턴 (모든 파일 공통):
+      ```bash
+      bd create "<title>" \
+        --type message \
+        --label <label> \
+        --assignee <agent> \
+        --description '<json>'
+      ```
+
+      #### 변경 후 패턴:
+      ```bash
+      # mq.sh 로드 (스크립트 최상단 또는 호출 전)
+      source .multi-agent/scripts/mq.sh
+
+      # 메시지 전송
+      mq_send <to_agent> <bead_id> <label> <from_agent> '<payload_json>'
+      ```
+
+      ### 3. 메시지 수신 섹션 교체
+
+      #### 기존:
+      ```bash
+      bd list --label <label> --assignee <agent>
+      bd show <message-id>
+      bd close <message-id>
+      ```
+
+      #### 변경 후:
+      ```bash
+      # dispatcher가 mq_claim → tmux send-keys로 자동 전달하므로
+      # 에이전트는 수신된 bead_id로 bd show만 호출
+      bd show <bead_id>
+
+      # 처리 완료 후 beads 태스크 닫기 (bd close는 유지)
+      bd close <bead_id>
+      ```
+      (mq_claim/mq_done은 dispatcher.sh가 처리하므로 에이전트 프롬프트에서 직접 호출 불필요)
+
+      ### 4. 파일별 변경 포인트
+
+      **task-manager.md**:
+      - 출력 섹션: bd create --type message 5개 예시 → mq_send 예시로 교체
+      - 입력 섹션: bd list --label ... 조회 설명 제거 (dispatcher가 자동 전달하므로)
+      - beads LOCK 재시도 패턴 내 find | xargs rm -f 라인 유지 (태스크 bd 명령에는 여전히 필요)
+
+      **spec-manager.md**:
+      - 출력 섹션: bd create --type message --label spec_ready → mq_send 예시로 교체
+      - 입력 섹션: bd list --label request_spec/update_spec 조회 → 불필요 설명 제거
+      - 워크플로우 3단계: bd create → mq_send 예시로 교체
+
+      **worker.md**:
+      - 출력 섹션: bd create --type message --label task_completed/blocker_found → mq_send 예시
+      - 완료 보고 워크플로우 코드 블록 교체
+
+      **consultant.md**:
+      - 출력 섹션: bd create --type message → mq_send 예시로 교체
+      - task-manager 에 보내는 초기 지시 전달 부분 교체
+    priority: 0
+    depends_on: []
+
+acceptance_criteria:
+  - condition: 'dispatcher.sh 실행 시 bd list / bd update 명령을 호출하지 않음'
+    verification: |
+      dispatcher.sh 소스 코드에서 `bd list`, `bd update` 문자열이 없음을 확인.
+      grep으로 검증: grep -n "bd list\|bd update" .multi-agent/scripts/dispatcher.sh → 0건
+
+  - condition: 'dispatcher.sh 시작 시 source mq.sh가 성공적으로 로드됨'
+    verification: |
+      bash -n .multi-agent/scripts/dispatcher.sh 문법 오류 없음.
+      bash 3.2에서 실행 시 mq_claim 함수가 정의되어 있음.
+
+  - condition: 'dispatcher.sh가 에이전트 inbox에 pending 파일 존재 시 mq_claim → tmux send-keys → mq_done 순서로 처리함'
+    verification: |
+      .multi-agent/queue/task-manager/ 에 테스트용 pending 파일 생성 후
+      dispatcher.sh 1회 순환 실행 → 파일이 archive로 이동되었음을 확인.
+
+  - condition: '각 에이전트 프롬프트 bash permission에서 bd create --type message * allow 항목이 제거됨'
+    verification: |
+      grep -n "bd create --type message" .opencode/agent/{task-manager,spec-manager,worker,consultant}.md
+      → permission 섹션에서 0건 (워크플로우 예시 섹션은 mq_send로 교체됨)
+
+  - condition: '에이전트 프롬프트에 mq_send 사용 예시가 포함됨'
+    verification: |
+      grep -n "mq_send" .opencode/agent/{task-manager,spec-manager,worker,consultant}.md → 각 파일 1건 이상
+
+  - condition: 'dispatcher.sh가 bash 3.2에서 문법 오류 없이 실행됨'
+    verification: 'bash -n .multi-agent/scripts/dispatcher.sh 통과'
+
+technical_notes:
+  - '현재 dispatcher.sh의 bd_poll() 함수(line 69–85)와 bd_update_status() 함수(line 88–102)를 mq_claim으로 대체'
+  - 'LOCK_DIR(/tmp/dispatcher_inprogress), RETRY_DIR(/tmp/dispatcher_retry)는 제거 — mq.sh의 파일 큐가 동일 역할 수행'
+  - '메인 루프(line 315–)에서 stale in_progress 블록(line 317–321) 제거 — mq_recover로 대체'
+  - 'JSON 파싱 시 jq 우선 사용, fallback은 grep + sed (bash 3.2 호환)'
+  - |
+    mq_send 인자 매핑표:
+      mq_send <to_agent>   <bead_id>   <label>        <from_agent>   <payload_json>
+               task-manager  blog-abc1   request_spec   spec-manager   '{"spec_file":"..."}'
+               worker-1      blog-abc2   assign_task    task-manager   '{"beads_id":"..."}'
+               task-manager  blog-abc3   task_completed worker-1       '{"result":"done"}'
+  - 'dispatcher.sh 내 make_prompt() 함수(line 135–186)는 변경 없이 유지 (label → 자연어 프롬프트 생성 역할 동일)'
+  - 'extract_label() 함수(line 104–112)는 mq.sh의 JSON에서 label 필드를 직접 읽으므로 불필요해지나, 하위 호환성을 위해 유지 가능'
+  - '에이전트 프롬프트 변경 시 워크플로우 다이어그램(bd create → mq_send)도 함께 갱신 필요'
+  - 'mq.sh 경로: .multi-agent/scripts/mq.sh (커밋 f27e90b에서 구현 완료)'

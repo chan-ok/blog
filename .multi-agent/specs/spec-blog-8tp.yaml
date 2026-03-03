@@ -1,0 +1,112 @@
+metadata:
+  id: 'spec-blog-8tp'
+  title: 'dashboard.sh overview 루프 버그 수정'
+  created_at: '2026-02-22T00:00:00Z'
+  created_by: 'spec-manager'
+  status: 'active'
+
+requirements:
+  functional:
+    - 'dashboard.sh overview 모드에서 while 루프가 5초 간격으로 계속 갱신되어야 함'
+    - '1회 출력 후 루프가 종료되는 버그를 수정해야 함'
+    - 'INT/TERM 시그널을 받을 때만 루프가 종료되어야 함'
+
+  non_functional:
+    - '수정 후 루프가 최소 3회 이상 연속 갱신됨을 확인 가능해야 함'
+
+  constraints:
+    - 'bash 3.2 호환 필수 (macOS 기본 셸)'
+    - 'clear 명령어 사용 금지 (\\033[H 방식 유지)'
+    - 'trunc_title() 함수 시그니처 변경 금지'
+    - '기존 키 입력 감지(s/f/스페이스/엔터 → show_spec_modal) 동작 유지'
+    - 'sleep 5 간격 유지'
+
+tasks:
+  - beads_id: 'blog-ple'
+    title: 'BUG: dashboard.sh overview 1회 출력 후 쉘 종료'
+    description: |
+      dashboard.sh의 메인 루프(while [ $_EXIT -eq 0 ])가 overview 모드에서
+      1회 출력 후 종료되는 버그 수정.
+
+      파일: .multi-agent/scripts/dashboard.sh
+      루프 위치: line 614–643
+      stty/read 위치: line 625–628
+
+      버그 원인 (3가지):
+        (1) `sleep 5 & wait $!` 패턴에서 wait의 exit code가 루프 조건에 영향 가능
+            - wait 자체가 0이 아닌 코드를 반환하면 set -e 환경에서 루프 탈출
+        (2) `stty min 0 time 0` 설정 후 `read -rn1`이 EOF를 반환하고
+            stty 복원 실패 시 stdin 이상 초래 → 다음 루프 반복에서 read 즉시 종료
+        (3) bash 3.2(macOS)에서 wait가 SIGCHLD로 즉시 리턴하는 동작
+
+      수정 방향 (우선순위 순):
+        1. `sleep 5 & wait $!` → `read -t 5 </dev/null` 또는 `sleep 5` (foreground) 로 교체
+           - read -t 5 </dev/null 은 bash 3.2에서도 동작하는 논블로킹 타이머
+           - wait의 exit code 문제를 원천 제거
+        2. stty 복원 로직 강화: trap에 stty 복원 추가
+           - 예: trap 'stty icanon min 1 time 0 echo 2>/dev/null; _EXIT=1' INT TERM EXIT
+        3. read 후 _EXIT 재확인:
+           - `|| true`가 누락된 부분에 추가하여 read 실패가 루프를 탈출시키지 않도록 처리
+        4. wait 후 _EXIT 재확인:
+           - `wait $!` 뒤에 `_EXIT=$?; [ $_EXIT -ne 0 ] && _EXIT=0` 등으로 exit code 무시
+    priority: 0
+    depends_on: []
+
+acceptance_criteria:
+  - condition: 'overview 모드 실행 시 루프가 5초 간격으로 최소 5회 이상 연속 갱신됨'
+    verification: '터미널에서 `bash .multi-agent/scripts/dashboard.sh overview` 실행 후 30초 이상 관찰'
+
+  - condition: 'Ctrl-C(INT 시그널) 입력 시 루프가 즉시 종료됨'
+    verification: '수동으로 Ctrl-C 입력 후 루프 종료 확인'
+
+  - condition: 's/f/스페이스/엔터 키 입력 시 show_spec_modal이 호출됨'
+    verification: '키 입력 후 모달 UI 표시 확인'
+
+  - condition: '수정 후 bash 3.2에서 문법 오류 없이 실행됨'
+    verification: '`bash --version`이 3.2.x인 macOS에서 `bash -n .multi-agent/scripts/dashboard.sh` 통과'
+
+technical_notes:
+  - '`sleep 5 & wait $!` 대신 `read -t 5 </dev/null || true`를 사용하면 bash 3.2 호환 + wait exit code 문제 동시 해결'
+  - 'stty 복원 trap을 INT/TERM/EXIT 모두에 등록하면 비정상 종료 시에도 터미널 상태 보호'
+  - '`read -rn1 _key 2>/dev/null || true` 의 `|| true`는 이미 있으나, stty 복원 직후 stdin이 icanon 상태인지 확인 필요'
+  - 'bash 3.2에서 `read -t` 는 정수만 허용 (소수점 불가) — `read -t 5`로 사용'
+  - '수정 대상 코드 블록 (dashboard.sh lines 609–643):'
+  - |
+    # 현재 코드 (버그 있음)
+    _EXIT=0
+    trap '_EXIT=1' INT TERM
+
+    while [ "$_EXIT" -eq 0 ]; do
+      if [ "$AGENT" = "overview" ]; then
+        ...
+        stty min 0 time 0 -echo 2>/dev/null || true
+        _key=""
+        read -rn1 _key 2>/dev/null || true
+        stty icanon min 1 time 0 echo 2>/dev/null || true
+        case "$_key" in
+          s|f|" "|$'\r'|$'\n') show_spec_modal ;;
+        esac
+      fi
+      case "$AGENT" in ...) esac
+      sleep 5 &
+      wait $!
+    done
+
+    # 수정 방향 (예시)
+    _EXIT=0
+    trap 'stty icanon min 1 time 0 echo 2>/dev/null; _EXIT=1' INT TERM
+
+    while [ "$_EXIT" -eq 0 ]; do
+      if [ "$AGENT" = "overview" ]; then
+        ...
+        stty min 0 time 0 -echo 2>/dev/null || true
+        _key=""
+        read -rn1 _key 2>/dev/null || true
+        stty icanon min 1 time 0 echo 2>/dev/null || true
+        case "$_key" in
+          s|f|" "|$'\r'|$'\n') show_spec_modal ;;
+        esac
+      fi
+      case "$AGENT" in ...) esac
+      read -t 5 </dev/null || true   # sleep 5 & wait $! 대체
+    done

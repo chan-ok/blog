@@ -1,0 +1,172 @@
+metadata:
+  id: 'spec-blog-2dn'
+  title: 'dashboard.sh 멀티 에이전트 모니터 개선'
+  created_at: '2026-02-22T00:00:00Z'
+  created_by: 'spec-manager'
+  status: 'active'
+
+requirements:
+  functional:
+    - '한글 문자가 잘리지 않고 정상 출력되어야 함'
+    - '에이전트 작업 상태가 실시간으로 정확히 반영되어야 함 (idle 고정 버그 해소)'
+    - '도트 진행도 개수가 터미널 너비에 따라 동적으로 조정되어야 함'
+    - 'draw_agent_pane에 작업 통계 요약, 경과 시간, beads ID, 대기 메시지 수를 추가로 표시해야 함'
+    - 'overview에서 숫자 키 입력으로 spec별 필터 전환이 가능해야 함'
+    - 'Done 섹션이 과거 완료 작업을 무한 누적하지 않고 최근 N개만 표시해야 함'
+
+  non_functional:
+    - '멀티바이트(한글) 안전 처리 — 모든 출력에서 바이트 자르기 금지'
+    - 'tput 기반 동적 너비·높이 사용'
+    - 'clear 명령어 사용 금지 (깜빡임 없는 \033[H 방식 유지)'
+    - 'Bash 스크립트 — 외부 의존성 최소화'
+
+  constraints:
+    - 'Bash 스크립트 (bash .multi-agent/scripts/dashboard.sh <agent-name> 실행 형식 유지)'
+    - '기존 pln() 함수에서 %.Ns 포맷 완전 제거 (멀티바이트 바이트 자르기 방지)'
+    - 'trunc_title() 결과를 %s로만 출력 (%.Ns 이중 자르기 금지)'
+    - 'bd list --assignee <ag> -s in_progress 의 실제 출력 형식을 확인 후 grep 패턴 수정'
+    - '의존성: blog-3t8, blog-9ua는 blog-dgt, blog-0tk 완료 후 시작'
+
+tasks:
+  - beads_id: 'blog-dgt'
+    title: 'FIX: BUG-1 한글 잘림 (%.Ns → %s)'
+    description: |
+      draw_overview() 내 pln() 호출에서 %.Ns 포맷 스트링을 %s로 교체한다.
+      trunc_title()이 이미 너비 기준으로 자른 문자열($t)을 pln 내에서 추가로
+      %.Ns 바이트 자르기를 하지 않도록 수정한다.
+      수정 대상 위치 (5곳):
+        ① Todos 섹션: in_progress 루프 "◐" 출력 줄
+        ② Todos 섹션: open 루프 "○" 출력 줄
+        ③ BLOCKED 섹션: blocked 루프 "●" 출력 줄
+        ④ Done 섹션: recent 루프 "✓" 출력 줄
+        ⑤ Agents 섹션: task_title 출력 줄
+    priority: 0
+    depends_on: []
+
+  - beads_id: 'blog-0tk'
+    title: 'FIX: BUG-2 에이전트 상태 항상 idle 표시'
+    description: |
+      bd list --assignee <ag> -s in_progress 의 실제 출력 형식을 확인한다.
+      현재 코드는 grep "^◐" 패턴으로 필터링하는데, 실제 출력 접두어가 다를 경우
+      항상 빈 문자열이 반환되어 idle로 표시된다.
+      수정 대상:
+        ① draw_overview() agents 루프 내 _ip_raw=$(bd list ...) + grep 패턴
+        ② draw_agent_pane() 내 _ip_raw 할당 + grep 패턴
+      실제 bd list 출력 형식(접두 아이콘) 확인 후 grep 패턴을 정확히 맞춘다.
+      in_progress 상태 아이템이 없으면 open 아이템을 fallback으로 사용하는
+      기존 로직(lines 325-327)은 유지한다.
+    priority: 0
+    depends_on: []
+
+  - beads_id: 'blog-it0'
+    title: 'FIX: BUG-4 draw_dots max=8 하드코딩'
+    description: |
+      draw_agent_pane() 내 draw_dots 호출부(line 346)를 수정한다.
+      현재: draw_dots "$ag_cl" "$ag_total"  (max 인자 없음 → 기본값 8 고정)
+      변경: 호출 전 dot_max 동적 계산 후 인자로 전달.
+        dot_max=$(( W / 3 ))
+        [ $dot_max -lt 4  ] && dot_max=4
+        [ $dot_max -gt 20 ] && dot_max=20
+        draw_dots "$ag_cl" "$ag_total" "$dot_max"
+    priority: 0
+    depends_on: []
+
+  - beads_id: 'blog-3t8'
+    title: 'FEAT: 에이전트 pane 정보 추가 4종'
+    description: |
+      draw_agent_pane()에 다음 4가지 정보를 추가한다.
+      (A) 작업 통계 요약: "진행 N / 대기 N / 완료 N" 형태 1줄 출력
+          — ag_ip, ag_op, ag_cl 변수 재사용 (이미 집계됨)
+      (B) 현재 작업 경과 시간:
+          — in_progress 아이템의 updated 또는 created 타임스탬프를 bd show <id>로 조회
+          — 현재 시각과의 차이를 Xh Ym 형태로 출력
+          — in_progress 아이템 없으면 표시 생략
+      (C) 현재 작업 beads ID:
+          — in_progress 첫 번째 아이템의 ID 파싱 (bd list 출력 첫 번째 토큰)
+          — "ID: blog-xxxx" 형태로 출력
+      (D) 대기 메시지 수 (task-manager 및 spec-manager 전용):
+          — bd list --assignee <ASSIGNEE> --type message -s open 으로 조회
+          — 카운트 > 0이면 "대기 메시지 X건" 출력
+          — worker-1/2는 표시 생략
+    priority: 1
+    depends_on: ['blog-dgt', 'blog-0tk']
+
+  - beads_id: 'blog-9ua'
+    title: 'FEAT: BUG-3 overview spec 필터 + Done 누적 해결'
+    description: |
+      [과제 1] Done 섹션 누적 문제 해결:
+        — bd list -s closed --sort updated -r -n "$n_done" 이 실제로 최신 N개만
+          반환하는지 확인한다. 만약 전체 반환 시 | head -n "$n_done" 추가.
+        — n_done 계산 로직(lines 225-227) 유지, 단 최소 1개 보장.
+
+      [과제 2] overview spec 필터 키 입력 처리:
+        — draw_overview() 메인루프(while loop) 내 sleep 이전에 논블로킹 키 입력 감지 추가.
+          read -t 0 -n 1 key 2>/dev/null 로 키 감지.
+        — ACTIVE_SPEC 변수 (초기값 "") 관리:
+            숫자 키 1-9: spec 목록에서 해당 인덱스 파일 선택 → ACTIVE_SPEC 설정
+            숫자 키 0 또는 'a': ACTIVE_SPEC="" (전체 보기로 복귀)
+        — 헤더 줄에 [전체] 또는 [spec: <파일명>] 표시.
+        — ACTIVE_SPEC 설정 시 Done 섹션과 Todos 섹션을 해당 spec 연관 태스크만
+          필터링하여 표시 (spec 파일 내 beads_id 목록 파싱 필요).
+        — spec 목록은 ls .multi-agent/specs/*.yaml | grep -v archive 기준.
+    priority: 1
+    depends_on: ['blog-dgt', 'blog-0tk']
+
+acceptance_criteria:
+  - condition: 'draw_overview()의 Todos/BLOCKED/Done/Agents 섹션에서 %.Ns 포맷 스트링이 없음'
+    verification: 'dashboard.sh에서 "%.$((" 패턴 grep 결과 없음'
+
+  - condition: '한글 포함 태스크 제목이 잘리지 않고 정상 표시됨'
+    verification: '한글 태스크 제목을 가진 beads 아이템 실행 후 터미널 시각적 확인'
+
+  - condition: 'in_progress 태스크가 있을 때 에이전트 pane이 idle 대신 실제 제목을 표시함'
+    verification: 'bd update <id> --status in_progress 후 대시보드에서 태스크 제목 확인'
+
+  - condition: 'draw_dots가 W/3으로 계산한 max 값으로 도트를 렌더링함 (최소 4, 최대 20)'
+    verification: '터미널 너비를 30/60/120으로 변경 후 도트 개수 시각적 확인'
+
+  - condition: 'draw_agent_pane에 작업 통계 요약(진행/대기/완료) 1줄이 출력됨'
+    verification: 'task-manager 또는 worker pane에서 통계 줄 시각적 확인'
+
+  - condition: 'in_progress 아이템 있을 때 경과 시간(Xh Ym 형태)이 표시됨'
+    verification: 'in_progress 아이템 생성 후 pane에서 경과 시간 텍스트 확인'
+
+  - condition: 'in_progress 아이템 beads ID가 "ID: blog-xxxx" 형태로 표시됨'
+    verification: 'pane에서 ID 텍스트 확인'
+
+  - condition: 'task-manager/spec-manager pane에 대기 메시지 수가 표시됨 (0건이면 미표시)'
+    verification: 'message 타입 open 아이템 생성 후 카운트 확인'
+
+  - condition: 'Done 섹션이 n_done 개수를 초과하여 표시하지 않음'
+    verification: '10개 이상 closed 아이템 상태에서 Done 섹션 항목 수 확인'
+
+  - condition: 'overview에서 숫자 키 입력으로 spec 필터가 전환되고 헤더에 [spec: 파일명] 표시됨'
+    verification: '실제 키 입력 후 헤더 변경 확인'
+
+  - condition: '키 0 또는 a 입력 시 [전체] 필터로 복귀됨'
+    verification: '필터 전환 후 0 키 입력으로 복귀 확인'
+
+technical_notes:
+  - '한글 잘림 근본 원인: pln()의 printf "%.Ns" 는 N 바이트 자르기이므로 한글(3바이트)이 중간에 잘림.
+    trunc_title()이 이미 출력 너비 기준으로 안전하게 자른 결과를 %s 그대로 출력해야 함.'
+
+  - 'idle 고정 근본 원인: bd list -s in_progress 출력의 접두 아이콘이 코드상 grep "^◐" 와
+    실제로 다를 수 있음. bd list 실행 결과를 직접 확인하여 정확한 접두 문자 사용.'
+
+  - '경과 시간 계산: bd show <id>로 created_at 또는 updated_at 파싱,
+    date -d (Linux) 또는 date -j (macOS) 로 epoch 변환 후 현재 시각 차이 계산.
+    macOS 환경이므로 date -j -f "%Y-%m-%dT%H:%M:%SZ" 형식 사용.'
+
+  - 'spec 필터 키 입력: read -t 0 -n 1 key 는 논블로킹. sleep 5 앞에서 호출.
+    ACTIVE_SPEC 변수는 global scope에서 관리하여 draw_overview 재진입 시 유지.'
+
+  - 'draw_dots max 클램프: W=40 → dot_max=13, W=30 → 클램프 후 10, W=15 → 클램프 후 5'
+
+execution_order:
+  phase_1_parallel:
+    - 'blog-dgt: BUG-1 한글 잘림 수정'
+    - 'blog-0tk: BUG-2 idle 고정 수정'
+    - 'blog-it0: BUG-4 draw_dots 하드코딩 수정'
+  phase_2_parallel:
+    - 'blog-3t8: 에이전트 pane 정보 추가 (blog-dgt, blog-0tk 완료 후)'
+    - 'blog-9ua: spec 필터 + Done 누적 해결 (blog-dgt, blog-0tk 완료 후)'

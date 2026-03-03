@@ -1,0 +1,113 @@
+metadata:
+  id: 'spec-blog-kla'
+  title: 'spec 파일 아카이브 자동화 + dashboard SPECS 섹션 archive 제외'
+  created_at: '2026-02-23T00:00:00Z'
+  updated_at: '2026-02-23T00:00:00Z'
+  created_by: 'spec-manager'
+  status: 'active'
+
+requirements:
+  functional:
+    - '과거 spec 파일 12개(spec-blog-6vc, irz, 8tp, 610, 6d9, 8a5, 8m7, mzq, d1o, w5x, 2dn, eb0) 및 validated-* 파일 3개를 삭제해야 함'
+    - 'spec-blog-49a.yaml은 삭제하지 않고 유지해야 함'
+    - '.multi-agent/specs/archive/ 디렉토리를 생성해야 함 (이미 존재하면 유지)'
+    - '.multi-agent/scripts/archive-spec.sh 스크립트를 작성해야 함'
+    - 'archive-spec.sh는 인자로 받은 spec 파일명(예: spec-blog-xxx.yaml)을 .multi-agent/specs/archive/ 디렉토리로 이동시켜야 함'
+    - 'archive-spec.sh 사용법: ./archive-spec.sh spec-blog-xxx.yaml'
+
+  non_functional:
+    - 'dashboard.sh의 SPECS 섹션은 .multi-agent/specs/spec-*.yaml glob만 사용하므로 archive/ 내 파일은 자동으로 제외됨 (별도 필터링 불필요)'
+    - '과거 spec 파일 삭제 시 git commit을 포함해야 함'
+    - 'spec-blog-49a.yaml은 절대 삭제하지 않아야 함'
+
+  constraints:
+    - 'Bash 3.2 호환 (macOS 기본 셸 환경 대응)'
+    - 'jq 미설치 환경을 위한 graceful fallback 구현'
+    - 'FSD 아키텍처와 무관한 인프라 스크립트 작업'
+    - 'archive-spec.sh는 .multi-agent/scripts/ 디렉토리에 위치해야 함'
+
+tasks:
+  - beads_id: 'blog-igj'
+    title: 'SCRIPT: .multi-agent/specs/ 과거 spec 파일 삭제'
+    description: |
+      .multi-agent/specs/ 디렉토리에서 아래 파일들을 삭제하고 git commit 한다.
+
+      [삭제 대상 — spec 파일 12개]
+        - spec-blog-6vc.yaml
+        - spec-blog-irz.yaml
+        - spec-blog-8tp.yaml
+        - spec-blog-610.yaml
+        - spec-blog-6d9.yaml
+        - spec-blog-8a5.yaml
+        - spec-blog-8m7.yaml
+        - spec-blog-mzq.yaml
+        - spec-blog-d1o.yaml
+        - spec-blog-w5x.yaml
+        - spec-blog-2dn.yaml
+        - spec-blog-eb0.yaml
+
+      [삭제 대상 — validated-* 파일 3개]
+        - validated-msg-test-20260220.yaml
+        - validated-test-20260220.yaml
+        - validated-20260220-test.yaml
+
+      [유지 대상 — 절대 삭제 금지]
+        - spec-blog-49a.yaml
+
+      삭제 완료 후 `git add -A && git commit -m "chore: 과거 spec 파일 정리"` 실행.
+    priority: 0
+    depends_on: []
+
+  - beads_id: 'blog-tpz'
+    title: 'FEAT: spec archive 자동화 + dashboard SPECS 섹션 archive 제외'
+    description: |
+      1) .multi-agent/specs/archive/ 디렉토리 생성 (이미 존재하면 skip)
+         - .gitkeep 파일로 git 추적 유지
+
+      2) .multi-agent/scripts/archive-spec.sh 스크립트 작성
+         사용법: ./archive-spec.sh spec-blog-xxx.yaml
+         동작:
+           - 인자 없으면 사용법 출력 후 종료 (exit 1)
+           - 인자로 받은 파일이 .multi-agent/specs/ 에 존재하는지 확인
+           - 존재하지 않으면 에러 출력 후 종료 (exit 1)
+           - .multi-agent/specs/archive/ 디렉토리 없으면 mkdir -p 로 생성
+           - mv 명령으로 해당 파일을 archive/ 로 이동
+           - 이동 성공 시 완료 메시지 출력
+
+         스크립트 요구사항:
+           - #!/bin/bash 헤더
+           - Bash 3.2 호환 (배열, herestring 사용 금지 또는 대안 사용)
+           - 실행 권한 부여 (chmod +x)
+
+      3) dashboard.sh SPECS 섹션 확인
+         - 현재 코드(268~275번째 줄)는 이미 archive/ 파일을 제외하는 `case "$sf" in *archive*) continue ;; esac` 구문 포함
+         - 별도 수정 불필요, 동작 확인만 수행
+
+      의존성: blog-5om 완료 후 진행
+    priority: 1
+    depends_on: ['blog-5om']
+
+acceptance_criteria:
+  - condition: 'spec-blog-6vc.yaml 등 12개 spec 파일이 .multi-agent/specs/ 에 존재하지 않음'
+    verification: '.multi-agent/specs/ 디렉토리 목록 확인 (ls 또는 glob 검색)'
+  - condition: 'validated-* 3개 파일이 .multi-agent/specs/ 에 존재하지 않음'
+    verification: '.multi-agent/specs/ 디렉토리 목록 확인'
+  - condition: 'spec-blog-49a.yaml이 .multi-agent/specs/ 에 그대로 존재함'
+    verification: 'ls .multi-agent/specs/spec-blog-49a.yaml 로 확인'
+  - condition: '과거 파일 삭제 내역이 git log에 commit으로 기록됨'
+    verification: 'git log --oneline -5 으로 commit 메시지 확인'
+  - condition: '.multi-agent/specs/archive/ 디렉토리가 존재함'
+    verification: 'ls .multi-agent/specs/archive/ 로 확인'
+  - condition: '.multi-agent/scripts/archive-spec.sh 파일이 존재하고 실행 가능함'
+    verification: 'ls -l .multi-agent/scripts/archive-spec.sh → 권한에 x 포함 확인'
+  - condition: 'archive-spec.sh 실행 시 spec 파일이 archive/ 디렉토리로 이동됨'
+    verification: '테스트 파일로 ./archive-spec.sh 실행 후 archive/ 에서 파일 확인'
+  - condition: 'dashboard.sh SPECS 섹션에서 archive/ 내 파일이 표시되지 않음'
+    verification: 'dashboard.sh 코드 내 *archive* 패턴 확인 (268~275번째 줄)'
+
+technical_notes:
+  - 'dashboard.sh 268~275번째 줄에 이미 archive 제외 로직 존재: `case "$sf" in *archive*) continue ;; esac`'
+  - 'blog-tpz는 blog-5om(현재 IN_PROGRESS 상태로 추정) 완료 후 시작해야 함'
+  - 'blog-igj와 blog-tpz는 독립적으로 진행 가능하나 blog-igj는 즉시 시작 가능'
+  - 'archive-spec.sh에서 PROJECT_ROOT는 스크립트 위치 기반으로 동적 계산 권장: `$(cd "$(dirname "$0")/../.." && pwd)`'
+  - 'Bash 3.2에서는 local 배열 선언이 제한적이므로 단순 변수와 반복문으로 구현'

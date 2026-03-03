@@ -1,0 +1,131 @@
+metadata:
+  id: 'spec-blog-eb0'
+  title: 'multi-agent 시스템 개선 및 문서 재구성'
+  created_at: '2026-02-22T00:00:00Z'
+  created_by: 'spec-manager'
+  status: 'active'
+
+requirements:
+  functional:
+    - '파일 큐 + beads 혼재 구조를 beads 완전 전환'
+    - '순수 폴링 방식으로 단일화'
+
+  non_functional:
+    - 'beads 완전 전환으로 아키텍처 단순화'
+    - '폴링 방식으로 파일 시스템 의존성 제거'
+
+  constraints:
+    - 'FSD 아키텍처 준수'
+    - 'TypeScript strict mode'
+    - '현재 runner.sh 기반'
+
+tasks:
+  - beads_id: 'blog-s66'
+    title: 'CONFIG: beads config.yaml no-db 및 flush-debounce 활성화'
+    description: '.beads/config.yaml에서 no-db: true 및 flush-debounce: 2s 활성화'
+    priority: 0
+    depends_on: []
+
+  - beads_id: 'blog-5me'
+    title: 'RUNNER: runner.sh 파일 큐 제거 및 bd 폴링 전환'
+    description: '파일 기반 큐 감시 로직 제거, 5초 간격 bd list 폴링으로 교체'
+    priority: 1
+    depends_on: ['blog-s66']
+
+  - beads_id: 'blog-p4f'
+    title: 'WATCHMAN: beads-changed 트리거 제거'
+    description: '폴링으로 대체되므로 beads-changed watchman 트리거 삭제'
+    priority: 2
+    depends_on: ['blog-5me']
+
+  - beads_id: 'blog-2w4'
+    title: 'SCRIPT: setup-watchman.sh 신규 생성'
+    description: 'watchman 트리거 등록 자동화 (spec-changed만)'
+    priority: 3
+    depends_on: ['blog-5me']
+
+  - beads_id: 'blog-43v'
+    title: 'SCRIPT: notify-all-agents.sh 신규 생성'
+    description: 'spec-changed 트리거용 (beads-changed는 제거됨)'
+    priority: 4
+    depends_on: ['blog-2w4']
+
+  - beads_id: 'blog-8uz'
+    title: 'SCRIPT: notify-spec-manager.sh 신규 생성'
+    description: '.multi-agent/specs/draft-*.yaml 감지용 스크립트'
+    priority: 4
+    depends_on: ['blog-2w4']
+
+  - beads_id: 'blog-9nl'
+    title: 'OPENCODE: 컨설턴트 bd create 권한 확인'
+    description: 'opencode.jsonc에서 컨설턴트 bd create 권한 확인/활성화'
+    priority: 5
+    depends_on: []
+
+  - beads_id: 'blog-088'
+    title: 'README: .multi-agent/README.md 신규 생성'
+    description: 'docs/multi-agent-system.md 내용을 이관 + 새 폴링 설계 반영'
+    priority: 6
+    depends_on: []
+
+  - beads_id: 'blog-1oc'
+    title: 'DOCS: docs/multi-agent-system.md 삭제'
+    description: '.multi-agent/README.md로 내용 이관 후 원본 삭제'
+    priority: 7
+    depends_on: ['blog-088']
+
+  - beads_id: 'blog-8fw'
+    title: 'DOCS: docs/agents.md 수정'
+    description: '에이전트 시스템 섹션(100~127줄) 제거, 링크 3곳 수정, 목차 수정'
+    priority: 6
+    depends_on: []
+
+  - beads_id: 'blog-5vf'
+    title: 'AGENTS: AGENTS.md multi-agent 섹션 추가'
+    description: '에이전트 4종 표 + 시작 명령어 + .multi-agent/README.md 링크 추가'
+    priority: 7
+    depends_on: []
+
+acceptance_criteria:
+  - condition: 'beads config.yaml에 no-db: true 및 flush-debounce: 2s 설정됨'
+    verification: 'cat .beads/config.yaml | grep -E "no-db|flush-debounce" 로 확인'
+
+  - condition: 'runner.sh에서 파일 큐 감시 로직 제거됨'
+    verification: 'runner.sh 파일에서 파일 큐 관련 grep 결과 없음'
+
+  - condition: 'bd list 폴링 로직 추가됨 (5초 간격)'
+    verification: 'runner.sh에서 bd list 명령어 및 sleep 5 확인'
+
+  - condition: 'beads-changed watchman 트리거 제거됨'
+    verification: 'watchman trigger-list 결과에 beads-changed 없음'
+
+  - condition: 'notify-all-agents.sh 스크립트 생성됨'
+    verification: 'ls -la .multi-agent/scripts/notify-all-agents.sh 확인'
+
+  - condition: 'notify-spec-manager.sh 스크립트 생성됨'
+    verification: 'ls -la .multi-agent/scripts/notify-spec-manager.sh 확인'
+
+  - condition: 'setup-watchman.sh 스크립트 생성됨'
+    verification: 'ls -la .multi-agent/scripts/setup-watchman.sh 확인'
+
+  - condition: 'opencode.jsonc에서 컨설턴트 bd create 권한 활성화됨'
+    verification: 'opencode.jsonc에서 consultant 권한 확인'
+
+  - condition: '.multi-agent/README.md 생성됨'
+    verification: 'ls -la .multi-agent/README.md 확인'
+
+  - condition: 'docs/multi-agent-system.md 삭제됨'
+    verification: 'ls docs/multi-agent-system.md 파일 없음 확인'
+
+  - condition: 'docs/agents.md에서 multi-agent 시스템 섹션 제거됨'
+    verification: 'docs/agents.md에서 multi-agent 시스템 관련 섹션 확인'
+
+  - condition: 'AGENTS.md에 multi-agent 섹션 추가됨'
+    verification: 'AGENTS.md에서 multi-agent 섹션 확인'
+
+technical_notes:
+  - 'no-db: true - beads 데이터를 파일 시스템에 저장, 데이터베이스 불필요'
+  - 'flush-debounce: 2s - 배치 처리로 성능 최적화'
+  - 'runner.sh 폴링 방식: 5초마다 bd list로 새 태스크 확인'
+  - 'watchman 트리거: spec-changed만 유지 (파일 생성/수정 감지)'
+  - 'opencode.jsonc 권한: consultant에게 bd create 권한 부여 필요'

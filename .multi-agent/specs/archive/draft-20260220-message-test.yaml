@@ -1,0 +1,52 @@
+# .multi-agent/specs/draft-20260220-message-test.yaml
+# 멀티 에이전트 메시지 테스트 - 컨설턴트가 작성한 명세서 초안
+
+metadata:
+  id: 'spec-msg-test-20260220'
+  title: '멀티 에이전트 메시지 플로우 검증 테스트'
+  priority: 2
+  created_at: '2026-02-20T12:00:00Z'
+  created_by: 'consultant'
+  status: 'draft'
+
+requirements:
+  functional:
+    - '컨설턴트가 명세서 초안을 작성하고 spec-manager에게 검증 요청을 보낼 수 있다'
+    - 'spec-manager가 명세서를 검증하고 task-manager에게 결과를 전달할 수 있다'
+    - 'task-manager가 태스크를 분해하고 작업자에게 할당할 수 있다'
+    - '작업 완료 후 task-manager가 consultant에게 완료 보고를 전송할 수 있다'
+
+  non_functional:
+    - '각 메시지는 JSON 형식이며 from/to/type/payload/timestamp 필드를 포함한다'
+    - '메시지 파일은 .multi-agent/queue/ 디렉토리에 저장된다'
+    - '처리된 메시지는 .multi-agent/queue/processed/ 로 이동된다'
+
+  constraints:
+    - '이 명세서는 실제 코드 구현 없이 메시지 통신 흐름만 테스트한다'
+    - 'FSD 아키텍처 준수 불필요 (통신 테스트 전용)'
+
+acceptance_criteria:
+  - condition: '컨설턴트 → spec-manager 방향으로 validate_spec 메시지가 생성된다'
+    verification: '.multi-agent/queue/spec-manager-*.json 파일 존재 확인'
+
+  - condition: 'spec-manager → task-manager 방향으로 spec_validated 메시지가 생성된다'
+    verification: '.multi-agent/queue/task-manager-*.json 파일 존재 확인'
+
+  - condition: 'task-manager → consultant 방향으로 all_tasks_done 메시지가 생성된다'
+    verification: '.multi-agent/queue/consultant-*.json 파일 존재 확인'
+
+  - condition: '전체 메시지 플로우가 순서대로 완성된다'
+    verification: '각 메시지의 timestamp 순서 검증'
+
+dependencies:
+  files:
+    - '.multi-agent/templates/spec-template.yaml'
+    - '.multi-agent/config/agents.yaml'
+    - '.multi-agent/config/validation-checklist.yaml'
+
+  packages: []
+
+technical_notes:
+  - '이 테스트는 실제 watchman 트리거 없이 수동으로 메시지 파일을 생성한다'
+  - '각 에이전트 역할을 컨설턴트가 시뮬레이션한다'
+  - '타임스탬프는 메시지 순서를 나타내기 위해 순차적으로 증가한다'

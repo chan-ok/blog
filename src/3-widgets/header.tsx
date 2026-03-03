@@ -29,7 +29,7 @@ export default function Header() {
     );
 
   const dynamicHeaderClasses = clsx(
-    'fixed flex items-center justify-between',
+    'fixed z-50 flex items-center justify-between',
     'w-full h-16 sm:h-12',
     'px-4 py-2',
     'transition-all duration-200',

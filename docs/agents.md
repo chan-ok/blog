@@ -9,7 +9,6 @@
 - [프로젝트 정보](#프로젝트-정보)
 - [핵심 규칙 요약](#핵심-규칙-요약)
 - [AI 답변 검증](#ai-답변-검증)
-- [에이전트 시스템](#에이전트-시스템)
 - [참고 문서](#참고-문서)
 
 ## 개요
@@ -68,7 +67,6 @@ pages → widgets → features → entities → shared
 | 언어/커밋 | 한국어 문서·주석·커밋, 영어 코드, Conventional Commits | [language-rules.md](./language-rules.md) |
 | Git Flow | `main ← develop ← feature`, Worktree 병렬 작업 | [git-flow.md](./git-flow.md) |
 | 안티패턴 | `any` 금지, FSD 위반, 테스트 하드코딩 | [anti-patterns.md](./anti-patterns.md) |
-| 에이전트 | v4 멀티 에이전트 (4종, tmux 기반) | [agent-system.md](./agent-system.md) |
 
 ## AI 답변 검증
 
@@ -97,39 +95,6 @@ pages → widgets → features → entities → shared
 3. **실행 테스트**: 코드 적용 후 동작 확인
 4. **반복**: 문제 발견 시 수정 요청
 
-## 에이전트 시스템
-
-이 프로젝트는 v4 멀티 에이전트 시스템을 사용합니다. tmux 기반 경량 아키텍처로 4종 에이전트만 사용합니다.
-
-### v4 에이전트 역할 요약
-
-| 에이전트 | 역할 | 사용 시기 |
-|----------|------|-----------|
-| **컨설턴트** | 사람 대면, 요구사항 수집 및 최종 보고 | 프로젝트 시작, 요구사항 변경 |
-| **작업관리자** | beads 태스크 관리 (분해/할당/추적) | 작업 할당, 블로커 해결 |
-| **명세서관리자** | spec 파일 검증 (FSD/보안/테스트) | 명세서 생성 후, 품질 게이트 |
-| **작업자** | 코드/테스트 작성 (최대 3개 동시) | 실제 구현, Git commit |
-
-### v4 아키텍처 특징
-
-- **경량화**: tmux + opencode + watchman + beads만 사용 (K8s 불필요)
-- **즉시 시작**: 터미널 pane 생성만으로 에이전트 실행
-- **투명성**: 모든 에이전트 동작을 tmux에서 실시간 확인
-- **파일 기반 통신**: 명세서 파일 + beads 태스크 + 상태 파일
-
-### 시작 방법
-
-```bash
-# tmux 세션 시작 (6-pane 레이아웃)
-bash scripts/start-multi-agent.sh
-
-# watchman 트리거 설정
-bash scripts/setup-watchman.sh
-```
-
-→ 상세: [agent-system.md](./agent-system.md)  
-→ 전체 설계: [architecture/multi-agent-system.md](./architecture/multi-agent-system.md)
-
 ## 참고 문서
 
 - [development.md](./development.md) - 개발 시작 및 환경 설정
@@ -143,9 +108,8 @@ bash scripts/setup-watchman.sh
 - [language-rules.md](./language-rules.md) - 언어 및 커밋 규칙
 - [git-flow.md](./git-flow.md) - Git Flow 가이드
 - [anti-patterns.md](./anti-patterns.md) - 안티패턴 목록
-- [agent-system.md](./agent-system.md) - 에이전트 시스템 상세
-- [architecture/multi-agent-system.md](./architecture/multi-agent-system.md) - v4 멀티 에이전트 시스템 전체 설계
+- [.multi-agent/](../.multi-agent/) — 멀티 에이전트 시스템 (tmux + opencode + beads, 4종 에이전트)
 
 ---
 
-> **Note**: v3 에이전트 시스템 (master-orchestrator 등 9개 에이전트)은 `docs/archive/v3-agent-permissions.md`에 아카이브되었습니다.
+> **Note**: tmux 기반 멀티 에이전트 시스템(consultant, task-manager, spec-manager, worker)은 [.multi-agent/docs/](../.multi-agent/docs/)를 참고하세요.

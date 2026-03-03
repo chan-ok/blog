@@ -1,0 +1,162 @@
+metadata:
+  id: 'spec-blog-w5x'
+  title: 'dashboard.sh 멀티 에이전트 모니터 개선'
+  created_at: '2026-02-22T00:00:00Z'
+  created_by: 'spec-manager'
+  status: 'active'
+  source_task: 'blog-f6c'
+
+requirements:
+  functional:
+    - 'draw_overview() 내 pln 포맷에서 printf %.Ns 바이트 잘림 문제를 제거하여 한글 제목이 올바르게 표시되어야 함'
+    - 'draw_overview() agents 루프에서 in_progress 에이전트 상태를 정확히 감지하여 idle 고정 버그를 수정해야 함'
+    - '메인 루프에서 논블로킹 키 입력으로 overview 화면의 spec 필터를 전환할 수 있어야 함'
+    - 'draw_dots()의 max 8 하드코딩을 제거하고 터미널 너비에 따른 동적 계산으로 교체해야 함'
+    - 'draw_agent_pane()에 작업 통계(진행/대기/완료 수) 및 in_progress 작업 경과시간을 표시해야 함'
+
+  non_functional:
+    - 'bash 스크립트 macOS/Linux 호환성 유지'
+    - '멀티바이트(한글) 안전 처리: trunc_title awk 기반 함수 유지'
+    - 'tput 기반 터미널 크기 동적 계산 유지'
+
+  constraints:
+    - 'bash 스크립트 단일 파일(.multi-agent/scripts/dashboard.sh) 수정만 허용'
+    - 'beads(bd) CLI 활용'
+    - 'awk 기반 trunc_title 함수 시그니처 변경 금지'
+    - 'sleep 5 메인 루프 구조 유지 (read -t 0 논블로킹으로 추가)'
+
+tasks:
+  - beads_id: 'blog-e4c'
+    title: 'FIX: dashboard.sh draw_overview 한글 제목 pln %.Ns 바이트 잘림'
+    priority: 0
+    depends_on: []
+    description: |
+      draw_overview() 내 todos/blocked/done/agents 섹션에서 pln 포맷 문자열 수정.
+      문제: trunc_title로 이미 너비 보정된 $t를 pln에서 printf %.$(( W-N ))s 로 한 번 더 바이트 기준 자르기.
+        - 한글 1글자 = 최대 3바이트 → 화면 너비와 무관하게 중간 잘림 발생.
+      수정 대상 라인 (dashboard.sh):
+        - 180: pln "  %b ${D}${ag_pad}${R} ${D}%.$(( W - 22 ))s${R}" → %.Ns 제거, %s 사용
+        - 197: pln "  ${YLW}◐${R} ${D}%.$(( W - 6 ))s${R}" → %s 사용
+        - 204: pln "  ${D}○ %.$(( W - 6 ))s${R}" → %s 사용
+        - 219: pln "  ${RED}● %.$(( W - 6 ))s${R}" → %s 사용
+        - 238: pln "  ${GRN}✓${R} ${D}%.$(( W - 6 ))s${R}" → %s 사용
+      trunc_title가 이미 너비 기준으로 자른 $t를 그대로 %s로 출력.
+
+  - beads_id: 'blog-h4q'
+    title: 'FIX: dashboard.sh draw_overview 에이전트 상태 idle 고정 버그'
+    priority: 0
+    depends_on: []
+    description: |
+      draw_overview() agents 루프(line 158~184)에서 에이전트 in_progress 상태 감지 실패 원인 파악 및 수정.
+      확인 항목:
+        1. bd list --assignee $ag -s in_progress 출력에서 실제 상태 아이콘 문자 확인
+           (◐ U+25D0 인지 다른 문자인지)
+        2. grep "^◐" 패턴이 실제 출력과 일치하는지 검증
+           - 불일치 시: grep 패턴을 실제 출력에 맞게 수정하거나
+             bd list 의 -s 옵션 대신 --status in_progress 확인
+        3. _ip_raw 변수 빈 문자열 여부가 아이콘 결정 조건(line 166~168)에 올바르게 반영되는지 점검
+      수정 후: 실제 in_progress 작업이 있을 때 ◐ 아이콘, 없으면 · 아이콘 표시.
+
+  - beads_id: 'blog-d0m'
+    title: 'FEAT: dashboard.sh overview spec 필터 키보드 전환'
+    priority: 1
+    depends_on: ['blog-e4c', 'blog-h4q']
+    description: |
+      overview 화면에서 숫자키로 특정 spec 기준 필터 전환, 0/a키로 전체 복귀.
+      구현 세부:
+        1. 전역 변수 추가 (파일 상단):
+           ACTIVE_SPEC=""  # 빈 문자열 = 전체 표시
+        2. 메인 루프(while) 내 draw_overview 호출 직전:
+           if read -t 0 -r -s -n1 _key 2>/dev/null; then
+             case "$_key" in
+               [0a]) ACTIVE_SPEC="" ;;
+               [1-9])
+                 _specs=($(ls "$PROJECT_ROOT/.multi-agent/specs/"spec-*.yaml 2>/dev/null | grep -v archive | sort))
+                 _idx=$(( _key - 1 ))
+                 [ -n "${_specs[$_idx]}" ] && ACTIVE_SPEC="$(basename "${_specs[$_idx]}")"
+                 ;;
+             esac
+           fi
+        3. draw_overview() 헤더(①)에 현재 필터 표시:
+           - ACTIVE_SPEC 비어있으면: pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')${R}"
+           - ACTIVE_SPEC 있으면:    pln "${CLR}${B} OVERVIEW${R}  ${D}$(date '+%H:%M:%S')  [${CYN}${ACTIVE_SPEC}${R}${D}]${R}"
+        4. todos / done / stats 섹션에서 ACTIVE_SPEC 이 비어있지 않은 경우:
+           bd list ... 에 --tag "$ACTIVE_SPEC" (또는 beads spec 필터 옵션) 추가.
+           beads spec 필터 지원 여부 확인 후, 미지원 시 bd show 기반 파싱으로 대체.
+
+  - beads_id: 'blog-ljp'
+    title: 'FIX: dashboard.sh draw_dots max 하드코딩 8개 제한'
+    priority: 1
+    depends_on: []
+    description: |
+      draw_dots() max 파라미터 하드코딩 제거 및 호출부에서 동적 계산.
+      현황: draw_dots "$ag_cl" "$ag_total" (max 인수 미전달 → 기본값 8)
+      수정:
+        1. draw_agent_pane() 내 draw_dots 호출 시 max 인수 동적 계산:
+           local _dots_max=$(( W / 3 ))
+           [ $_dots_max -lt 4  ] && _dots_max=4
+           [ $_dots_max -gt 20 ] && _dots_max=20
+           draw_dots "$ag_cl" "$ag_total" "$_dots_max"
+        2. draw_dots() 함수 시그니처 및 내부 로직은 변경 없음.
+           (이미 max 파라미터를 받아서 처리하도록 구현됨)
+
+  - beads_id: 'blog-lmc'
+    title: 'FEAT: dashboard.sh draw_agent_pane 작업 통계 및 경과시간 표시'
+    priority: 1
+    depends_on: []
+    description: |
+      draw_agent_pane() 도트 진행도(④) 이후에 두 가지 정보 추가.
+      [5-A] 작업 통계 한 줄 추가 (④ 바로 아래):
+        pln "  ${YLW}◐진행 %-2s${R}  ${D}○대기 %-2s${R}  ${GRN}✓완료 %-2s${R}" "$ag_ip" "$ag_op" "$ag_cl"
+      [5-B] in_progress 작업 경과시간 표시:
+        - bd show <in_progress_id> 로 updated_at(또는 created_at) 타임스탬프 파싱
+        - 현재 시각과의 차이를 Xh Ym 형식으로 계산 (bash date 기반)
+        - in_progress 작업이 없으면 해당 줄 미표시
+        - 예: "  ${D}경과 2h 35m${R}"
+        구현 예:
+          local _ip_id
+          _ip_id=$(printf "%s" "$_ip_raw" | head -1 | awk '{print $2}')
+          if [ -n "$_ip_id" ]; then
+            local _ts; _ts=$(bd show "$_ip_id" 2>/dev/null | grep -i "updated" | head -1 | awk '{print $NF}')
+            if [ -n "$_ts" ]; then
+              local _now; _now=$(date +%s)
+              local _then; _then=$(date -d "$_ts" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$_ts" +%s 2>/dev/null || echo 0)
+              local _diff=$(( _now - _then ))
+              local _h=$(( _diff / 3600 )) _m=$(( (_diff % 3600) / 60 ))
+              [ $_h -gt 0 ] && pln "  ${D}경과 ${_h}h ${_m}m${R}" || pln "  ${D}경과 ${_m}m${R}"
+            fi
+          fi
+
+acceptance_criteria:
+  - condition: '한글 제목을 포함한 todo/done/blocked/agents 항목이 터미널 너비 내에서 올바르게 표시됨'
+    verification: 'overview 화면에서 한글 제목 항목 시각적 확인, 글자 잘림 없음'
+
+  - condition: 'in_progress 태스크가 있는 에이전트의 아이콘이 ◐로 표시됨 (idle · 아님)'
+    verification: 'bd list --assignee worker-1 -s in_progress 결과가 있을 때 overview agents 섹션에서 ◐ 확인'
+
+  - condition: '1~9 숫자키 입력 시 해당 spec으로 todos/done 필터 전환됨'
+    verification: '1 키 입력 후 overview 헤더에 spec 파일명 표시 및 todos 목록 필터 적용 확인'
+
+  - condition: '0 또는 a 키 입력 시 필터 해제되어 전체 태스크 표시됨'
+    verification: '0 키 입력 후 overview 헤더에 spec 표시 없음, 전체 todos 표시 확인'
+
+  - condition: 'draw_dots max가 터미널 너비에 비례하여 동적으로 결정됨 (최소 4, 최대 20)'
+    verification: '터미널 너비 120에서 max=40 초과 없이 20 상한 적용 확인'
+
+  - condition: 'draw_agent_pane에 통계(◐진행 N ○대기 N ✓완료 N) 한 줄이 도트 아래에 표시됨'
+    verification: 'worker-1 pane에서 통계 줄 시각적 확인'
+
+  - condition: 'in_progress 작업이 있는 에이전트 pane에서 경과시간(Xh Ym 또는 Nm)이 표시됨'
+    verification: 'in_progress 태스크 존재 시 "경과 Xh Ym" 또는 "경과 Nm" 줄 표시 확인'
+
+  - condition: 'in_progress 작업이 없으면 경과시간 줄이 표시되지 않음'
+    verification: 'idle 에이전트 pane에서 경과시간 줄 미표시 확인'
+
+technical_notes:
+  - 'trunc_title은 awk 기반으로 한글 2칸/ASCII 1칸 처리 — 절대 변경 금지'
+  - '%.Ns 는 바이트 기준 자르기이므로 한글(UTF-8 멀티바이트) 환경에서 사용 금지'
+  - 'read -t 0: 타임아웃 0초 논블로킹 read, 입력 없으면 즉시 종료 (exit code != 0)'
+  - 'macOS date: -j -f 옵션 사용, Linux date: -d 옵션 사용 → 경과시간 계산 시 양쪽 분기 필요'
+  - 'bd list 아이콘 문자는 터미널/버전에 따라 다를 수 있으므로 blog-h4q 수정 전 실제 출력 확인 필수'
+  - 'draw_dots max 상한 20은 터미널 너비 60 이상에서 적용됨 (60/3=20)'
+  - 'spec 필터 기능(blog-d0m)은 blog-e4c, blog-h4q 완료 후 진행'

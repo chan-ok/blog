@@ -1,0 +1,48 @@
+# .multi-agent/specs/validated-test-20260220.yaml
+# 멀티 에이전트 시스템 통신 테스트용 명세서 (검증 완료)
+metadata:
+  id: 'spec-test-20260220'
+  title: '멀티 에이전트 시스템 통신 테스트'
+  priority: 2
+  created_at: '2026-02-20T10:00:00Z'
+  created_by: 'consultant'
+  validated_at: '2026-02-20T10:05:00Z'
+  validated_by: 'spec-manager'
+  status: 'validated'
+
+requirements:
+  functional:
+    - '컨설턴트가 명세서 초안을 작성하여 명세서관리자에게 검증 요청 전송'
+    - '명세서관리자가 검증 완료 후 작업관리자에게 태스크 분해 요청 전송'
+    - '각 에이전트 간 메시지 큐(.multi-agent/queue/)를 통한 JSON 메시지 전달 확인'
+
+  non_functional:
+    - '메시지 포맷이 표준(from/to/type/payload/timestamp) 준수'
+    - '파일 기반 MQ가 정상 작동'
+
+  constraints:
+    - '컨설턴트는 코드 수정 금지, 명세서/큐 파일만 작성'
+    - '이 명세서는 테스트 목적이므로 실제 코드 구현 불필요'
+
+acceptance_criteria:
+  - condition: 'draft-20260220-test.yaml 파일이 .multi-agent/specs/에 존재'
+    verification: '파일 시스템 확인'
+  - condition: 'spec-manager 큐 메시지 파일이 .multi-agent/queue/에 생성'
+    verification: '파일 시스템 확인'
+  - condition: 'task-manager 큐 메시지 파일이 .multi-agent/queue/에 생성'
+    verification: '파일 시스템 확인'
+  - condition: '모든 메시지 JSON이 표준 포맷 준수 (from/to/type/payload/timestamp)'
+    verification: 'JSON 포맷 수동 확인'
+
+dependencies:
+  files:
+    - '.multi-agent/templates/spec-template.yaml'
+    - '.multi-agent/config/agents.yaml'
+    - '.multi-agent/config/validation-checklist.yaml'
+
+  packages: []
+
+technical_notes:
+  - '이 명세서는 멀티 에이전트 시스템의 통신 흐름을 검증하는 테스트입니다'
+  - '실제 코드 작업이 없으므로 작업자 에이전트는 사용하지 않습니다'
+  - '검증 기준: 각 단계의 메시지 파일이 정확한 포맷으로 생성되는지 확인'
