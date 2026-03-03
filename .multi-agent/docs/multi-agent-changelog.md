@@ -39,4 +39,4 @@
 ## 참고
 
 - [multi-agent-system.md](./multi-agent-system.md) — 현재 아키텍처
-- [.multi-agent/README.md](../.multi-agent/README.md) — 퀵스타트 및 ma 명령어
+- [README.md](../README.md) — 퀵스타트 및 ma 명령어

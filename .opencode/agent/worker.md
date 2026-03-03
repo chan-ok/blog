@@ -400,7 +400,7 @@ import { PostCard } from '@/3-widgets/post-card'; // features에서 widgets impo
 
 ## 참고 문서
 
-- [multi-agent-system.md](../../docs/architecture/multi-agent-system.md) — 멀티 에이전트 시스템 아키텍처
+- [multi-agent-system.md](../../.multi-agent/docs/multi-agent-system.md) — 멀티 에이전트 시스템 아키텍처
 - [architecture-rules.md](../../docs/architecture-rules.md) — FSD 아키텍처 규칙
 - [code-style.md](../../docs/code-style.md) — 코드 스타일 가이드
 - [beads 공식 문서](https://github.com/jamsocket/beads) — beads CLI 레퍼런스

@@ -55,5 +55,6 @@ ma stop       # 세션 종료
 
 ## 상세 문서
 
-- [docs/multi-agent-system.md](../docs/multi-agent-system.md) — 전체 아키텍처, 에이전트 역할, 통신 모델, 명세서 시스템
-- [docs/multi-agent-changelog.md](../docs/multi-agent-changelog.md) — 구축 이력 (git 기반)
+- [docs/multi-agent-system.md](./docs/multi-agent-system.md) — 전체 아키텍처, 에이전트 역할, 통신 모델, 명세서 시스템
+- [docs/multi-agent-vs-claude-code.md](./docs/multi-agent-vs-claude-code.md) — 상용 제품(Claude Code, Cursor 등) 비교
+- [docs/multi-agent-changelog.md](./docs/multi-agent-changelog.md) — 구축 이력 (git 기반)

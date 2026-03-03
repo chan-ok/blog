@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import z from 'zod';
 
 type NetlifyEvent = {
   httpMethod:
@@ -22,6 +23,16 @@ type NetlifyResponse = {
   body: string;
 };
 
+const MailBodySchema = z.object({
+  from: z.string().email('Invalid email'),
+  subject: z
+    .string()
+    .min(1, 'Subject is required')
+    .max(100, 'Subject length is over'),
+  message: z.string().min(1, 'Message is required'),
+  turnstileToken: z.string().min(1, 'Turnstile token is required'),
+});
+
 export const handler = async (
   event: NetlifyEvent
 ): Promise<NetlifyResponse> => {
@@ -34,9 +45,43 @@ export const handler = async (
       return { statusCode: 400, body: 'Empty request body' };
     }
 
-    // 1. JSON 파싱
-    const body = JSON.parse(event.body);
-    const { from, subject, message, turnstileToken } = body;
+    // 1. JSON 파싱 + 서버 측 입력 검증
+    const rawBody = JSON.parse(event.body);
+    const parsed = MailBodySchema.safeParse(rawBody);
+
+    // #region agent log
+    fetch('http://127.0.0.1:7259/ingest/0344b4ce-d749-4585-8667-d81e5d74a5a8', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Debug-Session-Id': 'e04329',
+      },
+      body: JSON.stringify({
+        sessionId: 'e04329',
+        runId: 'pre-fix',
+        hypothesisId: 'H1',
+        location: 'netlify/functions/mail.mts:39',
+        message: 'Mail handler body validation result',
+        data: { success: parsed.success },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+
+    if (!parsed.success) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: 'Invalid payload',
+          issues: parsed.error.issues.map((issue) => ({
+            path: issue.path,
+            message: issue.message,
+          })),
+        }),
+      };
+    }
+
+    const { from, subject, message, turnstileToken } = parsed.data;
 
     if (!turnstileToken) {
       return { statusCode: 400, body: 'Missing Turnstile token' };
@@ -66,11 +111,32 @@ export const handler = async (
     const verifyJson = await verifyRes.json();
 
     if (!verifyJson.success) {
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7259/ingest/0344b4ce-d749-4585-8667-d81e5d74a5a8',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Debug-Session-Id': 'e04329',
+          },
+          body: JSON.stringify({
+            sessionId: 'e04329',
+            runId: 'pre-fix',
+            hypothesisId: 'H2',
+            location: 'netlify/functions/mail.mts:75',
+            message: 'Turnstile verification failed',
+            data: { success: verifyJson.success },
+            timestamp: Date.now(),
+          }),
+        }
+      ).catch(() => {});
+      // #endregion
+
       return {
         statusCode: 400,
         body: JSON.stringify({
           error: 'Turnstile verification failed',
-          detail: verifyJson,
         }),
       };
     }

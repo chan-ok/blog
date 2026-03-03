@@ -404,7 +404,7 @@ bd create "all_tasks_done: <기능명> 완료" \
 
 ## 참고 문서
 
-- [multi-agent-system.md](../../docs/architecture/multi-agent-system.md) — 멀티 에이전트 시스템 아키텍처
+- [multi-agent-system.md](../../.multi-agent/docs/multi-agent-system.md) — 멀티 에이전트 시스템 아키텍처
 - [beads 공식 문서](https://github.com/jamsocket/beads) — beads CLI 레퍼런스
 - [agents.md](../../docs/agents.md) — AI 에이전트 가이드
 

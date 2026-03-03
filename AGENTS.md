@@ -2,6 +2,18 @@
 
 This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
 
+## 멀티 에이전트 시스템
+
+tmux + opencode + beads 기반 4종 에이전트(consultant, task-manager, spec-manager, worker)를 사용합니다.
+
+```bash
+ma start      # tmux 세션 시작
+ma attach     # 실행 중인 세션에 진입
+ma stop       # 세션 종료
+```
+
+📖 [.multi-agent/](./.multi-agent/) — 퀵스타트 및 상세 문서
+
 ## Quick Reference
 
 ```bash
