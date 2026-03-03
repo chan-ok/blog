@@ -1,0 +1,33 @@
+# .multi-agent/templates/spec-template.yaml
+metadata:
+  id: "spec-XXX"  # 자동 생성
+  title: "[기능 제목]"
+  priority: 1  # 0-3
+  created_at: "YYYY-MM-DDTHH:MM:SSZ"
+  created_by: "consultant"
+  status: "draft"
+
+requirements:
+  functional:
+    - "[기능 설명 1]"
+    - "[기능 설명 2]"
+  
+  non_functional:
+    - "[성능/보안/접근성 요구사항]"
+  
+  constraints:
+    - "[제약사항: FSD, 라이브러리, 시간 등]"
+
+acceptance_criteria:
+  - condition: "[완료 조건]"
+    verification: "[검증 방법: 테스트/스토리북/수동]"
+
+dependencies:
+  files:
+    - "[의존 파일 경로]"
+  
+  packages:
+    - "[npm 패키지]"
+
+technical_notes:
+  - "[구현 힌트]"

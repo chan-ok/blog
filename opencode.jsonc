@@ -1,0 +1,187 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": true,
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      "dist/**",
+      ".git/**",
+      ".agents/skills/**",
+      "*.pem",
+      "*.key",
+      "*.p12",
+      "*.pfx",
+      "*.crt",
+      ".ssh/**",
+      "id_rsa*",
+      "id_ed25519*",
+      ".idea/**",
+      ".vscode/**",
+      ".DS_Store",
+      "Thumbs.db",
+      "pnpm-lock.yaml"
+    ]
+  },
+  "mcp": {
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp",
+      "enabled": true
+    },
+    "grep": {
+      "type": "remote",
+      "url": "https://mcp.grep.app",
+      "enabled": true
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+      }
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "enabled": true
+    }
+  },
+  "instructions": ["AGENTS.md", "docs/agents.md"],
+  "agent": {
+    "build": {
+      "disable": true
+    },
+    "plan": {
+      "disable": true
+    },
+    "consultant": {},
+    "task-manager": {},
+    "spec-manager": {},
+    "worker": {}
+  },
+  "permission": {
+    "task": "deny",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todowrite": "allow",
+    "todoread": "allow",
+    "grep": "allow",
+    "skill": "allow",
+    "glob": "allow",
+    "lsp": "allow",
+    "question": "allow",
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.pfx": "deny",
+      "*.crt": "deny",
+      ".ssh/**": "deny",
+      "id_rsa*": "deny",
+      "id_ed25519*": "deny",
+      ".git/**": "deny",
+      ".idea/**": "deny",
+      ".vscode/**": "deny",
+      "dist/**": "deny",
+      "node_modules/**": "deny",
+      "pnpm-lock.yaml": "deny",
+      ".DS_Store": "deny",
+      "Thumbs.db": "deny"
+    },
+    "write": {
+      "*": "deny"
+    },
+    "edit": {
+      "*": "deny"
+    },
+    "bash": {
+      "*": "ask",
+      "rm *": "deny",
+      "cp *": "deny",
+      "mv *": "deny",
+      "echo *": "deny",
+      "* | echo *": "deny",
+      "* | * | echo *": "deny",
+      "cat * > *": "deny",
+      "cat * >> *": "deny",
+      "npm *": "deny",
+      "pnpm *": "deny",
+      "yarn *": "deny",
+      "python *": "deny",
+      "python3 *": "deny",
+      "git add *": "deny",
+      "git commit *": "deny",
+      "git push *": "deny",
+      "git reset --hard *": "deny",
+      "git rebase *": "deny",
+      "pnpm exec *": "deny",
+      "date *": "allow",
+      "bd *": "allow",
+      "ls": "allow",
+      "ls *": "allow",
+      "wc": "allow",
+      "wc *": "allow",
+      "find *": "allow",
+      "find * | head *": "allow",
+      "find * | grep *": "allow",
+      "rm -f .git/index.lock": "allow",
+      "pnpm test": "allow",
+      "pnpm test *": "allow",
+      "pnpm coverage": "allow",
+      "pnpm coverage *": "allow",
+      "pnpm lint": "allow",
+      "pnpm lint *": "allow",
+      "pnpm lint * | head -*": "allow",
+      "pnpm tsc": "allow",
+      "pnpm tsc *": "allow",
+      "git status": "allow",
+      "git status *": "allow",
+      "git diff": "allow",
+      "git diff *": "allow",
+      "git diff * | head *": "allow",
+      "git diff * | tail *": "allow",
+      "git diff * | grep *": "allow",
+      "git log": "allow",
+      "git log *": "allow",
+      "git log * | head -*": "allow",
+      "git log * | tail -*": "allow",
+      "git log * | grep *": "allow",
+      "git log --oneline *": "allow",
+      "git log --oneline * | head -*": "allow",
+      "git show * --stat | head -*": "allow",
+      "git branch --show-current": "allow",
+      "git branch --list": "allow",
+      "git fetch *": "allow",
+      "git config --get *": "allow",
+      "git checkout -b *": "allow",
+      "git checkout develop": "allow",
+      "git checkout main": "allow",
+      "git reset HEAD *": "allow",
+      "git stash": "allow",
+      "git stash pop": "allow",
+      "git stash list": "allow",
+      "git worktree add *": "allow",
+      "git worktree list": "allow",
+      "git worktree remove *": "ask",
+      "git merge --no-ff *": "ask",
+      "git rm --cached .env*": "allow",
+      "git rm --cached node_modules/*": "allow",
+      "TIMESTAMP=$(date +%Y%m%d-%H%M%S) && git checkout -b *": "allow",
+      "gh pr view *": "allow",
+      "gh pr checks *": "allow",
+      "gh pr diff *": "allow"
+    }
+  },
+  "plugin": [
+    "@mohak34/opencode-notifier@latest",
+    "@franlol/opencode-md-table-formatter@0.0.3"
+  ]
+}

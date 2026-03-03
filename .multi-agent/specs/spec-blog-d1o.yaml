@@ -1,0 +1,149 @@
+metadata:
+  id: 'spec-blog-d1o'
+  title: 'dashboard.sh 멀티 에이전트 모니터 개선'
+  created_at: '2026-02-22T00:00:00Z'
+  created_by: 'spec-manager'
+  status: 'active'
+  parent_task: 'blog-5ck'
+  file_path: '.multi-agent/scripts/dashboard.sh'
+
+requirements:
+  functional:
+    - 'draw_overview() Todos 섹션에서 빈 문자열 변수에 대한 루프 진입 방지'
+    - 'spec-manager 검증 대기 건수 표시 시 올바른 레이블(request_spec) 사용'
+    - '호출되지 않는 safe_count(), latest_log() 함수 코드에서 제거'
+    - 'draw_dots() 함수의 dots 변수 누적 방식을 printf 직접 출력 방식으로 리팩토링'
+
+  non_functional:
+    - '수정 후 dashboard.sh 전체 동작에 영향 없음'
+    - '기존 함수 count_lines(), draw_agent_pane() 등 호출 관계 유지'
+
+  constraints:
+    - 'bash 스크립트 수정만 필요 (TypeScript/Node.js 무관)'
+    - 'blog-5uk, blog-77k, blog-kf8은 서로 독립적이므로 병렬 작업 가능'
+    - 'blog-9bm은 blog-kf8 완료 후 진행'
+    - '테스트는 수동 실행으로 확인 (자동화 테스트 불필요)'
+
+tasks:
+  - beads_id: 'blog-5uk'
+    title: 'FIX: dashboard.sh draw_overview Todos 섹션 빈 줄 렌더링 버그 수정'
+    description: |
+      draw_overview() 함수의 ⑤ Todos 섹션(193-206라인)에서
+      _todo_ip/_todo_pd가 빈 문자열일 때 heredoc(<<< "")이 빈 줄을 생성해
+      루프가 한 번 실행되는 버그 수정.
+      빈 문자열 여부를 루프 진입 전에 확인하는 조건 분기 추가.
+    priority: 0
+    depends_on: []
+    target_lines: '193-206'
+    fix_approach: |
+      현재 코드:
+        while IFS= read -r line; do
+          [ -z "$line" ] && continue
+          ...
+        done <<< "$_todo_ip"
+
+      수정 후:
+        if [ -n "$_todo_ip" ]; then
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            ...
+          done <<< "$_todo_ip"
+        fi
+
+      _todo_pd도 동일하게 처리 (200-206라인).
+
+  - beads_id: 'blog-77k'
+    title: 'FIX: dashboard.sh spec-manager 메시지 레이블 수정 (validate_spec → request_spec)'
+    description: |
+      dashboard.sh 360라인에서 --tag validate_spec으로 잘못 사용된 레이블을
+      --label request_spec으로 수정. 실제 시스템에서 사용하는 레이블과
+      일치시켜 spec-manager 검증 대기 건수가 올바르게 표시되도록 함.
+    priority: 0
+    depends_on: []
+    target_lines: '360'
+    fix_approach: |
+      현재 코드 (360라인):
+        spec_pending_raw=$(bd list --tag validate_spec --assignee spec-manager 2>/dev/null | grep "^○" || true)
+
+      수정 후:
+        spec_pending_raw=$(bd list --label request_spec --assignee spec-manager 2>/dev/null | grep "^○" || true)
+
+  - beads_id: 'blog-kf8'
+    title: 'REFACTOR: dashboard.sh 데드 코드 제거 (safe_count, latest_log)'
+    description: |
+      dashboard.sh에서 정의만 되어 있고 호출되지 않는
+      safe_count() 함수(58-65라인)와 latest_log() 함수(114-126라인)를 제거.
+      두 함수 모두 데드 코드임.
+    priority: 0
+    depends_on: []
+    target_lines: '58-65 (safe_count), 114-126 (latest_log)'
+    fix_approach: |
+      safe_count() 함수 블록(55-65라인, 주석 포함) 전체 삭제:
+        # ── 안전한 카운트 헬퍼 ────
+        safe_count() { ... }
+
+      latest_log() 함수 블록(112-126라인, 주석 포함) 전체 삭제:
+        # ── 최신 로그 파일 찾기 ────
+        latest_log() { ... }
+
+      삭제 후 count_lines() 함수(67-78라인)와 get_stats() 함수(80-93라인)가
+      연속으로 위치하도록 확인.
+
+  - beads_id: 'blog-9bm'
+    title: 'REFACTOR: dashboard.sh draw_dots 성능 개선 (dots 문자열 누적 → printf 직접 출력)'
+    description: |
+      draw_dots() 함수(248-265라인)에서 ANSI 이스케이프가 포함된 dots 문자열을
+      변수에 누적한 뒤 printf "%b"로 한번에 출력하는 방식을,
+      각 도트를 printf로 즉시 출력하는 방식으로 리팩토링.
+      dots 변수 자체를 제거하여 불필요한 문자열 누적 연산 제거.
+    priority: 1
+    depends_on: ['blog-kf8']
+    target_lines: '248-265'
+    fix_approach: |
+      현재 코드:
+        local dots=""
+        local i=0
+        while [ $i -lt $filled ]; do dots="${dots}${GRN}●${R} "; i=$(( i + 1 )); done
+        while [ $i -lt $(( filled + empty )) ]; do dots="${dots}${D}○${R} "; i=$(( i + 1 )); done
+        printf "%b ${D}%d/%d${R}" "$dots" "$done_n" "$total"
+
+      수정 후:
+        local i=0
+        while [ $i -lt $filled ]; do printf "${GRN}● ${R}"; i=$(( i + 1 )); done
+        while [ $i -lt $(( filled + empty )) ]; do printf "${D}○ ${R}"; i=$(( i + 1 )); done
+        printf "${D}%d/%d${R}" "$done_n" "$total"
+
+      dots 변수 선언(local dots="") 및 누적 패턴 제거.
+
+acceptance_criteria:
+  - condition: '_todo_ip가 빈 문자열일 때 Todos 섹션에서 빈 줄이 출력되지 않음'
+    verification: 'dashboard.sh overview 모드 수동 실행 후 Todos 섹션 확인'
+
+  - condition: '_todo_pd가 빈 문자열일 때 Todos 섹션에서 빈 줄이 출력되지 않음'
+    verification: 'dashboard.sh overview 모드 수동 실행 후 Todos 섹션 확인'
+
+  - condition: 'spec-manager pane에서 검증 대기 건수가 request_spec 레이블 기준으로 표시됨'
+    verification: 'bd list --label request_spec --assignee spec-manager 결과와 대조하여 수동 확인'
+
+  - condition: 'safe_count() 함수가 dashboard.sh에 존재하지 않음'
+    verification: 'dashboard.sh 파일에서 safe_count 문자열 검색으로 확인'
+
+  - condition: 'latest_log() 함수가 dashboard.sh에 존재하지 않음'
+    verification: 'dashboard.sh 파일에서 latest_log 문자열 검색으로 확인'
+
+  - condition: '데드 코드 제거 후 count_lines(), get_stats() 등 실사용 함수가 정상 동작'
+    verification: 'dashboard.sh 각 에이전트 모드 수동 실행으로 오류 없음 확인'
+
+  - condition: 'draw_dots() 내부에서 dots 변수 없이 printf 직접 출력 방식 사용'
+    verification: 'Read 도구로 draw_dots 함수 코드 확인, dots="" 누적 패턴 미존재 확인'
+
+  - condition: 'dashboard.sh 구문 오류 없음 (전체 수정 완료 후)'
+    verification: 'bash -n .multi-agent/scripts/dashboard.sh 실행 결과 오류 없음 확인'
+
+technical_notes:
+  - 'blog-5uk, blog-77k, blog-kf8은 서로 다른 라인 범위를 수정하므로 독립적으로 병렬 작업 가능'
+  - 'blog-9bm은 blog-kf8 완료 후 진행 (draw_dots 함수가 stable한 상태에서 리팩토링)'
+  - 'safe_count 제거 시 주석(55-57라인)도 함께 제거'
+  - 'latest_log 제거 시 주석(112-113라인)도 함께 제거'
+  - 'heredoc <<< "$var" 은 var이 빈 문자열이어도 빈 줄 하나를 생성하는 bash 특성에 유의'
+  - '--tag는 beads에서 지원하지 않는 플래그이며, --label이 올바른 플래그'

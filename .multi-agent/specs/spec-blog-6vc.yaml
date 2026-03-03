@@ -1,0 +1,201 @@
+metadata:
+  id: 'spec-blog-6vc'
+  title: 'dashboard.sh overview 개선 (spec 선택 UX + 정보 강화)'
+  created_at: '2026-02-22T00:00:00Z'
+  created_by: 'spec-manager'
+  status: 'active'
+
+requirements:
+  functional:
+    - 'start.sh 세션 시작 시 /tmp/multi-agent-session-start 파일에 Unix timestamp 기록'
+    - 'draw_overview() 헤더에 현재 git 브랜치명 표시'
+    - 'draw_overview() 헤더에 세션 경과 시간 (+Xm 형식) 표시'
+    - 'draw_overview() 헤더에 [s: spec선택] 키 힌트 표시'
+    - 'draw_overview()에 SPECS 섹션 상시 표시 (spec yaml tasks[].beads_id 파싱 + state.json closed 수로 완료율 계산)'
+    - 'SPECS 섹션에서 현재 ACTIVE_SPEC에 ▶ 마커 표시'
+    - 'draw_overview() Agents 섹션 각 행에 beads ID 표시'
+    - 'draw_overview() Agents 섹션 각 행에 경과 시간 (+Xm 형식) 표시'
+    - 'draw_overview() Agents 섹션 각 행에 완료/전체 카운트 표시'
+    - 'draw_overview()의 Done 섹션을 ACTIVITY FEED 섹션으로 대체'
+    - 'ACTIVITY FEED에 state.json closed 최근 10건 타임라인 표시'
+    - 'ACTIVITY FEED에 ACTIVE_SPEC 필터 적용'
+    - 'ACTIVITY FEED 줄 수는 터미널 높이에 따라 동적으로 조정'
+
+  non_functional:
+    - 'Bash 3.2 호환 (macOS 기본 bash, declare -A 배열 미사용)'
+    - 'clear 명령 금지 (기존 \033[H 커서 홈 방식 유지)'
+    - 'jq 없을 때 graceful fallback (빈 값으로 처리)'
+    - '외부 의존성 최소화 (jq·python 직접 호출 금지)'
+    - '대시보드 갱신 시 깜빡임 없음 유지'
+
+  constraints:
+    - 'Bash 3.2 호환 — declare -A(연관 배열) 미사용, bash 3.2에서 동작하는 문법만 허용'
+    - 'clear 명령 절대 금지 — \033[2J\033[H (첫 프레임) / \033[H (이후) 방식 유지'
+    - 'jq 없거나 state.json 없을 때 빈 값 반환 (graceful fallback, 오류 출력 금지)'
+    - '외부 의존성 최소화 — jq 단독 사용 허용, python/ruby/node 등 추가 호출 금지'
+    - '기존 함수 재사용 — pln(), sep(), trunc_title(), draw_bar(), cache_get_titles(), cache_get_agent_counts() 그대로 사용'
+    - 'ACTIVE_SPEC 필터 로직 유지 — 기존 ACTIVE_SPEC 필터링 방식 변경 금지'
+    - 'bd 직접 호출 금지 — state.json 읽기 전용으로만 데이터 접근'
+    - '수정 파일 범위 — .multi-agent/scripts/start.sh, .multi-agent/scripts/dashboard.sh 두 파일만 수정'
+
+tasks:
+  - beads_id: 'blog-n0n'
+    title: 'FEAT: start.sh 세션 시작 시간 기록 (/tmp/multi-agent-session-start)'
+    description: |
+      start.sh에서 tmux 세션 생성 직후 세션 시작 Unix timestamp를 파일에 기록한다.
+      수정 위치: start.sh 84번 줄 근처 ("echo "🚀 tmux 세션 생성 중..."" 라인 바로 아래)
+      추가 코드 1줄: date +%s > /tmp/multi-agent-session-start
+    priority: 0
+    depends_on: []
+
+  - beads_id: 'blog-m5g'
+    title: 'FEAT: dashboard.sh overview 헤더 강화 (git 브랜치 + 경과시간 + 키 힌트)'
+    description: |
+      draw_overview() 헤더 영역(현재 206~216줄)을 개선한다.
+
+      현재 헤더 출력 예시:
+        " OVERVIEW  14:23:45  [spec-blog-6vc.yaml]  캐시: 14:23"
+      개선 후 출력 예시:
+        " OVERVIEW  14:23:45  ⎇ develop  +42m  [s: spec선택]  [spec-blog-6vc.yaml]  캐시: 14:23"
+
+      구현 상세:
+        1. git 브랜치 읽기:
+           GIT_BRANCH=$(git -C "$PROJECT_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+           브랜치 있으면 "⎇ $GIT_BRANCH" 형식으로 추가
+        2. 경과 시간 계산:
+           SESSION_START_FILE="/tmp/multi-agent-session-start"
+           파일 존재 시: elapsed=$(( $(date +%s) - $(cat "$SESSION_START_FILE") ))
+           elapsed_min=$(( elapsed / 60 ))
+           "+${elapsed_min}m" 형식으로 추가 (파일 없으면 생략)
+        3. 키 힌트: "[s: spec선택]" 문자열을 항상 표시 (dim 스타일 적용)
+        4. 기존 cache_age, ACTIVE_SPEC 표시 로직은 유지한 채 앞에 삽입
+
+      의존성: blog-n0n (SESSION_START_FILE 파일 생성)
+    priority: 1
+    depends_on:
+      - 'blog-n0n'
+
+  - beads_id: 'blog-5om'
+    title: 'FEAT: dashboard.sh overview SPECS 섹션 상시 표시 (완료율 + 현재 spec 표시)'
+    description: |
+      draw_overview()의 ② 통계 전(현재 243줄 앞)에 SPECS 섹션을 신규 삽입한다.
+
+      표시 형식 예시:
+        " Specs"
+        "  ▶ spec-blog-6vc.yaml  ████░░  60%  (3/5)"
+        "    spec-blog-abc.yaml  ██████ 100%  (5/5)"
+
+      구현 상세:
+        1. spec yaml 파싱 (bash 3.2 grep/awk, jq 없이):
+           $PROJECT_ROOT/.multi-agent/specs/spec-*.yaml 목록 순회
+           각 yaml에서 tasks[].beads_id 추출: grep "^ *beads_id:" 로 파싱
+           total_tasks = beads_id 줄 수
+        2. 완료 수 계산:
+           state.json에서 closed 태스크 목록 jq로 읽기
+           각 beads_id가 closed 목록에 있는지 확인
+           jq 없으면 closed_tasks=0으로 fallback
+        3. 완료율 바: draw_bar() 함수 재사용 (bw=10 고정)
+        4. ACTIVE_SPEC 일치 파일 앞에 "▶" 마커, 나머지는 공백 2칸
+        5. spec 파일 없으면 "  없음" 표시
+        6. archive/ 하위 파일은 목록에서 제외
+    priority: 1
+    depends_on: []
+
+  - beads_id: 'blog-ad3'
+    title: 'FEAT: dashboard.sh overview 에이전트 패널 정보 추가 (beads ID + 경과시간 + 완료/전체)'
+    description: |
+      draw_overview() Agents 섹션(현재 262~291줄 for 루프)의 각 에이전트 행에
+      beads ID, 경과 시간(+Xm), 완료/전체 카운트를 추가한다.
+
+      현재 출력 예시:
+        "  ■ task-manager   태스크 분해 중..."
+      개선 후 출력 예시:
+        "  ■ task-manager   blog-abc  +5m  2/7   태스크 분해 중..."
+
+      구현 상세:
+        1. beads ID: cache_get_titles로 가져온 in_progress 첫 번째 항목에서
+           "◐ <id> - <title>" 형식의 <id> 부분 추출
+           sed 's/^◐ //' | awk '{print $1}' 방식 사용
+        2. 경과 시간: in_progress 태스크의 updated_at을 state.json에서 읽기
+           jq -r ".all_tasks[] | select(.id == \"$task_id\") | .updated_at" 방식
+           updated_at이 ISO8601 형식이면 date 명령으로 epoch 변환 후 차이 계산
+           jq 없거나 파싱 실패 시 생략
+        3. 완료/전체: cache_get_agent_counts 함수 활용
+           closed / (in_progress + open + blocked + closed) 형식
+        4. 행 폭 초과 방지: 각 필드를 추가할 때 W 기준으로 trunc_title 처리
+    priority: 1
+    depends_on: []
+
+  - beads_id: 'blog-xuv'
+    title: 'FEAT: dashboard.sh overview ACTIVITY FEED 섹션 추가 (최근 이벤트 타임라인)'
+    description: |
+      draw_overview()의 ⑦ Done 섹션(현재 341~364줄)을 ACTIVITY FEED 섹션으로 대체한다.
+
+      표시 형식 예시:
+        " Activity"
+        "  ✓ 14:21  blog-abc  태스크 제목"
+        "  ✓ 14:18  blog-def  다른 태스크"
+
+      구현 상세:
+        1. 데이터 소스: state.json의 closed 태스크 목록
+           각 태스크에서 id, title, updated_at 추출 (jq 사용)
+           updated_at을 HH:MM 형식으로 변환하여 타임라인 표시
+        2. 표시 건수: 터미널 높이 기반 동적 계산 (기존 n_done 방식 동일하게 유지)
+           n_feed = H - 20, 최소 1, 최대 10 (기존 최대 5에서 확장)
+        3. ACTIVE_SPEC 필터: 설정된 경우 해당 spec yaml의 beads_id 목록 파싱 후
+           그 ID에 속하는 태스크만 필터링 (cache_get_titles 기존 label 필터 방식 유지)
+        4. 타임스탬프 파싱:
+           macOS date 명령 호환: date -j -f "%Y-%m-%dT%H:%M:%SZ" 방식
+           파싱 실패 시 updated_at 원문 앞 5자 표시 또는 "--:--" fallback
+        5. jq 없으면 기존 Done 섹션 표시 방식으로 fallback (cache_get_titles 활용)
+    priority: 2
+    depends_on: []
+
+acceptance_criteria:
+  - condition: 'start.sh 실행 후 /tmp/multi-agent-session-start 파일이 생성되고 Unix timestamp가 기록된다'
+    verification: 'bash .multi-agent/scripts/start.sh 실행 후 cat /tmp/multi-agent-session-start 로 숫자 확인'
+
+  - condition: 'overview 헤더에 git 브랜치명이 "⎇ <branch>" 형식으로 표시된다'
+    verification: 'tmux overview pane 시각적 확인 또는 draw_overview 출력 캡처'
+
+  - condition: 'overview 헤더에 세션 경과 시간이 "+Xm" 형식으로 표시된다 (/tmp/multi-agent-session-start 존재 시)'
+    verification: 'start.sh 실행 후 1분 이상 대기 후 헤더에 "+1m" 이상 표시 확인'
+
+  - condition: 'overview 헤더에 "[s: spec선택]" 키 힌트가 항상 표시된다'
+    verification: 'draw_overview 출력에 "[s: spec선택]" 문자열 포함 확인'
+
+  - condition: 'SPECS 섹션이 통계 수치 위에 표시되며 spec 파일별 완료율이 계산된다'
+    verification: 'spec yaml 파일이 1개 이상일 때 SPECS 섹션에 파일명 + 진행도 바 + 백분율 표시 확인'
+
+  - condition: 'ACTIVE_SPEC으로 선택된 spec 파일 앞에 "▶" 마커가 표시된다'
+    verification: 'show_spec_modal에서 spec 선택 후 SPECS 섹션에 "▶" 마커 확인'
+
+  - condition: 'Agents 섹션 각 행에 beads ID, 경과 시간, 완료/전체 카운트가 표시된다 (in_progress 태스크 있을 때)'
+    verification: '에이전트에 in_progress 태스크 존재 시 행에 "blog-xxx +Ym N/M" 형식 포함 확인'
+
+  - condition: 'Done 섹션이 ACTIVITY FEED 섹션으로 대체되고 최근 closed 태스크 타임라인이 표시된다'
+    verification: 'closed 태스크 존재 시 " Activity" 헤더와 "✓ HH:MM  blog-xxx  제목" 형식 확인'
+
+  - condition: 'ACTIVITY FEED에 ACTIVE_SPEC 필터가 적용된다'
+    verification: 'ACTIVE_SPEC 설정 시 해당 spec의 beads_id에 속하는 closed 태스크만 표시 확인'
+
+  - condition: 'jq 없는 환경에서 graceful fallback — 오류 없이 빈 값 또는 기존 방식으로 동작한다'
+    verification: 'PATH에서 jq를 제거한 후 dashboard.sh overview 실행 시 오류 없이 대시보드 표시 확인'
+
+  - condition: 'Bash 3.2에서 오류 없이 실행된다 (declare -A 미사용)'
+    verification: 'bash --version | head -1 이 3.2.x인 macOS 환경에서 대시보드 정상 실행 확인'
+
+technical_notes:
+  - '수정 파일: .multi-agent/scripts/start.sh (1줄 추가), .multi-agent/scripts/dashboard.sh (draw_overview 함수 수정)'
+  - 'bash 3.2 호환을 위해 연관 배열(declare -A) 대신 파이프/변수 조합 사용'
+  - 'start.sh 수정 위치: 84줄 근처 "echo "🚀 tmux 세션 생성 중..."" 직후, tmux new-session 명령 이전'
+  - 'dashboard.sh draw_overview() 수정 위치 요약:'
+  - '  - ① 헤더: 206~216줄 — git 브랜치·경과시간·키 힌트 삽입'
+  - '  - ② 통계 전 243줄 앞 — SPECS 섹션 신규 삽입'
+  - '  - ④ Agents for 루프 262~291줄 — beads ID·경과시간·완료/전체 추가'
+  - '  - ⑦ Done 섹션 341~364줄 — ACTIVITY FEED로 대체'
+  - '경과 시간 계산: $(( $(date +%s) - $(cat /tmp/multi-agent-session-start) )) 방식, 파일 없으면 생략'
+  - '타임스탬프 표시: HH:MM 형식, macOS date -j 호환, 실패 시 "--:--" fallback'
+  - '기존 pln(), sep(), trunc_title(), draw_bar(), cache_get_titles(), cache_get_agent_counts() 함수 변경 없이 재사용'
+  - 'SPECS 섹션의 beads_id 추출은 grep "^ *beads_id:" 방식 (jq 없이 yaml 파싱 가능)'
+  - 'SPECS 섹션 완료 수 계산은 jq 사용 가능 시 state.json 활용, 없으면 0으로 fallback'

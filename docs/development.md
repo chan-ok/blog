@@ -65,6 +65,7 @@ cd blog
 
 ```bash
 pnpm install
+pnpm test:prepare  # Storybook/Vitest 브라우저 테스트용 Playwright 설치
 ```
 
 #### 3. 환경 변수 설정

@@ -1,0 +1,7 @@
+{
+  "dispatcher_poll_interval": 10,
+  "agent_gap": 1,
+  "bd_max_retry": 3,
+  "stale_timeout": 1800,
+  "runner_poll_interval": 3
+}

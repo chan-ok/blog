@@ -74,3 +74,8 @@ deno.lock
 .tanstack/
 **/routeTree.gen.ts
 
+# Multi-agent system
+.multi-agent/queue/*.json
+.multi-agent/status/*.json
+!.multi-agent/queue/.gitkeep
+!.multi-agent/status/.gitkeep

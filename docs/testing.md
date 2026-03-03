@@ -104,6 +104,27 @@ pnpm test --project=storybook
 pnpm e2e
 ```
 
+## 테스트 환경 설정 (Storybook/Vitest Browser)
+
+Storybook addon-vitest는 Playwright 브라우저를 사용합니다. 최초 실행 또는 클론 후 다음을 실행하세요:
+
+```bash
+pnpm test:prepare
+```
+
+`PLAYWRIGHT_BROWSERS_PATH`가 `./node_modules/.cache/playwright`로 설정되어 프로젝트 내부에 브라우저가 설치됩니다.
+
+## getByRole과 접근성 이름(accessible name)
+
+`getByRole('heading', { name: title })` 사용 시, WAI-ARIA spec에 따라 **접근성 이름은 공백이 정규화**됩니다. 연속 공백(`"!  !"`)은 단일 공백(`"! !"`)으로 처리됩니다.
+
+Property-Based 테스트에서 제목에 연속 공백이 포함될 수 있다면, 쿼리 시 정규화된 값을 사용하세요:
+
+```typescript
+const normalizedTitle = title.replace(/\s+/g, ' ');
+screen.getByRole('heading', { name: normalizedTitle });
+```
+
 ## 테스트 커버리지 목표
 
 - **전체**: 80% 이상
