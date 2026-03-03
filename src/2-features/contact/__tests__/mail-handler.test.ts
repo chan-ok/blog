@@ -1,12 +1,11 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 
-import { handler } from './mail.mts';
+import { handler } from '../../../../netlify/functions/mail.mts';
 
 const originalEnv = { ...process.env };
 
 beforeEach(() => {
   process.env = { ...originalEnv };
-  // @ts-expect-error - test environment global
   global.fetch = vi.fn();
 });
 
@@ -20,7 +19,6 @@ describe('netlify/functions/mail.mts', () => {
     process.env.TURNSTILE_SECRET_KEY = 'test-secret';
     process.env.RESEND_API_KEY = 're_test_key';
 
-    // @ts-expect-error - partial Response mock
     global.fetch = vi.fn().mockResolvedValue({
       json: async () => ({ success: true }),
     });
@@ -54,7 +52,6 @@ describe('netlify/functions/mail.mts', () => {
       'error-codes': ['invalid-input-response'],
     };
 
-    // @ts-expect-error - partial Response mock
     global.fetch = vi.fn().mockResolvedValue({
       json: async () => turnstileResponse,
     });
@@ -79,4 +76,3 @@ describe('netlify/functions/mail.mts', () => {
     expect(parsed.detail).toBeUndefined();
   });
 });
-

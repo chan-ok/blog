@@ -367,12 +367,14 @@ describe('PostCompactCard - Property-Based 테스트', () => {
           );
 
           // 제목이 렌더링되어야 함
+          // 접근성 이름(accessible name)은 WAI-ARIA spec에 따라 공백이 정규화됨
+          const normalizedTitle = title.replace(/\s+/g, ' ');
           expect(
-            screen.getByRole('heading', { name: title })
+            screen.getByRole('heading', { name: normalizedTitle })
           ).toBeInTheDocument();
 
-          // 이미지가 렌더링되어야 함
-          const img = screen.getByRole('img', { name: title });
+          // 이미지가 렌더링되어야 함 (alt의 접근성 이름도 공백 정규화됨)
+          const img = screen.getByRole('img', { name: normalizedTitle });
           expect(img).toBeInTheDocument();
 
           // 썸네일이 없으면 기본 이미지 사용
