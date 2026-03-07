@@ -6,12 +6,13 @@ import { Frontmatter } from '@/1-entities/markdown/model/markdown.schema';
 import Button from '@/5-shared/components/ui/button';
 import Link from '@/5-shared/components/ui/link';
 import OptimizedImage from '@/5-shared/components/ui/optimized-image';
+import { type LocaleType } from '@/5-shared/types/common.schema';
 import TagChip from './tag-chip';
 
 type PostCardVariant = 'basic' | 'compact' | 'simple';
 
 interface PostCardProps extends Frontmatter {
-  locale: string;
+  locale: LocaleType;
   variant: PostCardVariant;
 }
 

@@ -7,7 +7,7 @@ import PostCardList, {
   PostCardListSkeleton,
 } from '@/2-features/post/ui/post-card-list';
 import TagFilterBar from '@/2-features/post/ui/tag-filter-bar';
-import { getAvailableTags } from '@/2-features/post/util/get-posts';
+import { getAvailableTags } from '@/2-features/post/util/get-available-tags';
 import { parseLocale } from '@/5-shared/types/common.schema';
 
 const searchSchema = z.object({

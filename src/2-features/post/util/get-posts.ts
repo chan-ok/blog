@@ -2,30 +2,20 @@ import { api } from '@/5-shared/config/api';
 import { compareDesc } from 'date-fns';
 
 import { Frontmatter as PostInfo } from '@/1-entities/markdown/model/markdown.schema';
-import {
-  GetAvailableTagsProps,
-  GetPostsProps,
-  PagingPosts,
-} from '../model/post.schema';
+import { GetPostsProps, PagingPosts } from '../model/post.schema';
 
 /** 개발 환경에서만 노출하는 태그 (로컬에서 test/draft 포스트 확인용, 프로덕션에서는 숨김) */
-const DEV_ONLY_TAGS = ['test', 'draft'] as const;
+export const DEV_ONLY_TAGS = ['test', 'draft'] as const;
 
 /** 프로덕션일 때 true. Vite: import.meta.env.DEV === false */
-function isProduction(): boolean {
+export function isProduction(): boolean {
   return !import.meta.env.DEV;
 }
 
 /** 포스트가 dev-only 태그를 하나라도 가지면 true */
-function hasDevOnlyTag(tags: string[] | undefined): boolean {
+export function hasDevOnlyTag(tags: string[] | undefined): boolean {
   if (!tags?.length) return false;
   return tags.some((tag) => (DEV_ONLY_TAGS as readonly string[]).includes(tag));
-}
-
-/** index.json 항목에서 tags만 추출하기 위한 최소 타입 */
-interface IndexItem {
-  published?: boolean;
-  tags?: string[];
 }
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
@@ -106,54 +96,5 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       page,
       size,
     };
-  }
-}
-
-/**
- * locale에 해당하는 index.json에서 published 포스트의 태그를 모아
- * 중복 제거 후 정렬된 배열로 반환합니다.
- */
-function hasValidBaseURL(url: unknown): url is string {
-  return (
-    typeof url === 'string' && url.trim().length > 0 && url !== 'undefined'
-  );
-}
-
-export async function getAvailableTags(
-  props: GetAvailableTagsProps
-): Promise<string[]> {
-  const { locale } = props;
-  const baseURL = import.meta.env.VITE_GIT_RAW_URL;
-
-  if (!hasValidBaseURL(baseURL)) {
-    console.error('VITE_GIT_RAW_URL is not defined');
-    return [];
-  }
-
-  try {
-    const response = await api.get<IndexItem[]>(`/${locale}/index.json`, {
-      baseURL,
-    });
-
-    if (response.axios.status !== 200 || !response.data) {
-      return [];
-    }
-
-    let posts = response.data.filter((post) => post.published);
-    // 프로덕션에서는 test/draft 태그가 있는 포스트 제외 후 태그 수집 (목록과 동일한 노출 기준)
-    if (isProduction()) {
-      posts = posts.filter((post) => !hasDevOnlyTag(post.tags ?? []));
-    }
-
-    const tags = posts
-      .flatMap((post) => post.tags ?? [])
-      .filter(
-        (tag): tag is string => typeof tag === 'string' && tag.length > 0
-      );
-
-    return [...new Set(tags)].toSorted((a, b) => a.localeCompare(b));
-  } catch (error) {
-    console.error('Failed to fetch available tags:', error);
-    return [];
   }
 }

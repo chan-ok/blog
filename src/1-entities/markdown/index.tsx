@@ -30,11 +30,10 @@ export default function MDComponent({
   );
 
   // TanStack Query로 마크다운 페칭 및 evaluate
+  // retry/staleTime은 __root.tsx QueryClient 전역 기본값 사용
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ['markdown', path, baseUrl],
     queryFn: () => getMarkdown(path, baseUrl),
-    retry: 3,
-    staleTime: 1000 * 60 * 5, // 5분간 캐시
   });
 
   // 콜백: 쿼리 상태 변화를 상위 컴포넌트에 전달

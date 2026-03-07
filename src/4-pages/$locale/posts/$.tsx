@@ -39,7 +39,7 @@ function PostDetailPage() {
     null
   );
 
-  // DOM에서 h2, h3 추출
+  // DOM에서 h1, h2, h3 추출
   const contentRef = useRef<HTMLDivElement>(null);
   const [headings, setHeadings] = useState<Heading[]>([]);
 
@@ -101,7 +101,7 @@ function PostDetailPage() {
             )}
           </div>
         )}
-        <div ref={contentRef}>
+        <div ref={contentRef} className="mdx-content">
           <MDComponent
             path={path}
             baseUrl="https://raw.githubusercontent.com/chan-ok/blog-content/main"

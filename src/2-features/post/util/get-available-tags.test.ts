@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getAvailableTags } from './get-posts';
+import { getAvailableTags } from './get-available-tags';
 import { api } from '@/5-shared/config/api';
 
 vi.mock('@/5-shared/config/api', () => ({
