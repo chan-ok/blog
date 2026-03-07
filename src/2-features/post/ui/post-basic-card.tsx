@@ -6,6 +6,7 @@ import { Frontmatter } from '@/1-entities/markdown/model/markdown.schema';
 import Button from '@/5-shared/components/ui/button';
 import Link from '@/5-shared/components/ui/link';
 import OptimizedImage from '@/5-shared/components/ui/optimized-image';
+import TagChip from './tag-chip';
 
 interface Props extends Frontmatter {
   locale: string;
@@ -39,6 +40,13 @@ export default function PostBasicCard({
         <div className="mb-2 text-sm text-gray-500 dark:text-gray-400">
           {format(createdAt, 'yyyy-MM-dd')}
         </div>
+        {tags && tags.length > 0 && (
+          <div className="mb-2 flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <TagChip key={tag} tag={tag} locale={locale} />
+            ))}
+          </div>
+        )}
         <div className="flex-1">{summary}</div>
         <div className="">
           <Button

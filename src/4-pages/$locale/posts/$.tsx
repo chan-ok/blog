@@ -1,8 +1,11 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { useState, useEffect, useRef } from 'react';
+import { format } from 'date-fns';
 
 import MDComponent from '@/1-entities/markdown';
+import { Frontmatter } from '@/1-entities/markdown/model/markdown.schema';
 import TableOfContents from '@/2-features/post/ui/table-of-contents';
+import TagChip from '@/2-features/post/ui/tag-chip';
 import Reply from '@/5-shared/components/reply';
 import { parseLocale } from '@/5-shared/types/common.schema';
 
@@ -29,6 +32,9 @@ function PostDetailPage() {
 
   // MDX 파싱 상태
   const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>('loading');
+
+  // Frontmatter 상태
+  const [frontmatter, setFrontmatter] = useState<Frontmatter | null>(null);
 
   // DOM에서 h2, h3 추출
   const contentRef = useRef<HTMLDivElement>(null);
@@ -74,11 +80,28 @@ function PostDetailPage() {
     <div className={mdxStatus === 'success' ? 'lg:grid lg:grid-cols-[1fr_250px] lg:gap-8' : ''}>
       {/* 메인 콘텐츠 */}
       <div>
+        {/* 메타 헤더: 제목, 날짜, 태그 */}
+        {frontmatter && (
+          <div className="mb-8 border-b border-zinc-200 pb-6 dark:border-zinc-700">
+            <h1 className="mb-4 text-3xl font-bold">{frontmatter.title}</h1>
+            <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+              {format(frontmatter.createdAt, 'yyyy-MM-dd')}
+            </div>
+            {frontmatter.tags && frontmatter.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {frontmatter.tags.map((tag) => (
+                  <TagChip key={tag} tag={tag} locale={locale} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <div ref={contentRef}>
           <MDComponent 
             path={path} 
             baseUrl="https://raw.githubusercontent.com/chan-ok/blog-content/main"
-            onParseStatus={setMdxStatus} 
+            onParseStatus={setMdxStatus}
+            onFrontmatterLoaded={setFrontmatter}
           />
         </div>
         {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}

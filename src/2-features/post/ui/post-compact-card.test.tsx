@@ -338,6 +338,62 @@ describe('PostCompactCard - Unit 테스트', () => {
     const img = screen.getByRole('img', { name: 'Lazy Loading 테스트' });
     expect(img).toHaveAttribute('loading', 'lazy');
   });
+
+  it('태그가 있을 때 태그 칩이 렌더링되어야 한다', async () => {
+    await renderWithRouter(
+      <PostCompactCard
+        title="태그 테스트"
+        createdAt={new Date('2024-01-15')}
+        path={['2024', '01', 'tag-test']}
+        tags={['react', 'typescript']}
+        published={true}
+        locale="ko"
+      />
+    );
+
+    expect(screen.getByText('react')).toBeInTheDocument();
+    expect(screen.getByText('typescript')).toBeInTheDocument();
+  });
+
+  it('태그가 없을 때 태그 칩이 렌더링되지 않아야 한다', async () => {
+    await renderWithRouter(
+      <PostCompactCard
+        title="태그 없음 테스트"
+        createdAt={new Date('2024-01-15')}
+        path={['2024', '01', 'no-tags']}
+        tags={[]}
+        published={true}
+        locale="ko"
+      />
+    );
+
+    // 태그 관련 요소가 없어야 함
+    const links = screen.getAllByRole('link');
+    // Read More 버튼 링크만 있어야 함
+    expect(links.length).toBeGreaterThanOrEqual(1);
+    // 태그 링크는 없어야 함
+    const tagLinks = links.filter((link) =>
+      link.getAttribute('href')?.includes('tags=')
+    );
+    expect(tagLinks.length).toBe(0);
+  });
+
+  it('여러 태그가 모두 표시되어야 한다', async () => {
+    await renderWithRouter(
+      <PostCompactCard
+        title="다중 태그 테스트"
+        createdAt={new Date('2024-01-15')}
+        path={['2024', '01', 'multi-tags']}
+        tags={['react', 'typescript', 'nextjs']}
+        published={true}
+        locale="ko"
+      />
+    );
+
+    expect(screen.getByText('react')).toBeInTheDocument();
+    expect(screen.getByText('typescript')).toBeInTheDocument();
+    expect(screen.getByText('nextjs')).toBeInTheDocument();
+  });
 });
 
 // ============================================================================

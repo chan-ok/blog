@@ -447,6 +447,221 @@ totalPages: Math.ceil(posts.length / perPage),
 }
 \`\`\`
 
+## 태그 기능
+
+### 개요
+
+포스트에 태그를 표시하고 필터링하는 기능입니다. 각 포스트는 frontmatter에 `tags: string[]` 필드를 가지며, 태그를 클릭하면 해당 태그로 필터된 포스트 목록으로 이동합니다.
+
+### 데이터 구조
+
+#### Frontmatter 스키마
+
+```typescript
+// src/1-entities/markdown/model/markdown.schema.ts
+export const FrontmatterSchema = z.object({
+  title: z.string(),
+  path: z.array(z.string()),
+  tags: z.array(z.string()).default([]), // 태그 배열
+  createdAt: z.date(),
+  updatedAt: z.date().optional(),
+  published: z.boolean().default(false),
+  thumbnail: z.string().optional(),
+  summary: z.string().optional(),
+});
+```
+
+#### index.json 구조
+
+```json
+[
+  {
+    "title": "Next.js 16으로 업그레이드 후기",
+    "path": ["2024", "01", "nextjs-16-upgrade"],
+    "tags": ["nextjs", "react", "typescript"],
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "published": true
+  }
+]
+```
+
+### 컴포넌트 구조
+
+#### TagChip 컴포넌트
+
+태그를 칩 형태로 표시하고, 클릭 시 해당 태그로 필터된 목록으로 이동합니다.
+
+```typescript
+// src/2-features/post/ui/tag-chip.tsx
+interface TagChipProps {
+  tag: string;
+  locale: string;
+}
+
+export default function TagChip({ tag, locale }: TagChipProps) {
+  const href = `/${locale}/posts?tags=${encodeURIComponent(tag)}`;
+  return (
+    <Link href={href} className="...">
+      {tag}
+    </Link>
+  );
+}
+```
+
+#### PostBasicCard / PostCompactCard
+
+포스트 카드 컴포넌트에 태그를 표시합니다.
+
+```typescript
+// src/2-features/post/ui/post-basic-card.tsx
+{tags && tags.length > 0 && (
+  <div className="mb-2 flex flex-wrap gap-2">
+    {tags.map((tag) => (
+      <TagChip key={tag} tag={tag} locale={locale} />
+    ))}
+  </div>
+)}
+```
+
+### 태그 필터링
+
+#### URL 쿼리 파라미터
+
+태그 필터링은 URL 쿼리 파라미터로 관리됩니다:
+
+- 형식: `?tags=react,typescript` (쉼표 구분)
+- 여러 태그: `?tags=react,typescript,nextjs`
+
+#### 라우트 검색 파라미터 검증
+
+```typescript
+// src/4-pages/$locale/posts/index.tsx
+export const Route = createFileRoute('/$locale/posts/')({
+  validateSearch: (search) => {
+    return z
+      .object({
+        tags: z.string().optional(),
+      })
+      .parse(search);
+  },
+});
+```
+
+#### 필터링 로직
+
+```typescript
+// src/2-features/post/ui/post-card-list.tsx
+const search = useSearch({ from: Route.fullPath });
+const tags = search.tags
+  ? search.tags.split(',').map((tag) => tag.trim()).filter(Boolean)
+  : [];
+
+const { data: pagingPosts } = useSuspenseQuery({
+  queryKey: ['posts', locale, tags],
+  queryFn: () => getPosts({ locale, tags }),
+});
+```
+
+```typescript
+// src/2-features/post/util/get-posts.ts
+export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
+  const { locale, tags = [] } = props;
+  
+  // ... index.json fetch ...
+  
+  const filteredPosts = response.data
+    .filter((post) => post.published)
+    .filter(
+      (post) =>
+        tags.length === 0 || tags.some((tag) => post.tags.includes(tag))
+    );
+}
+```
+
+### 상세 페이지 태그 표시
+
+포스트 상세 페이지에서도 frontmatter의 태그를 표시합니다.
+
+```typescript
+// src/4-pages/$locale/posts/$.tsx
+const [frontmatter, setFrontmatter] = useState<Frontmatter | null>(null);
+
+<MDComponent
+  path={path}
+  onFrontmatterLoaded={setFrontmatter}
+/>
+
+{frontmatter && (
+  <div className="mb-8">
+    <h1>{frontmatter.title}</h1>
+    <div>{format(frontmatter.createdAt, 'yyyy-MM-dd')}</div>
+    {frontmatter.tags && frontmatter.tags.length > 0 && (
+      <div className="flex flex-wrap gap-2">
+        {frontmatter.tags.map((tag) => (
+          <TagChip key={tag} tag={tag} locale={locale} />
+        ))}
+      </div>
+    )}
+  </div>
+)}
+```
+
+### 데이터 흐름
+
+```mermaid
+flowchart TB
+    subgraph ListPage [포스트 목록 페이지]
+        PostsIndex[posts/index.tsx]
+        PostCardList[PostCardList]
+        PostBasicCard[PostBasicCard]
+        PostsIndex --> PostCardList
+        PostCardList -->|"getPosts(locale, tags)"| API1[index.json]
+        PostCardList --> PostBasicCard
+        PostBasicCard -->|"tags 표시 + TagChip"| TagChip1[TagChip]
+        TagChip1 -->|"클릭"| Link1["/posts?tags=react"]
+    end
+
+    subgraph DetailPage [포스트 상세 페이지]
+        PostDetail[posts/$.tsx]
+        MDComp[MDComponent]
+        PostDetail --> MDComp
+        MDComp -->|"onFrontmatterLoaded"| PostDetail
+        PostDetail -->|"frontmatter.tags"| TagChip2[TagChip]
+        TagChip2 --> Link2["/posts?tags=xxx"]
+    end
+```
+
+### Link 컴포넌트 쿼리 파라미터 지원
+
+Link 컴포넌트가 쿼리 파라미터를 처리하도록 수정되었습니다:
+
+```typescript
+// src/5-shared/components/ui/link/index.tsx
+function parseInternalLink(href: string, locale: string) {
+  const [pathWithLocale, searchString] = href.split('?');
+  const searchParams = searchString
+    ? Object.fromEntries(new URLSearchParams(searchString))
+    : undefined;
+  
+  // ... 경로 매칭 ...
+  
+  return {
+    to: '/$locale/posts',
+    params: { locale },
+    ...(searchParams && { search: searchParams }),
+  };
+}
+```
+
+### 테스트
+
+TDD 기반으로 구현되었으며, 다음 테스트가 포함됩니다:
+
+- `TagChip` 컴포넌트 테스트 (태그 렌더링, href 생성, 접근성)
+- `PostBasicCard` 태그 표시 테스트
+- `PostCompactCard` 태그 표시 테스트
+- Property-Based 테스트 (다양한 태그 문자열, locale 조합)
+
 ## 국제화
 
 ### URL 기반 라우팅
