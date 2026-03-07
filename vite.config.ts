@@ -101,6 +101,7 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       globals: true,
+      testTimeout: 5000,
       exclude: ['**/node_modules/**', '**/.git/**'],
       projects: [
         {
@@ -111,6 +112,7 @@ export default defineConfig(({ mode }) => {
             environment: 'jsdom',
             setupFiles: ['./vitest.setup.ts'],
             typecheck: { enabled: true },
+            pool: 'threads',
           },
         },
         {

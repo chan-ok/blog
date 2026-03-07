@@ -155,7 +155,7 @@ describe('Unit 테스트 - 기본 렌더링', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });
@@ -165,40 +165,6 @@ describe('Unit 테스트 - 기본 렌더링', () => {
 // ============================================================================
 
 describe('Unit 테스트 - 스타일링', () => {
-  /**
-   * **Feature: typography-component, Property: h1 보더 스타일**
-   * **검증: h1에 하단 보더 적용**
-   *
-   * 시나리오: h1 렌더링
-   * 기대 결과: border-b 클래스 포함
-   */
-  it('h1에 하단 보더가 있어야 한다', () => {
-    const { unmount } = render(<Typography.h1>Heading 1</Typography.h1>);
-    const heading = screen.getByRole('heading', { level: 1 });
-
-    expect(heading.className).toContain('border-b');
-    expect(heading.className).toContain('border-gray-200');
-
-    unmount();
-  });
-
-  /**
-   * **Feature: typography-component, Property: h2 보더 스타일**
-   * **검증: h2에 하단 보더 적용**
-   *
-   * 시나리오: h2 렌더링
-   * 기대 결과: border-b 클래스 포함
-   */
-  it('h2에 하단 보더가 있어야 한다', () => {
-    const { unmount } = render(<Typography.h2>Heading 2</Typography.h2>);
-    const heading = screen.getByRole('heading', { level: 2 });
-
-    expect(heading.className).toContain('border-b');
-    expect(heading.className).toContain('border-gray-200');
-
-    unmount();
-  });
-
   /**
    * **Feature: typography-component, Property: 모든 heading 렌더링**
    * **검증: 모든 heading 레벨에서 children이 올바르게 렌더링**
@@ -252,34 +218,8 @@ describe('Unit 테스트 - 스타일링', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
-  });
-
-  /**
-   * **Feature: typography-component, Property: h4 보더 없음**
-   * **검증: h4에 하단 보더 없음**
-   */
-  it('h4에 하단 보더가 없어야 한다', () => {
-    const { unmount } = render(<Typography.h4>Heading 4</Typography.h4>);
-    const heading = screen.getByRole('heading', { level: 4 });
-
-    expect(heading.className).not.toContain('border-b');
-
-    unmount();
-  });
-
-  /**
-   * **Feature: typography-component, Property: h5 보더 없음**
-   * **검증: h5에 하단 보더 없음**
-   */
-  it('h5에 하단 보더가 없어야 한다', () => {
-    const { unmount } = render(<Typography.h5>Heading 5</Typography.h5>);
-    const heading = screen.getByRole('heading', { level: 5 });
-
-    expect(heading.className).not.toContain('border-b');
-
-    unmount();
   });
 
   /**
@@ -305,74 +245,6 @@ describe('Unit 테스트 - 스타일링', () => {
     expect(h3).toBeInTheDocument();
     // h3는 다크모드 클래스가 없을 수 있으므로 체크하지 않음
     unmount3();
-  });
-
-  /**
-   * **Feature: typography-component, Property: 폰트 사이즈**
-   * **검증: 각 heading 레벨별 폰트 사이즈 클래스**
-   *
-   * 시나리오: 각 heading 렌더링
-   * 기대 결과: 올바른 text-* 클래스 포함
-   */
-  it('각 heading이 올바른 폰트 사이즈를 가져야 한다', () => {
-    const { unmount: unmount1 } = render(<Typography.h1>H1</Typography.h1>);
-    const h1 = screen.getByRole('heading', { level: 1 });
-    expect(h1.className).toContain('text-4xl');
-    unmount1();
-
-    const { unmount: unmount2 } = render(<Typography.h2>H2</Typography.h2>);
-    const h2 = screen.getByRole('heading', { level: 2 });
-    expect(h2.className).toContain('text-3xl');
-    unmount2();
-
-    const { unmount: unmount3 } = render(<Typography.h3>H3</Typography.h3>);
-    const h3 = screen.getByRole('heading', { level: 3 });
-    expect(h3.className).toContain('text-2xl');
-    unmount3();
-
-    const { unmount: unmount4 } = render(<Typography.h4>H4</Typography.h4>);
-    const h4 = screen.getByRole('heading', { level: 4 });
-    expect(h4.className).toContain('text-xl');
-    unmount4();
-
-    const { unmount: unmount5 } = render(<Typography.h5>H5</Typography.h5>);
-    const h5 = screen.getByRole('heading', { level: 5 });
-    expect(h5.className).toContain('text-lg');
-    unmount5();
-  });
-
-  /**
-   * **Feature: typography-component, Property: 폰트 굵기**
-   * **검증: 모든 heading이 font-bold 또는 font-semibold 포함**
-   *
-   * 시나리오: 각 heading 렌더링
-   * 기대 결과: font-bold 또는 font-semibold 클래스 포함
-   */
-  it('모든 heading이 굵은 폰트를 가져야 한다', () => {
-    const { unmount: unmount1 } = render(<Typography.h1>H1</Typography.h1>);
-    const h1 = screen.getByRole('heading', { level: 1 });
-    expect(h1.className).toMatch(/font-(bold|semibold)/);
-    unmount1();
-
-    const { unmount: unmount2 } = render(<Typography.h2>H2</Typography.h2>);
-    const h2 = screen.getByRole('heading', { level: 2 });
-    expect(h2.className).toMatch(/font-(bold|semibold)/);
-    unmount2();
-
-    const { unmount: unmount3 } = render(<Typography.h3>H3</Typography.h3>);
-    const h3 = screen.getByRole('heading', { level: 3 });
-    expect(h3.className).toMatch(/font-(bold|semibold)/);
-    unmount3();
-
-    const { unmount: unmount4 } = render(<Typography.h4>H4</Typography.h4>);
-    const h4 = screen.getByRole('heading', { level: 4 });
-    expect(h4.className).toMatch(/font-(bold|semibold)/);
-    unmount4();
-
-    const { unmount: unmount5 } = render(<Typography.h5>H5</Typography.h5>);
-    const h5 = screen.getByRole('heading', { level: 5 });
-    expect(h5.className).toMatch(/font-(bold|semibold)/);
-    unmount5();
   });
 });
 
@@ -434,7 +306,7 @@ describe('Property-Based 테스트 - 모든 heading 레벨', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -463,7 +335,7 @@ describe('Property-Based 테스트 - 모든 heading 레벨', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });

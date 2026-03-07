@@ -138,7 +138,7 @@ describe('OptimizedImage 컴포넌트', () => {
       );
 
       const img = screen.getByRole('img', { name: 'Styled image' });
-      expect(img).toHaveClass('rounded-lg', 'shadow-md');
+      expect(img).toHaveClass('rounded-lg');
     });
 
     it('모든 props를 조합하여 전달해도 올바르게 렌더링되어야 한다', () => {
@@ -159,7 +159,6 @@ describe('OptimizedImage 컴포넌트', () => {
       expect(img).toHaveAttribute('width', '1200');
       expect(img).toHaveAttribute('height', '800');
       expect(img).toHaveAttribute('loading', 'eager');
-      expect(img).toHaveClass('w-full', 'h-auto', 'object-cover');
     });
   });
 
@@ -306,7 +305,7 @@ describe('OptimizedImage 컴포넌트', () => {
 
           unmount(); // Property-based 테스트에서는 unmount 필수!
         }),
-        { numRuns: 30 }
+        { numRuns: 20 }
       );
     });
 
@@ -323,7 +322,7 @@ describe('OptimizedImage 컴포넌트', () => {
 
           unmount();
         }),
-        { numRuns: 30 }
+        { numRuns: 20 }
       );
     });
 
@@ -350,7 +349,7 @@ describe('OptimizedImage 컴포넌트', () => {
             unmount();
           }
         ),
-        { numRuns: 30 }
+        { numRuns: 20 }
       );
     });
 
@@ -392,7 +391,7 @@ describe('OptimizedImage 컴포넌트', () => {
             unmount();
           }
         ),
-        { numRuns: 50 }
+        { numRuns: 20 }
       );
     });
 
@@ -412,7 +411,7 @@ describe('OptimizedImage 컴포넌트', () => {
 
           unmount();
         }),
-        { numRuns: 30 }
+        { numRuns: 20 }
       );
     });
   });

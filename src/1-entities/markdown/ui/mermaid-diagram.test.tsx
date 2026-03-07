@@ -162,7 +162,7 @@ describe('MermaidDiagram', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 

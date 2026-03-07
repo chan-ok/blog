@@ -1,6 +1,7 @@
 import { Frontmatter } from '@/1-entities/markdown/model/markdown.schema';
 import Button from '@/5-shared/components/ui/button';
 import Link from '@/5-shared/components/ui/link';
+import TagChip from './tag-chip';
 
 import { format, isValid } from 'date-fns';
 import { Link2 } from 'lucide-react';
@@ -14,6 +15,8 @@ export default function PostCompactCard({
   createdAt,
   path,
   thumbnail,
+  tags,
+  locale,
 }: Props) {
   // 썸네일이 없을 경우 기본 이미지 사용
   const thumbnailUrl = thumbnail || '/image/context.png';
@@ -44,6 +47,13 @@ export default function PostCompactCard({
           <time className="text-xs text-gray-500 dark:text-gray-400">
             {formattedDate}
           </time>
+          {tags && tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <TagChip key={tag} tag={tag} locale={locale} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Read More 버튼 */}
