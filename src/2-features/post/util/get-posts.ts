@@ -2,7 +2,17 @@ import { api } from '@/5-shared/config/api';
 import { compareDesc } from 'date-fns';
 
 import { Frontmatter as PostInfo } from '@/1-entities/markdown/model/markdown.schema';
-import { GetPostsProps, PagingPosts } from '../model/post.schema';
+import {
+  GetAvailableTagsProps,
+  GetPostsProps,
+  PagingPosts,
+} from '../model/post.schema';
+
+/** index.json 항목에서 tags만 추출하기 위한 최소 타입 */
+interface IndexItem {
+  published?: boolean;
+  tags?: string[];
+}
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   const { locale, page = 0, size = 10, tags = [] } = props;
@@ -53,7 +63,8 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       .filter((post) => post.published)
       .filter(
         (post) =>
-          tags.length === 0 || tags.some((tag) => post.tags.includes(tag))
+          tags.length === 0 ||
+          tags.some((tag) => (post.tags ?? []).includes(tag))
       );
 
     const startIndex = page * size;
@@ -74,5 +85,49 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       page,
       size,
     };
+  }
+}
+
+/**
+ * locale에 해당하는 index.json에서 published 포스트의 태그를 모아
+ * 중복 제거 후 정렬된 배열로 반환합니다.
+ */
+function hasValidBaseURL(url: unknown): url is string {
+  return (
+    typeof url === 'string' && url.trim().length > 0 && url !== 'undefined'
+  );
+}
+
+export async function getAvailableTags(
+  props: GetAvailableTagsProps
+): Promise<string[]> {
+  const { locale } = props;
+  const baseURL = import.meta.env.VITE_GIT_RAW_URL;
+
+  if (!hasValidBaseURL(baseURL)) {
+    console.error('VITE_GIT_RAW_URL is not defined');
+    return [];
+  }
+
+  try {
+    const response = await api.get<IndexItem[]>(`/${locale}/index.json`, {
+      baseURL,
+    });
+
+    if (response.axios.status !== 200 || !response.data) {
+      return [];
+    }
+
+    const tags = response.data
+      .filter((post) => post.published)
+      .flatMap((post) => post.tags ?? [])
+      .filter(
+        (tag): tag is string => typeof tag === 'string' && tag.length > 0
+      );
+
+    return [...new Set(tags)].toSorted((a, b) => a.localeCompare(b));
+  } catch (error) {
+    console.error('Failed to fetch available tags:', error);
+    return [];
   }
 }

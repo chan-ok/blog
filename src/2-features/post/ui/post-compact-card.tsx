@@ -21,10 +21,10 @@ export default function PostCompactCard({
   // 썸네일이 없을 경우 기본 이미지 사용
   const thumbnailUrl = thumbnail || '/image/context.png';
 
-  // 날짜 유효성 검사
-  const formattedDate = isValid(createdAt)
-    ? format(createdAt, 'yyyy-MM-dd')
-    : 'Invalid Date';
+  // index.json 등 JSON에서 오는 createdAt은 문자열이므로 Date로 정규화
+  const date =
+    createdAt instanceof Date ? createdAt : new Date(createdAt as string);
+  const formattedDate = isValid(date) ? format(date, 'yyyy-MM-dd') : '—';
 
   return (
     <article className="group flex h-72 flex-col overflow-hidden rounded-lg border border-zinc-100 bg-white shadow transition-shadow hover:shadow-lg dark:border-zinc-800 dark:bg-gray-800 md:h-80">
