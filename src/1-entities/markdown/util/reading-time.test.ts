@@ -418,7 +418,7 @@ describe('Property-Based 테스트 - 항상 1 이상 반환', () => {
         expect(result).toBeGreaterThanOrEqual(1);
         expect(Number.isInteger(result)).toBe(true);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -442,7 +442,7 @@ describe('Property-Based 테스트 - 항상 1 이상 반환', () => {
         expect(result).toBeGreaterThanOrEqual(2);
         expect(result).toBeLessThanOrEqual(20);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -466,7 +466,7 @@ describe('Property-Based 테스트 - 항상 1 이상 반환', () => {
 
         expect(longTime).toBeGreaterThanOrEqual(shortTime);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });

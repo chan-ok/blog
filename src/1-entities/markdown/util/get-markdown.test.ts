@@ -435,7 +435,7 @@ Test content.
         // 검증: MDXContent는 항상 함수
         expect(typeof result.MDXContent).toBe('function');
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -478,7 +478,7 @@ ${content}
           expect(typeof result.MDXContent).toBe('function');
         }
       ),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });

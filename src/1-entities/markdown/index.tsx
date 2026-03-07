@@ -4,14 +4,21 @@ import { AlertCircle, RotateCcw } from 'lucide-react';
 
 import getMarkdown from './util/get-markdown';
 import setMdxComponents from './util/set-md-components';
+import { Frontmatter } from './model/markdown.schema';
 
 interface MDComponentProps {
   path: string;
   baseUrl?: string;
   onParseStatus?: (status: 'loading' | 'success' | 'error') => void;
+  onFrontmatterLoaded?: (frontmatter: Frontmatter) => void;
 }
 
-export default function MDComponent({ path, baseUrl, onParseStatus }: MDComponentProps) {
+export default function MDComponent({
+  path,
+  baseUrl,
+  onParseStatus,
+  onFrontmatterLoaded,
+}: MDComponentProps) {
   const { t } = useTranslation();
 
   // 상태: MDX 데이터
@@ -40,6 +47,7 @@ export default function MDComponent({ path, baseUrl, onParseStatus }: MDComponen
           MDXContent: result.MDXContent,
           frontmatter: result.frontmatter,
         });
+        onFrontmatterLoaded?.(result.frontmatter);
         onParseStatus?.('success');
       })
       .catch((err) => {
@@ -47,7 +55,7 @@ export default function MDComponent({ path, baseUrl, onParseStatus }: MDComponen
         onParseStatus?.('error');
         console.error('Failed to fetch markdown:', err);
       });
-  }, [path, baseUrl, onParseStatus]);
+  }, [path, baseUrl, onParseStatus, onFrontmatterLoaded]);
 
   // 이벤트 핸들러: 재시도
   const handleRetry = async () => {
@@ -60,6 +68,7 @@ export default function MDComponent({ path, baseUrl, onParseStatus }: MDComponen
         MDXContent: result.MDXContent,
         frontmatter: result.frontmatter,
       });
+      onFrontmatterLoaded?.(result.frontmatter);
       onParseStatus?.('success');
     } catch (err) {
       setError(err as Error);

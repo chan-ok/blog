@@ -5,15 +5,17 @@ import { getPosts } from '../util/get-posts';
 
 interface PostCardListProps {
   locale: LocaleType;
+  /** 태그 필터 (페이지에서 search params 파싱 후 전달). FSD 준수를 위해 feature는 route를 import하지 않음 */
+  tags?: string[];
 }
 
-export default function PostCardList({ locale }: PostCardListProps) {
+export default function PostCardList({ locale, tags = [] }: PostCardListProps) {
   const { t } = useTranslation();
 
   // useSuspenseQuery로 데이터 가져오기
   const { data: pagingPosts } = useSuspenseQuery({
-    queryKey: ['posts', locale],
-    queryFn: () => getPosts({ locale }),
+    queryKey: ['posts', locale, tags],
+    queryFn: () => getPosts({ locale, tags }),
     retry: 3, // 최대 3회 재시도
     staleTime: 1000 * 60 * 5, // 5분간 캐시
   });
