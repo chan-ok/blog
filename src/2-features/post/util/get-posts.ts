@@ -8,6 +8,20 @@ import {
   PagingPosts,
 } from '../model/post.schema';
 
+/** 개발 환경에서만 노출하는 태그 (로컬에서 test/draft 포스트 확인용, 프로덕션에서는 숨김) */
+const DEV_ONLY_TAGS = ['test', 'draft'] as const;
+
+/** 프로덕션일 때 true. Vite: import.meta.env.DEV === false */
+function isProduction(): boolean {
+  return !import.meta.env.DEV;
+}
+
+/** 포스트가 dev-only 태그를 하나라도 가지면 true */
+function hasDevOnlyTag(tags: string[] | undefined): boolean {
+  if (!tags?.length) return false;
+  return tags.some((tag) => (DEV_ONLY_TAGS as readonly string[]).includes(tag));
+}
+
 /** index.json 항목에서 tags만 추출하기 위한 최소 타입 */
 interface IndexItem {
   published?: boolean;
@@ -50,7 +64,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       throw new Error('Failed to fetch posts: empty response');
     }
 
-    const filteredPosts = response.data
+    let filteredPosts = response.data
       .map((post) => ({
         ...post,
         // 상대 경로인 thumbnail을 절대 URL로 변환
@@ -60,12 +74,19 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
             : post.thumbnail,
       }))
       .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))
-      .filter((post) => post.published)
-      .filter(
-        (post) =>
-          tags.length === 0 ||
-          tags.some((tag) => (post.tags ?? []).includes(tag))
+      .filter((post) => post.published);
+
+    // 프로덕션에서는 test/draft 태그가 있는 포스트는 노출하지 않음
+    if (isProduction()) {
+      filteredPosts = filteredPosts.filter(
+        (post) => !hasDevOnlyTag(post.tags ?? [])
       );
+    }
+
+    filteredPosts = filteredPosts.filter(
+      (post) =>
+        tags.length === 0 || tags.some((tag) => (post.tags ?? []).includes(tag))
+    );
 
     const startIndex = page * size;
     const endIndex = Math.min(startIndex + size, filteredPosts.length);
@@ -118,8 +139,13 @@ export async function getAvailableTags(
       return [];
     }
 
-    const tags = response.data
-      .filter((post) => post.published)
+    let posts = response.data.filter((post) => post.published);
+    // 프로덕션에서는 test/draft 태그가 있는 포스트 제외 후 태그 수집 (목록과 동일한 노출 기준)
+    if (isProduction()) {
+      posts = posts.filter((post) => !hasDevOnlyTag(post.tags ?? []));
+    }
+
+    const tags = posts
       .flatMap((post) => post.tags ?? [])
       .filter(
         (tag): tag is string => typeof tag === 'string' && tag.length > 0

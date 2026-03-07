@@ -84,7 +84,7 @@ function LocaleLayout() {
 
   return (
     <ThemeProvider>
-      <LocaleProvider locale={locale as LocaleType}>
+      <LocaleProvider locale={parseLocale(locale)}>
         <div className="flex flex-col min-h-screen bg-white text-gray-900 transition-colors duration-200 dark:bg-gray-900 dark:text-gray-100">
           <Header />
           <main className="flex-1">

@@ -1,18 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
-import { act } from 'react';
-import {
-  RouterProvider,
-  createMemoryHistory,
-  createRootRoute,
-  createRouter,
-  createRoute,
-} from '@tanstack/react-router';
+import { screen, within } from '@testing-library/react';
 import fc from 'fast-check';
 
 import TagChip from './tag-chip';
 import { useLocaleStore } from '@/5-shared/stores/locale-store';
 import type { LocaleType } from '@/5-shared/types/common.schema';
+import { renderWithRouter } from '@/5-shared/test-utils/render-with-router';
 
 /**
  * ============================================================================
@@ -29,44 +22,6 @@ import type { LocaleType } from '@/5-shared/types/common.schema';
  * 4. 접근성 (aria-label)
  * 5. 다양한 locale에서 정상 동작
  */
-
-// ============================================================================
-// 테스트 유틸리티
-// ============================================================================
-
-/**
- * TanStack Router 환경에서 컴포넌트를 렌더링하는 헬퍼 함수
- */
-async function renderWithRouter(ui: React.ReactElement) {
-  const rootRoute = createRootRoute({
-    component: () => ui,
-  });
-
-  const indexRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: '/$',
-    component: () => ui,
-  });
-
-  const routeTree = rootRoute.addChildren([indexRoute]);
-
-  const history = createMemoryHistory({
-    initialEntries: ['/'],
-  });
-
-  const router = createRouter({
-    routeTree,
-    history,
-  });
-
-  let result;
-  await act(async () => {
-    result = render(<RouterProvider router={router} />);
-    await router.load();
-  });
-
-  return result!;
-}
 
 // ============================================================================
 // Property-Based 테스트를 위한 데이터 생성기

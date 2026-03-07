@@ -70,4 +70,39 @@ describe('getAvailableTags', () => {
 
     expect(api.get).toHaveBeenCalledWith('/en/index.json', { baseURL });
   });
+
+  it('개발 환경에서는 test/draft 태그가 목록에 포함될 수 있다', async () => {
+    const origDev = import.meta.env.DEV;
+    import.meta.env.DEV = true;
+
+    mockApiGet([
+      { published: true, tags: ['react', 'draft'] },
+      { published: true, tags: ['test'] },
+    ]);
+
+    const result = await getAvailableTags({ locale: 'ko' });
+
+    expect(result).toContain('draft');
+    expect(result).toContain('test');
+    expect(result).toContain('react');
+    import.meta.env.DEV = origDev;
+  });
+
+  it('프로덕션 환경에서는 test/draft 태그가 있은 포스트를 제외한 태그만 반환해야 한다', async () => {
+    const origDev = import.meta.env.DEV;
+    import.meta.env.DEV = false;
+
+    mockApiGet([
+      { published: true, tags: ['react', 'nextjs'] },
+      { published: true, tags: ['react', 'draft'] },
+      { published: true, tags: ['test'] },
+    ]);
+
+    const result = await getAvailableTags({ locale: 'ko' });
+
+    expect(result).toEqual(['nextjs', 'react']);
+    expect(result).not.toContain('draft');
+    expect(result).not.toContain('test');
+    import.meta.env.DEV = origDev;
+  });
 });

@@ -50,4 +50,68 @@ describe('getPosts', () => {
     expect(result.posts[0].title).toBe('With tags post');
     expect(result.total).toBe(1);
   });
+
+  it('개발 환경(DEV)에서는 test/draft 태그가 있는 포스트가 포함되어야 한다', async () => {
+    const origDev = import.meta.env.DEV;
+    import.meta.env.DEV = true;
+
+    mockApiGet([
+      {
+        title: 'Draft post',
+        path: ['2024', 'draft'],
+        tags: ['draft'],
+        createdAt: '2024-01-01T00:00:00.000Z',
+        published: true,
+      },
+      {
+        title: 'Test post',
+        path: ['2024', 'test'],
+        tags: ['test'],
+        createdAt: '2024-01-02T00:00:00.000Z',
+        published: true,
+      },
+    ]);
+
+    const result = await getPosts({ locale: 'ko' });
+
+    expect(result.posts).toHaveLength(2);
+    expect(result.total).toBe(2);
+    import.meta.env.DEV = origDev;
+  });
+
+  it('프로덕션 환경에서는 test/draft 태그가 있는 포스트가 제외되어야 한다', async () => {
+    const origDev = import.meta.env.DEV;
+    import.meta.env.DEV = false;
+
+    mockApiGet([
+      {
+        title: 'Normal post',
+        path: ['2024', 'normal'],
+        tags: ['react'],
+        createdAt: '2024-01-01T00:00:00.000Z',
+        published: true,
+      },
+      {
+        title: 'Draft post',
+        path: ['2024', 'draft'],
+        tags: ['draft'],
+        createdAt: '2024-01-02T00:00:00.000Z',
+        published: true,
+      },
+      {
+        title: 'Test post',
+        path: ['2024', 'test'],
+        tags: ['test'],
+        createdAt: '2024-01-03T00:00:00.000Z',
+        published: true,
+      },
+    ]);
+
+    const result = await getPosts({ locale: 'ko' });
+
+    expect(result.posts).toHaveLength(1);
+    expect(result.posts[0].title).toBe('Normal post');
+    expect(result.total).toBe(1);
+    import.meta.env.DEV = origDev;
+  });
 });

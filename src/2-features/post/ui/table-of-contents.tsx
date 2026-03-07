@@ -106,7 +106,12 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
       <ul className="space-y-1">
         {headings.map(({ id, text, level }, index) => {
           const isActive = activeId === id;
-          const isH3 = level === 3;
+          const indentClass =
+            level === 1
+              ? 'pl-2 text-sm font-medium'
+              : level === 2
+                ? 'pl-4 text-sm'
+                : 'pl-7 text-sm';
 
           return (
             <li key={`${id}-${index}`}>
@@ -115,7 +120,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                 className={`
                   block w-full text-left transition-colors py-1
                   border-l-2
-                  ${isH3 ? 'pl-6 text-sm' : 'pl-2 text-sm'}
+                  ${indentClass}
                   ${
                     isActive
                       ? 'font-semibold text-blue-600 border-blue-600 dark:text-blue-400 dark:border-blue-400'
@@ -135,8 +140,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
   return (
     <>
-      {/* 모바일: 접이식 */}
-      <div className="mb-8 lg:hidden">
+      {/* 모바일/중간: 접이식 (xl=1280px 미만에서 표시) */}
+      <div className="mb-8 xl:hidden">
         <button
           onClick={handleToggle}
           className="flex w-full items-center justify-between rounded-lg bg-white px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
@@ -165,8 +170,10 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
         {isOpen && <div className="mt-2 rounded-lg p-4">{tocList}</div>}
       </div>
 
-      {/* 데스크탑: 사이드바 (sticky) */}
-      <aside className="sticky top-24 hidden max-h-[calc(100vh-8rem)] overflow-y-auto lg:block">
+      {/* 데스크탑: fixed 사이드바 — 포스트 콘텐츠(max-w-4xl=56rem) 우측에 배치
+          xl(1280px): 1rem 간격, 너비 160px(w-40) — 우측 여백 16px
+          2xl(1536px): 2.25rem 간격, 너비 240px(w-60) — 우측 여백 44px */}
+      <aside className="fixed top-24 hidden max-h-[calc(100vh-8rem)] overflow-y-auto xl:block xl:w-40 xl:left-[calc(50%+28rem+1rem)] 2xl:w-60 2xl:left-[calc(50%+28rem+2.25rem)]">
         <div className="p-4">
           <h2 className="mb-3 font-semibold text-gray-900 dark:text-gray-100">
             Table of Contents

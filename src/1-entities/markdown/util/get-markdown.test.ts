@@ -251,10 +251,9 @@ Minimal content.
 
     // 검증: 필수 필드만 있어도 동작
     expect(result.frontmatter.title).toBe('Minimal Post');
-    // gray-matter는 frontmatter에 없는 필드를 undefined로 설정
-    // Zod 스키마 기본값은 파싱 단계에서 적용되지 않음
-    expect(result.frontmatter.tags).toBeUndefined();
-    expect(result.frontmatter.published).toBeUndefined();
+    // FrontmatterSchema.parse()가 Zod 기본값을 적용
+    expect(result.frontmatter.tags).toEqual([]);
+    expect(result.frontmatter.published).toBe(false);
   });
 
   it('GFM(GitHub Flavored Markdown) 문법을 지원해야 한다', async () => {
@@ -345,11 +344,13 @@ No frontmatter here.
 
     const result = await getMarkdown('no-frontmatter/Post.md');
 
-    // 검증: frontmatter는 빈 객체
-    expect(result.frontmatter).toEqual({});
-
-    // 검증: content는 전체 본문
-    expect(result.content).toContain('# Just Markdown');
+    // FrontmatterSchema.partial(): 필수 필드 없어도 기본값만 적용
+    expect(result.frontmatter.title).toBeUndefined();
+    expect(result.frontmatter.path).toBeUndefined();
+    expect(result.frontmatter.createdAt).toBeUndefined();
+    // default 값은 적용됨
+    expect(result.frontmatter.tags).toEqual([]);
+    expect(result.frontmatter.published).toBe(false);
   });
 });
 

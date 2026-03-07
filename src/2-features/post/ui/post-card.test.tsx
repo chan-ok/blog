@@ -1,121 +1,180 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
-import {
-  RouterProvider,
-  createMemoryHistory,
-  createRootRoute,
-  createRouter,
-  createRoute,
-} from '@tanstack/react-router';
+import { screen, cleanup } from '@testing-library/react';
 import fc from 'fast-check';
 
-import PostCompactCard from './post-compact-card';
+import PostCard from './post-card';
+import { renderWithRouter } from '@/5-shared/test-utils/render-with-router';
 
 /**
  * ============================================================================
- * PostCompactCard 컴포넌트 테스트
+ * PostCard 컴포넌트 테스트
  * ============================================================================
  *
  * ## 테스트 목적
- * 포스트 카드 컴포넌트의 썸네일, 제목, 날짜, 링크 렌더링을 검증합니다.
+ * variant 패턴으로 통합된 포스트 카드 컴포넌트의 렌더링을 검증합니다.
  *
  * ## 검증 항목
+ * [basic variant]
  * 1. 기본 렌더링 (제목, 날짜, 썸네일, 버튼)
- * 2. 기본 이미지 사용 (/image/context.png)
- * 3. 카드 높이 (h-72)
- * 4. 썸네일 높이 (h-48)
- * 5. 수직 레이아웃 (flex-col)
- * 6. 썸네일 hover 효과
- * 7. 다크 모드 스타일
- * 8. 접근성 (article, time, img alt)
- * 9. Property-based 테스트 (다양한 입력 조합)
+ * 2. 태그가 있을 때 태그 칩이 렌더링됨
+ * 3. 태그가 없을 때 태그 칩이 렌더링되지 않음
+ * 4. 여러 태그가 모두 표시됨
+ * 5. 태그 칩이 날짜 아래에 표시됨
+ *
+ * [compact variant]
+ * 1. 제목, 날짜, 썸네일, 버튼이 올바르게 렌더링됨
+ * 2. 썸네일이 없을 경우 기본 이미지(/image/context.png) 사용
+ * 3. 썸네일이 있으면 해당 이미지 사용
+ * 4. 올바른 포스트 경로 생성
+ * 5. 다크 모드 스타일 포함
+ * 6. 접근성: article, time, img alt
+ * 7. 태그 렌더링
+ * 8. Property-based 테스트 (다양한 입력 조합)
  */
-
-// ============================================================================
-// 테스트 유틸리티
-// ============================================================================
-
-/**
- * TanStack Router 환경에서 컴포넌트를 렌더링하는 헬퍼 함수
- */
-async function renderWithRouter(ui: React.ReactElement) {
-  // 이전 테스트의 DOM 정리
-  cleanup();
-
-  const rootRoute = createRootRoute({
-    component: () => ui,
-  });
-
-  const indexRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: '/',
-    component: () => ui,
-  });
-
-  const routeTree = rootRoute.addChildren([indexRoute]);
-
-  const router = createRouter({
-    routeTree,
-    history: createMemoryHistory({ initialEntries: ['/'] }),
-  });
-
-  const result = render(<RouterProvider router={router} />);
-
-  // Router가 초기화될 때까지 대기
-  await screen.findByRole('article');
-
-  return result;
-}
 
 // ============================================================================
 // Property-Based 테스트를 위한 데이터 생성기
 // ============================================================================
 
-/**
- * 포스트 제목 생성기 (3~100자, 앞뒤 공백 없음)
- */
 const titleArb = fc
   .string({ minLength: 3, maxLength: 100 })
   .map((s) => s.trim())
   .filter((s) => s.length >= 3);
 
-/**
- * 날짜 생성기 (2020-01-01 ~ 2026-12-31)
- */
 const dateArb = fc.date({
   min: new Date('2020-01-01'),
   max: new Date('2026-12-31'),
 });
 
-/**
- * 경로 생성기 (예: ['2024', '01', 'my-post'])
- */
 const pathArb = fc.array(fc.string({ minLength: 1, maxLength: 20 }), {
   minLength: 1,
   maxLength: 5,
 });
 
-/**
- * 썸네일 URL 생성기 (undefined 포함)
- */
 const thumbnailArb = fc.option(
   fc.webUrl({ withFragments: false, withQueryParameters: false }),
   { nil: undefined }
 );
 
-/**
- * locale 생성기
- */
 const localeArb = fc.constantFrom('ko', 'en', 'ja');
 
 // ============================================================================
-// Unit 테스트
+// variant="basic" 테스트
 // ============================================================================
 
-describe('PostCompactCard - Unit 테스트', () => {
-  it('제목, 날짜, 썸네일이 올바르게 렌더링되어야 한다', async () => {
+describe('PostCard variant="basic" - Unit 테스트', () => {
+  it('기본 요소들이 올바르게 렌더링되어야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="basic"
+        title="테스트 포스트"
+        createdAt={new Date('2024-01-15')}
+        path={['2024', '01', 'test-post']}
+        tags={[]}
+        published={true}
+        locale="ko"
+      />
+    );
+
+    expect(screen.getByText('테스트 포스트')).toBeInTheDocument();
+    expect(screen.getByText('2024-01-15')).toBeInTheDocument();
+  });
+
+  it('태그가 있을 때 태그 칩이 렌더링되어야 한다', async () => {
+    cleanup();
+    await renderWithRouter(
+      <PostCard
+        variant="basic"
+        title="태그 테스트"
+        createdAt={new Date('2024-01-15')}
+        path={['2024', '01', 'tag-test']}
+        tags={['react', 'typescript']}
+        published={true}
+        locale="ko"
+      />
+    );
+
+    expect(screen.getByText('react')).toBeInTheDocument();
+    expect(screen.getByText('typescript')).toBeInTheDocument();
+  });
+
+  it('태그가 없을 때 태그 칩이 렌더링되지 않아야 한다', async () => {
+    cleanup();
+    await renderWithRouter(
+      <PostCard
+        variant="basic"
+        title="태그 없음 테스트"
+        createdAt={new Date('2024-01-15')}
+        path={['2024', '01', 'no-tags']}
+        tags={[]}
+        published={true}
+        locale="ko"
+      />
+    );
+
+    const tagLinks = document.querySelectorAll('a[href*="tags="]');
+    expect(tagLinks.length).toBe(0);
+  });
+
+  it('여러 태그가 모두 표시되어야 한다', async () => {
+    cleanup();
+    await renderWithRouter(
+      <PostCard
+        variant="basic"
+        title="다중 태그 테스트"
+        createdAt={new Date('2024-01-15')}
+        path={['2024', '01', 'multi-tags']}
+        tags={['react', 'typescript', 'nextjs', 'tailwind']}
+        published={true}
+        locale="ko"
+      />
+    );
+
+    expect(screen.getByText('react')).toBeInTheDocument();
+    expect(screen.getByText('typescript')).toBeInTheDocument();
+    expect(screen.getByText('nextjs')).toBeInTheDocument();
+    expect(screen.getByText('tailwind')).toBeInTheDocument();
+  });
+
+  it('태그 칩이 날짜 아래에 표시되어야 한다', async () => {
+    cleanup();
+    const { container } = await renderWithRouter(
+      <PostCard
+        variant="basic"
+        title="태그 위치 테스트"
+        createdAt={new Date('2024-01-15')}
+        path={['2024', '01', 'tag-position']}
+        tags={['react']}
+        published={true}
+        locale="ko"
+      />
+    );
+
+    const dateElement = screen.getByText('2024-01-15');
+    const tagElement = screen.getByText('react');
+
+    const dateIndex = Array.from(container.querySelectorAll('*')).indexOf(
+      dateElement
+    );
+    const tagIndex = Array.from(container.querySelectorAll('*')).indexOf(
+      tagElement
+    );
+
+    expect(tagIndex).toBeGreaterThan(dateIndex);
+  });
+});
+
+// ============================================================================
+// variant="compact" 테스트
+// ============================================================================
+
+describe('PostCard variant="compact" - Unit 테스트', () => {
+  it('제목, 날짜, 썸네일이 올바르게 렌더링되어야 한다', async () => {
+    cleanup();
+    await renderWithRouter(
+      <PostCard
+        variant="compact"
         title="테스트 포스트 제목"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'test-post']}
@@ -125,25 +184,20 @@ describe('PostCompactCard - Unit 테스트', () => {
       />
     );
 
-    // 제목 확인
     expect(
       screen.getByRole('heading', { name: '테스트 포스트 제목' })
     ).toBeInTheDocument();
-
-    // 날짜 확인
     expect(screen.getByText('2024-01-15')).toBeInTheDocument();
-
-    // 썸네일 확인
     const img = screen.getByRole('img', { name: '테스트 포스트 제목' });
     expect(img).toBeInTheDocument();
-
-    // Read More 버튼 확인
     expect(screen.getByText('Read More')).toBeInTheDocument();
   });
 
   it('썸네일이 없을 경우 기본 이미지(/image/context.png)를 사용해야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="썸네일 없는 포스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'no-thumbnail']}
@@ -158,8 +212,10 @@ describe('PostCompactCard - Unit 테스트', () => {
   });
 
   it('썸네일이 제공되면 해당 이미지를 사용해야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="썸네일 있는 포스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'with-thumbnail']}
@@ -174,25 +230,11 @@ describe('PostCompactCard - Unit 테스트', () => {
     expect(img).toHaveAttribute('src', '/images/custom-thumbnail.jpg');
   });
 
-  it('카드 높이가 h-72이어야 한다', async () => {
-    await renderWithRouter(
-      <PostCompactCard
-        title="높이 테스트"
-        createdAt={new Date('2024-01-15')}
-        path={['2024', '01', 'height-test']}
-        tags={[]}
-        published={true}
-        locale="ko"
-      />
-    );
-
-    const article = screen.getByRole('article');
-    expect(article).toBeInTheDocument();
-  });
-
   it('올바른 포스트 경로를 생성해야 한다', async () => {
+    cleanup();
     const { container } = await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="경로 테스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'path-test']}
@@ -202,14 +244,15 @@ describe('PostCompactCard - Unit 테스트', () => {
       />
     );
 
-    // Link 컴포넌트가 렌더링한 a 태그 확인
     const link = container.querySelector('a[href*="/posts/2024/01/path-test"]');
     expect(link).toBeInTheDocument();
   });
 
   it('다크 모드 스타일을 포함해야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="다크 모드 테스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'dark-mode']}
@@ -224,8 +267,10 @@ describe('PostCompactCard - Unit 테스트', () => {
   });
 
   it('접근성: article 시맨틱 태그를 사용해야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="접근성 테스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'accessibility']}
@@ -239,25 +284,11 @@ describe('PostCompactCard - Unit 테스트', () => {
     expect(article.tagName).toBe('ARTICLE');
   });
 
-  it('접근성: 이미지에 alt 속성이 있어야 한다', async () => {
-    await renderWithRouter(
-      <PostCompactCard
-        title="이미지 alt 테스트"
-        createdAt={new Date('2024-01-15')}
-        path={['2024', '01', 'img-alt']}
-        tags={[]}
-        published={true}
-        locale="ko"
-      />
-    );
-
-    const img = screen.getByRole('img', { name: '이미지 alt 테스트' });
-    expect(img).toHaveAttribute('alt', '이미지 alt 테스트');
-  });
-
   it('접근성: 날짜에 time 시맨틱 태그를 사용해야 한다', async () => {
+    cleanup();
     const { container } = await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="날짜 시맨틱 테스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'time-semantic']}
@@ -273,8 +304,10 @@ describe('PostCompactCard - Unit 테스트', () => {
   });
 
   it('이미지 lazy loading을 사용해야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="Lazy Loading 테스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'lazy-loading']}
@@ -289,8 +322,10 @@ describe('PostCompactCard - Unit 테스트', () => {
   });
 
   it('태그가 있을 때 태그 칩이 렌더링되어야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="태그 테스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'tag-test']}
@@ -305,8 +340,10 @@ describe('PostCompactCard - Unit 테스트', () => {
   });
 
   it('태그가 없을 때 태그 칩이 렌더링되지 않아야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="태그 없음 테스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'no-tags']}
@@ -321,8 +358,10 @@ describe('PostCompactCard - Unit 테스트', () => {
   });
 
   it('여러 태그가 모두 표시되어야 한다', async () => {
+    cleanup();
     await renderWithRouter(
-      <PostCompactCard
+      <PostCard
+        variant="compact"
         title="다중 태그 테스트"
         createdAt={new Date('2024-01-15')}
         path={['2024', '01', 'multi-tags']}
@@ -339,10 +378,10 @@ describe('PostCompactCard - Unit 테스트', () => {
 });
 
 // ============================================================================
-// Property-Based 테스트
+// variant="compact" Property-Based 테스트
 // ============================================================================
 
-describe('PostCompactCard - Property-Based 테스트', () => {
+describe('PostCard variant="compact" - Property-Based 테스트', () => {
   it('다양한 입력 조합에서 올바르게 렌더링되어야 한다', async () => {
     await fc.assert(
       fc.asyncProperty(
@@ -353,7 +392,8 @@ describe('PostCompactCard - Property-Based 테스트', () => {
         localeArb,
         async (title, createdAt, path, thumbnail, locale) => {
           const { unmount } = await renderWithRouter(
-            <PostCompactCard
+            <PostCard
+              variant="compact"
               title={title}
               createdAt={createdAt}
               path={path}
@@ -364,29 +404,20 @@ describe('PostCompactCard - Property-Based 테스트', () => {
             />
           );
 
-          // 제목이 렌더링되어야 함
-          // 접근성 이름(accessible name)은 WAI-ARIA spec에 따라 공백이 정규화됨
           const normalizedTitle = title.replace(/\s+/g, ' ');
           expect(
             screen.getByRole('heading', { name: normalizedTitle })
           ).toBeInTheDocument();
 
-          // 이미지가 렌더링되어야 함 (alt의 접근성 이름도 공백 정규화됨)
           const img = screen.getByRole('img', { name: normalizedTitle });
           expect(img).toBeInTheDocument();
 
-          // 썸네일이 없으면 기본 이미지 사용
           const expectedSrc =
             thumbnail === undefined ? '/image/context.png' : thumbnail;
           expect(img).toHaveAttribute('src', expectedSrc);
 
-          // Read More 버튼이 렌더링되어야 함
           expect(screen.getByText('Read More')).toBeInTheDocument();
 
-          const article = screen.getByRole('article');
-          expect(article).toBeInTheDocument();
-
-          // Property-based 테스트에서는 unmount 필수
           unmount();
         }
       ),
@@ -398,7 +429,8 @@ describe('PostCompactCard - Property-Based 테스트', () => {
     await fc.assert(
       fc.asyncProperty(dateArb, async (createdAt) => {
         const { unmount } = await renderWithRouter(
-          <PostCompactCard
+          <PostCard
+            variant="compact"
             title="날짜 포맷 테스트"
             createdAt={createdAt}
             path={['2024', '01', 'date-format']}
@@ -408,7 +440,6 @@ describe('PostCompactCard - Property-Based 테스트', () => {
           />
         );
 
-        // yyyy-MM-dd 형식 확인
         const year = createdAt.getFullYear();
         const month = String(createdAt.getMonth() + 1).padStart(2, '0');
         const day = String(createdAt.getDate()).padStart(2, '0');

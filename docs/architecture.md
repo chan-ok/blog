@@ -582,6 +582,15 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
 }
 ```
 
+#### 개발 전용 태그 (test, draft)
+
+로컬 개발 환경에서만 `test`, `draft` 태그가 있는 포스트를 노출하고, 프로덕션에서는 숨깁니다.
+
+- **개발 환경** (`pnpm dev`, `import.meta.env.DEV === true`): `test`/`draft` 태그가 있어도 목록·태그 필터에 포함.
+- **프로덕션** (빌드 배포): `test`/`draft` 중 하나라도 가진 포스트는 목록에서 제외되고, `getAvailableTags` 결과에도 포함되지 않음.
+
+구현 위치: `src/2-features/post/util/get-posts.ts` (`DEV_ONLY_TAGS`, `isProduction()`, `hasDevOnlyTag()`). 포스트 필터와 사용 가능 태그 수집 모두 동일 기준 적용.
+
 ### 상세 페이지 태그 표시
 
 포스트 상세 페이지에서도 frontmatter의 태그를 표시합니다.

@@ -9,12 +9,15 @@ import matter from 'gray-matter';
 
 import { api } from '@/5-shared/config/api';
 
-import { Frontmatter } from '../model/markdown.schema';
+import { FrontmatterSchema, Frontmatter } from '../model/markdown.schema';
 import remarkObsidianImage from './remark-obsidian-image';
 import rehypeUnwrapImages from './rehype-unwrap-images';
 
+// partial(): about 페이지(README)처럼 frontmatter 일부 필드가 없는 파일도 지원
+export type MarkdownFrontmatter = Partial<Frontmatter>;
+
 interface MarkdownElement {
-  frontmatter: Frontmatter;
+  frontmatter: MarkdownFrontmatter;
   content: string;
   source: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,7 +78,8 @@ export default async function getMarkdown(
 
   return {
     content,
-    frontmatter: data as unknown as Frontmatter,
+    // partial(): 필수 필드가 없는 파일(README 등)에서도 오류 없이 파싱
+    frontmatter: FrontmatterSchema.partial().parse(data),
     source: response.data,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     MDXContent: MDXContent as React.ComponentType<{ components?: any }>,

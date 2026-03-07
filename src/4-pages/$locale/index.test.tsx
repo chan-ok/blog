@@ -72,7 +72,11 @@ describe('$locale/index 라우트 (홈 페이지)', () => {
 
     const { getPosts } = await import('@/2-features/post/util/get-posts');
 
-    const result = await loader?.({ params: { locale: 'ko' } } as any);
+    // TanStack Router loader 파라미터 타입 추출: as unknown as T는 as any보다 명시적
+    type LoaderArgs = Parameters<NonNullable<typeof loader>>[0];
+    const result = await loader?.({
+      params: { locale: 'ko' },
+    } as unknown as LoaderArgs);
 
     expect(getPosts).toHaveBeenCalledWith({ locale: 'ko', size: 3 });
     expect(result).toHaveProperty('postsPromise');
