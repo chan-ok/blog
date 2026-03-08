@@ -6,6 +6,7 @@ import MDComponent, { MarkdownFrontmatter } from '@/1-entities/markdown';
 import TableOfContents from '@/2-features/post/ui/table-of-contents';
 import TagChip from '@/2-features/post/ui/tag-chip';
 import Reply from '@/5-shared/components/reply';
+import ScrollProgressBar from '@/5-shared/components/scroll-progress-bar';
 import { parseLocale } from '@/5-shared/types/common.schema';
 
 interface Heading {
@@ -80,6 +81,8 @@ function PostDetailPage() {
 
   return (
     <div>
+      {/* 스크롤 진행 바: 페이지 최상단 fixed */}
+      <ScrollProgressBar />
       {/* 메인 콘텐츠: max-w-4xl 중앙 정렬 (부모 레이아웃에서 상속) */}
       <div>
         {/* 메타 헤더: 제목, 날짜, 태그 */}
