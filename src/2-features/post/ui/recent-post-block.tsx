@@ -1,7 +1,7 @@
 import { use } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PagingPosts } from '../model/post.schema';
-import PostCompactCard from './post-compact-card';
+import PostCard from './post-card';
 
 interface RecentPostBlockProps {
   locale: LocaleType;
@@ -35,8 +35,9 @@ export default function RecentPostBlock({
       <h2 className="mb-4 text-2xl font-bold">{t('post.recentPosts')}</h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {posts.map((post) => (
-          <PostCompactCard
+          <PostCard
             key={post.path.join('/')}
+            variant="compact"
             locale={locale}
             {...post}
           />

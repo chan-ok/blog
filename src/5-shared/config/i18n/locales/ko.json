@@ -30,7 +30,8 @@
     "noPosts": "포스트가 없습니다. 콘텐츠 저장소를 확인해주세요.",
     "readMore": "더 보기",
     "loading": "포스트 로딩 중...",
-    "tags": "태그"
+    "tags": "태그",
+    "filterAll": "전체"
   },
   "markdown": {
     "loadError": "콘텐츠를 불러오지 못했습니다",

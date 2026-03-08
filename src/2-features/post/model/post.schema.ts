@@ -7,6 +7,10 @@ export interface GetPostsProps {
   tags?: string[];
 }
 
+export interface GetAvailableTagsProps {
+  locale: LocaleType;
+}
+
 export interface PagingPosts {
   posts: PostInfo[];
   total: number;

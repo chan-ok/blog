@@ -101,6 +101,10 @@ pnpm dev:server
 - Vite: http://localhost:5173
 - Netlify Dev: http://localhost:8888
 
+#### 5. 로컬 전용 포스트 (test / draft)
+
+포스트 frontmatter의 tags에 `test` 또는 `draft`가 있으면, 로컬(`pnpm dev`)에서는 목록과 태그 필터에 노출되고, 프로덕션 빌드에서는 목록·태그 메뉴에서 제외됩니다. 상세는 docs/architecture.md 태그 기능 섹션 참고.
+
 ## 개발 규칙
 
 ### 핵심 원칙 5가지

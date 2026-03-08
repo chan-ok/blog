@@ -58,7 +58,17 @@ vi.mock('@/5-shared/components/toggle/locale-toggle', () => ({
 
 // Link 컴포넌트 모킹 (href 속성을 유지)
 vi.mock('@/5-shared/components/ui/link', () => ({
-  default: ({ href, children, className, 'aria-label': ariaLabel }: any) => (
+  default: ({
+    href,
+    children,
+    className,
+    'aria-label': ariaLabel,
+  }: {
+    href: string;
+    children?: React.ReactNode;
+    className?: string;
+    'aria-label'?: string;
+  }) => (
     <a href={href} className={className} aria-label={ariaLabel}>
       {children}
     </a>
@@ -70,6 +80,7 @@ describe('Header 위젯', () => {
     // 기본값 설정
     vi.mocked(useRouterState).mockReturnValue({
       location: { pathname: '/' },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     vi.mocked(useDetectScrolled).mockReturnValue(false);
   });
@@ -115,7 +126,7 @@ describe('Header 위젯', () => {
     it('pathname이 빈 문자열일 때 처리해야 한다', () => {
       vi.mocked(useRouterState).mockReturnValue({
         location: { pathname: '' },
-      } as any);
+      } as unknown as ReturnType<typeof useRouterState>);
 
       render(<Header />);
 
@@ -161,7 +172,7 @@ describe('Header 위젯', () => {
     it('pathname이 /about일 때 About 링크가 하이라이트되어야 한다', () => {
       vi.mocked(useRouterState).mockReturnValue({
         location: { pathname: '/about' },
-      } as any);
+      } as unknown as ReturnType<typeof useRouterState>);
 
       render(<Header />);
 
@@ -172,7 +183,7 @@ describe('Header 위젯', () => {
     it('pathname이 / (홈)일 때 네비게이션 링크가 하이라이트되지 않아야 한다', () => {
       vi.mocked(useRouterState).mockReturnValue({
         location: { pathname: '/' },
-      } as any);
+      } as unknown as ReturnType<typeof useRouterState>);
 
       render(<Header />);
 

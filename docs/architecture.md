@@ -483,6 +483,15 @@ export const FrontmatterSchema = z.object({
 
 ### 컴포넌트 구조
 
+#### TagFilterBar (태그 필터 메뉴 바)
+
+포스트 목록 페이지 상단에 배치되는 메뉴 바로, "전체" 링크와 index.json에서 추출한 사용 가능한 태그 목록을 표시합니다. 선택된 태그는 `aria-current="true"`로 강조되며, 태그 클릭 시 해당 태그를 토글한 URL로 이동합니다.
+
+- **데이터**: `getAvailableTags({ locale })`로 published 포스트의 태그를 중복 제거·정렬해 가져옴.
+- **위치**: `src/2-features/post/ui/tag-filter-bar.tsx`
+- **i18n**: `post.filterAll` (전체 / All / すべて)
+
+
 #### TagChip 컴포넌트
 
 태그를 칩 형태로 표시하고, 클릭 시 해당 태그로 필터된 목록으로 이동합니다.
@@ -574,6 +583,16 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
 }
 ```
 
+#### 개발 전용 태그 (test, draft)
+
+로컬 개발 환경에서만 `test`, `draft` 태그가 있는 포스트를 노출하고, 프로덕션에서는 숨깁니다.
+
+- **개발 환경** (`pnpm dev`, `import.meta.env.DEV === true`): `test`/`draft` 태그가 있어도 목록·태그 필터에 포함.
+- **프로덕션** (빌드 배포): `test`/`draft` 중 하나라도 가진 포스트는 목록에서 제외되고, `getAvailableTags` 결과에도 포함되지 않음.
+
+구현 위치: `src/2-features/post/util/get-posts.ts` (`DEV_ONLY_TAGS`, `isProduction()`, `hasDevOnlyTag()`). 포스트 필터와 사용 가능 태그 수집 모두 동일 기준 적용.
+
+
 ### 상세 페이지 태그 표시
 
 포스트 상세 페이지에서도 frontmatter의 태그를 표시합니다.
@@ -608,12 +627,16 @@ const [frontmatter, setFrontmatter] = useState<Frontmatter | null>(null);
 flowchart TB
     subgraph ListPage [포스트 목록 페이지]
         PostsIndex[posts/index.tsx]
+        TagFilterBar[TagFilterBar]
         PostCardList[PostCardList]
         PostBasicCard[PostBasicCard]
+        PostsIndex --> TagFilterBar
         PostsIndex --> PostCardList
+        TagFilterBar -->|"getAvailableTags(locale)"| API0[index.json]
         PostCardList -->|"getPosts(locale, tags)"| API1[index.json]
         PostCardList --> PostBasicCard
         PostBasicCard -->|"tags 표시 + TagChip"| TagChip1[TagChip]
+        TagFilterBar -->|"클릭"| Link0["/posts 또는 /posts?tags=xxx"]
         TagChip1 -->|"클릭"| Link1["/posts?tags=react"]
     end
 
@@ -653,6 +676,8 @@ function parseInternalLink(href: string, locale: string) {
 
 TDD 기반으로 구현되었으며, 다음 테스트가 포함됩니다:
 
+- `getAvailableTags` 유틸 테스트 (published 태그 추출, 빈 배열, 오류 처리)
+- `TagFilterBar` 컴포넌트 테스트 (전체/태그 링크, 선택 상태, href)
 - `TagChip` 컴포넌트 테스트 (태그 렌더링, href 생성, 접근성)
 - `PostBasicCard` 태그 표시 테스트
 - `PostCompactCard` 태그 표시 테스트

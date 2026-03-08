@@ -1,6 +1,8 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import PostBasicCard from '@/2-features/post/ui/post-basic-card';
+
+import type { LocaleType } from '@/5-shared/types/common.schema';
+import PostCard from '@/2-features/post/ui/post-card';
 import { getPosts } from '../util/get-posts';
 
 interface PostCardListProps {
@@ -35,7 +37,12 @@ export default function PostCardList({ locale, tags = [] }: PostCardListProps) {
   return (
     <div className="flex flex-col gap-4">
       {posts.map((post) => (
-        <PostBasicCard key={post.path.join('/')} locale={locale} {...post} />
+        <PostCard
+          key={post.path.join('/')}
+          variant="basic"
+          locale={locale}
+          {...post}
+        />
       ))}
     </div>
   );

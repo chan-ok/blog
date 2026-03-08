@@ -1,18 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { act } from 'react';
-import {
-  RouterProvider,
-  createMemoryHistory,
-  createRootRoute,
-  createRouter,
-  createRoute,
-} from '@tanstack/react-router';
+import { screen } from '@testing-library/react';
 import fc from 'fast-check';
 
 import Link from '.';
 import { useLocaleStore } from '@/5-shared/stores/locale-store';
 import type { LocaleType } from '@/5-shared/types/common.schema';
+import { renderWithRouter } from '@/5-shared/test-utils/render-with-router';
 
 /**
  * ============================================================================
@@ -33,53 +26,6 @@ import type { LocaleType } from '@/5-shared/types/common.schema';
  * - 다양한 locale 지원 (ko, en, ja)
  * - className, children props 전달
  */
-
-// ============================================================================
-// 테스트 유틸리티: TanStack Router Provider 래퍼
-// ============================================================================
-
-/**
- * TanStack Router 환경에서 컴포넌트를 렌더링하는 헬퍼 함수
- *
- * @param ui - 렌더링할 React 요소
- * @returns render 함수의 반환값
- */
-async function renderWithRouter(ui: React.ReactElement) {
-  // 루트 라우트 생성
-  const rootRoute = createRootRoute({
-    component: () => ui,
-  });
-
-  // catch-all 라우트 생성 (모든 경로 매칭)
-  const indexRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: '/$',
-    component: () => ui,
-  });
-
-  const routeTree = rootRoute.addChildren([indexRoute]);
-
-  // 메모리 히스토리 생성 (테스트 환경용)
-  const history = createMemoryHistory({
-    initialEntries: ['/'],
-  });
-
-  // 라우터 생성
-  const router = createRouter({
-    routeTree,
-    history,
-  });
-
-  // 라우터를 load하여 초기화 완료 대기
-  let result;
-  await act(async () => {
-    result = render(<RouterProvider router={router} />);
-    // 라우터 초기화 완료 대기
-    await router.load();
-  });
-
-  return result!;
-}
 
 // ============================================================================
 // Property-Based 테스트를 위한 데이터 생성기 (Arbitraries)
