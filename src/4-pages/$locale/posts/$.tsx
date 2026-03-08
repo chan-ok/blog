@@ -33,7 +33,6 @@ function PostDetailPage() {
   const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>(
     'loading'
   );
-
   // Frontmatter 상태 (partial: README 등 일부 필드 없는 파일 지원)
   const [frontmatter, setFrontmatter] = useState<MarkdownFrontmatter | null>(
     null

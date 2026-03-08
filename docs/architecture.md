@@ -491,6 +491,7 @@ export const FrontmatterSchema = z.object({
 - **위치**: `src/2-features/post/ui/tag-filter-bar.tsx`
 - **i18n**: `post.filterAll` (전체 / All / すべて)
 
+
 #### TagChip 컴포넌트
 
 태그를 칩 형태로 표시하고, 클릭 시 해당 태그로 필터된 목록으로 이동합니다.
@@ -590,6 +591,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
 - **프로덕션** (빌드 배포): `test`/`draft` 중 하나라도 가진 포스트는 목록에서 제외되고, `getAvailableTags` 결과에도 포함되지 않음.
 
 구현 위치: `src/2-features/post/util/get-posts.ts` (`DEV_ONLY_TAGS`, `isProduction()`, `hasDevOnlyTag()`). 포스트 필터와 사용 가능 태그 수집 모두 동일 기준 적용.
+
 
 ### 상세 페이지 태그 표시
 
