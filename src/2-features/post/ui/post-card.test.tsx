@@ -44,6 +44,7 @@ const titleArb = fc
 const dateArb = fc.date({
   min: new Date('2020-01-01'),
   max: new Date('2026-12-31'),
+  noInvalidDate: true,
 });
 
 const pathArb = fc.array(fc.string({ minLength: 1, maxLength: 20 }), {
