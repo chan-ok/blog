@@ -31,7 +31,10 @@
     "readMore": "続きを読む",
     "loading": "投稿を読み込み中...",
     "tags": "タグ",
-    "filterAll": "すべて"
+    "filterAll": "すべて",
+    "share": "シェア",
+    "copyLink": "リンクをコピー",
+    "copied": "コピーしました"
   },
   "markdown": {
     "loadError": "コンテンツの読み込みに失敗しました",

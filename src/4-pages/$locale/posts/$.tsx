@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 
 import MDComponent, { MarkdownFrontmatter } from '@/1-entities/markdown';
 import { getFrontmatter } from '@/1-entities/markdown/util/get-frontmatter';
+import PostShareButtons from '@/2-features/post/ui/post-share-buttons';
 import TableOfContents from '@/2-features/post/ui/table-of-contents';
 import TagChip from '@/2-features/post/ui/tag-chip';
 import Reply from '@/5-shared/components/reply';
@@ -176,6 +177,13 @@ function PostDetailPage() {
             onFrontmatterLoaded={setFrontmatter}
           />
         </div>
+        {/* 공유 버튼: MDX 로딩 완료 후 댓글 위에 표시 */}
+        {mdxStatus === 'success' && frontmatter && (
+          <PostShareButtons
+            title={frontmatter.title ?? ''}
+            url={window.location.href}
+          />
+        )}
         {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
       </div>
 

@@ -31,7 +31,10 @@
     "readMore": "더 보기",
     "loading": "포스트 로딩 중...",
     "tags": "태그",
-    "filterAll": "전체"
+    "filterAll": "전체",
+    "share": "공유",
+    "copyLink": "링크 복사",
+    "copied": "복사됨"
   },
   "markdown": {
     "loadError": "콘텐츠를 불러오지 못했습니다",
