@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
+import type { MDXComponents } from 'mdx/types';
+
 import getMarkdown, { type MarkdownFrontmatter } from './util/get-markdown';
 import setMdxComponents from './util/set-md-components';
 
@@ -13,6 +15,7 @@ interface MDComponentProps {
   baseUrl?: string;
   onParseStatus?: (status: 'loading' | 'success' | 'error') => void;
   onFrontmatterLoaded?: (frontmatter: MarkdownFrontmatter) => void;
+  components?: MDXComponents;
 }
 
 export default function MDComponent({
@@ -20,13 +23,14 @@ export default function MDComponent({
   baseUrl,
   onParseStatus,
   onFrontmatterLoaded,
+  components: customComponents,
 }: MDComponentProps) {
   const { t } = useTranslation();
 
-  // 파생 값: MDX 컴포넌트 설정
+  // 파생 값: MDX 컴포넌트 설정 (customComponents로 기본값 오버라이드 가능)
   const components = useMemo(
-    () => setMdxComponents(undefined, baseUrl, path),
-    [baseUrl, path]
+    () => setMdxComponents(customComponents, baseUrl, path),
+    [customComponents, baseUrl, path]
   );
 
   // TanStack Query로 마크다운 페칭 및 evaluate
