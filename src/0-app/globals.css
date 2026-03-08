@@ -29,3 +29,19 @@ html:lang(ja) body {
 html {
   scrollbar-gutter: stable;
 }
+
+/* 마크다운 헤딩 앵커 아이콘(#) 숨김 — TOC 이동 기능은 유지 */
+.anchor-icon {
+  display: none;
+}
+
+/* TOC 클릭 스크롤 시 fixed 헤더(최대 h-16=64px)에 가려지지 않도록 오프셋 적용
+   .mdx-content 범위로 한정하여 다른 페이지 헤딩에 영향 없음 */
+.mdx-content h1[id],
+.mdx-content h2[id],
+.mdx-content h3[id],
+.mdx-content h4[id],
+.mdx-content h5[id],
+.mdx-content h6[id] {
+  scroll-margin-top: 5rem;
+}

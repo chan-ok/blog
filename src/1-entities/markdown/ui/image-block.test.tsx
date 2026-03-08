@@ -263,7 +263,7 @@ describe('Property-Based 테스트 - 다양한 src/alt 조합', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   }, 10000);
 

@@ -18,8 +18,10 @@ export const FrontmatterSchema = z.object({
   title: z.string(),
   path: z.array(z.string()),
   tags: z.array(z.string()).default([]),
-  createdAt: z.date(),
-  updatedAt: z.date().optional(),
+  // z.coerce.date(): Date 객체(YAML) 또는 문자열(JSON) 모두 처리
+  createdAt: z.coerce.date(),
+  // updatedAt: null은 "미업데이트" 의미이므로 nullable 허용
+  updatedAt: z.coerce.date().nullish(),
   published: z.boolean().default(false),
   thumbnail: z.string().optional(),
   summary: z.string().optional(),

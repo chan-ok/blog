@@ -32,6 +32,8 @@ export const TranslationResourceSchema = z.object({
     noPosts: z.string().min(1),
     readMore: z.string().min(1),
     loading: z.string().min(1),
+    tags: z.string().optional(),
+    filterAll: z.string().min(1),
   }),
   markdown: z.object({
     loadError: z.string().min(1),

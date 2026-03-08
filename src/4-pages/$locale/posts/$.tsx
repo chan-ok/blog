@@ -1,8 +1,10 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { useState, useEffect, useRef } from 'react';
+import { format } from 'date-fns';
 
-import MDComponent from '@/1-entities/markdown';
+import MDComponent, { MarkdownFrontmatter } from '@/1-entities/markdown';
 import TableOfContents from '@/2-features/post/ui/table-of-contents';
+import TagChip from '@/2-features/post/ui/tag-chip';
 import Reply from '@/5-shared/components/reply';
 import { parseLocale } from '@/5-shared/types/common.schema';
 
@@ -28,9 +30,15 @@ function PostDetailPage() {
   const path = `${locale}/${_splat}.mdx`;
 
   // MDX 파싱 상태
-  const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>(
+    'loading'
+  );
+  // Frontmatter 상태 (partial: README 등 일부 필드 없는 파일 지원)
+  const [frontmatter, setFrontmatter] = useState<MarkdownFrontmatter | null>(
+    null
+  );
 
-  // DOM에서 h2, h3 추출
+  // DOM에서 h1, h2, h3 추출
   const contentRef = useRef<HTMLDivElement>(null);
   const [headings, setHeadings] = useState<Heading[]>([]);
 
@@ -38,7 +46,7 @@ function PostDetailPage() {
     const extractHeadings = () => {
       if (!contentRef.current) return;
 
-      const elements = contentRef.current.querySelectorAll('h2, h3');
+      const elements = contentRef.current.querySelectorAll('h1, h2, h3');
       const extracted: Heading[] = Array.from(elements)
         .filter((el) => el.id) // id가 있는 것만
         .map((el) => ({
@@ -71,20 +79,39 @@ function PostDetailPage() {
   }, [path]);
 
   return (
-    <div className={mdxStatus === 'success' ? 'lg:grid lg:grid-cols-[1fr_250px] lg:gap-8' : ''}>
-      {/* 메인 콘텐츠 */}
+    <div>
+      {/* 메인 콘텐츠: max-w-4xl 중앙 정렬 (부모 레이아웃에서 상속) */}
       <div>
-        <div ref={contentRef}>
-          <MDComponent 
-            path={path} 
+        {/* 메타 헤더: 제목, 날짜, 태그 */}
+        {frontmatter && (
+          <div className="mb-8 border-b border-zinc-200 pb-6 dark:border-zinc-700">
+            <h1 className="mb-4 text-3xl font-bold">{frontmatter.title}</h1>
+            {frontmatter.createdAt && (
+              <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+                {format(frontmatter.createdAt, 'yyyy-MM-dd')}
+              </div>
+            )}
+            {frontmatter.tags && frontmatter.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {frontmatter.tags.map((tag) => (
+                  <TagChip key={tag} tag={tag} locale={locale} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        <div ref={contentRef} className="mdx-content">
+          <MDComponent
+            path={path}
             baseUrl="https://raw.githubusercontent.com/chan-ok/blog-content/main"
-            onParseStatus={setMdxStatus} 
+            onParseStatus={setMdxStatus}
+            onFrontmatterLoaded={setFrontmatter}
           />
         </div>
         {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
       </div>
 
-      {/* 데스크탑: 오른쪽 TOC 사이드바 */}
+      {/* TOC: 포스트 콘텐츠 영역 밖에 fixed로 배치 */}
       {mdxStatus === 'success' && <TableOfContents headings={headings} />}
     </div>
   );

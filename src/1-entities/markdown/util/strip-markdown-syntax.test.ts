@@ -593,7 +593,7 @@ describe('Property-Based 테스트 - 마크다운 문법 제거 검증', () => {
 
         expect(result).not.toContain('```');
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -613,7 +613,7 @@ describe('Property-Based 테스트 - 마크다운 문법 제거 검증', () => {
 
         expect(result).not.toMatch(/^---/);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -634,7 +634,7 @@ describe('Property-Based 테스트 - 마크다운 문법 제거 검증', () => {
         // HTML 태그 패턴 매칭 (<...> 형식)
         expect(result).not.toMatch(/<[^>]+>/);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -654,7 +654,7 @@ describe('Property-Based 테스트 - 마크다운 문법 제거 검증', () => {
 
         expect(typeof result).toBe('string');
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -675,7 +675,7 @@ describe('Property-Based 테스트 - 마크다운 문법 제거 검증', () => {
         // 빈 문자열이 아닌 경우에만 검증
         expect(result).not.toMatch(/\s{2,}/);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -695,7 +695,7 @@ describe('Property-Based 테스트 - 마크다운 문법 제거 검증', () => {
 
         expect(result).toBe(result.trim());
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });

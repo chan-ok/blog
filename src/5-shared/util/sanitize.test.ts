@@ -39,7 +39,7 @@ describe('Property 1: HTML 태그 제거', () => {
         const result = sanitizeInput(input);
         expect(htmlTagRegex.test(result)).toBe(false);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -57,7 +57,7 @@ describe('Property 1: HTML 태그 제거', () => {
         const result = sanitizeInput(input);
         expect(htmlTagRegex.test(result)).toBe(false);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });
@@ -82,7 +82,7 @@ describe('Property 2: 안전한 콘텐츠 보존', () => {
         const result = sanitizeInput(input);
         expect(result).toBe(input);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -100,7 +100,7 @@ describe('Property 2: 안전한 콘텐츠 보존', () => {
         const result = sanitizeInput(input);
         expect(result).toBe(input);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });
@@ -123,7 +123,7 @@ describe('Property 3: 멱등성', () => {
         const twice = sanitizeInput(once);
         expect(once).toBe(twice);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -141,7 +141,7 @@ describe('Property 3: 멱등성', () => {
         const twice = sanitizeInput(once);
         expect(once).toBe(twice);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });

@@ -68,19 +68,19 @@ describe('$locale 레이아웃 라우트', () => {
     const beforeLoad = Route.options.beforeLoad;
     expect(beforeLoad).toBeDefined();
 
+    // TanStack Router의 beforeLoad 파라미터 타입 추출
+    // as unknown as T는 as any보다 명시적인 타입 캐스팅
+    type BeforeLoadArgs = Parameters<NonNullable<typeof beforeLoad>>[0];
+    const makeArgs = (locale: string) =>
+      ({ params: { locale } }) as unknown as BeforeLoadArgs;
+
     // 유효한 locale
-    expect(() =>
-      beforeLoad?.({ params: { locale: 'ko' } } as any)
-    ).not.toThrow();
-    expect(() =>
-      beforeLoad?.({ params: { locale: 'en' } } as any)
-    ).not.toThrow();
-    expect(() =>
-      beforeLoad?.({ params: { locale: 'ja' } } as any)
-    ).not.toThrow();
+    expect(() => beforeLoad?.(makeArgs('ko'))).not.toThrow();
+    expect(() => beforeLoad?.(makeArgs('en'))).not.toThrow();
+    expect(() => beforeLoad?.(makeArgs('ja'))).not.toThrow();
 
     // 유효하지 않은 locale - notFound() throw
-    expect(() => beforeLoad?.({ params: { locale: 'fr' } } as any)).toThrow();
+    expect(() => beforeLoad?.(makeArgs('fr'))).toThrow();
   });
 
   it('레이아웃 구조가 올바른 클래스를 가져야 한다', () => {

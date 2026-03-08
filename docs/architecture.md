@@ -49,7 +49,7 @@
 
 ### Content
 
-- **@mdx-js/mdx**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
+- **@mdx-js/mdx**: 런타임 MDX 렌더링 (`evaluate()` + remark/rehype 플러그인)
 - **rehype-highlight**: 코드 하이라이팅
 - **remark/rehype**: 마크다운 처리 플러그인
 
@@ -338,7 +338,7 @@ return <TagFilter tags={['react', 'nextjs']} onFilter={handleFilter} />;
 3. `generate-index.ts` 스크립트 실행하여 `index.json` 생성
 4. blog 애플리케이션이 `index.json` fetch (목록 페이지)
 5. 필요 시 MDX 파일 fetch (상세 페이지)
-6. `@mdx-js/mdx`로 런타임 렌더링 (`compile()` + `new Function()`)
+6. `@mdx-js/mdx`로 런타임 렌더링 (`evaluate()` + remark/rehype 플러그인)
 7. 사용자에게 렌더링된 페이지 제공
 
 #### 시퀀스 다이어그램
@@ -394,25 +394,21 @@ const posts: PostMetadata[] = await response.json();
 **상세 페이지에서 MDX fetch 및 렌더링**:
 
 \`\`\`typescript
-// src/1-entities/markdown/util/render-mdx.ts
-import { compile } from '@mdx-js/mdx';
+// src/1-entities/markdown/util/get-markdown.ts
+import { evaluate } from '@mdx-js/mdx';
 import \* as runtime from 'react/jsx-runtime';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
 
-export async function renderMDX(source: string) {
-// 1. MDX → JavaScript 변환
-const compiled = await compile(source, {
-outputFormat: 'function-body',
-development: false,
-});
+export default async function getMarkdown(path: string) {
+  // MDX evaluate - remark/rehype 플러그인과 함께 1단계 처리
+  const { default: MDXContent } = await evaluate(content, {
+    ...(runtime as any),
+    remarkPlugins: [remarkGfm, remarkFrontmatter],
+    rehypePlugins: [rehypeHighlight, rehypeSlug],
+  });
 
-// 2. JavaScript 실행 → React 컴포넌트
-const { default: Component } = new Function(
-'React',
-...Object.keys(runtime),
-String(compiled)
-)(React, ...Object.values(runtime));
-
-return Component;
+  return { MDXContent };
 }
 \`\`\`
 
@@ -446,6 +442,246 @@ totalPages: Math.ceil(posts.length / perPage),
 };
 }
 \`\`\`
+
+## 태그 기능
+
+### 개요
+
+포스트에 태그를 표시하고 필터링하는 기능입니다. 각 포스트는 frontmatter에 `tags: string[]` 필드를 가지며, 태그를 클릭하면 해당 태그로 필터된 포스트 목록으로 이동합니다.
+
+### 데이터 구조
+
+#### Frontmatter 스키마
+
+```typescript
+// src/1-entities/markdown/model/markdown.schema.ts
+export const FrontmatterSchema = z.object({
+  title: z.string(),
+  path: z.array(z.string()),
+  tags: z.array(z.string()).default([]), // 태그 배열
+  createdAt: z.date(),
+  updatedAt: z.date().optional(),
+  published: z.boolean().default(false),
+  thumbnail: z.string().optional(),
+  summary: z.string().optional(),
+});
+```
+
+#### index.json 구조
+
+```json
+[
+  {
+    "title": "Next.js 16으로 업그레이드 후기",
+    "path": ["2024", "01", "nextjs-16-upgrade"],
+    "tags": ["nextjs", "react", "typescript"],
+    "createdAt": "2024-01-15T00:00:00.000Z",
+    "published": true
+  }
+]
+```
+
+### 컴포넌트 구조
+
+#### TagFilterBar (태그 필터 메뉴 바)
+
+포스트 목록 페이지 상단에 배치되는 메뉴 바로, "전체" 링크와 index.json에서 추출한 사용 가능한 태그 목록을 표시합니다. 선택된 태그는 `aria-current="true"`로 강조되며, 태그 클릭 시 해당 태그를 토글한 URL로 이동합니다.
+
+- **데이터**: `getAvailableTags({ locale })`로 published 포스트의 태그를 중복 제거·정렬해 가져옴.
+- **위치**: `src/2-features/post/ui/tag-filter-bar.tsx`
+- **i18n**: `post.filterAll` (전체 / All / すべて)
+
+
+#### TagChip 컴포넌트
+
+태그를 칩 형태로 표시하고, 클릭 시 해당 태그로 필터된 목록으로 이동합니다.
+
+```typescript
+// src/2-features/post/ui/tag-chip.tsx
+interface TagChipProps {
+  tag: string;
+  locale: string;
+}
+
+export default function TagChip({ tag, locale }: TagChipProps) {
+  const href = `/${locale}/posts?tags=${encodeURIComponent(tag)}`;
+  return (
+    <Link href={href} className="...">
+      {tag}
+    </Link>
+  );
+}
+```
+
+#### PostBasicCard / PostCompactCard
+
+포스트 카드 컴포넌트에 태그를 표시합니다.
+
+```typescript
+// src/2-features/post/ui/post-basic-card.tsx
+{tags && tags.length > 0 && (
+  <div className="mb-2 flex flex-wrap gap-2">
+    {tags.map((tag) => (
+      <TagChip key={tag} tag={tag} locale={locale} />
+    ))}
+  </div>
+)}
+```
+
+### 태그 필터링
+
+#### URL 쿼리 파라미터
+
+태그 필터링은 URL 쿼리 파라미터로 관리됩니다:
+
+- 형식: `?tags=react,typescript` (쉼표 구분)
+- 여러 태그: `?tags=react,typescript,nextjs`
+
+#### 라우트 검색 파라미터 검증
+
+```typescript
+// src/4-pages/$locale/posts/index.tsx
+export const Route = createFileRoute('/$locale/posts/')({
+  validateSearch: (search) => {
+    return z
+      .object({
+        tags: z.string().optional(),
+      })
+      .parse(search);
+  },
+});
+```
+
+#### 필터링 로직
+
+```typescript
+// src/2-features/post/ui/post-card-list.tsx
+const search = useSearch({ from: Route.fullPath });
+const tags = search.tags
+  ? search.tags.split(',').map((tag) => tag.trim()).filter(Boolean)
+  : [];
+
+const { data: pagingPosts } = useSuspenseQuery({
+  queryKey: ['posts', locale, tags],
+  queryFn: () => getPosts({ locale, tags }),
+});
+```
+
+```typescript
+// src/2-features/post/util/get-posts.ts
+export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
+  const { locale, tags = [] } = props;
+  
+  // ... index.json fetch ...
+  
+  const filteredPosts = response.data
+    .filter((post) => post.published)
+    .filter(
+      (post) =>
+        tags.length === 0 || tags.some((tag) => post.tags.includes(tag))
+    );
+}
+```
+
+#### 개발 전용 태그 (test, draft)
+
+로컬 개발 환경에서만 `test`, `draft` 태그가 있는 포스트를 노출하고, 프로덕션에서는 숨깁니다.
+
+- **개발 환경** (`pnpm dev`, `import.meta.env.DEV === true`): `test`/`draft` 태그가 있어도 목록·태그 필터에 포함.
+- **프로덕션** (빌드 배포): `test`/`draft` 중 하나라도 가진 포스트는 목록에서 제외되고, `getAvailableTags` 결과에도 포함되지 않음.
+
+구현 위치: `src/2-features/post/util/get-posts.ts` (`DEV_ONLY_TAGS`, `isProduction()`, `hasDevOnlyTag()`). 포스트 필터와 사용 가능 태그 수집 모두 동일 기준 적용.
+
+
+### 상세 페이지 태그 표시
+
+포스트 상세 페이지에서도 frontmatter의 태그를 표시합니다.
+
+```typescript
+// src/4-pages/$locale/posts/$.tsx
+const [frontmatter, setFrontmatter] = useState<Frontmatter | null>(null);
+
+<MDComponent
+  path={path}
+  onFrontmatterLoaded={setFrontmatter}
+/>
+
+{frontmatter && (
+  <div className="mb-8">
+    <h1>{frontmatter.title}</h1>
+    <div>{format(frontmatter.createdAt, 'yyyy-MM-dd')}</div>
+    {frontmatter.tags && frontmatter.tags.length > 0 && (
+      <div className="flex flex-wrap gap-2">
+        {frontmatter.tags.map((tag) => (
+          <TagChip key={tag} tag={tag} locale={locale} />
+        ))}
+      </div>
+    )}
+  </div>
+)}
+```
+
+### 데이터 흐름
+
+```mermaid
+flowchart TB
+    subgraph ListPage [포스트 목록 페이지]
+        PostsIndex[posts/index.tsx]
+        TagFilterBar[TagFilterBar]
+        PostCardList[PostCardList]
+        PostBasicCard[PostBasicCard]
+        PostsIndex --> TagFilterBar
+        PostsIndex --> PostCardList
+        TagFilterBar -->|"getAvailableTags(locale)"| API0[index.json]
+        PostCardList -->|"getPosts(locale, tags)"| API1[index.json]
+        PostCardList --> PostBasicCard
+        PostBasicCard -->|"tags 표시 + TagChip"| TagChip1[TagChip]
+        TagFilterBar -->|"클릭"| Link0["/posts 또는 /posts?tags=xxx"]
+        TagChip1 -->|"클릭"| Link1["/posts?tags=react"]
+    end
+
+    subgraph DetailPage [포스트 상세 페이지]
+        PostDetail[posts/$.tsx]
+        MDComp[MDComponent]
+        PostDetail --> MDComp
+        MDComp -->|"onFrontmatterLoaded"| PostDetail
+        PostDetail -->|"frontmatter.tags"| TagChip2[TagChip]
+        TagChip2 --> Link2["/posts?tags=xxx"]
+    end
+```
+
+### Link 컴포넌트 쿼리 파라미터 지원
+
+Link 컴포넌트가 쿼리 파라미터를 처리하도록 수정되었습니다:
+
+```typescript
+// src/5-shared/components/ui/link/index.tsx
+function parseInternalLink(href: string, locale: string) {
+  const [pathWithLocale, searchString] = href.split('?');
+  const searchParams = searchString
+    ? Object.fromEntries(new URLSearchParams(searchString))
+    : undefined;
+  
+  // ... 경로 매칭 ...
+  
+  return {
+    to: '/$locale/posts',
+    params: { locale },
+    ...(searchParams && { search: searchParams }),
+  };
+}
+```
+
+### 테스트
+
+TDD 기반으로 구현되었으며, 다음 테스트가 포함됩니다:
+
+- `getAvailableTags` 유틸 테스트 (published 태그 추출, 빈 배열, 오류 처리)
+- `TagFilterBar` 컴포넌트 테스트 (전체/태그 링크, 선택 상태, href)
+- `TagChip` 컴포넌트 테스트 (태그 렌더링, href 생성, 접근성)
+- `PostBasicCard` 태그 표시 테스트
+- `PostCompactCard` 태그 표시 테스트
+- Property-Based 테스트 (다양한 태그 문자열, locale 조합)
 
 ## 국제화
 
@@ -555,7 +791,7 @@ return <LocaleContext.Provider value={{ locale }}>{children}</LocaleContext.Prov
 
 ### 3. @mdx-js/mdx 채택
 
-**결정**: 런타임 MDX 렌더링 (`compile()` + `new Function()`)
+**결정**: 런타임 MDX 렌더링 (`evaluate()` + remark/rehype 플러그인)
 
 **이유**:
 
@@ -758,7 +994,7 @@ const { data } = useQuery({
 
 **해결**:
 
-- ✅ `@mdx-js/mdx`로 런타임 렌더링 (`compile()` + `new Function()`)
+- ✅ `@mdx-js/mdx`로 런타임 렌더링 (`evaluate()` + remark/rehype 플러그인)
 - ✅ GitHub Raw URL로 fetch → 간단하고 빠름
 - ✅ 브라우저 캐시로 성능 보완
 

@@ -29,7 +29,9 @@
     "recentPosts": "Recent Posts",
     "noPosts": "No posts found. Please check your content repository.",
     "readMore": "Read More",
-    "loading": "Loading posts..."
+    "loading": "Loading posts...",
+    "tags": "Tags",
+    "filterAll": "All"
   },
   "markdown": {
     "loadError": "Failed to load content",

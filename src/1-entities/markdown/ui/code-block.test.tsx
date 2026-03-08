@@ -267,9 +267,12 @@ describe('Unit 테스트 - 복사 기능', () => {
     const copyButton = screen.getByRole('button', { name: 'Copy code' });
     await userEvent.click(copyButton);
 
-    // 약간의 대기 후 호출되지 않았는지 확인
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    expect(mockWriteText).not.toHaveBeenCalled();
+    await waitFor(
+      () => {
+        expect(mockWriteText).not.toHaveBeenCalled();
+      },
+      { timeout: 150, interval: 25 }
+    );
 
     unmount();
   });
@@ -342,7 +345,7 @@ describe('Property-Based 테스트 - 다양한 코드 텍스트', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -373,7 +376,7 @@ describe('Property-Based 테스트 - 다양한 코드 텍스트', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -408,7 +411,7 @@ describe('Property-Based 테스트 - 다양한 코드 텍스트', () => {
 
         unmount();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });

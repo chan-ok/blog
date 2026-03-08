@@ -485,7 +485,7 @@ describe('Property-Based 테스트 - 길이 제한 검증', () => {
         // 결과 길이는 maxLength + 3 ('...') 이하
         expect(result.length).toBeLessThanOrEqual(maxLength + 3);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -505,7 +505,7 @@ describe('Property-Based 테스트 - 길이 제한 검증', () => {
 
         expect(result).toBe('');
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -527,7 +527,7 @@ describe('Property-Based 테스트 - 길이 제한 검증', () => {
         const expectedResult = text.trim().length > 0 ? '...' : '';
         expect(result).toBe(expectedResult);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });

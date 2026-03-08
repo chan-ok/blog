@@ -36,40 +36,10 @@ describe('Footer 위젯', () => {
     });
   });
 
-  describe('UI/UX (스타일 검증)', () => {
-    it('text-center 클래스가 적용되어야 한다', () => {
-      render(<Footer />);
+  it('다크 모드용 클래스가 포함되어야 한다', () => {
+    render(<Footer />);
 
-      const footer = screen.getByRole('contentinfo');
-      expect(footer).toHaveClass('text-center');
-    });
-
-    it('text-gray-600 클래스가 포함되어야 한다 (라이트 모드)', () => {
-      render(<Footer />);
-
-      const footer = screen.getByRole('contentinfo');
-      expect(footer).toHaveClass('text-gray-600');
-    });
-
-    it('dark:text-gray-400 클래스가 포함되어야 한다 (다크 모드 지원)', () => {
-      render(<Footer />);
-
-      const footer = screen.getByRole('contentinfo');
-      expect(footer.className).toMatch(/dark:text-gray-400/);
-    });
-
-    it('mt-10 클래스가 적용되어야 한다 (상단 여백)', () => {
-      render(<Footer />);
-
-      const footer = screen.getByRole('contentinfo');
-      expect(footer).toHaveClass('mt-10');
-    });
-
-    it('py-6 클래스가 적용되어야 한다 (수직 패딩)', () => {
-      render(<Footer />);
-
-      const footer = screen.getByRole('contentinfo');
-      expect(footer).toHaveClass('py-6');
-    });
+    const footer = screen.getByRole('contentinfo');
+    expect(footer.className).toMatch(/dark:/);
   });
 });

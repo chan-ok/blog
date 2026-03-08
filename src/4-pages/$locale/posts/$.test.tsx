@@ -33,7 +33,7 @@ vi.mock('@/5-shared/components/reply', () => ({
 
 // TableOfContents 모킹
 vi.mock('@/2-features/post/ui/table-of-contents', () => ({
-  default: ({ headings }: { headings: any[] }) => (
+  default: ({ headings }: { headings: unknown[] }) => (
     <div
       data-testid="table-of-contents"
       data-headings={JSON.stringify(headings)}

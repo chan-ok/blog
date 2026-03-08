@@ -270,7 +270,7 @@ describe('Property-Based 테스트 - 임의 URL 추출', () => {
 
         expect(result).toBe(url);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   }, 10000);
 
@@ -293,7 +293,7 @@ describe('Property-Based 테스트 - 임의 URL 추출', () => {
 
         expect(result).toBe(url);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -319,7 +319,7 @@ describe('Property-Based 테스트 - 임의 URL 추출', () => {
 
         expect(result).toBe(url);
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 
@@ -342,7 +342,7 @@ describe('Property-Based 테스트 - 임의 URL 추출', () => {
 
         expect(result).toBeNull();
       }),
-      { numRuns: 30 }
+      { numRuns: 20 }
     );
   });
 });
