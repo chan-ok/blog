@@ -30,8 +30,9 @@ export default async function getMarkdown(
 ): Promise<MarkdownElement> {
   // Vite 환경 변수 사용
   const baseURL = baseUrl || import.meta.env.VITE_GIT_RAW_URL;
+  // 언더바를 공백으로 변환
   const realPath = decodeURIComponent(path).replace(/[^/]+$/, (s) =>
-    s.replaceAll('-', ' ')
+    s.replaceAll('_', ' ')
   );
 
   const response = await api.get<string>(realPath, { baseURL });

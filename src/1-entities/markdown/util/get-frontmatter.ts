@@ -18,9 +18,9 @@ export async function getFrontmatter(
 ): Promise<PartialFrontmatter> {
   const baseURL = baseUrl || import.meta.env.VITE_GIT_RAW_URL;
 
-  // URL 디코딩 + 경로 내 파일명의 하이픈을 공백으로 변환
+  // URL 디코딩 + 경로 내 파일명의 언더바를 공백으로 변환
   const realPath = decodeURIComponent(path).replace(/[^/]+$/, (s) =>
-    s.replaceAll('-', ' ')
+    s.replaceAll('_', ' ')
   );
 
   const response = await api.get<string>(realPath, { baseURL });
