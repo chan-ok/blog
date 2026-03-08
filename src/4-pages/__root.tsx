@@ -1,6 +1,7 @@
 import {
   createRootRoute,
   ErrorComponentProps,
+  HeadContent,
   Outlet,
   useRouter,
 } from '@tanstack/react-router';
@@ -52,6 +53,8 @@ function RootNotFoundComponent() {
 function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
+      {/* 라우트별 동적 메타태그 렌더링 */}
+      <HeadContent />
       <Outlet />
       {import.meta.env.DEV && (
         <TanStackDevtools

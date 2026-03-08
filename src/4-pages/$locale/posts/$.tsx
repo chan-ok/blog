@@ -3,10 +3,12 @@ import { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 
 import MDComponent, { MarkdownFrontmatter } from '@/1-entities/markdown';
+import { getFrontmatter } from '@/1-entities/markdown/util/get-frontmatter';
 import TableOfContents from '@/2-features/post/ui/table-of-contents';
 import TagChip from '@/2-features/post/ui/tag-chip';
 import Reply from '@/5-shared/components/reply';
 import { parseLocale } from '@/5-shared/types/common.schema';
+import { buildMeta, buildCanonicalLink } from '@/5-shared/util/build-meta';
 
 interface Heading {
   id: string;
@@ -14,7 +16,70 @@ interface Heading {
   level: number;
 }
 
+const BASE_URL =
+  'https://raw.githubusercontent.com/chan-ok/blog-content/main';
+
 export const Route = createFileRoute('/$locale/posts/$')({
+  // loader: SEO 메타태그 생성을 위해 frontmatter를 미리 로드한다.
+  // MDX 컴파일은 컴포넌트 내부에서 별도로 수행한다.
+  loader: async ({ params }) => {
+    const { locale, _splat } = params;
+
+    if (!_splat || _splat.trim() === '') {
+      throw notFound();
+    }
+
+    const path = `${locale}/${_splat}.mdx`;
+
+    try {
+      const frontmatter = await getFrontmatter(path, BASE_URL);
+      return { frontmatter };
+    } catch {
+      // frontmatter 로드 실패 시 빈 객체 반환 (컴포넌트에서 재시도)
+      return { frontmatter: {} };
+    }
+  },
+  // 포스트 상세 페이지 메타태그: loader에서 받은 frontmatter를 활용
+  head: ({ params, loaderData }) => {
+    const { locale, _splat } = params;
+
+    if (!_splat || !loaderData) {
+      return {};
+    }
+
+    const { frontmatter } = loaderData;
+    const path = `/${locale}/posts/${_splat}`;
+
+    const title = frontmatter.title
+      ? `${frontmatter.title} | chan-ok.com`
+      : 'chan-ok.com';
+
+    const description =
+      frontmatter.summary ??
+      (frontmatter.tags?.join(', ')
+        ? `${frontmatter.tags.join(', ')} - chan-ok.com`
+        : 'chan-ok.com');
+
+    const publishedTime = frontmatter.createdAt
+      ? frontmatter.createdAt instanceof Date
+        ? frontmatter.createdAt.toISOString()
+        : new Date(frontmatter.createdAt).toISOString()
+      : undefined;
+
+    return {
+      meta: buildMeta({
+        title,
+        description,
+        image: frontmatter.thumbnail,
+        type: 'article',
+        locale,
+        publishedTime,
+        tags: frontmatter.tags ?? [],
+        path,
+      }),
+      links: buildCanonicalLink(path),
+    };
+  },
   component: PostDetailPage,
 });
 
@@ -103,7 +168,7 @@ function PostDetailPage() {
         <div ref={contentRef} className="mdx-content">
           <MDComponent
             path={path}
-            baseUrl="https://raw.githubusercontent.com/chan-ok/blog-content/main"
+            baseUrl={BASE_URL}
             onParseStatus={setMdxStatus}
             onFrontmatterLoaded={setFrontmatter}
           />
