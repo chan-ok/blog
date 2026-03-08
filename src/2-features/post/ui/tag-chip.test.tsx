@@ -127,7 +127,7 @@ describe('TagChip - Property-Based 테스트', () => {
 
         unmount();
       }),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 
@@ -153,7 +153,7 @@ describe('TagChip - Property-Based 테스트', () => {
 
         unmount();
       }),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 });

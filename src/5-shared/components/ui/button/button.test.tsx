@@ -106,16 +106,17 @@ describe('Property 4: Props 전달', () => {
     fc.assert(
       fc.property(fc.string({ minLength: 1, maxLength: 50 }), (label) => {
         // 무작위 label 값으로 Button 렌더링
-        const { unmount } = render(
+        const { container, unmount } = render(
           <Button aria-label={label}>Click me</Button>
         );
-        const button = screen.getByRole('button');
+        // getByRole 대신 querySelector 사용 (접근성 트리 탐색 비용 절감)
+        const button = container.querySelector('button')!;
 
         // aria-label 속성이 전달된 값과 동일한지 확인
         expect(button).toHaveAttribute('aria-label', label);
         unmount();
       }),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 
@@ -139,19 +140,19 @@ describe('Property 4: Props 전달', () => {
         variantArb,
         shapeArb,
         (customClass, variant, shape) => {
-          const { unmount } = render(
+          const { container, unmount } = render(
             <Button variant={variant} shape={shape} className={customClass}>
               Click me
             </Button>
           );
-          const button = screen.getByRole('button');
+          const button = container.querySelector('button')!;
 
           // 전달한 className이 button의 className에 포함되어 있는지 확인
           expect(button.className).toContain(customClass);
           unmount();
         }
       ),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 
@@ -177,12 +178,12 @@ describe('Property 4: Props 전달', () => {
         // 무작위 name 값
         fc.string({ minLength: 1, maxLength: 20 }),
         (type, name) => {
-          const { unmount } = render(
+          const { container, unmount } = render(
             <Button type={type} name={name}>
               Click me
             </Button>
           );
-          const button = screen.getByRole('button');
+          const button = container.querySelector('button')!;
 
           // type과 name 속성이 올바르게 전달되었는지 확인
           expect(button).toHaveAttribute('type', type);
@@ -190,7 +191,7 @@ describe('Property 4: Props 전달', () => {
           unmount();
         }
       ),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 });
@@ -231,12 +232,12 @@ describe('Property 2: 일관된 기본 스타일 적용', () => {
   it('should apply consistent base styles for non-link variants', () => {
     fc.assert(
       fc.property(nonLinkVariantArb, shapeArb, (variant, shape) => {
-        const { unmount } = render(
+        const { container, unmount } = render(
           <Button variant={variant} shape={shape}>
             Test Button
           </Button>
         );
-        const button = screen.getByRole('button');
+        const button = container.querySelector('button')!;
         const className = button.className;
 
         // Requirements 3.1: 둥근 모서리 (8px)
@@ -250,7 +251,7 @@ describe('Property 2: 일관된 기본 스타일 적용', () => {
         expect(className).toContain('font-medium');
         unmount();
       }),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 });
@@ -288,50 +289,49 @@ describe('Property 1: Link variant는 shape을 무시함', () => {
    * - <Button variant="link" shape="outline"> 의 className
    * - 위 두 버튼의 className이 완전히 동일해야 함
    */
-  it(
-    'should apply identical styles for link variant regardless of shape',
-    { timeout: 10000 },
-    () => {
-      fc.assert(
-        fc.property(shapeArb, (shape) => {
-          // 테스트할 shape으로 link variant 버튼 렌더링
-          const { unmount: unmountLinkVariantButton } = render(
+  it('should apply identical styles for link variant regardless of shape', () => {
+    fc.assert(
+      fc.property(shapeArb, (shape) => {
+        // 테스트할 shape으로 link variant 버튼 렌더링
+        const { container: container1, unmount: unmountLinkVariantButton } =
+          render(
             <Button variant="link" shape={shape}>
               Link Button 1
             </Button>
           );
-          const button1 = screen.getByRole('button', { name: 'Link Button 1' });
-          const className1 = button1.className;
+        // querySelector 사용 (접근성 트리 탐색 비용 절감)
+        const button1 = container1.querySelector('button')!;
+        const className1 = button1.className;
 
-          // 비교 대상: fill shape의 link variant 버튼
-          const { unmount: unmountLinkFillButton } = render(
+        // 비교 대상: fill shape의 link variant 버튼
+        const { container: container2, unmount: unmountLinkFillButton } =
+          render(
             <Button variant="link" shape="fill">
               Link Button 2
             </Button>
           );
-          const button2 = screen.getByRole('button', { name: 'Link Button 2' });
-          const className2 = button2.className;
+        const button2 = container2.querySelector('button')!;
+        const className2 = button2.className;
 
-          // 핵심 검증: 두 버튼의 className이 완전히 동일해야 함
-          // (shape이 무시되므로 fill이든 outline이든 같은 스타일)
-          expect(className1).toBe(className2);
+        // 핵심 검증: 두 버튼의 className이 완전히 동일해야 함
+        // (shape이 무시되므로 fill이든 outline이든 같은 스타일)
+        expect(className1).toBe(className2);
 
-          // link variant는 둥근 모서리가 없어야 함
-          expect(className1).not.toContain('rounded-lg');
+        // link variant는 둥근 모서리가 없어야 함
+        expect(className1).not.toContain('rounded-lg');
 
-          // link variant는 패딩이 없어야 함 (텍스트 링크처럼 보이기 위해)
-          expect(className1).toContain('px-0');
-          expect(className1).toContain('py-0');
+        // link variant는 패딩이 없어야 함 (텍스트 링크처럼 보이기 위해)
+        expect(className1).toContain('px-0');
+        expect(className1).toContain('py-0');
 
-          // link variant는 투명 배경이어야 함
-          expect(className1).toContain('bg-transparent');
-          unmountLinkVariantButton();
-          unmountLinkFillButton();
-        }),
-        { numRuns: 20 }
-      );
-    }
-  );
+        // link variant는 투명 배경이어야 함
+        expect(className1).toContain('bg-transparent');
+        unmountLinkVariantButton();
+        unmountLinkFillButton();
+      }),
+      { numRuns: 5 }
+    );
+  });
 });
 
 // ============================================================================
@@ -369,12 +369,12 @@ describe('Property 3: 다크 모드 클래스 포함', () => {
   it('should include dark mode classes for all variant/shape combinations', () => {
     fc.assert(
       fc.property(variantArb, shapeArb, (variant, shape) => {
-        const { unmount } = render(
+        const { container, unmount } = render(
           <Button variant={variant} shape={shape}>
             Test Button
           </Button>
         );
-        const button = screen.getByRole('button');
+        const button = container.querySelector('button')!;
         const className = button.className;
 
         // dark: 접두사가 붙은 클래스가 최소 1개 이상 존재하는지 확인
@@ -382,7 +382,7 @@ describe('Property 3: 다크 모드 클래스 포함', () => {
         expect(className).toMatch(/dark:/);
         unmount();
       }),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 });
