@@ -5,17 +5,23 @@
  * 쿼리파라미터: ?locale=ko|en|ja (기본값: ko)
  */
 
-// blog-content index.json의 개별 포스트 항목 타입
-type PostInfo = {
-  title: string;
-  path: string[];
-  tags?: string[];
-  createdAt: string;
-  updatedAt?: string | null;
-  published: boolean;
-  thumbnail?: string;
-  summary?: string;
-};
+import z from 'zod';
+
+// H-1: blog-content index.json 응답을 Zod 스키마로 검증
+const PostInfoSchema = z.object({
+  title: z.string(),
+  path: z.array(z.string()),
+  tags: z.array(z.string()).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string().nullish(),
+  published: z.boolean(),
+  thumbnail: z.string().optional(),
+  summary: z.string().optional(),
+});
+
+const PostInfoArraySchema = z.array(PostInfoSchema);
+
+type PostInfo = z.infer<typeof PostInfoSchema>;
 
 type NetlifyEvent = {
   httpMethod: string;
@@ -93,7 +99,10 @@ function buildRssXml(
 
   const items = posts
     .map((post) => {
-      const postPath = post.path.join('/');
+      // M-1: path 각 세그먼트를 escapeXml + encodeURIComponent 처리하여 XML Injection 방지
+      const postPath = post.path
+        .map((segment) => encodeURIComponent(escapeXml(segment)))
+        .join('/');
       const postLink = `${siteUrl}/${locale}/posts/${postPath}`;
       const pubDate = new Date(post.createdAt).toUTCString();
       const title = escapeXml(post.title);
@@ -138,18 +147,23 @@ export const handler = async (
 
     const locale = parseLocale(event.queryStringParameters?.locale);
 
-    const baseURL = process.env.VITE_GIT_RAW_URL;
+    // M-2: VITE_ 접두사 없는 서버 전용 환경변수 사용 (VITE_* 는 클라이언트 번들에 노출됨)
+    const baseURL = process.env.GIT_RAW_URL;
     if (!baseURL) {
       return {
         statusCode: 500,
-        body: 'VITE_GIT_RAW_URL is not configured',
+        body: 'GIT_RAW_URL is not configured',
       };
     }
 
     const siteUrl = process.env.URL ?? 'https://chan-ok.com';
 
     const indexUrl = `${baseURL}/${locale}/index.json`;
-    const response = await fetch(indexUrl);
+
+    // M-3: 타임아웃 추가로 외부 요청 무한 대기 방지
+    const response = await fetch(indexUrl, {
+      signal: AbortSignal.timeout(5000),
+    });
 
     if (!response.ok) {
       return {
@@ -158,11 +172,24 @@ export const handler = async (
       };
     }
 
-    const allPosts: PostInfo[] = await response.json();
+    // H-1: Zod 스키마로 외부 데이터 검증
+    const rawData: unknown = await response.json();
+    const parseResult = PostInfoArraySchema.safeParse(rawData);
+    if (!parseResult.success) {
+      console.error('[rss] Invalid posts index format:', parseResult.error);
+      return {
+        statusCode: 502,
+        body: 'Invalid posts index format',
+      };
+    }
+
+    const allPosts = parseResult.data;
 
     const publishedPosts = allPosts
       .filter((post) => post.published)
       .filter((post) => !hasDevOnlyTag(post.tags))
+      // L-1: 유효하지 않은 날짜 포스트 제외
+      .filter((post) => !isNaN(new Date(post.createdAt).getTime()))
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -179,9 +206,11 @@ export const handler = async (
       body: xml,
     };
   } catch (err: unknown) {
+    // H-2: 내부 에러 메시지를 클라이언트에 노출하지 않음
+    console.error('[rss] Unhandled error:', err);
     return {
       statusCode: 500,
-      body: err instanceof Error ? err.message : 'Unknown error occurred',
+      body: 'Internal server error',
     };
   }
 };
