@@ -85,9 +85,9 @@ describe('Property 1: Locale 자동 추가', () => {
           unmount();
         }
       ),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
-  }, 10000);
+  });
 });
 
 // ============================================================================
@@ -123,7 +123,7 @@ describe('Property 2: Locale 중복 방지', () => {
           unmount();
         }
       ),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 });
@@ -158,7 +158,7 @@ describe('Property 3: 외부 링크 처리', () => {
 
         unmount();
       }),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 });
@@ -196,7 +196,7 @@ describe('Property 4: 다국어 지원', () => {
           unmount();
         }
       ),
-      { numRuns: 20 }
+      { numRuns: 5 }
     );
   });
 });

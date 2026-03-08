@@ -75,7 +75,7 @@ export default function ImageBlock({
         alt={alt || ''}
         loading="lazy"
         onError={handleError}
-        className="w-full rounded-lg border border-gray-200 dark:border-gray-700"
+        className="max-w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700"
       />
       {alt && (
         <figcaption className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">

@@ -42,6 +42,11 @@ vi.mock('mermaid', async () => {
   };
 });
 
+// DOMPurify의 jsdom 초기화 비용을 제거 (SVG는 이미 모킹된 안전한 값)
+vi.mock('isomorphic-dompurify', () => ({
+  default: { sanitize: (html: string) => html },
+}));
+
 describe('MermaidDiagram', () => {
   beforeAll(() => {
     // jsdom에서 SVGElement.getBBox가 없어서 발생하는 에러 방지

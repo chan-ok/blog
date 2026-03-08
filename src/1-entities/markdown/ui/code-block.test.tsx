@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  act,
+  fireEvent,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fc from 'fast-check';
 
@@ -48,6 +54,8 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.clearAllMocks();
+  // fake timer를 사용한 테스트 이후 항상 실제 타이머로 복구
+  vi.useRealTimers();
 });
 
 // ============================================================================
@@ -220,6 +228,10 @@ describe('Unit 테스트 - 복사 기능', () => {
    * 기대 결과: 버튼이 "Copy code" 상태로 복귀
    */
   it('2초 후 원래 상태로 복귀해야 한다', async () => {
+    // fake timer로 실제 2초 대기 없이 타이머를 앞당김
+    // userEvent는 내부적으로 setTimeout을 사용하므로 fireEvent로 대체
+    vi.useFakeTimers();
+
     const { unmount } = render(
       <CodeBlock>
         <code>test</code>
@@ -227,24 +239,27 @@ describe('Unit 테스트 - 복사 기능', () => {
     );
 
     const copyButton = screen.getByRole('button', { name: 'Copy code' });
-    await userEvent.click(copyButton);
 
-    // "Copied" 상태 확인
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Copied' })
-      ).toBeInTheDocument();
+    // act 안에서 클릭 + clipboard Promise(microtask) 플러시
+    await act(async () => {
+      fireEvent.click(copyButton);
+      // clipboard.writeText mock이 Promise.resolve()로 해결됨 → microtask 2회 플러시
+      await Promise.resolve();
+      await Promise.resolve();
     });
 
-    // 2초 후 원래 상태로 복귀 확인
-    await waitFor(
-      () => {
-        expect(
-          screen.getByRole('button', { name: 'Copy code' })
-        ).toBeInTheDocument();
-      },
-      { timeout: 3000 }
-    );
+    // "Copied" 상태 확인 (fake timer 환경에서 waitFor 불필요)
+    expect(screen.getByRole('button', { name: 'Copied' })).toBeInTheDocument();
+
+    // setTimeout(2000) 앞당김 + 후속 microtask 플러시
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000);
+    });
+
+    // 원래 상태로 복귀 확인
+    expect(
+      screen.getByRole('button', { name: 'Copy code' })
+    ).toBeInTheDocument();
     expect(screen.getByText('Copy')).toBeInTheDocument();
 
     unmount();
