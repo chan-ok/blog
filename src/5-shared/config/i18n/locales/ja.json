@@ -34,7 +34,10 @@
     "filterAll": "すべて",
     "share": "シェア",
     "copyLink": "リンクをコピー",
-    "copied": "コピーしました"
+    "copied": "コピーしました",
+    "series": {
+      "otherPosts": "このシリーズの他の記事"
+    }
   },
   "markdown": {
     "loadError": "コンテンツの読み込みに失敗しました",

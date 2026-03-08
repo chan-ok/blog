@@ -34,7 +34,10 @@
     "filterAll": "전체",
     "share": "공유",
     "copyLink": "링크 복사",
-    "copied": "복사됨"
+    "copied": "복사됨",
+    "series": {
+      "otherPosts": "이 시리즈의 다른 글"
+    }
   },
   "markdown": {
     "loadError": "콘텐츠를 불러오지 못했습니다",

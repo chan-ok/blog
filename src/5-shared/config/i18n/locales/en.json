@@ -34,7 +34,10 @@
     "filterAll": "All",
     "share": "Share",
     "copyLink": "Copy link",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "series": {
+      "otherPosts": "Other posts in this series"
+    }
   },
   "markdown": {
     "loadError": "Failed to load content",

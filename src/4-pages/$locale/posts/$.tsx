@@ -1,9 +1,12 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { format } from 'date-fns';
 
 import MDComponent, { MarkdownFrontmatter } from '@/1-entities/markdown';
 import { getFrontmatter } from '@/1-entities/markdown/util/get-frontmatter';
+import PostSeriesBlock, {
+  PostSeriesBlockSkeleton,
+} from '@/2-features/post/ui/post-series-block';
 import PostShareButtons from '@/2-features/post/ui/post-share-buttons';
 import TableOfContents from '@/2-features/post/ui/table-of-contents';
 import TagChip from '@/2-features/post/ui/tag-chip';
@@ -183,6 +186,16 @@ function PostDetailPage() {
             title={frontmatter.title ?? ''}
             url={window.location.href}
           />
+        )}
+        {/* 시리즈 블록: frontmatter에 series 값이 있을 때만 렌더링 */}
+        {mdxStatus === 'success' && frontmatter?.series && (
+          <Suspense fallback={<PostSeriesBlockSkeleton />}>
+            <PostSeriesBlock
+              series={frontmatter.series}
+              currentPath={_splat}
+              locale={locale}
+            />
+          </Suspense>
         )}
         {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
       </div>
