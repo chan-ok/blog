@@ -45,6 +45,7 @@ tags: [test, markdown]
 createdAt: 2024-01-01
 path: ['test', 'Test Post']
 published: true
+series: test-series
 ---
 
 # Heading
@@ -66,6 +67,7 @@ tags: []
 createdAt: 2024-01-01
 path: ['empty']
 published: false
+series: empty-series
 ---
 `;
 
@@ -138,7 +140,7 @@ describe('Unit 테스트 - 정상 케이스', () => {
     });
 
     // 함수 실행
-    const result = await getMarkdown('test/Test-Post.md');
+    const result = await getMarkdown('test/Test_Post.md');
 
     // 검증: API 호출 (baseURL은 환경 변수에서 자동 결정)
     expect(api.get).toHaveBeenCalledWith('test/Test Post.md', {
@@ -179,15 +181,15 @@ describe('Unit 테스트 - 정상 케이스', () => {
     });
   });
 
-  it('파일명의 하이픈을 공백으로 변환해야 한다', async () => {
+  it('파일명의 언더바를 공백으로 변환해야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockMDX,
       axios: { status: 200 } as AxiosResponse,
     });
 
-    await getMarkdown('category/My-First-Post.md');
+    await getMarkdown('category/My_First_Post.md');
 
-    // 검증: 파일명의 하이픈이 공백으로 변환됨
+    // 검증: 파일명의 언더바가 공백으로 변환됨
     expect(api.get).toHaveBeenCalledWith('category/My First Post.md', {
       baseURL: undefined,
     });
@@ -199,10 +201,10 @@ describe('Unit 테스트 - 정상 케이스', () => {
       axios: { status: 200 } as AxiosResponse,
     });
 
-    // %20 = 공백, %ED = 한글 시작
-    await getMarkdown('test/%ED%85%8C%EC%8A%A4%ED%8A%B8-Post.md');
+    // %ED = 한글 시작, 언더바는 공백으로 변환
+    await getMarkdown('test/%ED%85%8C%EC%8A%A4%ED%8A%B8_Post.md');
 
-    // 검증: URL 디코딩 + 하이픈을 공백으로 변환
+    // 검증: URL 디코딩 + 언더바를 공백으로 변환
     expect(api.get).toHaveBeenCalledWith('test/테스트 Post.md', {
       baseURL: undefined,
     });

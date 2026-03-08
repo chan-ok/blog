@@ -22,6 +22,7 @@ function makePost(overrides: Partial<{
   createdAt: string;
   published: boolean;
   summary: string;
+  series?: string;
 }> = {}) {
   return {
     title: '테스트 포스트',
@@ -30,6 +31,7 @@ function makePost(overrides: Partial<{
     createdAt: '2024-01-01T00:00:00Z',
     published: true,
     summary: '요약입니다.',
+    series: undefined as string | undefined,
     ...overrides,
   };
 }
