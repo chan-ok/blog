@@ -27,6 +27,15 @@ export const Route = createFileRoute('/$locale')({
       throw notFound();
     }
   },
+  // 기본 메타태그: 하위 라우트에서 덮어쓰지 않은 경우 폴백으로 사용
+  head: () => ({
+    meta: [
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
+      { property: 'og:site_name', content: 'chan-ok.com' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+    ],
+  }),
   component: LocaleLayout,
   errorComponent: ErrorComponent,
   notFoundComponent: NotFoundComponent,
