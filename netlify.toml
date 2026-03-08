@@ -9,6 +9,10 @@
   command = "pnpm build"
   publish = "dist"
 
+[[edge_functions]]
+  path = "/api/rss"
+  function = "rate-limit-rss"
+
 [[redirects]]
   from   = "/api/*"
   to     = "/.netlify/functions/:splat"
