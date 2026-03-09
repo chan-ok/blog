@@ -1,0 +1,49 @@
+name: 정적 파일 생성 (sitemap.xml / llms.txt)
+
+# blog-content가 업데이트되거나 수동으로 실행할 때 생성
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [content-updated]
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 리포지터리 체크아웃
+        uses: actions/checkout@v4
+
+      - name: pnpm 설치
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Node.js 설치
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 의존성 설치
+        run: pnpm install --frozen-lockfile
+
+      - name: 정적 파일 생성
+        env:
+          GIT_RAW_URL: ${{ secrets.GIT_RAW_URL }}
+          URL: https://chan-ok.com
+        run: pnpm generate
+
+      - name: 변경 여부 확인 및 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/sitemap.xml public/llms.txt
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 생략"
+          else
+            git commit -m "chore: sitemap.xml / llms.txt 자동 업데이트"
+            git push
+          fi

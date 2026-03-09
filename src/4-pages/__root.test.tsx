@@ -1,12 +1,14 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 
-// Outlet 모킹 (파일 상단에서)
+// Outlet, HeadContent 모킹 (파일 상단에서)
+// HeadContent는 라우터 컨텍스트가 필요하므로 테스트에서 모킹
 vi.mock('@tanstack/react-router', async () => {
   const actual = await vi.importActual('@tanstack/react-router');
   return {
     ...actual,
     Outlet: () => <div data-testid="outlet">Outlet Content</div>,
+    HeadContent: () => null,
   };
 });
 

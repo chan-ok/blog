@@ -136,7 +136,7 @@ blog/
 │       ├── stores/        # Zustand 스토어
 │       ├── types/         # 타입 정의
 │       └── util/          # 유틸리티 함수
-├── netlify/functions/     # 서버리스 함수 (Contact 폼 등)
+├── netlify/functions/     # 서버리스 함수 (Contact 폼, RSS 피드 등)
 ├── e2e/                   # Playwright E2E 테스트
 ├── docs/                  # 개발 문서
 ├── .opencode/             # opencode 에이전트 설정
@@ -172,6 +172,8 @@ blog/
 - **댓글 시스템** — Giscus (GitHub Discussions 기반)
 - **포스트 페이지네이션** — 페이지 기반 포스트 목록
 - **TanStack Query 캐싱** — API 응답 캐싱 및 재검증
+- **RSS/Atom 피드** — Netlify Function 기반 피드 제공 + Footer 구독 링크
+- **스크롤 진행 바** — 포스트 상세 페이지 읽기 진행률 표시
 
 ## 문서
 

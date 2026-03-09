@@ -79,3 +79,7 @@ deno.lock
 .multi-agent/status/*.json
 !.multi-agent/queue/.gitkeep
 !.multi-agent/status/.gitkeep
+
+
+# claude
+.claude/

@@ -6,7 +6,8 @@
     "src/**/*.mts",
     "src/**/*.mdx",
     "contents/**/*.mdx",
-    "netlify/**/*.mts"
+    "netlify/**/*.mts",
+    "scripts/**/*.mts"
   ],
   "exclude": [
     "node_modules",

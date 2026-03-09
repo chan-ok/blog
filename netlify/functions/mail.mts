@@ -49,25 +49,6 @@ export const handler = async (
     const rawBody = JSON.parse(event.body);
     const parsed = MailBodySchema.safeParse(rawBody);
 
-    // #region agent log
-    fetch('http://127.0.0.1:7259/ingest/0344b4ce-d749-4585-8667-d81e5d74a5a8', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Debug-Session-Id': 'e04329',
-      },
-      body: JSON.stringify({
-        sessionId: 'e04329',
-        runId: 'pre-fix',
-        hypothesisId: 'H1',
-        location: 'netlify/functions/mail.mts:39',
-        message: 'Mail handler body validation result',
-        data: { success: parsed.success },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-
     if (!parsed.success) {
       return {
         statusCode: 400,
@@ -111,28 +92,6 @@ export const handler = async (
     const verifyJson = await verifyRes.json();
 
     if (!verifyJson.success) {
-      // #region agent log
-      fetch(
-        'http://127.0.0.1:7259/ingest/0344b4ce-d749-4585-8667-d81e5d74a5a8',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': 'e04329',
-          },
-          body: JSON.stringify({
-            sessionId: 'e04329',
-            runId: 'pre-fix',
-            hypothesisId: 'H2',
-            location: 'netlify/functions/mail.mts:75',
-            message: 'Turnstile verification failed',
-            data: { success: verifyJson.success },
-            timestamp: Date.now(),
-          }),
-        }
-      ).catch(() => {});
-      // #endregion
-
       return {
         statusCode: 400,
         body: JSON.stringify({

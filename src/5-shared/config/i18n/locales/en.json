@@ -31,7 +31,13 @@
     "readMore": "Read More",
     "loading": "Loading posts...",
     "tags": "Tags",
-    "filterAll": "All"
+    "filterAll": "All",
+    "share": "Share",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "series": {
+      "otherPosts": "Other posts in this series"
+    }
   },
   "markdown": {
     "loadError": "Failed to load content",

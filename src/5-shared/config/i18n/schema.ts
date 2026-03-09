@@ -34,6 +34,9 @@ export const TranslationResourceSchema = z.object({
     loading: z.string().min(1),
     tags: z.string().optional(),
     filterAll: z.string().min(1),
+    share: z.string().min(1),
+    copyLink: z.string().min(1),
+    copied: z.string().min(1),
   }),
   markdown: z.object({
     loadError: z.string().min(1),

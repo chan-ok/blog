@@ -25,5 +25,7 @@ export const FrontmatterSchema = z.object({
   published: z.boolean().default(false),
   thumbnail: z.string().optional(),
   summary: z.string().optional(),
+  // series: 관련 포스트를 하나의 시리즈로 묶기 위한 식별자
+  series: z.string().optional(),
 });
 export type Frontmatter = z.infer<typeof FrontmatterSchema>;

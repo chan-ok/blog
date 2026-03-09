@@ -31,7 +31,7 @@ function h2({ children, id, ...rest }: HeadingProps) {
 
 function h3({ children, id, ...rest }: HeadingProps) {
   return (
-    <h3 id={id} className="group pt-8 text-2xl font-bold" {...rest}>
+    <h3 id={id} className="group pt-8 mb-4 text-2xl font-bold" {...rest}>
       {children}
     </h3>
   );
