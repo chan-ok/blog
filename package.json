@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "vite",
     "dev:server": "netlify dev",
+    "generate": "tsx scripts/generate-static.mts",
     "build": "vite build",
     "preview": "vite preview",
     "tsc": "tsc",
