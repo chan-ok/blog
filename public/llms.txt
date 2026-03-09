@@ -1,1 +1,32 @@
 # chan-ok.com
+
+> 프론트엔드 개발, 기술, 경험을 기록하는 개인 블로그입니다.
+> A personal blog sharing frontend development, technology, and experiences.
+
+## Site Info
+
+- URL: https://chan-ok.com
+- Author: Chanho Kim
+- Languages: Korean, English, Japanese
+- Topics: Frontend Development, React, TypeScript, Web Performance, Career
+- Total Posts: 1
+
+## Navigation
+
+- [Korean Blog](https://chan-ok.com/ko): 한국어 포스트
+- [English Blog](https://chan-ok.com/en): English posts
+- [Japanese Blog](https://chan-ok.com/ja): 日本語のポスト
+- [About](https://chan-ok.com/ko/about): 저자 소개 / About the author
+- [Contact](https://chan-ok.com/ko/contact): 연락처 / Contact
+- [RSS Feed](https://chan-ok.com/api/rss?locale=ko): RSS 피드 (한국어)
+- [Sitemap](https://chan-ok.com/sitemap.xml): 전체 사이트맵
+
+## Content Policy
+
+All content is original writing by the author.
+Posts are written in Korean, English, or Japanese.
+Code examples are provided for educational purposes.
+
+## 한국어 (Korean) Posts
+
+- [AI시대에서 개발자 블로그가 필요할까](https://chan-ok.com/ko/posts/%EB%B8%94%EB%A1%9C%EA%B7%B8-%EA%B0%9C%EB%B0%9C/AI%EC%8B%9C%EB%8C%80%EC%97%90%EC%84%9C_%EA%B0%9C%EB%B0%9C%EC%9E%90_%EB%B8%94%EB%A1%9C%EA%B7%B8%EA%B0%80_%ED%95%84%EC%9A%94%ED%95%A0%EA%B9%8C) (2026-01-31) [blog, 회고]
