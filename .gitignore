@@ -83,6 +83,3 @@ deno.lock
 
 # claude
 .claude/
-# 빌드 시 자동 생성되는 정적 파일
-public/sitemap.xml
-public/llms.txt

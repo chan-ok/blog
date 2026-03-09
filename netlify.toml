@@ -6,7 +6,7 @@
   functions = "netlify/functions"
   
 [build]
-  command = "pnpm generate && pnpm build"
+  command = "pnpm build"
   publish = "dist"
 
 [[edge_functions]]
