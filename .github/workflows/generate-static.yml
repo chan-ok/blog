@@ -44,6 +44,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 생략"
           else
-            git commit -m "chore: sitemap.xml / llms.txt 자동 업데이트"
+            git commit --no-verify -m "chore: sitemap.xml / llms.txt 자동 업데이트"
             git push
           fi
