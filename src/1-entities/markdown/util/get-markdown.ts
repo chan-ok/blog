@@ -35,7 +35,13 @@ export default async function getMarkdown(
     s.replaceAll('_', ' ')
   );
 
-  const response = await api.get<string>(realPath, { baseURL });
+  let response = await api.get<string>(realPath, { baseURL });
+
+  // .mdx 요청 실패 시 .md 확장자로 재시도
+  if (response.axios.status !== 200 && realPath.endsWith('.mdx')) {
+    const mdPath = realPath.replace(/\.mdx$/, '.md');
+    response = await api.get<string>(mdPath, { baseURL });
+  }
 
   if (response.axios.status !== 200) {
     throw new Error('Failed to fetch posts');
