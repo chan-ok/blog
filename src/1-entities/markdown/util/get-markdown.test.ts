@@ -317,6 +317,55 @@ describe('Unit 테스트 - 에러 케이스', () => {
     await expect(getMarkdown('error/Post.md')).rejects.toThrow('Network error');
   });
 
+  it('.mdx 요청 실패 시 .md로 재시도해야 한다', async () => {
+    vi.mocked(api.get)
+      .mockResolvedValueOnce({
+        data: '',
+        axios: { status: 404 } as AxiosResponse<string>,
+      })
+      .mockResolvedValueOnce({
+        data: mockMDX,
+        axios: { status: 200 } as AxiosResponse,
+      });
+
+    const result = await getMarkdown('test/Post.mdx');
+
+    // 검증: .mdx 실패 후 .md로 재시도
+    expect(api.get).toHaveBeenCalledTimes(2);
+    expect(api.get).toHaveBeenNthCalledWith(1, 'test/Post.mdx', {
+      baseURL: undefined,
+    });
+    expect(api.get).toHaveBeenNthCalledWith(2, 'test/Post.md', {
+      baseURL: undefined,
+    });
+    expect(result.frontmatter.title).toBe('Test Post');
+  });
+
+  it('.mdx와 .md 모두 실패하면 에러를 던져야 한다', async () => {
+    vi.mocked(api.get).mockResolvedValue({
+      data: '',
+      axios: { status: 404 } as AxiosResponse<string>,
+    });
+
+    await expect(getMarkdown('not-found/Post.mdx')).rejects.toThrow(
+      'Failed to fetch posts'
+    );
+    expect(api.get).toHaveBeenCalledTimes(2);
+  });
+
+  it('.md 경로는 폴백 없이 바로 에러를 던져야 한다', async () => {
+    vi.mocked(api.get).mockResolvedValue({
+      data: '',
+      axios: { status: 404 } as AxiosResponse<string>,
+    });
+
+    await expect(getMarkdown('not-found/Post.md')).rejects.toThrow(
+      'Failed to fetch posts'
+    );
+    // .md는 재시도 없이 1번만 호출됨
+    expect(api.get).toHaveBeenCalledTimes(1);
+  });
+
   it('잘못된 MDX 문법은 evaluate 에러를 발생시켜야 한다', async () => {
     vi.mocked(api.get).mockResolvedValue({
       data: mockInvalidMDX,
