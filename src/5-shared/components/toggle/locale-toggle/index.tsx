@@ -27,8 +27,8 @@ export default function LocaleToggle() {
     switch (locale) {
       case 'ko':
         return 'Change language: Switch to Korean';
-      case 'en':
-        return 'Change language: Switch to English';
+      // case 'en':
+      //   return 'Change language: Switch to English';
       case 'ja':
         return 'Change language: Switch to Japanese';
     }
@@ -127,7 +127,7 @@ export default function LocaleToggle() {
               </div>
               <div>日本語</div>
             </Menu.Item>
-            <Menu.Item
+            {/* <Menu.Item
               className={itemClassName}
               onClick={() => changeLocale('en')}
             >
@@ -135,7 +135,7 @@ export default function LocaleToggle() {
                 {getLocaleIcon('en')}
               </div>
               <div>English</div>
-            </Menu.Item>
+            </Menu.Item> */}
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>

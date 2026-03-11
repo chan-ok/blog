@@ -172,6 +172,8 @@ function PostDetailPage() {
             )}
           </div>
         )}
+        {/* TOC: 모바일에서는 본문 위에 표시, 데스크탑에서는 fixed 사이드바 */}
+        {mdxStatus === 'success' && <TableOfContents headings={headings} />}
         <div ref={contentRef} className="mdx-content">
           <MDComponent
             path={path}
@@ -199,9 +201,6 @@ function PostDetailPage() {
         )}
         {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
       </div>
-
-      {/* TOC: 포스트 콘텐츠 영역 밖에 fixed로 배치 */}
-      {mdxStatus === 'success' && <TableOfContents headings={headings} />}
     </div>
   );
 }
