@@ -38,7 +38,7 @@
     "@giscus/react": "^3.1.0",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-router": "^1.159.14",
-    "axios": "^1.13.5",
+    "axios": "^1.15.0",
     "buffer": "^6.0.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -110,7 +110,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.55.0",
-    "vite": "^7.3.1",
+    "vite": "^7.3.2",
     "vite-plugin-image-optimizer": "^2.0.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18"
