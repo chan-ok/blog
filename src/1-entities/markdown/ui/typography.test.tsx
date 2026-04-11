@@ -230,20 +230,20 @@ describe('Unit 테스트 - 스타일링', () => {
    * 기대 결과: dark: 접두사가 붙은 클래스 포함
    */
   it('모든 heading에 다크모드 클래스가 포함되어야 한다', () => {
+    // CSS 토큰 기반 디자인으로 전환: dark: 접두사 대신 CSS 변수 토큰(border-ink, border-rule 등)을 사용
     const { unmount: unmount1 } = render(<Typography.h1>H1</Typography.h1>);
     const h1 = screen.getByRole('heading', { level: 1 });
-    expect(h1.className).toMatch(/dark:/);
+    expect(h1.className).toMatch(/border-ink/);
     unmount1();
 
     const { unmount: unmount2 } = render(<Typography.h2>H2</Typography.h2>);
     const h2 = screen.getByRole('heading', { level: 2 });
-    expect(h2.className).toMatch(/dark:/);
+    expect(h2.className).toMatch(/border-rule/);
     unmount2();
 
     const { unmount: unmount3 } = render(<Typography.h3>H3</Typography.h3>);
     const h3 = screen.getByRole('heading', { level: 3 });
     expect(h3).toBeInTheDocument();
-    // h3는 다크모드 클래스가 없을 수 있으므로 체크하지 않음
     unmount3();
   });
 });
