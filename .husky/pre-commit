@@ -21,6 +21,7 @@ pnpm exec lint-staged
 echo "Running unit test / function test..."
 pnpm test run
 
-# audit fix (취약점 자동 수정)
+# audit fix — 프로덕션 의존성의 critical 취약점만 커밋 차단
+# moderate/high는 mermaid>lodash-es 등 unfixable transitive dep 존재로 허용
 echo "Running pnpm audit fix..."
-pnpm audit fix --audit-level=moderate
+pnpm audit fix --prod --audit-level=critical

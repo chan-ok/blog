@@ -1,42 +1,59 @@
 @import 'tailwindcss';
 @import 'highlight.js/styles/github-dark.css';
 
-/* https://tailwindcss.com/docs/dark-mode */
+/* ── 다크모드 variant ── */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* 기본 폰트 패밀리 (모든 언어 지원) */
+/* ── 색상 토큰 (라이트) ── */
+:root {
+  --bg: #f7f8fa;
+  --bg2: #f0f1f4;
+  --ink: #0f1117;
+  --ink2: #3a3d47;
+  --ink3: #8a8e9a;
+  --rule: #e2e4ea;
+}
+
+/* ── 색상 토큰 (다크) ── */
+.dark {
+  --bg: #12141a;
+  --bg2: #1c1f28;
+  --ink: #e8eaf0;
+  --ink2: #a8acba;
+  --ink3: #6a6e7e;
+  --rule: #2a2e3a;
+}
+
+/* ── Tailwind v4 토큰 등록 ── */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg2);
+  --color-ink: var(--ink);
+  --color-ink2: var(--ink2);
+  --color-ink3: var(--ink3);
+  --color-rule: var(--rule);
+  /* 세리프 폰트 스택을 font-sans 유틸리티로 노출 */
+  --font-sans: 'Noto Serif KR', 'Noto Serif JP', 'Noto Serif', serif;
+}
+
+/* ── 기본 폰트 (KR/JP/EN 세리프 통일) ── */
 html,
 body {
-  font-family: 'Inter', 'Noto Sans KR', 'Noto Sans JP', sans-serif;
-}
-
-/* 언어별 폰트 설정 */
-html:lang(ko),
-html:lang(ko) body {
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
-html:lang(en),
-html:lang(en) body {
-  font-family: 'Inter', sans-serif;
-}
-
-html:lang(ja),
-html:lang(ja) body {
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Noto Serif KR', 'Noto Serif JP', 'Noto Serif', serif;
+  background-color: var(--bg);
+  color: var(--ink);
 }
 
 html {
   scrollbar-gutter: stable;
 }
 
-/* 마크다운 헤딩 앵커 아이콘(#) 숨김 — TOC 이동 기능은 유지 */
+/* ── 마크다운 헤딩 앵커 아이콘 숨김 ── */
 .anchor-icon {
   display: none;
 }
 
-/* TOC 클릭 스크롤 시 fixed 헤더(최대 h-16=64px)에 가려지지 않도록 오프셋 적용
-   .mdx-content 범위로 한정하여 다른 페이지 헤딩에 영향 없음 */
+/* ── TOC 클릭 스크롤 오프셋 ── */
 .mdx-content h1[id],
 .mdx-content h2[id],
 .mdx-content h3[id],

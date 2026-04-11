@@ -23,27 +23,27 @@ interface CalloutConfig {
 const CALLOUT_CONFIGS: Record<CalloutType, CalloutConfig> = {
   INFO: {
     icon: Info,
-    bgColor: 'bg-blue-50 dark:bg-blue-950/30',
-    iconColor: 'text-blue-600 dark:text-blue-400',
-    borderColor: 'border-blue-200 dark:border-blue-800',
+    bgColor: 'bg-bg2',
+    iconColor: 'text-ink3',
+    borderColor: 'border-rule',
   },
   WARNING: {
     icon: AlertTriangle,
-    bgColor: 'bg-yellow-50 dark:bg-yellow-950/30',
-    iconColor: 'text-yellow-600 dark:text-yellow-400',
-    borderColor: 'border-yellow-200 dark:border-yellow-800',
+    bgColor: 'bg-bg2',
+    iconColor: 'text-ink2',
+    borderColor: 'border-rule',
   },
   DANGER: {
     icon: AlertOctagon,
-    bgColor: 'bg-red-50 dark:bg-red-950/30',
-    iconColor: 'text-red-600 dark:text-red-400',
-    borderColor: 'border-red-200 dark:border-red-800',
+    bgColor: 'bg-bg2',
+    iconColor: 'text-ink',
+    borderColor: 'border-ink',
   },
   SUCCESS: {
     icon: CheckCircle,
-    bgColor: 'bg-green-50 dark:bg-green-950/30',
-    iconColor: 'text-green-600 dark:text-green-400',
-    borderColor: 'border-green-200 dark:border-green-800',
+    bgColor: 'bg-bg2',
+    iconColor: 'text-ink3',
+    borderColor: 'border-rule',
   },
 };
 
@@ -143,20 +143,16 @@ export default function Blockquote({ children }: BlockquoteProps) {
       >
         <div className="mb-2 flex items-center gap-2">
           <Icon size={20} className={config.iconColor} aria-hidden="true" />
-          <p className="font-semibold text-gray-900 dark:text-gray-100">
-            {callout.title}
-          </p>
+          <p className="font-semibold text-ink">{callout.title}</p>
         </div>
-        <div className="text-gray-700 dark:text-gray-300">
-          {callout.content}
-        </div>
+        <div className="text-ink2">{callout.content}</div>
       </div>
     );
   }
 
   // 일반 blockquote 렌더링
   return (
-    <blockquote className="my-6 border-l-4 border-gray-300 bg-gray-50 pl-4 pr-4 py-2 italic text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300">
+    <blockquote className="my-8 border-l-[3px] border-ink bg-bg2 pl-7 pr-6 py-5 italic text-ink2 text-[15px] leading-[1.9]">
       {children}
     </blockquote>
   );
