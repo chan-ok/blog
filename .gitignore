@@ -83,3 +83,4 @@ deno.lock
 
 # claude
 .claude/
+.superpowers/
