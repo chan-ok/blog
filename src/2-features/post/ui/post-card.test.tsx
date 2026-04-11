@@ -57,7 +57,7 @@ const thumbnailArb = fc.option(
   { nil: undefined }
 );
 
-const localeArb = fc.constantFrom('ko', 'en', 'ja');
+const localeArb = fc.constantFrom('ko', 'ja');
 
 // ============================================================================
 // variant="basic" 테스트

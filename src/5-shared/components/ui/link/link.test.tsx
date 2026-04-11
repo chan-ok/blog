@@ -34,7 +34,7 @@ import { renderWithRouter } from '@/5-shared/test-utils/render-with-router';
 /**
  * locale 생성기
  */
-const localeArb = fc.constantFrom<LocaleType>('ko', 'en', 'ja');
+const localeArb = fc.constantFrom<LocaleType>('ko', 'ja');
 
 /**
  * 외부 링크 생성기
@@ -318,15 +318,15 @@ describe('Link Component - Unit Tests', () => {
   });
 
   /**
-   * locale 변경 시 정상 동작 테스트 (en)
+   * locale 변경 시 정상 동작 테스트 (ko)
    */
-  it('uses current locale from store (en)', async () => {
-    useLocaleStore.setState({ locale: 'en' });
+  it('uses current locale from store (ko)', async () => {
+    useLocaleStore.setState({ locale: 'ko' });
 
-    await renderWithRouter(<Link href="/about">About EN Store</Link>);
+    await renderWithRouter(<Link href="/about">About KO Store</Link>);
 
-    const link = screen.getByRole('link', { name: 'About EN Store' });
-    expect(link).toHaveAttribute('href', '/en/about');
+    const link = screen.getByRole('link', { name: 'About KO Store' });
+    expect(link).toHaveAttribute('href', '/ko/about');
   });
 
   /**

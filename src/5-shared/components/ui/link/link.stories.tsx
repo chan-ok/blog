@@ -169,7 +169,7 @@ export const English: Story = {
     children: 'About Page',
   },
   beforeEach: () => {
-    useLocaleStore.setState({ locale: 'en' });
+    useLocaleStore.setState({ locale: 'ko' });
   },
 };
 

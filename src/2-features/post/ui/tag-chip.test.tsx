@@ -37,7 +37,7 @@ const tagArb = fc
 /**
  * locale 생성기
  */
-const localeArb = fc.constantFrom<LocaleType>('ko', 'en', 'ja');
+const localeArb = fc.constantFrom<LocaleType>('ko', 'ja');
 
 // ============================================================================
 // Unit 테스트
@@ -82,7 +82,7 @@ describe('TagChip - Unit 테스트', () => {
   });
 
   it('다양한 locale에서 올바른 href를 생성해야 한다', async () => {
-    const locales: LocaleType[] = ['ko', 'en', 'ja'];
+    const locales: LocaleType[] = ['ko', 'ja'];
 
     for (const locale of locales) {
       useLocaleStore.setState({ locale });

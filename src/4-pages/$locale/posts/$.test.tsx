@@ -129,15 +129,15 @@ describe('$locale/posts/$ 라우트 (포스트 상세)', () => {
   });
 
   it('다른 locale과 _splat 조합도 동작해야 한다', async () => {
-    mockUseParams.mockReturnValue({ locale: 'en', _splat: 'hello-world' });
+    mockUseParams.mockReturnValue({ locale: 'ja', _splat: 'hello-world' });
 
     const Component = Route.options.component as React.ComponentType;
     render(<Component />);
 
     const mdComponent = screen.getByTestId('md-component');
-    expect(mdComponent.getAttribute('data-path')).toBe('en/hello-world.mdx');
+    expect(mdComponent.getAttribute('data-path')).toBe('ja/hello-world.mdx');
 
     const reply = await screen.findByTestId('reply');
-    expect(reply.getAttribute('data-locale')).toBe('en');
+    expect(reply.getAttribute('data-locale')).toBe('ja');
   });
 });
