@@ -161,19 +161,6 @@ export const Korean: Story = {
 };
 
 /**
- * 영어 locale (en)
- */
-export const English: Story = {
-  args: {
-    href: '/about',
-    children: 'About Page',
-  },
-  beforeEach: () => {
-    useLocaleStore.setState({ locale: 'ko' });
-  },
-};
-
-/**
  * 일본어 locale (ja)
  */
 export const Japanese: Story = {
@@ -297,17 +284,6 @@ export const AllLocales: Story = {
           </Link>
           <Link href="/posts" className="text-blue-600 hover:underline">
             포스트
-          </Link>
-        </div>
-      </section>
-      <section>
-        <h3 className="text-lg font-semibold mb-4">English (en)</h3>
-        <div className="flex flex-col gap-2">
-          <Link href="/about" className="text-blue-600 hover:underline">
-            About
-          </Link>
-          <Link href="/posts" className="text-blue-600 hover:underline">
-            Posts
           </Link>
         </div>
       </section>

@@ -16,8 +16,8 @@ import { parseLocale } from '@/5-shared/types/common.schema';
 import Footer from '@/3-widgets/footer';
 import Header from '@/3-widgets/header';
 
-// Locale 유효성 검증
-const localeSchema = z.enum(['ko', 'en', 'ja']);
+// Locale 유효성 검증 (영어 지원 제거됨)
+const localeSchema = z.enum(['ko', 'ja']);
 
 export const Route = createFileRoute('/$locale')({
   validateSearch: (search) => search,

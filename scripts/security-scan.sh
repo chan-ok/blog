@@ -38,8 +38,8 @@ else
   # 제외 패턴 (False Positive 방지)
   EXCLUDE_PATTERNS="(process\.env\.|NEXT_PUBLIC_|test\.|spec\.|mock|fixture|stories\.|example\.com|your-api-key|\*\*\*|xxx|REPLACE_ME|-tokens@|-token@|/tokens:|/token:|comma-separated-tokens|space-separated-tokens|pnpm-lock\.yaml)"
   
-  # 스테이징된 변경사항에서 민감 정보 검색
-  SENSITIVE_MATCHES=$(git diff --cached | grep -iE "$SENSITIVE_PATTERNS" | grep -ivE "$EXCLUDE_PATTERNS" | grep -E '^\+[^+]' || true)
+  # 스테이징된 변경사항에서 민감 정보 검색 (lock 파일 제외 — 패키지명 false positive 방지)
+  SENSITIVE_MATCHES=$(git diff --cached -- ':(exclude)pnpm-lock.yaml' ':(exclude)package-lock.json' ':(exclude)yarn.lock' | grep -iE "$SENSITIVE_PATTERNS" | grep -ivE "$EXCLUDE_PATTERNS" | grep -E '^\+[^+]' || true)
   
   if [ -n "$SENSITIVE_MATCHES" ]; then
     echo "🚨 ERROR: Potential sensitive data detected in staged changes!"

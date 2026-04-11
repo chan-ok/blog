@@ -32,6 +32,8 @@
   --color-ink2: var(--ink2);
   --color-ink3: var(--ink3);
   --color-rule: var(--rule);
+  /* 세리프 폰트 스택을 font-sans 유틸리티로 노출 */
+  --font-sans: 'Noto Serif KR', 'Noto Serif JP', 'Noto Serif', serif;
 }
 
 /* ── 기본 폰트 (KR/JP/EN 세리프 통일) ── */
