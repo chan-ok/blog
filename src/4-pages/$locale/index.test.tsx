@@ -78,7 +78,7 @@ describe('$locale/index 라우트 (홈 페이지)', () => {
       params: { locale: 'ko' },
     } as unknown as LoaderArgs);
 
-    expect(getPosts).toHaveBeenCalledWith({ locale: 'ko', size: 3 });
+    expect(getPosts).toHaveBeenCalledWith({ locale: 'ko', size: 5 });
     expect(result).toHaveProperty('postsPromise');
   });
 });
