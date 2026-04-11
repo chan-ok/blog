@@ -29,8 +29,8 @@ export default function MDComponent({
 
   // 파생 값: MDX 컴포넌트 설정 (customComponents로 기본값 오버라이드 가능)
   const components = useMemo(
-    () => setMdxComponents(customComponents, baseUrl, path),
-    [customComponents, baseUrl, path]
+    () => setMdxComponents(customComponents, baseUrl),
+    [customComponents, baseUrl]
   );
 
   // TanStack Query로 마크다운 페칭 및 evaluate
@@ -57,11 +57,7 @@ export default function MDComponent({
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-200 bg-red-50 p-8 text-center dark:border-red-800 dark:bg-red-900/20">
-        <AlertCircle
-          size={48}
-          className="text-red-600 dark:text-red-400"
-          aria-hidden="true"
-        />
+        <AlertCircle size={48} className="text-red-600 dark:text-red-400" aria-hidden="true" />
         <p className="text-lg font-medium text-red-900 dark:text-red-100">
           {t('markdown.loadError')}
         </p>

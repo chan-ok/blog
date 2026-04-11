@@ -4,9 +4,7 @@ interface TurnstileWidgetProps {
   onSuccess: (token: string) => void;
 }
 
-export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
-  onSuccess,
-}) => {
+export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({ onSuccess }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -17,9 +15,7 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
 
     // ⭐ 환경 변수가 없을 때 에러 처리
     if (!sitekey) {
-      console.error(
-        '[Turnstile] VITE_TURNSTILE_SITE_KEY environment variable is not set'
-      );
+      console.error('[Turnstile] VITE_TURNSTILE_SITE_KEY environment variable is not set');
       return;
     }
 

@@ -12,18 +12,12 @@ interface TagFilterBarProps {
  * 포스트 목록 상단 태그 필터 메뉴 바.
  * "전체" 링크와 각 태그 링크를 표시하며, 선택된 태그는 강조합니다.
  */
-export default function TagFilterBar({
-  locale,
-  availableTags,
-  selectedTags,
-}: TagFilterBarProps) {
+export default function TagFilterBar({ locale, availableTags, selectedTags }: TagFilterBarProps) {
   const { t } = useTranslation();
 
   const buildTagHref = (tag: string) => {
     const isSelected = selectedTags.includes(tag);
-    const newTags = isSelected
-      ? selectedTags.filter((t) => t !== tag)
-      : [...selectedTags, tag];
+    const newTags = isSelected ? selectedTags.filter((t) => t !== tag) : [...selectedTags, tag];
     if (newTags.length === 0) {
       return `/${locale}/posts`;
     }

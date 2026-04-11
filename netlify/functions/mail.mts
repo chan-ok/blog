@@ -25,17 +25,11 @@ type NetlifyResponse = {
 
 const MailBodySchema = z.object({
   from: z.string().email('Invalid email'),
-  subject: z
-    .string()
-    .min(1, 'Subject is required')
-    .max(100, 'Subject length is over'),
   message: z.string().min(1, 'Message is required'),
   turnstileToken: z.string().min(1, 'Turnstile token is required'),
 });
 
-export const handler = async (
-  event: NetlifyEvent
-): Promise<NetlifyResponse> => {
+export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => {
   try {
     if (event.httpMethod.toUpperCase() !== 'POST') {
       return { statusCode: 405, body: 'Method Not Allowed' };
@@ -62,7 +56,7 @@ export const handler = async (
       };
     }
 
-    const { from, subject, message, turnstileToken } = parsed.data;
+    const { from, message, turnstileToken } = parsed.data;
 
     if (!turnstileToken) {
       return { statusCode: 400, body: 'Missing Turnstile token' };
@@ -77,17 +71,14 @@ export const handler = async (
       };
     }
 
-    const verifyRes = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          secret: secretKey,
-          response: turnstileToken,
-        }),
-      }
-    );
+    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        secret: secretKey,
+        response: turnstileToken,
+      }),
+    });
 
     const verifyJson = await verifyRes.json();
 
@@ -111,12 +102,8 @@ export const handler = async (
     const email = await resend.emails.send({
       from: 'contact@chanho.dev',
       to: 'kiss.yagni.dry@gmail.com',
-      subject,
-      text: `
-      from: ${from}
-      
-      ${message}
-      `,
+      subject: 'chan-ok.com 블로그 문의',
+      text: `from: ${from}\n\n${message}`,
     });
 
     if (email.error) {

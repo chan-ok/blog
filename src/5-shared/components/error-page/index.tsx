@@ -33,13 +33,7 @@ const statusCodeColors = {
   500: 'text-rose-500',
 } as const;
 
-export function ErrorPage({
-  statusCode,
-  title,
-  description,
-  onRetry,
-  onGoHome,
-}: ErrorPageProps) {
+export function ErrorPage({ statusCode, title, description, onRetry, onGoHome }: ErrorPageProps) {
   const { t } = useTranslation();
 
   // i18n 키 매핑
@@ -59,14 +53,9 @@ export function ErrorPage({
   };
 
   // title과 description 우선순위: props > i18n > 기본값
-  const displayTitle =
-    title || t(i18nKeys[statusCode].title, defaultMessages[statusCode].title);
+  const displayTitle = title || t(i18nKeys[statusCode].title, defaultMessages[statusCode].title);
   const displayDescription =
-    description ||
-    t(
-      i18nKeys[statusCode].description,
-      defaultMessages[statusCode].description
-    );
+    description || t(i18nKeys[statusCode].description, defaultMessages[statusCode].description);
 
   return (
     <div
@@ -94,20 +83,12 @@ export function ErrorPage({
 
       {/* 버튼 영역 */}
       <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
-        <Button
-          variant="primary"
-          onClick={onGoHome}
-          aria-label={t('error.goHome', 'Go Home')}
-        >
+        <Button variant="primary" onClick={onGoHome} aria-label={t('error.goHome', 'Go Home')}>
           {t('error.goHome', 'Go Home')}
         </Button>
 
         {onRetry && (
-          <Button
-            variant="default"
-            onClick={onRetry}
-            aria-label={t('error.retry', 'Try Again')}
-          >
+          <Button variant="default" onClick={onRetry} aria-label={t('error.retry', 'Try Again')}>
             {t('error.retry', 'Try Again')}
           </Button>
         )}

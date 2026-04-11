@@ -31,9 +31,7 @@ export default async function getMarkdown(
   // Vite 환경 변수 사용
   const baseURL = baseUrl || import.meta.env.VITE_GIT_RAW_URL;
   // 언더바를 공백으로 변환
-  const realPath = decodeURIComponent(path).replace(/[^/]+$/, (s) =>
-    s.replaceAll('_', ' ')
-  );
+  const realPath = decodeURIComponent(path).replace(/[^/]+$/, (s) => s.replaceAll('_', ' '));
 
   let response = await api.get<string>(realPath, { baseURL });
 
@@ -49,8 +47,7 @@ export default async function getMarkdown(
 
   // 브라우저 환경을 위한 Buffer polyfill 방지
   // gray-matter에 문자열만 전달하면 Buffer 사용 안 함
-  const stringData =
-    typeof response.data === 'string' ? response.data : String(response.data);
+  const stringData = typeof response.data === 'string' ? response.data : String(response.data);
 
   const { content, data } = matter(stringData);
 

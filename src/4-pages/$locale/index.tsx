@@ -2,16 +2,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
 import AboutBlock from '@/2-features/about/ui/about-block';
-import RecentPostBlock, {
-  RecentPostBlockSkeleton,
-} from '@/2-features/post/ui/recent-post-block';
+import RecentPostBlock, { RecentPostBlockSkeleton } from '@/2-features/post/ui/recent-post-block';
 import { getPosts } from '@/2-features/post/util/get-posts';
 import { parseLocale } from '@/5-shared/types/common.schema';
-import {
-  buildMeta,
-  buildCanonicalLink,
-  getHomeDescription,
-} from '@/5-shared/util/build-meta';
+import { buildMeta, buildCanonicalLink, getHomeDescription } from '@/5-shared/util/build-meta';
 
 export const Route = createFileRoute('/$locale/')({
   // loader: 데이터 prefetch (옵션)
@@ -45,10 +39,7 @@ function HomePage() {
     <div className="py-16 max-w-2xl">
       <AboutBlock />
       <Suspense fallback={<RecentPostBlockSkeleton />}>
-        <RecentPostBlock
-          locale={parseLocale(locale)}
-          postsPromise={postsPromise}
-        />
+        <RecentPostBlock locale={parseLocale(locale)} postsPromise={postsPromise} />
       </Suspense>
     </div>
   );

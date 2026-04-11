@@ -8,14 +8,15 @@ import { getPosts } from '../util/get-posts';
 interface PostCardListProps {
   locale: LocaleType;
   tags?: string[];
+  query?: string;
 }
 
-export default function PostCardList({ locale, tags = [] }: PostCardListProps) {
+export default function PostCardList({ locale, tags = [], query = '' }: PostCardListProps) {
   const { t } = useTranslation();
 
   const { data: pagingPosts } = useSuspenseQuery({
-    queryKey: ['posts', locale, tags],
-    queryFn: () => getPosts({ locale, tags }),
+    queryKey: ['posts', locale, tags, query],
+    queryFn: () => getPosts({ locale, tags, query }),
     retry: 3,
     staleTime: 1000 * 60 * 5,
   });
@@ -24,19 +25,16 @@ export default function PostCardList({ locale, tags = [] }: PostCardListProps) {
 
   if (!posts || posts.length === 0) {
     return (
-      <p className="text-ink3 text-sm py-8 text-center">{t('post.noPosts')}</p>
+      <p className="text-ink3 text-sm py-8 text-center">
+        {query ? t('post.noSearchResults') : t('post.noPosts')}
+      </p>
     );
   }
 
   return (
     <ol>
       {posts.map((post, idx) => (
-        <PostCard
-          key={post.path.join('/')}
-          index={idx + 1}
-          locale={locale}
-          {...post}
-        />
+        <PostCard key={post.path.join('/')} index={idx + 1} locale={locale} {...post} />
       ))}
     </ol>
   );

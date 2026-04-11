@@ -15,9 +15,7 @@ export interface GetSeriesPostsProps {
  * - 프로덕션에서는 test/draft 태그 포스트 제외
  * - createdAt 오름차순 정렬 (시리즈 순서대로)
  */
-export async function getSeriesPosts(
-  props: GetSeriesPostsProps
-): Promise<PostInfo[]> {
+export async function getSeriesPosts(props: GetSeriesPostsProps): Promise<PostInfo[]> {
   const { locale, series } = props;
 
   const baseURL = import.meta.env.VITE_GIT_RAW_URL;
@@ -43,9 +41,7 @@ export async function getSeriesPosts(
 
     // 프로덕션에서는 test/draft 태그가 있는 포스트 제외
     if (isProduction()) {
-      filteredPosts = filteredPosts.filter(
-        (post) => !hasDevOnlyTag(post.tags ?? [])
-      );
+      filteredPosts = filteredPosts.filter((post) => !hasDevOnlyTag(post.tags ?? []));
     }
 
     // createdAt 오름차순 정렬 (시리즈 첫 글부터 순서대로)

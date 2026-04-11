@@ -4,13 +4,10 @@ import { format } from 'date-fns';
 
 import MDComponent, { MarkdownFrontmatter } from '@/1-entities/markdown';
 import { getFrontmatter } from '@/1-entities/markdown/util/get-frontmatter';
-import PostSeriesBlock, {
-  PostSeriesBlockSkeleton,
-} from '@/2-features/post/ui/post-series-block';
-import PostShareButtons from '@/2-features/post/ui/post-share-buttons';
+import PostNavigation, { PostNavigationSkeleton } from '@/2-features/post/ui/post-navigation';
 import TableOfContents from '@/2-features/post/ui/table-of-contents';
 import TagChip from '@/2-features/post/ui/tag-chip';
-import Reply from '@/5-shared/components/reply';
+import { calcReadingTime } from '@/2-features/post/util/calc-reading-time';
 import ScrollProgressBar from '@/5-shared/components/scroll-progress-bar';
 import { parseLocale } from '@/5-shared/types/common.schema';
 import { buildMeta, buildCanonicalLink } from '@/5-shared/util/build-meta';
@@ -21,8 +18,7 @@ interface Heading {
   level: number;
 }
 
-const BASE_URL =
-  'https://raw.githubusercontent.com/chan-ok/blog-content/main';
+const BASE_URL = 'https://raw.githubusercontent.com/chan-ok/blog-content/main';
 
 export const Route = createFileRoute('/$locale/posts/$')({
   // loader: SEO 메타태그 생성을 위해 frontmatter를 미리 로드한다.
@@ -55,9 +51,7 @@ export const Route = createFileRoute('/$locale/posts/$')({
     const { frontmatter } = loaderData;
     const path = `/${locale}/posts/${_splat}`;
 
-    const title = frontmatter.title
-      ? `${frontmatter.title} | chan-ok.com`
-      : 'chan-ok.com';
+    const title = frontmatter.title ? `${frontmatter.title} | chan-ok.com` : 'chan-ok.com';
 
     const description =
       frontmatter.summary ??
@@ -100,13 +94,11 @@ function PostDetailPage() {
   const path = `${locale}/${_splat}.mdx`;
 
   // MDX 파싱 상태
-  const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>(
-    'loading'
-  );
+  const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>('loading');
   // Frontmatter 상태 (partial: README 등 일부 필드 없는 파일 지원)
-  const [frontmatter, setFrontmatter] = useState<MarkdownFrontmatter | null>(
-    null
-  );
+  const [frontmatter, setFrontmatter] = useState<MarkdownFrontmatter | null>(null);
+  // 읽기 예상 시간: MDX 로드 완료 후 DOM 텍스트 기반으로 계산
+  const [readingTime, setReadingTime] = useState<string | null>(null);
 
   // DOM에서 h1, h2, h3 추출
   const contentRef = useRef<HTMLDivElement>(null);
@@ -148,6 +140,13 @@ function PostDetailPage() {
     };
   }, [path]);
 
+  // MDX 로드 완료 후 읽기 예상 시간 계산
+  useEffect(() => {
+    if (mdxStatus !== 'success' || !contentRef.current) return;
+    const text = contentRef.current.textContent ?? '';
+    setReadingTime(calcReadingTime(text, parseLocale(locale)));
+  }, [mdxStatus, locale]);
+
   return (
     <div>
       {/* 스크롤 진행 바: 페이지 최상단 fixed */}
@@ -156,11 +155,19 @@ function PostDetailPage() {
       <div>
         {/* 메타 헤더: 제목, 날짜, 태그 */}
         {frontmatter && (
-          <div className="mb-8 border-b border-zinc-200 pb-6 dark:border-zinc-700">
-            <h1 className="mb-4 text-3xl font-bold">{frontmatter.title}</h1>
+          <div className="mb-8 border-b-2 border-ink pb-6">
+            <h1 className="mb-4 text-[28px] font-bold leading-tight text-ink">
+              {frontmatter.title}
+            </h1>
             {frontmatter.createdAt && (
-              <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-                {format(frontmatter.createdAt, 'yyyy-MM-dd')}
+              <div className="mb-4 flex items-center gap-3 text-[11px] tracking-[1px] text-ink3 tabular-nums">
+                <span>{format(frontmatter.createdAt, 'yyyy.MM.dd')}</span>
+                {readingTime && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>{readingTime}</span>
+                  </>
+                )}
               </div>
             )}
             {frontmatter.tags && frontmatter.tags.length > 0 && (
@@ -172,8 +179,15 @@ function PostDetailPage() {
             )}
           </div>
         )}
-        {/* TOC: 모바일에서는 본문 위에 표시, 데스크탑에서는 fixed 사이드바 */}
-        {mdxStatus === 'success' && <TableOfContents headings={headings} />}
+        {/* TOC (+ 시리즈): 모바일에서는 본문 위에 표시, 데스크탑에서는 fixed 사이드바 */}
+        {mdxStatus === 'success' && (
+          <TableOfContents
+            headings={headings}
+            series={frontmatter?.series}
+            currentPath={_splat}
+            locale={locale}
+          />
+        )}
         <div ref={contentRef} className="mdx-content">
           <MDComponent
             path={path}
@@ -182,24 +196,12 @@ function PostDetailPage() {
             onFrontmatterLoaded={setFrontmatter}
           />
         </div>
-        {/* 공유 버튼: MDX 로딩 완료 후 댓글 위에 표시 */}
-        {mdxStatus === 'success' && frontmatter && (
-          <PostShareButtons
-            title={frontmatter.title ?? ''}
-            url={window.location.href}
-          />
-        )}
-        {/* 시리즈 블록: frontmatter에 series 값이 있을 때만 렌더링 */}
-        {mdxStatus === 'success' && frontmatter?.series && (
-          <Suspense fallback={<PostSeriesBlockSkeleton />}>
-            <PostSeriesBlock
-              series={frontmatter.series}
-              currentPath={_splat}
-              locale={locale}
-            />
+        {/* 이전/다음 포스트 네비게이션 */}
+        {mdxStatus === 'success' && (
+          <Suspense fallback={<PostNavigationSkeleton />}>
+            <PostNavigation currentPath={_splat} locale={parseLocale(locale)} />
           </Suspense>
         )}
-        {mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
       </div>
     </div>
   );

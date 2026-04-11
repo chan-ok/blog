@@ -5,7 +5,6 @@ interface ImageBlockProps {
   src: string;
   alt?: string;
   baseUrl?: string;
-  contentPath?: string;
 }
 
 /**
@@ -16,12 +15,7 @@ interface ImageBlockProps {
  * - 다크모드 및 접근성 지원
  * - 상대 경로 이미지를 baseUrl 기준으로 절대 경로로 변환
  */
-export default function ImageBlock({
-  src,
-  alt,
-  baseUrl,
-  contentPath,
-}: ImageBlockProps) {
+export default function ImageBlock({ src, alt, baseUrl }: ImageBlockProps) {
   const [hasError, setHasError] = useState(false);
 
   // 상대 경로 → 절대 경로 변환
@@ -32,14 +26,13 @@ export default function ImageBlock({
     }
 
     // 상대 경로면 baseUrl + src로 조합
-    // (contentPath는 MDX 파일 위치이고, 이미지는 루트 images/ 디렉토리에 있음)
     if (baseUrl) {
       return `${baseUrl}/${src}`;
     }
 
     // baseUrl이 없으면 src 그대로 (fallback)
     return src;
-  }, [src, baseUrl, contentPath]);
+  }, [src, baseUrl]);
 
   const handleError = () => {
     setHasError(true);
@@ -52,17 +45,10 @@ export default function ImageBlock({
         aria-label={alt || '이미지를 불러올 수 없습니다'}
         className="my-6 flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-800"
       >
-        <ImageOff
-          className="h-12 w-12 text-gray-400 dark:text-gray-500"
-          aria-hidden="true"
-        />
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          이미지를 불러올 수 없습니다
-        </p>
+        <ImageOff className="h-12 w-12 text-gray-400 dark:text-gray-500" aria-hidden="true" />
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">이미지를 불러올 수 없습니다</p>
         {alt && (
-          <figcaption className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-            {alt}
-          </figcaption>
+          <figcaption className="mt-2 text-xs text-gray-400 dark:text-gray-500">{alt}</figcaption>
         )}
       </figure>
     );

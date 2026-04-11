@@ -4,15 +4,7 @@
 /node_modules
 /.pnp
 .pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
 package-lock.json
-
-# testing
-/coverage
 
 # vite
 /dist
@@ -35,6 +27,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.env.local
 
 # vercel
 .vercel
@@ -42,27 +35,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# Playwright
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/playwright/.auth/
-e2e-report
 
 *storybook.log
 storybook-static
 
 # Local Netlify folder
 .netlify
-
-# mcp
-.gemini
-.serena
-
-# obsidian
-contents/.obsidian
 
 # deno
 deno.lock
@@ -73,14 +52,3 @@ deno.lock
 # tanstack
 .tanstack/
 **/routeTree.gen.ts
-
-# Multi-agent system
-.multi-agent/queue/*.json
-.multi-agent/status/*.json
-!.multi-agent/queue/.gitkeep
-!.multi-agent/status/.gitkeep
-
-
-# claude
-.claude/
-.superpowers/

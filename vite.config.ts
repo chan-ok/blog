@@ -1,19 +1,9 @@
-import { defineConfig } from 'vitest/config';
-import { loadEnv } from 'vite';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+/// <reference types="vitest/config" />
+import { loadEnv, defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { tanstackRouter } from '@tanstack/router-vite-plugin';
-import tsconfigPaths from 'vite-tsconfig-paths';
-import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import tailwindcss from '@tailwindcss/vite';
-import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
-import { playwright } from '@vitest/browser-playwright';
-
-const dirname =
-  typeof __dirname !== 'undefined'
-    ? __dirname
-    : path.dirname(fileURLToPath(import.meta.url));
+import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -24,10 +14,12 @@ export default defineConfig(({ mode }) => {
         routesDirectory: './src/4-pages',
         generatedRouteTree: './src/5-shared/config/route/routeTree.gen.ts',
         routeFileIgnorePattern: '\\.test\\.tsx?$',
-        autoCodeSplitting: false,
+        // 테스트 환경에서는 코드 스플리팅 비활성화:
+        // autoCodeSplitting이 활성화되면 Route.options.component가 lazy 래퍼로 변환되어
+        // 단위 테스트에서 동기 렌더링이 불가능해짐 (Suspense 없이는 <div/>만 렌더됨)
+        autoCodeSplitting: mode !== 'test',
       }),
       react(),
-      tsconfigPaths(),
       ViteImageOptimizer({
         png: { quality: 80 },
         jpeg: { quality: 85 },
@@ -40,6 +32,8 @@ export default defineConfig(({ mode }) => {
     ],
     envPrefix: 'VITE_',
     resolve: {
+      // tsconfig의 paths (@/* 등)를 Vite 8 네이티브 기능으로 해석
+      tsconfigPaths: true,
       alias: {
         buffer: 'buffer',
       },
@@ -52,57 +46,84 @@ export default defineConfig(({ mode }) => {
     },
     optimizeDeps: {
       include: ['buffer'],
-      esbuildOptions: {
-        define: {
-          global: 'globalThis',
-        },
-      },
     },
     build: {
-      rollupOptions: {
+      rolldownOptions: {
+        // gray-matter 내부의 eval 사용 경고 억제 (외부 라이브러리, 수정 불가)
+        onwarn(warning, warn) {
+          if (warning.code === 'EVAL' && warning.id?.includes('gray-matter')) return;
+          warn(warning);
+        },
         output: {
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              if (id.includes('react') || id.includes('react-dom')) {
-                return 'react-vendor';
-              }
-              if (id.includes('@tanstack')) {
-                return 'tanstack';
-              }
-              if (
-                id.includes('gray-matter') ||
-                id.includes('rehype') ||
-                id.includes('remark') ||
-                id.includes('highlight.js')
-              ) {
-                return 'mdx';
-              }
-              if (id.includes('i18next')) {
-                return 'i18n';
-              }
-              if (id.includes('lucide-react') || id.includes('@base-ui')) {
-                return 'ui';
-              }
-              if (
-                id.includes('date-fns') ||
-                id.includes('zod') ||
-                id.includes('zustand') ||
-                id.includes('clsx')
-              ) {
-                return 'utils';
-              }
-              if (id.includes('axios') || id.includes('dompurify')) {
-                return 'vendor';
-              }
-            }
+          codeSplitting: {
+            groups: [
+              // 우선순위가 높을수록 여러 그룹에 매칭될 때 우선 적용
+              {
+                test: /node_modules\/(react|react-dom)/,
+                name: 'react-vendor',
+                priority: 30,
+              },
+              {
+                test: /node_modules\/@tanstack/,
+                name: 'tanstack',
+                priority: 25,
+              },
+
+              // MDX 파이프라인: 750 kB → 청크 분리
+              {
+                test: /node_modules\/@mdx-js/,
+                name: 'mdx-compiler',
+                priority: 24,
+              },
+              {
+                test: /node_modules\/(micromark|mdast|unist|vfile|hast)/,
+                name: 'mdx-ast',
+                priority: 23,
+              },
+              {
+                test: /node_modules\/(rehype|remark|gray-matter)/,
+                name: 'mdx-plugins',
+                priority: 22,
+              },
+
+              // mermaid는 내부적으로 diagram 타입을 dynamic import하므로 groups 지정 제외
+              // → rolldown이 자연스럽게 lazy chunk로 분리
+
+              {
+                test: /node_modules\/highlight\.js/,
+                name: 'highlight',
+                priority: 20,
+              },
+              { test: /node_modules\/i18next/, name: 'i18n', priority: 15 },
+              {
+                test: /node_modules\/(lucide-react|@base-ui)/,
+                name: 'ui',
+                priority: 15,
+              },
+
+              // date-fns는 용량이 크므로 utils에서 분리
+              {
+                test: /node_modules\/date-fns/,
+                name: 'date-fns',
+                priority: 12,
+              },
+              {
+                test: /node_modules\/(zod|zustand|clsx)/,
+                name: 'utils',
+                priority: 10,
+              },
+              {
+                test: /node_modules\/(axios|dompurify|isomorphic-dompurify)/,
+                name: 'vendor',
+                priority: 10,
+              },
+            ],
           },
         },
       },
     },
     test: {
       globals: true,
-      testTimeout: 5000,
-      exclude: ['**/node_modules/**', '**/.git/**'],
       projects: [
         {
           extends: true,
@@ -113,28 +134,6 @@ export default defineConfig(({ mode }) => {
             setupFiles: ['./vitest.setup.ts'],
             typecheck: { enabled: true },
             pool: 'threads',
-          },
-        },
-        {
-          extends: true,
-          plugins: [
-            storybookTest({
-              configDir: path.join(dirname, '.storybook'),
-            }),
-          ],
-          test: {
-            name: 'storybook',
-            browser: {
-              enabled: true,
-              headless: true,
-              provider: playwright({}),
-              instances: [
-                {
-                  browser: 'chromium',
-                },
-              ],
-            },
-            setupFiles: ['.storybook/vitest.setup.ts'],
           },
         },
       ],

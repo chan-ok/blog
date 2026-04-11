@@ -9,8 +9,7 @@ export function useScrollProgress() {
       if (typeof window === 'undefined') return;
 
       const scrollY = window.scrollY;
-      const totalHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
 
       // 전체 스크롤 높이가 0 이하인 경우(짧은 페이지) 100으로 처리
       if (totalHeight <= 0) {

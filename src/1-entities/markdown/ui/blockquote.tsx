@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Info,
-  AlertTriangle,
-  AlertOctagon,
-  CheckCircle,
-  type LucideIcon,
-} from 'lucide-react';
+import { Info, AlertTriangle, AlertOctagon, CheckCircle, type LucideIcon } from 'lucide-react';
 
 interface BlockquoteProps {
   children?: React.ReactNode;
@@ -88,9 +82,7 @@ function parseCallout(children: React.ReactNode): {
   }
 
   // 패턴 매칭: [!TYPE] 또는 [!TYPE] Title
-  const calloutMatch = /^\s*\[!(INFO|WARNING|DANGER|SUCCESS)\]\s*(.*)$/m.exec(
-    textContent
-  );
+  const calloutMatch = /^\s*\[!(INFO|WARNING|DANGER|SUCCESS)\]\s*(.*)$/m.exec(textContent);
   if (!calloutMatch) return null;
 
   const type = calloutMatch[1] as CalloutType;

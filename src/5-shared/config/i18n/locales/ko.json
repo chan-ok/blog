@@ -13,8 +13,6 @@
   "contact": {
     "from": "보내는 분",
     "fromPlaceholder": "이메일 주소를 입력해주세요...",
-    "subject": "제목",
-    "subjectPlaceholder": "제목을 입력해주세요...",
     "message": "내용",
     "placeholder": "메시지를 작성해주세요...",
     "checkRobot": "로봇 확인",
@@ -32,12 +30,16 @@
     "loading": "포스트 로딩 중...",
     "tags": "태그",
     "filterAll": "전체",
-    "share": "공유",
-    "copyLink": "링크 복사",
-    "copied": "복사됨",
     "series": {
       "otherPosts": "이 시리즈의 다른 글"
-    }
+    },
+    "searchPlaceholder": "포스트 검색...",
+    "noSearchResults": "검색 결과가 없습니다.",
+    "prev": "이전 포스트",
+    "next": "다음 포스트"
+  },
+  "series": {
+    "empty": "아직 발행된 시리즈가 없습니다."
   },
   "markdown": {
     "loadError": "콘텐츠를 불러오지 못했습니다",

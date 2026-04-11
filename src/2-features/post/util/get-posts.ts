@@ -19,7 +19,7 @@ export function hasDevOnlyTag(tags: string[] | undefined): boolean {
 }
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
-  const { locale, page = 0, size = 10, tags = [] } = props;
+  const { locale, page = 0, size = 10, tags = [], query = '' } = props;
 
   // Vite 환경 변수 사용
   const baseURL = import.meta.env.VITE_GIT_RAW_URL;
@@ -68,15 +68,23 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
 
     // 프로덕션에서는 test/draft 태그가 있는 포스트는 노출하지 않음
     if (isProduction()) {
-      filteredPosts = filteredPosts.filter(
-        (post) => !hasDevOnlyTag(post.tags ?? [])
-      );
+      filteredPosts = filteredPosts.filter((post) => !hasDevOnlyTag(post.tags ?? []));
     }
 
     filteredPosts = filteredPosts.filter(
-      (post) =>
-        tags.length === 0 || tags.some((tag) => (post.tags ?? []).includes(tag))
+      (post) => tags.length === 0 || tags.some((tag) => (post.tags ?? []).includes(tag))
     );
+
+    // query 필터: title, tags, summary에서 대소문자 무관 검색
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      filteredPosts = filteredPosts.filter(
+        (post) =>
+          post.title?.toLowerCase().includes(q) ||
+          (post.tags ?? []).some((tag) => tag.toLowerCase().includes(q)) ||
+          post.summary?.toLowerCase().includes(q)
+      );
+    }
 
     const startIndex = page * size;
     const endIndex = Math.min(startIndex + size, filteredPosts.length);

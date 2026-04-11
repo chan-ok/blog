@@ -38,7 +38,7 @@ export default function CodeBlock({ children }: CodeBlockProps) {
 
   // 렌더링
   return (
-    <div className="flex overflow-x-auto relative">
+    <div className="flex overflow-x-auto relative my-6 rounded border border-rule">
       {/* 코드 내용 */}
       <pre ref={preRef} className="flex-1 p-4">
         {children}

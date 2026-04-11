@@ -10,18 +10,14 @@ interface IndexItem {
 }
 
 function hasValidBaseURL(url: unknown): url is string {
-  return (
-    typeof url === 'string' && url.trim().length > 0 && url !== 'undefined'
-  );
+  return typeof url === 'string' && url.trim().length > 0 && url !== 'undefined';
 }
 
 /**
  * locale에 해당하는 index.json에서 published 포스트의 태그를 모아
  * 중복 제거 후 정렬된 배열로 반환합니다.
  */
-export async function getAvailableTags(
-  props: GetAvailableTagsProps
-): Promise<string[]> {
+export async function getAvailableTags(props: GetAvailableTagsProps): Promise<string[]> {
   const { locale } = props;
   const baseURL = import.meta.env.VITE_GIT_RAW_URL;
 
@@ -47,9 +43,7 @@ export async function getAvailableTags(
 
     const tags = posts
       .flatMap((post) => post.tags ?? [])
-      .filter(
-        (tag): tag is string => typeof tag === 'string' && tag.length > 0
-      );
+      .filter((tag): tag is string => typeof tag === 'string' && tag.length > 0);
 
     return [...new Set(tags)].toSorted((a, b) => a.localeCompare(b));
   } catch (error) {

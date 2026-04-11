@@ -1,8 +1,5 @@
 import { api } from '@/5-shared/config/api';
-import {
-  ContactFormInputsSchema,
-  type FormState,
-} from '../model/contact-form.schema';
+import { ContactFormInputsSchema, type FormState } from '../model/contact-form.schema';
 
 export function submitFormWithToken(token: string) {
   return async (_previousState: FormState, formData: FormData) => {
@@ -19,8 +16,7 @@ export function submitFormWithToken(token: string) {
 
     if (!parsed.success) {
       return {
-        serverErrors: parsed.error.flatten((issue) => issue.message)
-          .fieldErrors,
+        serverErrors: parsed.error.flatten((issue) => issue.message).fieldErrors,
       };
     }
 
@@ -34,8 +30,7 @@ export function submitFormWithToken(token: string) {
         throw new Error('Failed to send message');
       }
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to send message';
+      const message = error instanceof Error ? error.message : 'Failed to send message';
       console.error(message);
       return {
         serverErrors: { submit: message },

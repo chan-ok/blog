@@ -13,8 +13,6 @@
   "contact": {
     "from": "From",
     "fromPlaceholder": "Enter your email address...",
-    "subject": "Subject",
-    "subjectPlaceholder": "Enter subject...",
     "message": "Message",
     "placeholder": "Write your message...",
     "checkRobot": "Check Robot",
@@ -32,12 +30,16 @@
     "loading": "Loading posts...",
     "tags": "Tags",
     "filterAll": "All",
-    "share": "Share",
-    "copyLink": "Copy link",
-    "copied": "Copied!",
     "series": {
       "otherPosts": "Other posts in this series"
-    }
+    },
+    "searchPlaceholder": "Search posts...",
+    "noSearchResults": "No results found.",
+    "prev": "Previous Post",
+    "next": "Next Post"
+  },
+  "series": {
+    "empty": "No series published yet."
   },
   "markdown": {
     "loadError": "Failed to load content",

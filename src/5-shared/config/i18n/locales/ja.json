@@ -13,8 +13,6 @@
   "contact": {
     "from": "送信者",
     "fromPlaceholder": "メールアドレスを入力してください...",
-    "subject": "件名",
-    "subjectPlaceholder": "件名を入力してください...",
     "message": "内容",
     "placeholder": "メッセージを入力してください...",
     "checkRobot": "ロボット確認",
@@ -32,12 +30,16 @@
     "loading": "投稿を読み込み中...",
     "tags": "タグ",
     "filterAll": "すべて",
-    "share": "シェア",
-    "copyLink": "リンクをコピー",
-    "copied": "コピーしました",
     "series": {
       "otherPosts": "このシリーズの他の記事"
-    }
+    },
+    "searchPlaceholder": "記事を検索...",
+    "noSearchResults": "検索結果がありません。",
+    "prev": "前の記事",
+    "next": "次の記事"
+  },
+  "series": {
+    "empty": "まだシリーズが公開されていません。"
   },
   "markdown": {
     "loadError": "コンテンツの読み込みに失敗しました",

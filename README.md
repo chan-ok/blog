@@ -96,8 +96,7 @@ pnpm dev:server
 
 # 코드 품질
 pnpm lint
-pnpm lint:fix
-pnpm format
+pnpm fmt
 
 # 테스팅
 pnpm test
@@ -172,7 +171,11 @@ blog/
 - **댓글 시스템** — Giscus (GitHub Discussions 기반)
 - **포스트 페이지네이션** — 페이지 기반 포스트 목록
 - **TanStack Query 캐싱** — API 응답 캐싱 및 재검증
-- **RSS/Atom 피드** — Netlify Function 기반 피드 제공 + Footer 구독 링크
+- **Series 기능** — 포스트와 외부 스크랩을 시리즈로 묶어 발행
+- **몰입형 읽기 모드** — 포스트 상세 스크롤 시 헤더 자동 숨김
+- **포스트 검색** — 클라이언트 사이드 키워드 검색 (index.json 기반)
+- **포스트 네비게이션** — 상세 페이지에서 이전/다음 포스트 이동
+- **읽기 시간 표시** — MDX 렌더링 기반 예상 읽기 시간 계산
 - **스크롤 진행 바** — 포스트 상세 페이지 읽기 진행률 표시
 
 ## 문서
@@ -181,22 +184,22 @@ blog/
 - **.multi-agent/** — 멀티 에이전트 시스템 절대 기준 (문서·스크립트·설정)
 - **.opencode/agent/** — 직접 구축한 에이전트 프롬프트 기준점
 
-| 문서                                                          | 설명                            |
-| ------------------------------------------------------------- | ------------------------------- |
-| [doc-structure.md](./docs/doc-structure.md)                   | 문서 구조 및 기준점             |
-| [agents.md](./docs/agents.md)                                 | AI 코딩 에이전트 가이드         |
-| [development.md](./docs/development.md)                       | 개발 환경 설정 및 워크플로우    |
-| [architecture.md](./docs/architecture.md)                     | 프로젝트 구조 및 기술 선택 배경 |
-| [architecture-rules.md](./docs/architecture-rules.md)         | FSD 아키텍처 규칙               |
-| [code-style.md](./docs/code-style.md)                         | 코드 스타일 가이드              |
-| [commands.md](./docs/commands.md)                             | 명령어 레퍼런스                 |
-| [testing.md](./docs/testing.md)                               | 테스팅 가이드                   |
-| [security.md](./docs/security.md)                             | 보안 가이드                     |
-| [git-flow.md](./docs/git-flow.md)                             | Git Flow 가이드                 |
-| [language-rules.md](./docs/language-rules.md)                 | 언어 및 커밋 규칙               |
-| [anti-patterns.md](./docs/anti-patterns.md)                   | 안티패턴 목록                   |
-| [retrospective/overview.md](./docs/retrospective/overview.md) | 프로젝트 회고 및 의사결정 로그  |
-| [.multi-agent/](./.multi-agent/)                             | tmux 멀티 에이전트 시스템 (4종 에이전트) |
+| 문서                                                          | 설명                                     |
+| ------------------------------------------------------------- | ---------------------------------------- |
+| [doc-structure.md](./docs/doc-structure.md)                   | 문서 구조 및 기준점                      |
+| [agents.md](./docs/agents.md)                                 | AI 코딩 에이전트 가이드                  |
+| [development.md](./docs/development.md)                       | 개발 환경 설정 및 워크플로우             |
+| [architecture.md](./docs/architecture.md)                     | 프로젝트 구조 및 기술 선택 배경          |
+| [architecture-rules.md](./docs/architecture-rules.md)         | FSD 아키텍처 규칙                        |
+| [code-style.md](./docs/code-style.md)                         | 코드 스타일 가이드                       |
+| [commands.md](./docs/commands.md)                             | 명령어 레퍼런스                          |
+| [testing.md](./docs/testing.md)                               | 테스팅 가이드                            |
+| [security.md](./docs/security.md)                             | 보안 가이드                              |
+| [git-flow.md](./docs/git-flow.md)                             | Git Flow 가이드                          |
+| [language-rules.md](./docs/language-rules.md)                 | 언어 및 커밋 규칙                        |
+| [anti-patterns.md](./docs/anti-patterns.md)                   | 안티패턴 목록                            |
+| [retrospective/overview.md](./docs/retrospective/overview.md) | 프로젝트 회고 및 의사결정 로그           |
+| [.multi-agent/](./.multi-agent/)                              | tmux 멀티 에이전트 시스템 (4종 에이전트) |
 
 ## 관련 리소스
 

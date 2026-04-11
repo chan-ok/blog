@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/5-shared/config/i18n';
 import { useLocaleStore } from '@/5-shared/stores/locale-store';
+import type { LocaleType } from '@/5-shared/types/common.schema';
 
 interface LocaleProviderProps {
   locale: LocaleType;

@@ -24,13 +24,13 @@ export default function Header() {
   return (
     <header
       className={clsx(
-        'border-b-2 border-ink bg-bg',
+        'sticky top-0 z-50 border-b-2 border-ink bg-bg',
         'transition-transform duration-300 ease-in-out',
         isHidden ? '-translate-y-full' : 'translate-y-0'
       )}
     >
       {/* 마스트헤드 영역 */}
-      <div className="flex flex-col items-center pt-6 pb-0 px-10">
+      <div className="flex flex-col items-center pt-6 pb-0">
         <Link
           href="/"
           aria-label="Home"
@@ -38,53 +38,34 @@ export default function Header() {
         >
           Chanho.dev
         </Link>
-        <p className="text-[10px] tracking-[2.5px] text-ink3 mt-1 mb-3">
-          개발 · 사유 · 기록
-        </p>
+        <p className="text-[10px] tracking-[2.5px] text-ink3 mt-1 mb-3">개발 · 사유 · 기록</p>
       </div>
 
       {/* nav 바 */}
-      <nav
-        className="flex items-center border-t border-rule"
-        aria-label="주요 네비게이션"
-      >
-        {/* 좌측 경계선 */}
-        <span className="border-l border-rule self-stretch" />
+      <nav className="border-t border-rule" aria-label="주요 네비게이션">
+        <div className="max-w-4xl mx-auto flex items-center">
+          {/* 좌측 경계선 */}
+          <span className="border-l border-rule self-stretch" />
 
-        <Link
-          href="/about"
-          aria-label="About"
-          className={navLinkClass('/about')}
-        >
-          About
-        </Link>
-        <Link
-          href="/posts"
-          aria-label="Posts"
-          className={navLinkClass('/posts')}
-        >
-          Posts
-        </Link>
-        <Link
-          href="/series"
-          aria-label="Series"
-          className={navLinkClass('/series')}
-        >
-          Series
-        </Link>
-        <Link
-          href="/contact"
-          aria-label="Contact"
-          className={navLinkClass('/contact')}
-        >
-          Contact
-        </Link>
+          <Link href="/about" aria-label="About" className={navLinkClass('/about')}>
+            About
+          </Link>
+          <Link href="/posts" aria-label="Posts" className={navLinkClass('/posts')}>
+            Posts
+          </Link>
+          <Link href="/contact" aria-label="Contact" className={navLinkClass('/contact')}>
+            Contact
+          </Link>
 
-        {/* 토글 영역 */}
-        <span className="ml-auto flex items-center border-l border-rule px-2">
-          <ThemeToggle />
-          <LocaleToggle />
-        </span>
+          {/* 토글 영역 */}
+          <span className="ml-auto flex items-stretch border-l border-rule">
+            <ThemeToggle />
+            <LocaleToggle />
+          </span>
+
+          {/* 우측 경계선 */}
+          <span className="border-r border-rule self-stretch" />
+        </div>
       </nav>
     </header>
   );

@@ -108,11 +108,7 @@ export default function Button({
   // link variant ignores shape prop (Requirements 2.4)
   const effectiveShape = variant === 'link' ? 'fill' : shape;
 
-  const buttonClassName = clsx(
-    baseStyles,
-    variantStyles[variant][effectiveShape],
-    className
-  );
+  const buttonClassName = clsx(baseStyles, variantStyles[variant][effectiveShape], className);
 
   return (
     <BaseButton className={buttonClassName} nativeButton {...props}>

@@ -9,8 +9,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
     const applyTheme = () => {
-      const isDark =
-        theme === 'dark' || (theme === 'system' && mediaQuery.matches);
+      const isDark = theme === 'dark' || (theme === 'system' && mediaQuery.matches);
 
       root.classList.toggle('dark', isDark);
       setThemeClass(isDark ? 'dark' : 'light');
@@ -22,6 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       mediaQuery.addEventListener('change', applyTheme);
       return () => mediaQuery.removeEventListener('change', applyTheme);
     }
+    // oxlint-disable-next-line react/exhaustive-deps -- Zustand action은 stable reference
   }, [theme]);
 
   return <>{children}</>;

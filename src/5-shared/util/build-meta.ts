@@ -8,9 +8,7 @@ const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
  * RouteMatchExtensions.meta는 React.JSX.IntrinsicElements['meta'] 배열을 기대하지만
  * 런타임의 headContentUtils는 { title } / { name, content } / { property, content } 형식을 처리한다.
  */
-type MetaTag =
-  | ({ title: string } & Record<string, unknown>)
-  | React.JSX.IntrinsicElements['meta'];
+type MetaTag = ({ title: string } & Record<string, unknown>) | React.JSX.IntrinsicElements['meta'];
 
 /** 페이지별 메타태그 생성 옵션 */
 export interface MetaOptions {
@@ -39,9 +37,7 @@ export interface MetaOptions {
  * 반환 타입은 TanStack Router의 RouteMatchExtensions.meta와 호환되도록
  * React.JSX.IntrinsicElements['meta']로 캐스팅한다.
  */
-export function buildMeta(
-  options: MetaOptions
-): React.JSX.IntrinsicElements['meta'][] {
+export function buildMeta(options: MetaOptions): React.JSX.IntrinsicElements['meta'][] {
   const {
     title,
     description,
@@ -110,9 +106,7 @@ function localeToOgLocale(locale: string): string {
  * canonical link 태그를 생성한다.
  * TanStack Router route의 `head()` 옵션에서 links 필드로 전달한다.
  */
-export function buildCanonicalLink(
-  path: string
-): React.JSX.IntrinsicElements['link'][] {
+export function buildCanonicalLink(path: string): React.JSX.IntrinsicElements['link'][] {
   return [{ rel: 'canonical', href: `${SITE_URL}${path}` }];
 }
 

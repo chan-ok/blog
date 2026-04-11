@@ -10,12 +10,7 @@ interface LinkProps extends Omit<RouterLinkProps, 'to' | 'params'> {
 }
 
 type RouteConfig = {
-  to:
-    | '/$locale'
-    | '/$locale/about'
-    | '/$locale/contact'
-    | '/$locale/posts'
-    | '/$locale/posts/$';
+  to: '/$locale' | '/$locale/about' | '/$locale/contact' | '/$locale/posts' | '/$locale/posts/$';
   params: { locale: string; _splat?: string };
 };
 
@@ -90,12 +85,7 @@ function parseInternalLink(
   };
 }
 
-export default function Link({
-  href,
-  children,
-  className,
-  ...props
-}: LinkProps) {
+export default function Link({ href, children, className, ...props }: LinkProps) {
   const { locale } = useLocaleStore();
 
   // 외부 링크는 일반 <a> 태그로 처리
@@ -115,13 +105,7 @@ export default function Link({
   const { to, params, search } = parseInternalLink(href, locale);
 
   return (
-    <RouterLink
-      to={to}
-      params={params}
-      search={search}
-      className={className}
-      {...props}
-    >
+    <RouterLink to={to} params={params} search={search} className={className} {...props}>
       {children}
     </RouterLink>
   );

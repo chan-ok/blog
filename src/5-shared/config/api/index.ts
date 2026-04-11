@@ -73,9 +73,7 @@ class ApiClient {
     if (schema) {
       const result = schema.safeParse(parsed);
       if (!result.success) {
-        throw new Error(
-          `Zod validation failed: ${JSON.stringify(result.error.issues)}`
-        );
+        throw new Error(`Zod validation failed: ${JSON.stringify(result.error.issues)}`);
       }
       parsed = result.data;
     }

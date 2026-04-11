@@ -1,6 +1,4 @@
 declare global {
-  type LocaleType = import('@/5-shared/types/common.schema').LocaleType;
-
   // reference: https://github.com/vnphanquang/svelte-put
   interface TurnstileConfig {
     sitekey: string;
@@ -25,14 +23,6 @@ declare global {
     turnstile: TurnstileWidget;
     Buffer: typeof import('buffer').Buffer; // Buffer polyfill
     global: typeof globalThis; // global polyfill
-  }
-
-  namespace NodeJS {
-    interface ProcessEnv {
-      // Git repository configuration
-      NEXT_PUBLIC_GIT_RAW_URL: string;
-      NEXT_PUBLIC_CONTENT_REPO_URL: string;
-    }
   }
 }
 

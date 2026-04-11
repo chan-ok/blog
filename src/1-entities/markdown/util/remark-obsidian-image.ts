@@ -18,7 +18,6 @@ import { visit } from 'unist-util-visit';
 const remarkObsidianImage = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (tree: any) => {
-
     visit(
       tree,
       'paragraph',
@@ -32,9 +31,7 @@ const remarkObsidianImage = () => {
 
         // Obsidian 이미지 패턴 감지: ![[path]] or ![[path|alt]]
         const obsidianImageRegex = /!\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
-        const matches = Array.from(
-          textNode.value.matchAll(obsidianImageRegex)
-        );
+        const matches = Array.from(textNode.value.matchAll(obsidianImageRegex));
 
         if (matches.length === 0) return;
 
@@ -48,50 +45,49 @@ const remarkObsidianImage = () => {
           const fullMatch = match[0] as string;
           const imagePath = (match[1] as string).trim();
           const altText =
-            (match[2] as string | undefined)?.trim() ||
-            imagePath.split('/').pop() ||
-            '';
+            (match[2] as string | undefined)?.trim() || imagePath.split('/').pop() || '';
 
           const matchIndex = (match.index as number | undefined) ?? 0;
 
-        // 매치 이전 텍스트가 있으면 Text 노드로 추가
-        if (matchIndex > lastIndex) {
-          const beforeText = textNode.value.slice(lastIndex, matchIndex);
-          if (beforeText) {
+          // 매치 이전 텍스트가 있으면 Text 노드로 추가
+          if (matchIndex > lastIndex) {
+            const beforeText = textNode.value.slice(lastIndex, matchIndex);
+            if (beforeText) {
+              newChildren.push({
+                type: 'text',
+                value: beforeText,
+              });
+            }
+          }
+
+          // Image 노드 추가
+          newChildren.push({
+            type: 'image',
+            url: imagePath,
+            alt: altText,
+          });
+
+          lastIndex = matchIndex + fullMatch.length;
+        });
+
+        // 마지막 매치 이후 남은 텍스트 추가
+        if (lastIndex < textNode.value.length) {
+          const afterText = textNode.value.slice(lastIndex);
+          if (afterText) {
             newChildren.push({
               type: 'text',
-              value: beforeText,
+              value: afterText,
             });
           }
         }
 
-        // Image 노드 추가
-        newChildren.push({
-          type: 'image',
-          url: imagePath,
-          alt: altText,
-        });
-
-        lastIndex = matchIndex + fullMatch.length;
-      });
-
-      // 마지막 매치 이후 남은 텍스트 추가
-      if (lastIndex < textNode.value.length) {
-        const afterText = textNode.value.slice(lastIndex);
-        if (afterText) {
-          newChildren.push({
-            type: 'text',
-            value: afterText,
-          });
+        // 변환된 노드들로 paragraph의 children 교체
+        if (newChildren.length > 0) {
+          // Image 노드만 있으면 paragraph를 유지하고 children만 교체
+          node.children = newChildren;
         }
       }
-
-      // 변환된 노드들로 paragraph의 children 교체
-      if (newChildren.length > 0) {
-        // Image 노드만 있으면 paragraph를 유지하고 children만 교체
-        node.children = newChildren;
-      }
-    });
+    );
   };
 };
 
