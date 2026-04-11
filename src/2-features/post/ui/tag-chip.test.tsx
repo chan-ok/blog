@@ -62,13 +62,13 @@ describe('TagChip - Unit 테스트', () => {
   });
 
   it('스타일 클래스가 적용되어야 한다', async () => {
+    // 사각형 모노크롬 스타일: rounded-full 대신 border 토큰 사용
     await renderWithRouter(<TagChip tag="react" locale="ko" />);
 
     const link = screen.getByRole('link');
-    expect(link.className).toContain('rounded-full');
+    expect(link.className).toContain('border');
     expect(link.className).toContain('px-2');
     expect(link.className).toContain('py-0.5');
-    expect(link.className).toContain('text-xs');
   });
 
   it('접근성을 위한 aria-label이 있어야 한다', async () => {

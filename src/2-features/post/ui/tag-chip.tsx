@@ -6,9 +6,7 @@ interface TagChipProps {
 }
 
 /**
- * TagChip 컴포넌트
- *
- * 태그를 칩 형태로 표시하고, 클릭 시 해당 태그로 필터된 포스트 목록으로 이동합니다.
+ * TagChip: 사각형 테두리만 있는 모노크롬 태그 칩.
  */
 export default function TagChip({ tag, locale }: TagChipProps) {
   const href = `/${locale}/posts?tags=${encodeURIComponent(tag)}`;
@@ -16,7 +14,7 @@ export default function TagChip({ tag, locale }: TagChipProps) {
   return (
     <Link
       href={href}
-      className="rounded-full px-2 py-0.5 text-xs bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-600 transition-colors"
+      className="border border-rule text-[9px] text-ink3 px-2 py-0.5 hover:border-ink hover:text-ink transition-colors duration-150"
       aria-label={`태그: ${tag}`}
     >
       {tag}
