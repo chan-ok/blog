@@ -28,12 +28,10 @@ export default function ThemeToggle() {
   };
 
   const buttonClassName = clsx(
-    'flex items-center',
-    'h-8',
-    'px-3 py-4 gap-1',
-    'text-sm font-medium text-gray-600 dark:text-gray-300',
-    'rounded-2xl outline-none select-none cursor-pointer transition-colors duration-200',
-    'hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:bg-gray-100 dark:focus-visible:bg-gray-800'
+    'flex items-center h-9 px-3 gap-1',
+    'text-[11px] text-ink3 cursor-pointer',
+    'hover:bg-ink hover:text-bg transition-colors duration-150',
+    'outline-none select-none'
   );
 
   return (

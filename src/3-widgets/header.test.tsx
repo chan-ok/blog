@@ -3,47 +3,26 @@ import { render, screen } from '@testing-library/react';
 import { useRouterState } from '@tanstack/react-router';
 
 import Header from './header';
-import { useDetectScrolled } from '@/5-shared/hooks/use-detect-scrolled';
 
 /**
  * ============================================================================
- * Header 위젯 테스트
+ * Header 위젯 테스트 (마스트헤드 스타일)
  * ============================================================================
  *
  * ## 테스트 종류
- * 1. Unit 테스트: 렌더링, 네비게이션 링크, 접근성, 스크롤 상태
+ * 1. Unit 테스트: 렌더링, 네비게이션 링크, 접근성, 활성 상태
  *
  * ## 검증 항목
- * - 로고 및 네비게이션 링크 렌더링
- * - pathname 기반 링크 하이라이트
- * - 다국어 지원 (ko/en/ja)
- * - 접근성 속성 (aria-label)
- * - 스크롤 상태에 따른 스타일 변경
+ * - 마스트헤드 로고 및 서브타이틀 렌더링
+ * - About / Posts / Series / Contact 네비게이션 링크
+ * - pathname 기반 링크 활성 클래스 (bg-ink)
+ * - 접근성 속성 (aria-label, nav aria-label)
  * - ThemeToggle, LocaleToggle 렌더링
  */
 
 // TanStack Router 모킹
 vi.mock('@tanstack/react-router', () => ({
   useRouterState: vi.fn(),
-}));
-
-// useDetectScrolled 모킹
-vi.mock('@/5-shared/hooks/use-detect-scrolled', () => ({
-  useDetectScrolled: vi.fn(),
-}));
-
-// react-i18next 모킹
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => {
-      const translations: Record<string, string> = {
-        'nav.about': 'About',
-        'nav.posts': 'Posts',
-        'nav.contact': 'Contact',
-      };
-      return translations[key] || key;
-    },
-  }),
 }));
 
 // ThemeToggle 컴포넌트 모킹
@@ -77,12 +56,10 @@ vi.mock('@/5-shared/components/ui/link', () => ({
 
 describe('Header 위젯', () => {
   beforeEach(() => {
-    // 기본값 설정
     vi.mocked(useRouterState).mockReturnValue({
       location: { pathname: '/' },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
-    vi.mocked(useDetectScrolled).mockReturnValue(false);
   });
 
   describe('정상 케이스', () => {
@@ -95,81 +72,59 @@ describe('Header 위젯', () => {
       expect(logo).toHaveAttribute('href', '/');
     });
 
-    it('About, Posts, Contact 네비게이션 링크가 올바른 href를 가져야 한다', () => {
+    it('About, Posts, Series, Contact 네비게이션 링크가 올바른 href를 가져야 한다', () => {
       render(<Header />);
 
-      const aboutLink = screen.getByLabelText('About');
-      const postsLink = screen.getByLabelText('Posts');
-      const contactLink = screen.getByLabelText('Contact');
-
-      expect(aboutLink).toHaveAttribute('href', '/about');
-      expect(postsLink).toHaveAttribute('href', '/posts');
-      expect(contactLink).toHaveAttribute('href', '/contact');
+      expect(screen.getByLabelText('About')).toHaveAttribute('href', '/about');
+      expect(screen.getByLabelText('Posts')).toHaveAttribute('href', '/posts');
+      expect(screen.getByLabelText('Series')).toHaveAttribute(
+        'href',
+        '/series'
+      );
+      expect(screen.getByLabelText('Contact')).toHaveAttribute(
+        'href',
+        '/contact'
+      );
     });
 
     it('ThemeToggle 버튼이 렌더링되어야 한다', () => {
       render(<Header />);
 
-      const themeToggle = screen.getByLabelText('Toggle theme');
-      expect(themeToggle).toBeInTheDocument();
+      expect(screen.getByLabelText('Toggle theme')).toBeInTheDocument();
     });
 
     it('LocaleToggle 버튼이 렌더링되어야 한다', () => {
       render(<Header />);
 
-      const localeToggle = screen.getByLabelText('Toggle locale');
-      expect(localeToggle).toBeInTheDocument();
+      expect(screen.getByLabelText('Toggle locale')).toBeInTheDocument();
+    });
+
+    it('nav에 aria-label="주요 네비게이션"이 있어야 한다', () => {
+      render(<Header />);
+
+      expect(
+        screen.getByRole('navigation', { name: '주요 네비게이션' })
+      ).toBeInTheDocument();
     });
   });
 
   describe('경계 조건', () => {
-    it('pathname이 빈 문자열일 때 처리해야 한다', () => {
+    it('pathname이 빈 문자열일 때 에러 없이 렌더링되어야 한다', () => {
       vi.mocked(useRouterState).mockReturnValue({
         location: { pathname: '' },
       } as unknown as ReturnType<typeof useRouterState>);
 
       render(<Header />);
 
-      // 에러 없이 렌더링되고 모든 링크가 하이라이트되지 않아야 함
-      const aboutLink = screen.getByLabelText('About');
-      const postsLink = screen.getByLabelText('Posts');
-      const contactLink = screen.getByLabelText('Contact');
-
-      expect(aboutLink).toBeInTheDocument();
-      expect(postsLink).toBeInTheDocument();
-      expect(contactLink).toBeInTheDocument();
-    });
-
-    it('locale이 ko일 때 네비게이션 텍스트가 올바르게 표시되어야 한다', () => {
-      render(<Header />);
-
-      // i18n 모킹에서 영어 번역을 반환하므로 영어로 검증
       expect(screen.getByLabelText('About')).toBeInTheDocument();
       expect(screen.getByLabelText('Posts')).toBeInTheDocument();
-      expect(screen.getByLabelText('Contact')).toBeInTheDocument();
-    });
-
-    it('locale이 en일 때 네비게이션 텍스트가 올바르게 표시되어야 한다', () => {
-      // 모킹된 번역 함수가 이미 영어를 반환하므로 동일하게 검증
-      render(<Header />);
-
-      expect(screen.getByLabelText('About')).toBeInTheDocument();
-      expect(screen.getByLabelText('Posts')).toBeInTheDocument();
-      expect(screen.getByLabelText('Contact')).toBeInTheDocument();
-    });
-
-    it('locale이 ja일 때 네비게이션 텍스트가 올바르게 표시되어야 한다', () => {
-      // 모킹된 번역 함수가 이미 영어를 반환하므로 동일하게 검증
-      render(<Header />);
-
-      expect(screen.getByLabelText('About')).toBeInTheDocument();
-      expect(screen.getByLabelText('Posts')).toBeInTheDocument();
+      expect(screen.getByLabelText('Series')).toBeInTheDocument();
       expect(screen.getByLabelText('Contact')).toBeInTheDocument();
     });
   });
 
   describe('엣지 케이스', () => {
-    it('pathname이 /about일 때 About 링크가 하이라이트되어야 한다', () => {
+    it('pathname이 /about일 때 About 링크에 활성 클래스(bg-ink)가 적용되어야 한다', () => {
       vi.mocked(useRouterState).mockReturnValue({
         location: { pathname: '/about' },
       } as unknown as ReturnType<typeof useRouterState>);
@@ -177,10 +132,21 @@ describe('Header 위젯', () => {
       render(<Header />);
 
       const aboutLink = screen.getByLabelText('About');
-      expect(aboutLink).toHaveClass('text-blue-600');
+      expect(aboutLink).toHaveClass('bg-ink');
     });
 
-    it('pathname이 / (홈)일 때 네비게이션 링크가 하이라이트되지 않아야 한다', () => {
+    it('pathname이 /series일 때 Series 링크에 활성 클래스(bg-ink)가 적용되어야 한다', () => {
+      vi.mocked(useRouterState).mockReturnValue({
+        location: { pathname: '/series' },
+      } as unknown as ReturnType<typeof useRouterState>);
+
+      render(<Header />);
+
+      const seriesLink = screen.getByLabelText('Series');
+      expect(seriesLink).toHaveClass('bg-ink');
+    });
+
+    it('pathname이 / (홈)일 때 네비게이션 링크가 활성화되지 않아야 한다', () => {
       vi.mocked(useRouterState).mockReturnValue({
         location: { pathname: '/' },
       } as unknown as ReturnType<typeof useRouterState>);
@@ -188,7 +154,7 @@ describe('Header 위젯', () => {
       render(<Header />);
 
       const aboutLink = screen.getByLabelText('About');
-      expect(aboutLink).not.toHaveClass('text-blue-600');
+      expect(aboutLink).not.toHaveClass('bg-ink');
     });
   });
 
@@ -196,53 +162,64 @@ describe('Header 위젯', () => {
     it('로고 링크에 aria-label="Home"이 있어야 한다', () => {
       render(<Header />);
 
-      const logo = screen.getByLabelText('Home');
-      expect(logo).toHaveAttribute('aria-label', 'Home');
+      expect(screen.getByLabelText('Home')).toHaveAttribute(
+        'aria-label',
+        'Home'
+      );
     });
 
-    it('About 링크에 적절한 aria-label이 있어야 한다', () => {
+    it('About 링크에 aria-label="About"이 있어야 한다', () => {
       render(<Header />);
 
-      const aboutLink = screen.getByLabelText('About');
-      expect(aboutLink).toHaveAttribute('aria-label', 'About');
+      expect(screen.getByLabelText('About')).toHaveAttribute(
+        'aria-label',
+        'About'
+      );
     });
 
-    it('Posts 링크에 적절한 aria-label이 있어야 한다', () => {
+    it('Posts 링크에 aria-label="Posts"이 있어야 한다', () => {
       render(<Header />);
 
-      const postsLink = screen.getByLabelText('Posts');
-      expect(postsLink).toHaveAttribute('aria-label', 'Posts');
+      expect(screen.getByLabelText('Posts')).toHaveAttribute(
+        'aria-label',
+        'Posts'
+      );
     });
 
-    it('Contact 링크에 적절한 aria-label이 있어야 한다', () => {
+    it('Series 링크에 aria-label="Series"이 있어야 한다', () => {
       render(<Header />);
 
-      const contactLink = screen.getByLabelText('Contact');
-      expect(contactLink).toHaveAttribute('aria-label', 'Contact');
+      expect(screen.getByLabelText('Series')).toHaveAttribute(
+        'aria-label',
+        'Series'
+      );
+    });
+
+    it('Contact 링크에 aria-label="Contact"이 있어야 한다', () => {
+      render(<Header />);
+
+      expect(screen.getByLabelText('Contact')).toHaveAttribute(
+        'aria-label',
+        'Contact'
+      );
     });
 
     it('ThemeToggle 버튼에 aria-label이 있어야 한다', () => {
       render(<Header />);
 
-      const themeToggle = screen.getByLabelText('Toggle theme');
-      expect(themeToggle).toHaveAttribute('aria-label', 'Toggle theme');
+      expect(screen.getByLabelText('Toggle theme')).toHaveAttribute(
+        'aria-label',
+        'Toggle theme'
+      );
     });
 
     it('LocaleToggle 버튼에 aria-label이 있어야 한다', () => {
       render(<Header />);
 
-      const localeToggle = screen.getByLabelText('Toggle locale');
-      expect(localeToggle).toHaveAttribute('aria-label', 'Toggle locale');
+      expect(screen.getByLabelText('Toggle locale')).toHaveAttribute(
+        'aria-label',
+        'Toggle locale'
+      );
     });
-  });
-
-  it('scrolled=true일 때 헤더에 스크롤 스타일이 적용되어야 한다', () => {
-    vi.mocked(useDetectScrolled).mockReturnValue(true);
-
-    render(<Header />);
-
-    const header = screen.getByRole('banner');
-    const headerInner = header.firstElementChild;
-    expect(headerInner?.className).toMatch(/shadow|backdrop/);
   });
 });

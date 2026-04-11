@@ -1,86 +1,82 @@
 import { useRouterState } from '@tanstack/react-router';
-import { useTranslation } from 'react-i18next';
 
 import Link from '@/5-shared/components/ui/link';
 import LocaleToggle from '@/5-shared/components/toggle/locale-toggle';
 import ThemeToggle from '@/5-shared/components/toggle/theme-toggle';
-import { useDetectScrolled } from '@/5-shared/hooks/use-detect-scrolled';
-
-import { Book, Mail, User } from 'lucide-react';
-import clsx from 'clsx';
 
 export default function Header() {
   const { location } = useRouterState();
   const pathname = location.pathname;
-  const scrolled = useDetectScrolled();
-  const { t } = useTranslation();
 
-  const getNavButtonClasses = (path: string) =>
-    clsx(
-      'flex items-center',
-      'h-8',
-      'px-2 py-4 gap-1',
-      'text-sm font-medium',
-      'rounded-2xl outline-none select-none',
-      'hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:bg-gray-100 dark:focus-visible:bg-gray-800',
-      pathname.startsWith(path)
-        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30'
-        : 'text-gray-600 dark:text-gray-300'
-    );
+  const isActive = (path: string) => pathname.includes(path);
 
-  const dynamicHeaderClasses = clsx(
-    'fixed z-50 flex items-center justify-between',
-    'w-full h-16 sm:h-12',
-    'px-4 py-2',
-    'transition-all duration-200',
-    scrolled
-      ? 'bg-white/50 shadow-xl backdrop-blur-sm md:max-w-xl md:rounded-3xl lg:max-w-xl dark:bg-gray-900/50'
-      : 'bg-white md:max-w-3xl lg:max-w-4xl dark:bg-gray-900'
-  );
-
-  const titleClasses = clsx(
-    'font-bold sm:text-base',
-    'transition-all duration-200',
-    scrolled ? 'md:text-md' : 'md:text-4xl'
-  );
+  const navLinkClass = (path: string) =>
+    [
+      'text-[11px] tracking-[1.5px] uppercase px-5 py-2.5',
+      'border-r border-rule transition-colors duration-150',
+      'hover:bg-ink hover:text-bg',
+      isActive(path) ? 'bg-ink text-bg' : 'text-ink2',
+    ].join(' ');
 
   return (
-    <header className="flex items-center justify-center max-w-4xl h-16 sm:h-20 mx-auto">
-      <div className={dynamicHeaderClasses}>
-        <div className="ms-2">
-          <Link href="/" aria-label="Home" className={titleClasses}>
-            Chanho.dev
-          </Link>
-        </div>
-        <div className="flex space-x-1">
-          <Link
-            href="/about"
-            aria-label={t('nav.about')}
-            className={getNavButtonClasses('/about')}
-          >
-            <User size={16} />
-            <span className="hidden md:inline">{t('nav.about')}</span>
-          </Link>
-          <Link
-            href="/posts"
-            aria-label={t('nav.posts')}
-            className={getNavButtonClasses('/posts')}
-          >
-            <Book size={16} />
-            <span className="hidden md:inline">{t('nav.posts')}</span>
-          </Link>
-          <Link
-            href="/contact"
-            aria-label={t('nav.contact')}
-            className={getNavButtonClasses('/contact')}
-          >
-            <Mail size={16} />
-            <span className="hidden md:inline">{t('nav.contact')}</span>
-          </Link>
+    <header className="border-b-2 border-ink bg-bg">
+      {/* 마스트헤드 영역 */}
+      <div className="flex flex-col items-center pt-6 pb-0 px-10">
+        <Link
+          href="/"
+          aria-label="Home"
+          className="text-[28px] sm:text-[32px] font-bold tracking-[8px] uppercase text-ink no-underline"
+        >
+          Chanho.dev
+        </Link>
+        <p className="text-[10px] tracking-[2.5px] text-ink3 mt-1 mb-3">
+          개발 · 사유 · 기록
+        </p>
+      </div>
+
+      {/* nav 바 */}
+      <nav
+        className="flex items-center border-t border-rule"
+        aria-label="주요 네비게이션"
+      >
+        {/* 좌측 경계선 */}
+        <span className="border-l border-rule self-stretch" />
+
+        <Link
+          href="/about"
+          aria-label="About"
+          className={navLinkClass('/about')}
+        >
+          About
+        </Link>
+        <Link
+          href="/posts"
+          aria-label="Posts"
+          className={navLinkClass('/posts')}
+        >
+          Posts
+        </Link>
+        <Link
+          href="/series"
+          aria-label="Series"
+          className={navLinkClass('/series')}
+        >
+          Series
+        </Link>
+        <Link
+          href="/contact"
+          aria-label="Contact"
+          className={navLinkClass('/contact')}
+        >
+          Contact
+        </Link>
+
+        {/* 토글 영역 */}
+        <span className="ml-auto flex items-center border-l border-rule px-2">
           <ThemeToggle />
           <LocaleToggle />
-        </div>
-      </div>
+        </span>
+      </nav>
     </header>
   );
 }
