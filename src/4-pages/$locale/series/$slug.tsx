@@ -7,8 +7,8 @@ import { buildMeta, buildCanonicalLink } from '@/5-shared/util/build-meta';
 export const Route = createFileRoute('/$locale/series/$slug')({
   // loader: 시리즈 데이터를 미리 로드하고 SEO 메타태그에 사용한다.
   loader: async ({ params }) => {
-    const { slug } = params;
-    const series = await getSeriesBySlug(slug);
+    const { locale, slug } = params;
+    const series = await getSeriesBySlug(slug, locale);
     if (!series) throw notFound();
     return { series };
   },

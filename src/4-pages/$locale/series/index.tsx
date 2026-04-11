@@ -38,8 +38,8 @@ function SeriesPage() {
   const { locale } = Route.useParams();
 
   const { data: seriesList } = useSuspenseQuery({
-    queryKey: ['series'],
-    queryFn: () => getSeries(),
+    queryKey: ['series', locale],
+    queryFn: () => getSeries(locale),
     staleTime: 1000 * 60 * 5,
   });
 

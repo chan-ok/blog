@@ -33,10 +33,22 @@ describe('getSeries', () => {
       json: async () => mockSeriesList,
     } as Response);
 
-    const result = await getSeries('https://example.com');
+    const result = await getSeries('ko', 'https://example.com');
     expect(result).toHaveLength(1);
     expect(result[0].slug).toBe('fsd-architecture');
     expect(result[0].title).toBe('FSD 아키텍처 탐구');
+  });
+
+  it('locale별 경로로 fetch한다', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [],
+    } as Response);
+
+    await getSeries('ja', 'https://example.com');
+    expect(fetch).toHaveBeenCalledWith(
+      'https://example.com/series/ja/index.json'
+    );
   });
 
   it('fetch 실패 시 빈 배열을 반환한다', async () => {
@@ -44,7 +56,7 @@ describe('getSeries', () => {
       ok: false,
     } as Response);
 
-    const result = await getSeries('https://example.com');
+    const result = await getSeries('ko', 'https://example.com');
     expect(result).toEqual([]);
   });
 });
@@ -58,6 +70,7 @@ describe('getSeriesBySlug', () => {
 
     const result = await getSeriesBySlug(
       'fsd-architecture',
+      'ko',
       'https://example.com'
     );
     expect(result).not.toBeNull();
@@ -71,7 +84,11 @@ describe('getSeriesBySlug', () => {
       json: async () => mockSeriesList,
     } as Response);
 
-    const result = await getSeriesBySlug('nonexistent', 'https://example.com');
+    const result = await getSeriesBySlug(
+      'nonexistent',
+      'ko',
+      'https://example.com'
+    );
     expect(result).toBeNull();
   });
 });

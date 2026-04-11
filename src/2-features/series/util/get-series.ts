@@ -3,12 +3,16 @@ import { seriesSchema, type Series } from '../model/series.schema';
 const BASE_URL = 'https://raw.githubusercontent.com/chan-ok/blog-content/main';
 
 /**
- * blog-content 리포지터리에서 전체 시리즈 목록을 fetch한다.
+ * blog-content 리포지터리에서 해당 로케일의 시리즈 목록을 fetch한다.
+ * 경로: series/{locale}/index.json
  * 실패 시 빈 배열을 반환한다.
  */
-export async function getSeries(baseUrl: string = BASE_URL): Promise<Series[]> {
+export async function getSeries(
+  locale: string,
+  baseUrl: string = BASE_URL
+): Promise<Series[]> {
   try {
-    const res = await fetch(`${baseUrl}/series/index.json`);
+    const res = await fetch(`${baseUrl}/series/${locale}/index.json`);
     if (!res.ok) return [];
 
     const raw = await res.json();
@@ -26,8 +30,9 @@ export async function getSeries(baseUrl: string = BASE_URL): Promise<Series[]> {
  */
 export async function getSeriesBySlug(
   slug: string,
+  locale: string,
   baseUrl: string = BASE_URL
 ): Promise<Series | null> {
-  const list = await getSeries(baseUrl);
+  const list = await getSeries(locale, baseUrl);
   return list.find((s) => s.slug === slug) ?? null;
 }
