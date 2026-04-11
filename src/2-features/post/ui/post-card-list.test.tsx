@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 // PostCard 모킹 (Router 의존성 제거)
 vi.mock('@/2-features/post/ui/post-card', () => ({
   default: ({ title }: { title: string }) => (
-    <article data-testid="post-card">{title}</article>
+    <li data-testid="post-card">{title}</li>
   ),
 }));
 
