@@ -1,5 +1,3 @@
-우리는 작업을 마크다운 대신 Beads로 관리해. `bd quickstart` 실행해서 어떻게 하는지 알아봐.
-
 # AI 코딩 에이전트 가이드
 
 ## 📋 목차
@@ -9,6 +7,7 @@
 - [프로젝트 정보](#프로젝트-정보)
 - [핵심 규칙 요약](#핵심-규칙-요약)
 - [AI 답변 검증](#ai-답변-검증)
+- [사용 가능한 플러그인 및 스킬](#사용-가능한-플러그인-및-스킬)
 - [참고 문서](#참고-문서)
 
 ## 개요
@@ -59,7 +58,7 @@ pages → widgets → features → entities → shared
 
 | 영역 | 핵심 | 상세 문서 |
 |------|------|-----------|
-| 코드 스타일 | Import 4단계, TypeScript strict, 컴포넌트 6단계, Tailwind 8단계 | [code-style.md](./code-style.md) |
+| 코드 스타일 | TypeScript strict, 컴포넌트 6단계, 명명 규칙 | [code-style.md](./code-style.md) |
 | 아키텍처 | FSD 레이어 의존성, 역방향 import 금지, `@/` 경로 별칭 | [architecture-rules.md](./architecture-rules.md) |
 | 테스팅 | TDD (Red/Green/Refactor), Property-based, 커버리지 80%+ | [testing.md](./testing.md) |
 | 보안 | 환경변수 `VITE_*`, Zod 검증, XSS 방지, 입력 sanitize | [security.md](./security.md) |
@@ -88,12 +87,31 @@ pages → widgets → features → entities → shared
 - 불필요한 추상화 지양
 - YAGNI / KISS 원칙 준수
 
-### 검증 프로세스
+## 사용 가능한 플러그인 및 스킬
 
-1. **즉시 검증**: AI 답변 직후 체크리스트 확인
-2. **코드 적용 전**: 관련 항목 집중 검증
-3. **실행 테스트**: 코드 적용 후 동작 확인
-4. **반복**: 문제 발견 시 수정 요청
+### Superpowers (Claude Code 플러그인)
+
+새 기능 기획 및 구현 시 다음 스킬을 적극 활용하세요:
+
+| 스킬 | 언제 사용 | 설명 |
+|------|-----------|------|
+| `superpowers:brainstorming` | 새 기능 기획 시작 | 아이디어 → 설계 → 스펙 문서 작성까지 대화형 진행 |
+| `superpowers:writing-plans` | 구현 계획 수립 | 스펙을 바탕으로 TDD 기반 bite-sized 태스크 플랜 생성 |
+| `superpowers:executing-plans` | 플랜 실행 | 플랜 파일 로드 후 태스크별 순차 실행 |
+
+스펙은 `docs/superpowers/specs/`, 플랜은 `docs/superpowers/plans/`에 저장됩니다.
+
+### Context7 MCP
+
+라이브러리 최신 문서가 필요할 때 사용하세요. 학습 데이터가 오래된 경우를 대비합니다:
+
+- TanStack Router, React Query, Zod, Tailwind v4, Vite 등 API 문법/설정
+- 버전 마이그레이션, 라이브러리 디버깅
+- 명령어: 라이브러리 이름 언급 시 자동으로 최신 문서 참조
+
+### Figma MCP
+
+디자인 참조가 필요할 때 Figma URL을 제공하면 설계 컨텍스트를 직접 읽어옵니다.
 
 ## 참고 문서
 
@@ -108,8 +126,3 @@ pages → widgets → features → entities → shared
 - [language-rules.md](./language-rules.md) - 언어 및 커밋 규칙
 - [git-flow.md](./git-flow.md) - Git Flow 가이드
 - [anti-patterns.md](./anti-patterns.md) - 안티패턴 목록
-- [.multi-agent/](../.multi-agent/) — 멀티 에이전트 시스템 (tmux + opencode + beads, 4종 에이전트)
-
----
-
-> **Note**: tmux 기반 멀티 에이전트 시스템(consultant, task-manager, spec-manager, worker)은 [.multi-agent/docs/](../.multi-agent/docs/)를 참고하세요.

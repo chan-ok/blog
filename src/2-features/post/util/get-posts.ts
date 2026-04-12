@@ -1,11 +1,11 @@
-import { api } from '@/5-shared/config/api';
-import { compareDesc } from 'date-fns';
+import { api } from "@/5-shared/config/api";
+import { compareDesc } from "date-fns";
 
-import { Frontmatter as PostInfo } from '@/1-entities/markdown/model/markdown.schema';
-import { GetPostsProps, PagingPosts } from '../model/post.schema';
+import { Frontmatter as PostInfo } from "@/1-entities/markdown/model/markdown.schema";
+import { GetPostsProps, PagingPosts } from "../model/post.schema";
 
 /** 개발 환경에서만 노출하는 태그 (로컬에서 test/draft 포스트 확인용, 프로덕션에서는 숨김) */
-export const DEV_ONLY_TAGS = ['test', 'draft'] as const;
+export const DEV_ONLY_TAGS = ["test", "draft"] as const;
 
 /** 프로덕션일 때 true. Vite: import.meta.env.DEV === false */
 export function isProduction(): boolean {
@@ -19,13 +19,13 @@ export function hasDevOnlyTag(tags: string[] | undefined): boolean {
 }
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
-  const { locale, page = 0, size = 10, tags = [] } = props;
+  const { locale, page = 0, size = 10, tags = [], query = "" } = props;
 
   // Vite 환경 변수 사용
   const baseURL = import.meta.env.VITE_GIT_RAW_URL;
 
   if (!baseURL) {
-    console.error('VITE_GIT_RAW_URL is not defined');
+    console.error("VITE_GIT_RAW_URL is not defined");
     return {
       posts: [],
       total: 0,
@@ -41,7 +41,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
     });
 
     if (response.axios.status !== 200) {
-      console.error('Failed to fetch posts');
+      console.error("Failed to fetch posts");
       return {
         posts: [],
         total: 0,
@@ -51,7 +51,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
     }
 
     if (!response.data) {
-      throw new Error('Failed to fetch posts: empty response');
+      throw new Error("Failed to fetch posts: empty response");
     }
 
     let filteredPosts = response.data
@@ -59,7 +59,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
         ...post,
         // 상대 경로인 thumbnail을 절대 URL로 변환
         thumbnail:
-          post.thumbnail && !post.thumbnail.startsWith('http')
+          post.thumbnail && !post.thumbnail.startsWith("http")
             ? `${baseURL}/${post.thumbnail}`
             : post.thumbnail,
       }))
@@ -69,14 +69,26 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
     // 프로덕션에서는 test/draft 태그가 있는 포스트는 노출하지 않음
     if (isProduction()) {
       filteredPosts = filteredPosts.filter(
-        (post) => !hasDevOnlyTag(post.tags ?? [])
+        (post) => !hasDevOnlyTag(post.tags ?? []),
       );
     }
 
     filteredPosts = filteredPosts.filter(
       (post) =>
-        tags.length === 0 || tags.some((tag) => (post.tags ?? []).includes(tag))
+        tags.length === 0 ||
+        tags.some((tag) => (post.tags ?? []).includes(tag)),
     );
+
+    // query 필터: title, tags, summary에서 대소문자 무관 검색
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      filteredPosts = filteredPosts.filter(
+        (post) =>
+          post.title?.toLowerCase().includes(q) ||
+          (post.tags ?? []).some((tag) => tag.toLowerCase().includes(q)) ||
+          post.summary?.toLowerCase().includes(q),
+      );
+    }
 
     const startIndex = page * size;
     const endIndex = Math.min(startIndex + size, filteredPosts.length);
@@ -89,7 +101,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       size,
     };
   } catch (error) {
-    console.error('Failed to fetch posts:', error);
+    console.error("Failed to fetch posts:", error);
     return {
       posts: [],
       total: 0,

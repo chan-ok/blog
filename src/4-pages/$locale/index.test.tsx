@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { Route } from './index';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { Route } from "./index";
 
 // Feature 컴포넌트 모킹
-vi.mock('@/2-features/about/ui/about-block', () => ({
+vi.mock("@/2-features/about/ui/about-block", () => ({
   default: () => <div data-testid="about-block">About Block</div>,
 }));
 
-vi.mock('@/2-features/post/ui/recent-post-block', () => ({
+vi.mock("@/2-features/post/ui/recent-post-block", () => ({
   default: () => <div data-testid="recent-post-block">Recent Post Block</div>,
   RecentPostBlockSkeleton: () => (
     <div data-testid="recent-post-skeleton">Loading...</div>
@@ -15,33 +15,33 @@ vi.mock('@/2-features/post/ui/recent-post-block', () => ({
 }));
 
 // getPosts 모킹
-vi.mock('@/2-features/post/util/get-posts', () => ({
+vi.mock("@/2-features/post/util/get-posts", () => ({
   getPosts: vi.fn().mockResolvedValue([
-    { id: '1', title: 'Post 1' },
-    { id: '2', title: 'Post 2' },
-    { id: '3', title: 'Post 3' },
+    { id: "1", title: "Post 1" },
+    { id: "2", title: "Post 2" },
+    { id: "3", title: "Post 3" },
   ]),
 }));
 
 // useParams, useLoaderData 모킹
-const mockUseParams = vi.fn(() => ({ locale: 'ko' }));
+const mockUseParams = vi.fn(() => ({ locale: "ko" }));
 const mockUseLoaderData = vi.fn(() => ({
   postsPromise: Promise.resolve([
-    { id: '1', title: 'Post 1' },
-    { id: '2', title: 'Post 2' },
-    { id: '3', title: 'Post 3' },
+    { id: "1", title: "Post 1" },
+    { id: "2", title: "Post 2" },
+    { id: "3", title: "Post 3" },
   ]),
 }));
 
-describe('$locale/index 라우트 (홈 페이지)', () => {
+describe("$locale/index 라우트 (홈 페이지)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseParams.mockReturnValue({ locale: 'ko' });
+    mockUseParams.mockReturnValue({ locale: "ko" });
     mockUseLoaderData.mockReturnValue({
       postsPromise: Promise.resolve([
-        { id: '1', title: 'Post 1' },
-        { id: '2', title: 'Post 2' },
-        { id: '3', title: 'Post 3' },
+        { id: "1", title: "Post 1" },
+        { id: "2", title: "Post 2" },
+        { id: "3", title: "Post 3" },
       ]),
     });
 
@@ -52,33 +52,38 @@ describe('$locale/index 라우트 (홈 페이지)', () => {
     Route.useLoaderData = mockUseLoaderData;
   });
 
-  it('HomePage가 AboutBlock을 포함해야 한다', () => {
+  it("HomePage가 AboutBlock을 포함해야 한다", () => {
     const Component = Route.options.component as React.ComponentType;
     render(<Component />);
 
-    expect(screen.getByTestId('about-block')).toBeInTheDocument();
+    expect(screen.getByTestId("about-block")).toBeInTheDocument();
   });
 
-  it('HomePage가 RecentPostBlock을 포함해야 한다', () => {
+  it("HomePage가 RecentPostBlock을 포함해야 한다", () => {
     const Component = Route.options.component as React.ComponentType;
     render(<Component />);
 
-    expect(screen.getByTestId('recent-post-block')).toBeInTheDocument();
+    expect(screen.getByTestId("recent-post-block")).toBeInTheDocument();
   });
 
-  it('loader 함수가 getPosts를 호출해야 한다', async () => {
+  it("loader 함수가 getPosts를 호출해야 한다", async () => {
     const loader = Route.options.loader;
     expect(loader).toBeDefined();
 
-    const { getPosts } = await import('@/2-features/post/util/get-posts');
+    const { getPosts } = await import("@/2-features/post/util/get-posts");
 
-    // TanStack Router loader 파라미터 타입 추출: as unknown as T는 as any보다 명시적
-    type LoaderArgs = Parameters<NonNullable<typeof loader>>[0];
-    const result = await loader?.({
-      params: { locale: 'ko' },
+    // TanStack Router loader는 함수 또는 객체일 수 있으므로 함수 타입만 추출
+    type LoaderFn = Extract<
+      NonNullable<typeof loader>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (...args: any[]) => any
+    >;
+    type LoaderArgs = Parameters<LoaderFn>[0];
+    const result = await (loader as LoaderFn | undefined)?.({
+      params: { locale: "ko" },
     } as unknown as LoaderArgs);
 
-    expect(getPosts).toHaveBeenCalledWith({ locale: 'ko', size: 3 });
-    expect(result).toHaveProperty('postsPromise');
+    expect(getPosts).toHaveBeenCalledWith({ locale: "ko", size: 5 });
+    expect(result).toHaveProperty("postsPromise");
   });
 });

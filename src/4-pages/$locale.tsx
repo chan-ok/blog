@@ -16,8 +16,8 @@ import { parseLocale } from '@/5-shared/types/common.schema';
 import Footer from '@/3-widgets/footer';
 import Header from '@/3-widgets/header';
 
-// Locale 유효성 검증
-const localeSchema = z.enum(['ko', 'en', 'ja']);
+// Locale 유효성 검증 (영어 지원 제거됨)
+const localeSchema = z.enum(['ko', 'ja']);
 
 export const Route = createFileRoute('/$locale')({
   validateSearch: (search) => search,
@@ -94,7 +94,7 @@ function LocaleLayout() {
   return (
     <ThemeProvider>
       <LocaleProvider locale={parseLocale(locale)}>
-        <div className="flex flex-col min-h-screen bg-white text-gray-900 transition-colors duration-200 dark:bg-gray-900 dark:text-gray-100">
+        <div className="flex flex-col min-h-screen bg-bg text-ink transition-colors duration-200">
           <Header />
           <main className="flex-1">
             <div className="max-w-4xl mx-auto px-6 pt-10">

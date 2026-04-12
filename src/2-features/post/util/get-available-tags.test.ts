@@ -66,9 +66,9 @@ describe('getAvailableTags', () => {
   it('locale에 해당하는 index.json을 요청해야 한다', async () => {
     mockApiGet([{ published: true, tags: ['a'] }]);
 
-    await getAvailableTags({ locale: 'en' });
+    await getAvailableTags({ locale: 'ja' });
 
-    expect(api.get).toHaveBeenCalledWith('/en/index.json', { baseURL });
+    expect(api.get).toHaveBeenCalledWith('/ja/index.json', { baseURL });
   });
 
   it('개발 환경에서는 test/draft 태그가 목록에 포함될 수 있다', async () => {

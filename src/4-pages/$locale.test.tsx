@@ -74,12 +74,12 @@ describe('$locale 레이아웃 라우트', () => {
     const makeArgs = (locale: string) =>
       ({ params: { locale } }) as unknown as BeforeLoadArgs;
 
-    // 유효한 locale
+    // 유효한 locale (영어 지원 제거됨)
     expect(() => beforeLoad?.(makeArgs('ko'))).not.toThrow();
-    expect(() => beforeLoad?.(makeArgs('en'))).not.toThrow();
     expect(() => beforeLoad?.(makeArgs('ja'))).not.toThrow();
 
     // 유효하지 않은 locale - notFound() throw
+    expect(() => beforeLoad?.(makeArgs('en'))).toThrow();
     expect(() => beforeLoad?.(makeArgs('fr'))).toThrow();
   });
 

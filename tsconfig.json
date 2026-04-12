@@ -34,7 +34,6 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
     "types": ["vite/client", "@tanstack/react-router"],
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

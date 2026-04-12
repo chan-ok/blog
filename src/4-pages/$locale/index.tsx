@@ -17,7 +17,7 @@ export const Route = createFileRoute('/$locale/')({
   // loader: 데이터 prefetch (옵션)
   loader: async ({ params }) => {
     const locale = parseLocale(params.locale);
-    const postsPromise = getPosts({ locale, size: 3 });
+    const postsPromise = getPosts({ locale, size: 5 });
     return { postsPromise };
   },
   // 홈 페이지 메타태그: 언어별 설명 포함
@@ -42,7 +42,7 @@ function HomePage() {
   const { postsPromise } = Route.useLoaderData();
 
   return (
-    <div className="flex flex-col min-h-screen gap-8">
+    <div className="py-16 max-w-2xl">
       <AboutBlock />
       <Suspense fallback={<RecentPostBlockSkeleton />}>
         <RecentPostBlock
