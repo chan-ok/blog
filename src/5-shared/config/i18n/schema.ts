@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const TranslationResourceSchema = z.object({
   nav: z.object({
@@ -15,8 +15,6 @@ export const TranslationResourceSchema = z.object({
   contact: z.object({
     from: z.string().min(1),
     fromPlaceholder: z.string().min(1),
-    subject: z.string().min(1),
-    subjectPlaceholder: z.string().min(1),
     message: z.string().min(1),
     placeholder: z.string().min(1),
     checkRobot: z.string().min(1),
@@ -34,9 +32,16 @@ export const TranslationResourceSchema = z.object({
     loading: z.string().min(1),
     tags: z.string().optional(),
     filterAll: z.string().min(1),
-    share: z.string().min(1),
-    copyLink: z.string().min(1),
-    copied: z.string().min(1),
+    series: z.object({
+      otherPosts: z.string().min(1),
+    }),
+    searchPlaceholder: z.string().min(1),
+    noSearchResults: z.string().min(1),
+    prev: z.string().min(1),
+    next: z.string().min(1),
+  }),
+  series: z.object({
+    empty: z.string().min(1),
   }),
   markdown: z.object({
     loadError: z.string().min(1),
