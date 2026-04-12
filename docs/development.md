@@ -168,9 +168,7 @@ Husky pre-commit 훅이 자동으로 다음 4단계를 실행합니다:
 
 **간단 요약**:
 
-- **Import 순서**: React → 외부 → 내부(@/\*) → 타입
 - **컴포넌트 구조**: 타입 → 훅 → 파생값 → 핸들러 → 이펙트 → 렌더
-- **Tailwind 순서**: Layout → Size → Spacing → Typography → Visual → Interaction → Responsive → Dark Mode
 - **명명 규칙**: PascalCase (컴포넌트), camelCase (함수/변수), kebab-case (파일)
 
 ## 테스팅
@@ -253,7 +251,7 @@ it('모든 variant에서 다크 모드 클래스 포함', () => {
       expect(button.className).toMatch(/dark:/);
       unmount(); // 각 반복 후 DOM 정리 필수
     }),
-    { numRuns: 30 }
+    { numRuns: 20 }
   );
 });
 ```
@@ -297,13 +295,9 @@ import { z } from 'zod';
 import { sanitizeInput } from '@/5-shared/util/sanitize';
 
 // Zod 스키마 + transform으로 sanitize
+// src/2-features/contact/model/contact-form.schema.ts
 export const ContactFormInputsSchema = z.object({
-  from: z.string().email('Invalid email'),
-  subject: z
-    .string()
-    .min(1, 'Subject is required')
-    .max(100, 'Subject length is over')
-    .transform(sanitizeInput),
+  from: z.email('Invalid email'),
   message: z.string().min(1, 'Message is required').transform(sanitizeInput),
 });
 
@@ -367,36 +361,33 @@ update code  # type 없음, 설명 부족
 ### 브랜치 전략
 
 ```
-type/description
+main ← develop ← feature/[name]-[timestamp]
 ```
 
-| Type        | 용도        | 예시                        |
-| ----------- | ----------- | --------------------------- |
-| `feat/`     | 새 기능     | `feat/dark-mode`            |
-| `fix/`      | 버그 수정   | `fix/contact-validation`    |
-| `refactor/` | 리팩토링    | `refactor/header-component` |
-| `test/`     | 테스트 추가 | `test/e2e-contact`          |
+- **feature 브랜치** → develop으로 PR
+- **develop 브랜치** → main으로 PR
+- feature에서 main으로 직접 PR 금지
 
 ### 워크플로우
 
 ```bash
-# 1. main에서 새 브랜치 생성
-git checkout main
-git pull origin main
-git checkout -b feat/dark-mode
+# 1. develop에서 feature 브랜치 생성
+git checkout develop
+git pull origin develop
+git checkout -b feature/dark-mode-20260415-120000
 
 # 2. 개발 및 커밋
 git add .
 git commit -m "feat(theme): 다크 모드 토글 추가"
 
-# 3. 푸시 및 PR 생성
-git push origin feat/dark-mode
-# GitHub에서 PR 생성
+# 3. 푸시 및 PR 생성 (develop 대상)
+git push origin feature/dark-mode-20260415-120000
+# GitHub에서 develop으로 PR 생성
 
 # 4. 머지 후 정리
-git checkout main
-git pull origin main
-git branch -d feat/dark-mode
+git checkout develop
+git pull origin develop
+git branch -d feature/dark-mode-20260415-120000
 ```
 
 ### Pre-commit Hook

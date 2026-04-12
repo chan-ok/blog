@@ -1,10 +1,10 @@
-import { use } from 'react';
-import { useTranslation } from 'react-i18next';
-import { format, isValid } from 'date-fns';
+import { use } from "react";
+import { useTranslation } from "react-i18next";
+import { format, isValid } from "date-fns";
 
-import Link from '@/5-shared/components/ui/link';
-import type { LocaleType } from '@/5-shared/types/common.schema';
-import { PagingPosts } from '../model/post.schema';
+import Link from "@/5-shared/components/ui/link";
+import type { LocaleType } from "@/5-shared/types/common.schema";
+import { PagingPosts } from "../model/post.schema";
 
 interface RecentPostBlockProps {
   locale: LocaleType;
@@ -23,9 +23,9 @@ export default function RecentPostBlock({
     return (
       <div>
         <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-5">
-          {t('post.recentPosts')}
+          {t("post.recentPosts")}
         </p>
-        <p className="text-ink3 text-sm">{t('post.noPosts')}</p>
+        <p className="text-ink3 text-sm">{t("post.noPosts")}</p>
       </div>
     );
   }
@@ -37,7 +37,7 @@ export default function RecentPostBlock({
 
       {/* 레이블 */}
       <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-5">
-        {t('post.recentPosts')}
+        {t("post.recentPosts")}
       </p>
 
       {/* 목차형 목록 */}
@@ -47,16 +47,16 @@ export default function RecentPostBlock({
             post.createdAt instanceof Date
               ? post.createdAt
               : new Date(post.createdAt as string);
-          const formattedDate = isValid(date) ? format(date, 'yyyy.MM') : '—';
-          const href = `/${locale}/posts/${post.path.join('/')}`;
-          const num = String(idx + 1).padStart(2, '0');
+          const formattedDate = isValid(date) ? format(date, "yyyy.MM") : "—";
+          const href = `/${locale}/posts/${post.path.join("/")}`;
+          const num = String(idx + 1).padStart(2, "0");
 
           return (
             <li
-              key={post.path.join('/')}
+              key={post.path.join("/")}
               className="flex items-baseline gap-3 py-4 border-b border-rule first:border-t"
             >
-              <span className="text-[9px] text-rule min-w-[18px] shrink-0">
+              <span className="text-[9px] text-ink3 min-w-[18px] shrink-0">
                 {num}
               </span>
               <Link href={href} className="flex-1 group">
@@ -65,7 +65,7 @@ export default function RecentPostBlock({
                 </span>
                 {post.tags && post.tags.length > 0 && (
                   <span className="text-[10px] text-ink3">
-                    {post.tags.join(' · ')}
+                    {post.tags.join(" · ")}
                   </span>
                 )}
               </Link>

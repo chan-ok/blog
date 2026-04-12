@@ -1,6 +1,4 @@
-import { seriesSchema, type Series } from '../model/series.schema';
-
-const BASE_URL = 'https://raw.githubusercontent.com/chan-ok/blog-content/main';
+import { seriesSchema, type Series } from "../model/series.schema";
 
 /**
  * blog-content 리포지터리에서 해당 로케일의 시리즈 목록을 fetch한다.
@@ -9,8 +7,9 @@ const BASE_URL = 'https://raw.githubusercontent.com/chan-ok/blog-content/main';
  */
 export async function getSeries(
   locale: string,
-  baseUrl: string = BASE_URL
+  baseUrl: string = import.meta.env.VITE_GIT_RAW_URL ?? "",
 ): Promise<Series[]> {
+  if (!baseUrl) return [];
   try {
     const res = await fetch(`${baseUrl}/series/${locale}/index.json`);
     if (!res.ok) return [];
@@ -31,7 +30,7 @@ export async function getSeries(
 export async function getSeriesBySlug(
   slug: string,
   locale: string,
-  baseUrl: string = BASE_URL
+  baseUrl: string = import.meta.env.VITE_GIT_RAW_URL ?? "",
 ): Promise<Series | null> {
   const list = await getSeries(locale, baseUrl);
   return list.find((s) => s.slug === slug) ?? null;

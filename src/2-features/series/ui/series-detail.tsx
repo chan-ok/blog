@@ -1,7 +1,7 @@
-import { BookOpen, ExternalLink } from 'lucide-react';
+import { BookOpen, ExternalLink } from "lucide-react";
 
-import Link from '@/5-shared/components/ui/link';
-import type { Series } from '../model/series.schema';
+import Link from "@/5-shared/components/ui/link";
+import type { Series } from "../model/series.schema";
 
 interface SeriesDetailProps {
   series: Series;
@@ -37,15 +37,15 @@ export default function SeriesDetail({ series, locale }: SeriesDetailProps) {
       {/* 항목 목록 */}
       <ol>
         {series.items.map((item, idx) => {
-          const num = String(idx + 1).padStart(2, '0');
+          const num = String(idx + 1).padStart(2, "0");
 
-          if (item.type === 'post') {
+          if (item.type === "post") {
             return (
               <li
                 key={item.path}
                 className="flex items-start gap-3 py-4 border-b border-rule first:border-t"
               >
-                <span className="text-[9px] text-rule min-w-[18px] shrink-0 mt-1">
+                <span className="text-[9px] text-ink3 min-w-[18px] shrink-0 mt-1">
                   {num}
                 </span>
                 <BookOpen size={13} className="text-ink3 mt-[3px] shrink-0" />
@@ -70,7 +70,7 @@ export default function SeriesDetail({ series, locale }: SeriesDetailProps) {
               key={item.url}
               className="flex items-start gap-3 py-4 border-b border-rule first:border-t"
             >
-              <span className="text-[9px] text-rule min-w-[18px] shrink-0 mt-1">
+              <span className="text-[9px] text-ink3 min-w-[18px] shrink-0 mt-1">
                 {num}
               </span>
               <ExternalLink size={13} className="text-ink3 mt-[3px] shrink-0" />

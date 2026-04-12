@@ -68,15 +68,6 @@ pnpm tsc --noEmit     # TypeScript 타입 체크
 - Tailwind CSS 유틸리티 우선
 - 인라인 `style={{ ... }}` 사용 금지
 
-### Import 순서 (4단계)
-
-```typescript
-// 1. React / TanStack Router
-// 2. 외부 라이브러리
-// 3. 내부 모듈 (@/*)
-// 4. type import
-```
-
 ## 환경변수
 
 `.env.local`에 보관, 절대 커밋 금지:
@@ -93,7 +84,7 @@ pnpm tsc --noEmit     # TypeScript 타입 체크
 | -------------------------------------------------------- | --------------------------------------------- |
 | [docs/architecture.md](docs/architecture.md)             | FSD 레이어 구조, 콘텐츠 파이프라인, 기술 스택 |
 | [docs/architecture-rules.md](docs/architecture-rules.md) | FSD 의존성 규칙 상세                          |
-| [docs/code-style.md](docs/code-style.md)                 | Import 순서, 명명 규칙, 컴포넌트 구조         |
+| [docs/code-style.md](docs/code-style.md)                 | TypeScript 규칙, 명명 규칙, 컴포넌트 구조     |
 | [docs/language-rules.md](docs/language-rules.md)         | 한국어 주석/커밋 규칙                         |
 | [docs/commands.md](docs/commands.md)                     | 전체 명령어 목록                              |
 | [docs/testing.md](docs/testing.md)                       | 테스트 전략 및 작성 가이드                    |

@@ -447,21 +447,6 @@
 
 ---
 
-### `src/2-features/post/__tests__/rss-handler.test.ts`
-
-**단위**: Integration
-**대상**: RSS Feed 생성 Netlify Function
-**연관**: RSS 구독, SEO
-
-| 테스트 | 조건 | 검증 |
-| --- | --- | --- |
-| RSS XML 생성 | 포스트 목록 있음 | 유효한 XML 반환 |
-| Content-Type 헤더 | 항상 | `application/xml` |
-| 포스트 항목 포함 | 각 포스트 | `<item>` 태그 포함 |
-| API 실패 | fetch 오류 | 500 응답 |
-
----
-
 ### `src/2-features/post/ui/post-card.test.tsx`
 
 **단위**: Component + Property-Based
@@ -511,13 +496,24 @@
 
 **단위**: Component
 **대상**: `TableOfContents` 컴포넌트
-**연관**: `PostDetail` (사이드바)
+**연관**: `PostDetail` 사이드바 (시리즈 통합 포함)
+**Mock**: `IntersectionObserver`, `Element.prototype.scrollIntoView`
 
 | 테스트 | 조건 | 검증 |
 | --- | --- | --- |
-| 헤딩 목록 렌더링 | headings 배열 | 각 항목 표시 |
-| 활성 항목 표시 | activeId 설정 | 활성 스타일 적용 |
-| 클릭 이벤트 | 항목 클릭 | 스크롤 이동 또는 콜백 |
+| headings 렌더링 | headings 배열 | 각 텍스트 화면에 표시 |
+| h2/h3 들여쓰기 | level 2 vs 3 | 스타일 차이 반영 |
+| 항목 클릭 스크롤 | 항목 클릭 | `scrollIntoView({ behavior: 'smooth', block: 'start' })` 호출 |
+| 빈 headings | `headings=[]` | `role="navigation"` 없음 |
+| IntersectionObserver 활성 섹션 | 콜백 트리거 | 활성 항목 변경 |
+| 모바일 토글 | 토글 버튼 클릭 | `aria-expanded` 전환 |
+| 접근성 | 항상 | `role="navigation"`, `aria-label` 포함 |
+| Property-based | 임의 headings | 크래시 없음 |
+| 중복 id | 동일 id 3개 | 안전 처리 |
+| 긴 제목 | 긴 텍스트 | 정상 표시 |
+| level 2/3 외 값 | level 1, 4, 6 | 안전 처리 |
+| 프로그래밍 스크롤 중 Observer | 클릭 후 Observer 콜백 | activeId 변경 없음 |
+| 활성 항목 보더 인디케이터 | intersecting 항목 | 활성 스타일 적용 |
 
 ---
 
@@ -550,17 +546,21 @@
 
 ---
 
-### `src/2-features/post/ui/post-share-buttons.test.tsx`
+### `src/2-features/post/util/calc-reading-time.test.ts`
 
-**단위**: Component
-**대상**: `PostShareButtons` 컴포넌트
-**연관**: `PostDetail` 하단
+**단위**: Util
+**대상**: `calcReadingTime` 함수
+**연관**: `PostDetail` 헤더 읽기 예상 시간 표시
 
 | 테스트 | 조건 | 검증 |
 | --- | --- | --- |
-| 공유 버튼 렌더링 | 항상 | 트위터/링크 복사 버튼 표시 |
-| 링크 복사 | 클릭 | clipboard API 호출 |
-| 트위터 공유 링크 | 항상 | 올바른 트위터 공유 URL |
+| 빈 텍스트 | `''` | `'1분 미만'` 반환 |
+| 공백만 있는 텍스트 | `'   '` | `'1분 미만'` 반환 |
+| 한국어 500자 미만 | `'a'.repeat(499)` | `'1분 미만'` 반환 |
+| 한국어 정확히 500자 | `'a'.repeat(500)` | `'약 1분'` 반환 |
+| 한국어 1001자 | `'a'.repeat(1001)` | `'약 3분'` 반환 (ceil) |
+| 일본어 500자 | `'a'.repeat(500)`, `'ja'` | `'約1分'` 반환 |
+| 일본어 500자 미만 | `'a'.repeat(499)`, `'ja'` | `'1分未満'` 반환 |
 
 ---
 

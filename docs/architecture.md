@@ -92,7 +92,6 @@
 
 - **Cloudflare Turnstile**: 봇 방지
 - **Resend**: 이메일 발송
-- **Giscus**: GitHub Discussions 기반 댓글 시스템
 
 ## 리포지터리 구조
 
@@ -202,7 +201,6 @@ src/
 │
 └── 5-shared/ # 🛠️ Shared Layer (공유 리소스)
  ├── components/ # 독립적인 복합 컴포넌트 (유기체 이상)
- │ ├── reply/
  │ ├── toggle/
  │ ├── turnstile/
  │ └── ui/ # 순수 UI 컴포넌트 (원자, 분자)
@@ -546,6 +544,7 @@ export const Route = createFileRoute('/$locale/posts/')({
     return z
       .object({
         tags: z.string().optional(),
+        q: z.string().optional(), // 포스트 검색어
       })
       .parse(search);
   },
@@ -570,16 +569,27 @@ const { data: pagingPosts } = useSuspenseQuery({
 ```typescript
 // src/2-features/post/util/get-posts.ts
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
-  const { locale, tags = [] } = props;
+  const { locale, tags = [], query = '' } = props;
   
   // ... index.json fetch ...
   
-  const filteredPosts = response.data
+  let filteredPosts = response.data
     .filter((post) => post.published)
     .filter(
       (post) =>
         tags.length === 0 || tags.some((tag) => post.tags.includes(tag))
     );
+
+  // 클라이언트 검색어 필터 (title + tags + summary)
+  if (query.trim()) {
+    const q = query.trim().toLowerCase();
+    filteredPosts = filteredPosts.filter(
+      (post) =>
+        post.title?.toLowerCase().includes(q) ||
+        (post.tags ?? []).some((tag) => tag.toLowerCase().includes(q)) ||
+        post.summary?.toLowerCase().includes(q)
+    );
+  }
 }
 ```
 
@@ -682,6 +692,113 @@ TDD 기반으로 구현되었으며, 다음 테스트가 포함됩니다:
 - `PostBasicCard` 태그 표시 테스트
 - `PostCompactCard` 태그 표시 테스트
 - Property-Based 테스트 (다양한 태그 문자열, locale 조합)
+
+## 포스트 검색
+
+### 개요
+
+포스트 목록 페이지 상단의 검색 입력창으로 title·tags·summary를 클라이언트에서 필터링합니다.
+
+### URL 파라미터
+
+- `?q=검색어` — 검색어 (태그 필터 `?tags=` 와 AND 조건)
+- 예: `/ko/posts?q=react&tags=typescript`
+
+### 구현 위치
+
+- **컴포넌트**: `src/2-features/post/ui/post-search-input.tsx` — 300ms debounce, URL 업데이트
+- **유틸**: `src/2-features/post/util/get-posts.ts` — `query` 파라미터 필터링
+- **페이지**: `src/4-pages/$locale/posts/index.tsx` — `q` 검색 파라미터 수신
+- **카드 목록**: `src/2-features/post/ui/post-card-list.tsx` — queryKey에 query 포함
+
+### i18n 키
+
+- `post.searchPlaceholder`: "포스트 검색..." / "Search posts..." / "記事を検索..."
+- `post.noSearchResults`: "검색 결과가 없습니다." / "No results found." / "検索結果がありません。"
+
+---
+
+## 이전/다음 포스트 네비게이션
+
+### 개요
+
+포스트 상세 페이지 본문 하단에 날짜 기준 이전·다음 포스트 링크를 표시합니다.
+
+### 구현 위치
+
+- **컴포넌트**: `src/2-features/post/ui/post-navigation.tsx` (+ `PostNavigationSkeleton`)
+- **유틸**: `src/2-features/post/util/get-all-posts.ts` — 태그·쿼리 필터 없이 published 전체 목록
+- **사용처**: `src/4-pages/$locale/posts/$.tsx` — Suspense 래핑
+
+### 네비게이션 방향
+
+날짜 내림차순(최신순) 정렬 배열 기준:
+
+- `prevPost` = `index + 1` → 더 오래된 포스트 (이전 글)
+- `nextPost` = `index - 1` → 더 최신 포스트 (다음 글)
+
+### i18n 키
+
+- `post.prev`: "이전 포스트" / "Previous Post" / "前の記事"
+- `post.next`: "다음 포스트" / "Next Post" / "次の記事"
+
+---
+
+## 읽기 예상 시간
+
+### 개요
+
+포스트 상세 페이지 메타 정보(날짜 옆)에 "약 N분" 형태로 읽기 예상 시간을 표시합니다.
+
+### 구현 위치
+
+- **유틸**: `src/2-features/post/util/calc-reading-time.ts` (순수 함수)
+- **사용처**: `src/4-pages/$locale/posts/$.tsx` — `mdxStatus === 'success'` 이후 `useEffect`에서 계산
+
+### 읽기 속도 기준
+
+| locale | 단위 | 속도 |
+| ------ | ---- | ---- |
+| `ko`   | 글자 수 | 500자/분 |
+| `ja`   | 글자 수 | 500자/분 |
+
+### 함수 시그니처
+
+```typescript
+calcReadingTime(text: string, locale: LocaleType): string
+// 반환 예: "약 5분", "1분 미만", "約3分", "1分未満"
+```
+
+---
+
+## 시리즈와 목차(TOC) 통합
+
+### 개요
+
+시리즈가 있는 포스트에서는 TOC 패널 상단에 시리즈 목록을 함께 표시합니다. 포스트 상세 페이지 하단의 독립 `PostSeriesBlock`은 제거됐습니다.
+
+### 구현 위치
+
+- **컴포넌트**: `src/2-features/post/ui/table-of-contents.tsx` — `series`, `currentPath`, `locale` props 추가
+- `src/2-features/post/ui/post-series-block.tsx` — 하단 블록 유지(다른 컨텍스트 재사용 가능)
+
+### props
+
+```typescript
+interface TableOfContentsProps {
+  headings: Heading[];
+  series?: string;      // 시리즈 식별자
+  currentPath?: string; // 현재 포스트 경로 (강조용)
+  locale?: string;      // 시리즈 데이터 fetch용
+}
+```
+
+### 표시 규칙
+
+- `series` 없음: headings만 표시 (기존 동작 유지)
+- `series` 있음: 패널 헤더 "Series · Contents", 시리즈 목록(Suspense 처리) → headings 순서로 표시
+
+---
 
 ## 국제화
 

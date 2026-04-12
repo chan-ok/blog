@@ -25,10 +25,6 @@ type NetlifyResponse = {
 
 const MailBodySchema = z.object({
   from: z.string().email('Invalid email'),
-  subject: z
-    .string()
-    .min(1, 'Subject is required')
-    .max(100, 'Subject length is over'),
   message: z.string().min(1, 'Message is required'),
   turnstileToken: z.string().min(1, 'Turnstile token is required'),
 });
@@ -62,7 +58,7 @@ export const handler = async (
       };
     }
 
-    const { from, subject, message, turnstileToken } = parsed.data;
+    const { from, message, turnstileToken } = parsed.data;
 
     if (!turnstileToken) {
       return { statusCode: 400, body: 'Missing Turnstile token' };
@@ -111,12 +107,8 @@ export const handler = async (
     const email = await resend.emails.send({
       from: 'contact@chanho.dev',
       to: 'kiss.yagni.dry@gmail.com',
-      subject,
-      text: `
-      from: ${from}
-      
-      ${message}
-      `,
+      subject: 'chan-ok.com 블로그 문의',
+      text: `from: ${from}\n\n${message}`,
     });
 
     if (email.error) {

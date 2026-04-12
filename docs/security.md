@@ -42,13 +42,9 @@ import { z } from 'zod';
 import { sanitizeInput } from '@/5-shared/util/sanitize';
 
 // Zod 스키마 + transform으로 sanitize
+// src/2-features/contact/model/contact-form.schema.ts
 export const ContactFormInputsSchema = z.object({
-  from: z.string().email('Invalid email'),
-  subject: z
-    .string()
-    .min(1, 'Subject is required')
-    .max(100, 'Subject length is over')
-    .transform(sanitizeInput),
+  from: z.email('Invalid email'),
   message: z.string().min(1, 'Message is required').transform(sanitizeInput),
 });
 ```
