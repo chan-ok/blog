@@ -399,14 +399,14 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 
 export default async function getMarkdown(path: string) {
-  // MDX evaluate - remark/rehype 플러그인과 함께 1단계 처리
-  const { default: MDXContent } = await evaluate(content, {
-    ...(runtime as any),
-    remarkPlugins: [remarkGfm, remarkFrontmatter],
-    rehypePlugins: [rehypeHighlight, rehypeSlug],
-  });
+// MDX evaluate - remark/rehype 플러그인과 함께 1단계 처리
+const { default: MDXContent } = await evaluate(content, {
+...(runtime as any),
+remarkPlugins: [remarkGfm, remarkFrontmatter],
+rehypePlugins: [rehypeHighlight, rehypeSlug],
+});
 
-  return { MDXContent };
+return { MDXContent };
 }
 \`\`\`
 
@@ -489,7 +489,6 @@ export const FrontmatterSchema = z.object({
 - **위치**: `src/2-features/post/ui/tag-filter-bar.tsx`
 - **i18n**: `post.filterAll` (전체 / All / すべて)
 
-
 #### TagChip 컴포넌트
 
 태그를 칩 형태로 표시하고, 클릭 시 해당 태그로 필터된 목록으로 이동합니다.
@@ -570,9 +569,9 @@ const { data: pagingPosts } = useSuspenseQuery({
 // src/2-features/post/util/get-posts.ts
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   const { locale, tags = [], query = '' } = props;
-  
+
   // ... index.json fetch ...
-  
+
   let filteredPosts = response.data
     .filter((post) => post.published)
     .filter(
@@ -601,7 +600,6 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
 - **프로덕션** (빌드 배포): `test`/`draft` 중 하나라도 가진 포스트는 목록에서 제외되고, `getAvailableTags` 결과에도 포함되지 않음.
 
 구현 위치: `src/2-features/post/util/get-posts.ts` (`DEV_ONLY_TAGS`, `isProduction()`, `hasDevOnlyTag()`). 포스트 필터와 사용 가능 태그 수집 모두 동일 기준 적용.
-
 
 ### 상세 페이지 태그 표시
 
@@ -671,9 +669,9 @@ function parseInternalLink(href: string, locale: string) {
   const searchParams = searchString
     ? Object.fromEntries(new URLSearchParams(searchString))
     : undefined;
-  
+
   // ... 경로 매칭 ...
-  
+
   return {
     to: '/$locale/posts',
     params: { locale },
@@ -757,8 +755,8 @@ TDD 기반으로 구현되었으며, 다음 테스트가 포함됩니다:
 
 ### 읽기 속도 기준
 
-| locale | 단위 | 속도 |
-| ------ | ---- | ---- |
+| locale | 단위    | 속도     |
+| ------ | ------- | -------- |
 | `ko`   | 글자 수 | 500자/분 |
 | `ja`   | 글자 수 | 500자/분 |
 

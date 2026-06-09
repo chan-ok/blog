@@ -1,4 +1,26 @@
+allowBuilds:
+  '@parcel/watcher': set this to true or false
+  esbuild: set this to true or false
+  netlify-cli: set this to true or false
+  sharp: set this to true or false
+  unix-dgram: set this to true or false
 minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - uuid@14.0.0
+  - postcss@8.5.10
+  - '@fastify/static@9.1.1'
+  - fastify@5.8.5
+  - fast-uri@3.1.1
+  - fast-uri@3.1.2
+  - multiparty@4.2.4
+  - ws@8.20.1
+  - uuid@11.1.1
+  - uuid@13.0.1
+  - qs@6.15.2
+  - tmp@0.2.6
+  - axios@1.16.0
+  - mermaid@11.14.1
+  - brace-expansion@5.0.6
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild

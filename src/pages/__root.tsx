@@ -1,0 +1,75 @@
+import {
+  createRootRoute,
+  ErrorComponentProps,
+  HeadContent,
+  Outlet,
+  useRouter,
+} from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
+
+import { ErrorPage } from '@/shared/components/error-page';
+
+// QueryClient 인스턴스 생성
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5분
+      gcTime: 1000 * 60 * 10, // 10분
+      retry: 3, // 최대 3회 재시도
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // 지수 백오프 (1s, 2s, 4s)
+    },
+  },
+});
+
+export const Route = createRootRoute({
+  component: RootLayout,
+  errorComponent: RootErrorComponent,
+  notFoundComponent: RootNotFoundComponent,
+});
+
+function RootErrorComponent({ reset }: ErrorComponentProps) {
+  const router = useRouter();
+
+  const handleGoHome = () => {
+    router.navigate({ to: '/' });
+  };
+
+  return <ErrorPage statusCode={500} onRetry={reset} onGoHome={handleGoHome} />;
+}
+
+function RootNotFoundComponent() {
+  const router = useRouter();
+
+  const handleGoHome = () => {
+    router.navigate({ to: '/' });
+  };
+
+  return <ErrorPage statusCode={404} onGoHome={handleGoHome} />;
+}
+
+function RootLayout() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      {/* 라우트별 동적 메타태그 렌더링 */}
+      <HeadContent />
+      <Outlet />
+      {import.meta.env.DEV && (
+        <TanStackDevtools
+          plugins={[
+            {
+              name: 'TanStack Query',
+              render: <ReactQueryDevtoolsPanel />,
+            },
+            {
+              name: 'TanStack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
+      )}
+    </QueryClientProvider>
+  );
+}

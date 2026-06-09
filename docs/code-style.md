@@ -2,7 +2,7 @@
 
 # 코드 스타일
 
-> ℹ️ Import 순서와 Tailwind 클래스 순서는 ESLint/Prettier가 자동 검사합니다.
+> ℹ️ Import 순서와 Tailwind 클래스 순서는 oxlint/oxfmt가 자동 검사합니다.
 
 ## TypeScript
 
@@ -110,13 +110,13 @@ export function Component({ title, description, onAction }: ComponentProps) {
 
 ## 파일 명명
 
-| 파일 종류    | 규칙                       | 예시                            |
-| ------------ | -------------------------- | ------------------------------- |
-| 컴포넌트     | `kebab-case.tsx`           | `button.tsx`, `post-card.tsx`   |
-| 유틸리티     | `kebab-case.ts`            | `date-utils.ts`, `sanitize.ts`  |
-| 테스트       | `kebab-case.test.tsx`      | `button.test.tsx`               |
-| Storybook    | `kebab-case.stories.tsx`   | `button.stories.tsx`            |
-| 타입         | `kebab-case.types.ts`      | `post.types.ts`                 |
-| 스키마 (Zod) | `kebab-case.schema.ts`     | `contact-form.schema.ts`        |
-| 훅           | `use-*.ts (kebab-case)`    | `use-theme.ts`, `use-resize.ts` |
-| 인덱스       | `index.ts` (re-export만)   |                                 |
+| 파일 종류    | 규칙                     | 예시                            |
+| ------------ | ------------------------ | ------------------------------- |
+| 컴포넌트     | `kebab-case.tsx`         | `button.tsx`, `post-card.tsx`   |
+| 유틸리티     | `kebab-case.ts`          | `date-utils.ts`, `sanitize.ts`  |
+| 테스트       | `kebab-case.test.tsx`    | `button.test.tsx`               |
+| Storybook    | `kebab-case.stories.tsx` | `button.stories.tsx`            |
+| 타입         | `kebab-case.types.ts`    | `post.types.ts`                 |
+| 스키마 (Zod) | `kebab-case.schema.ts`   | `contact-form.schema.ts`        |
+| 훅           | `use-*.ts (kebab-case)`  | `use-theme.ts`, `use-resize.ts` |
+| 인덱스       | `index.ts` (re-export만) |                                 |

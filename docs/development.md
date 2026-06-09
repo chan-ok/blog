@@ -143,8 +143,8 @@ pages → widgets → features → entities → shared
 커밋 전 반드시 다음을 실행:
 
 ```bash
-pnpm fmt              # Prettier 포맷팅
-pnpm lint             # ESLint 검사
+pnpm fmt              # oxfmt 포맷팅
+pnpm lint             # oxlint 검사
 pnpm tsc --noEmit     # TypeScript 타입 체크
 ```
 
@@ -342,7 +342,7 @@ type(scope): 한국어 제목
 | `refactor` | 리팩토링         | `refactor(header): 네비게이션 분리`   |
 | `test`     | 테스트 추가/수정 | `test(button): 클릭 테스트 추가`      |
 | `docs`     | 문서 수정        | `docs(readme): 설치 가이드 업데이트`  |
-| `style`    | 코드 스타일      | `style: Prettier 포맷팅 적용`         |
+| `style`    | 코드 스타일      | `style: oxfmt 포맷팅 적용`            |
 | `chore`    | 빌드/설정 변경   | `chore(deps): React 19.2.3 업데이트`  |
 
 #### 예시
@@ -442,7 +442,7 @@ Netlify Dashboard에서 설정:
 # 1. TypeScript 에러 확인
 pnpm tsc --noEmit
 
-# 2. ESLint 에러 확인
+# 2. oxlint 에러 확인
 pnpm lint
 
 # 3. 의존성 재설치

@@ -7,17 +7,9 @@
     "src/**/*.mdx",
     "contents/**/*.mdx",
     "netlify/**/*.mts",
-    "scripts/**/*.mts"
+    "scripts/**/*.mts",
   ],
-  "exclude": [
-    "node_modules",
-    ".husky",
-    ".netlify",
-    ".storybook",
-    ".next",
-    "dist",
-    "e2e-report"
-  ],
+  "exclude": ["node_modules", ".husky", ".netlify", ".storybook", "dist"],
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "strict": true,
@@ -35,7 +27,7 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "@tanstack/react-router"],
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": ["./src/*"],
+    },
+  },
 }

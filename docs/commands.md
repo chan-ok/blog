@@ -14,8 +14,8 @@ pnpm preview          # 프로덕션 빌드 미리보기
 ## 린트/포맷팅
 
 ```bash
-pnpm lint             # ESLint 실행
-pnpm fmt              # Prettier 포맷팅
+pnpm lint             # oxlint 실행
+pnpm fmt              # oxfmt 포맷팅
 pnpm tsc --noEmit     # TypeScript 타입 체크
 ```
 

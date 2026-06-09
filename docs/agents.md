@@ -56,16 +56,16 @@ pages → widgets → features → entities → shared
 
 ## 핵심 규칙 요약
 
-| 영역 | 핵심 | 상세 문서 |
-|------|------|-----------|
-| 코드 스타일 | TypeScript strict, 컴포넌트 6단계, 명명 규칙 | [code-style.md](./code-style.md) |
-| 아키텍처 | FSD 레이어 의존성, 역방향 import 금지, `@/` 경로 별칭 | [architecture-rules.md](./architecture-rules.md) |
-| 테스팅 | TDD (Red/Green/Refactor), Property-based, 커버리지 80%+ | [testing.md](./testing.md) |
-| 보안 | 환경변수 `VITE_*`, Zod 검증, XSS 방지, 입력 sanitize | [security.md](./security.md) |
-| 명령어 | `pnpm dev/test/lint/e2e/storybook` | [commands.md](./commands.md) |
-| 언어/커밋 | 한국어 문서·주석·커밋, 영어 코드, Conventional Commits | [language-rules.md](./language-rules.md) |
-| Git Flow | `main ← develop ← feature`, Worktree 병렬 작업 | [git-flow.md](./git-flow.md) |
-| 안티패턴 | `any` 금지, FSD 위반, 테스트 하드코딩 | [anti-patterns.md](./anti-patterns.md) |
+| 영역        | 핵심                                                    | 상세 문서                                        |
+| ----------- | ------------------------------------------------------- | ------------------------------------------------ |
+| 코드 스타일 | TypeScript strict, 컴포넌트 6단계, 명명 규칙            | [code-style.md](./code-style.md)                 |
+| 아키텍처    | FSD 레이어 의존성, 역방향 import 금지, `@/` 경로 별칭   | [architecture-rules.md](./architecture-rules.md) |
+| 테스팅      | TDD (Red/Green/Refactor), Property-based, 커버리지 80%+ | [testing.md](./testing.md)                       |
+| 보안        | 환경변수 `VITE_*`, Zod 검증, XSS 방지, 입력 sanitize    | [security.md](./security.md)                     |
+| 명령어      | `pnpm dev/test/lint/e2e/storybook`                      | [commands.md](./commands.md)                     |
+| 언어/커밋   | 한국어 문서·주석·커밋, 영어 코드, Conventional Commits  | [language-rules.md](./language-rules.md)         |
+| Git Flow    | `main ← develop ← feature`, Worktree 병렬 작업          | [git-flow.md](./git-flow.md)                     |
+| 안티패턴    | `any` 금지, FSD 위반, 테스트 하드코딩                   | [anti-patterns.md](./anti-patterns.md)           |
 
 ## AI 답변 검증
 
@@ -93,11 +93,11 @@ pages → widgets → features → entities → shared
 
 새 기능 기획 및 구현 시 다음 스킬을 적극 활용하세요:
 
-| 스킬 | 언제 사용 | 설명 |
-|------|-----------|------|
-| `superpowers:brainstorming` | 새 기능 기획 시작 | 아이디어 → 설계 → 스펙 문서 작성까지 대화형 진행 |
-| `superpowers:writing-plans` | 구현 계획 수립 | 스펙을 바탕으로 TDD 기반 bite-sized 태스크 플랜 생성 |
-| `superpowers:executing-plans` | 플랜 실행 | 플랜 파일 로드 후 태스크별 순차 실행 |
+| 스킬                          | 언제 사용         | 설명                                                 |
+| ----------------------------- | ----------------- | ---------------------------------------------------- |
+| `superpowers:brainstorming`   | 새 기능 기획 시작 | 아이디어 → 설계 → 스펙 문서 작성까지 대화형 진행     |
+| `superpowers:writing-plans`   | 구현 계획 수립    | 스펙을 바탕으로 TDD 기반 bite-sized 태스크 플랜 생성 |
+| `superpowers:executing-plans` | 플랜 실행         | 플랜 파일 로드 후 태스크별 순차 실행                 |
 
 스펙은 `docs/superpowers/specs/`, 플랜은 `docs/superpowers/plans/`에 저장됩니다.
 

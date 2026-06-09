@@ -29,9 +29,7 @@ const MailBodySchema = z.object({
   turnstileToken: z.string().min(1, 'Turnstile token is required'),
 });
 
-export const handler = async (
-  event: NetlifyEvent
-): Promise<NetlifyResponse> => {
+export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => {
   try {
     if (event.httpMethod.toUpperCase() !== 'POST') {
       return { statusCode: 405, body: 'Method Not Allowed' };
@@ -73,17 +71,14 @@ export const handler = async (
       };
     }
 
-    const verifyRes = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          secret: secretKey,
-          response: turnstileToken,
-        }),
-      }
-    );
+    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        secret: secretKey,
+        response: turnstileToken,
+      }),
+    });
 
     const verifyJson = await verifyRes.json();
 

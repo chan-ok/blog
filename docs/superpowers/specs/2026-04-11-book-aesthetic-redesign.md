@@ -16,14 +16,14 @@
 
 ### 색상 팔레트
 
-| 토큰 | 라이트 | 다크 | 용도 |
-|---|---|---|---|
-| `--bg` | `#f7f8fa` | `#12141a` | 페이지 배경 |
-| `--bg2` | `#f0f1f4` | `#1c1f28` | 인용구·코드 배경 |
-| `--ink` | `#0f1117` | `#e8eaf0` | 제목·강조 텍스트 |
-| `--ink2` | `#3a3d47` | `#a8acba` | 본문 텍스트 |
+| 토큰     | 라이트    | 다크      | 용도             |
+| -------- | --------- | --------- | ---------------- |
+| `--bg`   | `#f7f8fa` | `#12141a` | 페이지 배경      |
+| `--bg2`  | `#f0f1f4` | `#1c1f28` | 인용구·코드 배경 |
+| `--ink`  | `#0f1117` | `#e8eaf0` | 제목·강조 텍스트 |
+| `--ink2` | `#3a3d47` | `#a8acba` | 본문 텍스트      |
 | `--ink3` | `#8a8e9a` | `#6a6e7e` | 메타·보조 텍스트 |
-| `--rule` | `#e2e4ea` | `#2a2e3a` | 구분선·테두리 |
+| `--rule` | `#e2e4ea` | `#2a2e3a` | 구분선·테두리    |
 
 색상 포인트(파랑, 초록 등) 전면 제거. 흑백·회색 계열만 사용.
 
@@ -34,7 +34,7 @@ font-family: 'Noto Serif KR', 'Noto Serif JP', 'Noto Serif', serif;
 ```
 
 - **한국어:** Noto Serif KR
-- **일본어:** Noto Serif JP  
+- **일본어:** Noto Serif JP
 - **영어/라틴:** Noto Serif
 - 세 언어 모두 세리프 계열로 통일
 - Google Fonts에서 400·600·700 weight 로드
@@ -60,6 +60,7 @@ font-family: 'Noto Serif KR', 'Noto Serif JP', 'Noto Serif', serif;
 - 스크롤 시 floating/blur 효과 제거 — 항상 심플하게 유지
 
 **메뉴 구성 (신규):**
+
 - About
 - Posts
 - **Series** (신규 — 기존 없던 메뉴)
@@ -123,6 +124,7 @@ All Posts                              12 articles
 ### 마크다운 컴포넌트 스타일
 
 **Blockquote:**
+
 ```
 border-left: 3px solid var(--ink)
 background: var(--bg2)
@@ -132,17 +134,20 @@ font-size: 15px, line-height 1.9
 ```
 
 콜아웃(`[!INFO]`, `[!WARNING]` 등) — 기존 색상(파랑, 노랑 등) 제거, 흑백 계열로 통일:
+
 - INFO: `var(--bg2)` 배경, `var(--ink)` 테두리
 - WARNING: 동일 (아이콘으로만 구분)
 - DANGER: 동일
 - SUCCESS: 동일
 
 **Heading:**
+
 - h1: 28px, border-bottom `1px solid var(--ink)`, pt-16, mb-6
 - h2: 22px, border-bottom `1px solid var(--rule)`, pt-12, mb-4
 - h3: 18px, pt-10, mb-4 (구분선 없음)
 
 **태그 칩:**
+
 - 테두리만: `border: 1px solid var(--rule)`
 - 색상 없음, `var(--ink3)` 텍스트
 - border-radius 제거 (사각형)
@@ -155,12 +160,12 @@ font-size: 15px, line-height 1.9
 
 ### 동작 규칙
 
-| 조건 | 동작 |
-|---|---|
-| 스크롤 다운 (200px 이상) | 헤더 숨김 (slide-up 애니메이션) |
-| 스크롤 업 | 헤더 재표시 (slide-down 애니메이션) |
-| 페이지 최상단 (scrollY < 50) | 항상 헤더 표시 |
-| 포스트 상세 외 페이지 | 기존 동작 유지 |
+| 조건                         | 동작                                |
+| ---------------------------- | ----------------------------------- |
+| 스크롤 다운 (200px 이상)     | 헤더 숨김 (slide-up 애니메이션)     |
+| 스크롤 업                    | 헤더 재표시 (slide-down 애니메이션) |
+| 페이지 최상단 (scrollY < 50) | 항상 헤더 표시                      |
+| 포스트 상세 외 페이지        | 기존 동작 유지                      |
 
 ### 구현 방식
 
@@ -225,10 +230,12 @@ Series
 ### 페이지 구성
 
 **`/series`** — 시리즈 목록:
+
 - 목차형 스타일 동일하게 적용
 - 번호 · 시리즈 제목 · 항목 수 · 날짜
 
 **`/series/:slug`** — 시리즈 상세:
+
 - 시리즈 제목 + 설명
 - 글 목록 (내 글: 내부 링크 / 스크랩: 외부 링크 + 한 줄 코멘트)
 - 내 글 vs 스크랩 시각적 구분 (아이콘 또는 레이블)
