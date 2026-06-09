@@ -1,0 +1,7 @@
+# pnpm test run
+
+pnpm tsc --noEmit
+
+pnpm exec lint-staged
+
+pnpm audit fix --prod --audit-level=critical

@@ -1,0 +1,28 @@
+{
+  "include": [
+    "vite.config.ts",
+    "netlify/**/*.mts",
+    "scripts/**/*.mts"
+  ],
+  "exclude": ["node_modules", ".husky", ".netlify", ".storybook", "dist"],
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "target": "esnext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["esnext"],
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
