@@ -11,8 +11,8 @@ export default defineConfig(({ mode }) => {
     plugins: [
       tailwindcss(),
       tanstackRouter({
-        routesDirectory: './src/4-pages',
-        generatedRouteTree: './src/5-shared/config/route/routeTree.gen.ts',
+        routesDirectory: './src/pages',
+        generatedRouteTree: './src/shared/config/route/routeTree.gen.ts',
         routeFileIgnorePattern: '\\.test\\.tsx?$',
         // 테스트 환경에서는 코드 스플리팅 비활성화:
         // autoCodeSplitting이 활성화되면 Route.options.component가 lazy 래퍼로 변환되어
