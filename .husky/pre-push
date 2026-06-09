@@ -1,0 +1,6 @@
+set -e
+
+echo "▶ [1/4] typecheck"; pnpm tsc --noEmit
+echo "▶ [2/4] test";      pnpm test run
+echo "▶ [3/4] audit";     pnpm audit --prod --audit-level=critical
+echo "▶ [4/4] build";     pnpm build
