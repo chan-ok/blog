@@ -8,14 +8,14 @@
     "dev:server": "netlify dev",
     "build": "vite build",
     "preview": "vite preview",
-    "tsc": "tsc",
+    "tsc": "tsc -b",
     "lint": "oxlint src",
     "fmt": "oxfmt .",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "prepare": "husky",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "prepare": "husky"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

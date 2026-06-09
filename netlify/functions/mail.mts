@@ -80,7 +80,7 @@ export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => 
       }),
     });
 
-    const verifyJson = await verifyRes.json();
+    const verifyJson = (await verifyRes.json()) as { success: boolean };
 
     if (!verifyJson.success) {
       return {
