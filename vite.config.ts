@@ -124,6 +124,7 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       globals: true,
+      passWithNoTests: true,
       projects: [
         {
           extends: true,
