@@ -37,7 +37,7 @@ export default function ContactForm() {
         <Field.Root name="from">
           <div className="flex items-stretch border-b border-rule">
             {/* "From" 레이블 — 고정 너비 열 */}
-            <Field.Label className="shrink-0 w-20 flex items-center px-6 text-[10px] tracking-[2.5px] uppercase text-ink3 bg-bg2 border-r border-rule">
+            <Field.Label className="shrink-0 w-24 flex items-center justify-center px-6 text-[10px] tracking-[2.5px] uppercase text-ink3 bg-bg2 border-r border-rule text-nowrap">
               {t('contact.from')}
             </Field.Label>
             {/* 이메일 입력 — 나머지 공간 전체 */}

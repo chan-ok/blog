@@ -13,10 +13,9 @@ import { ErrorPage } from '@/shared/components/error-page';
 import { LocaleProvider } from '@/shared/providers/locale-provider';
 import { ThemeProvider } from '@/shared/providers/theme-provider';
 import { parseLocale } from '@/shared/types/common.schema';
-import Footer from '@/widgets/footer';
-import Header from '@/widgets/header';
+import Footer from '@/shared/components/layout/footer';
+import Header from '@/shared/components/layout/header';
 
-// Locale 유효성 검증 (영어 지원 제거됨)
 const localeSchema = z.enum(['ko', 'ja']);
 
 export const Route = createFileRoute('/$locale')({
