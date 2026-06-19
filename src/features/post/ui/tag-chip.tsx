@@ -14,7 +14,7 @@ export default function TagChip({ tag, locale }: TagChipProps) {
   return (
     <Link
       href={href}
-      className="border border-rule text-[9px] text-ink3 px-2 py-0.5 hover:border-ink hover:text-ink transition-colors duration-150"
+      className="rounded-md border border-rule bg-bg px-2 py-0.5 text-[9px] text-ink3 transition-colors duration-150 hover:border-accent hover:bg-accent-soft hover:text-ink"
       aria-label={`태그: ${tag}`}
     >
       {tag}

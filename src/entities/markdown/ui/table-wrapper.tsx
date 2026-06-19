@@ -17,7 +17,7 @@ export default function TableWrapper({ children, className = '', ...rest }: Tabl
       role="region"
       aria-label="표 영역"
       tabIndex={0}
-      className="my-6 overflow-x-auto rounded border border-rule"
+      className="my-6 overflow-x-auto rounded-md border border-rule bg-bg"
     >
       <table className={`min-w-full divide-y divide-rule ${className}`} {...rest}>
         {React.Children.map(children, (child) => {
@@ -52,9 +52,6 @@ export default function TableWrapper({ children, className = '', ...rest }: Tabl
           padding: 0.75rem 1rem;
           font-size: 0.875rem;
           color: var(--ink2);
-        }
-        table tbody tr:nth-child(even) {
-          background-color: var(--bg2);
         }
       `}</style>
     </div>

@@ -48,7 +48,7 @@ export default function ContactForm() {
                 placeholder={t('contact.fromPlaceholder')}
                 className="w-full h-12 px-4 bg-transparent text-[14px] text-ink placeholder:text-ink3 outline-none focus:bg-bg2 transition-colors"
               />
-              <Field.Error className="px-4 pb-1.5 text-[11px] text-red-700" />
+              <Field.Error className="px-4 pb-1.5 text-[11px] text-accent-strong" />
             </div>
           </div>
         </Field.Root>
@@ -64,7 +64,7 @@ export default function ContactForm() {
               />
             )}
           />
-          <Field.Error className="px-6 pb-2 text-[11px] text-red-700" />
+          <Field.Error className="px-6 pb-2 text-[11px] text-accent-strong" />
         </Field.Root>
 
         {/* 하단: 봇 확인 + 전송 */}
@@ -73,7 +73,7 @@ export default function ContactForm() {
           <Button
             type="submit"
             variant="primary"
-            className="flex h-10 items-center gap-2 border border-ink bg-bg px-5 text-[11px] tracking-[1.5px] uppercase text-ink outline-0 select-none hover:bg-ink hover:text-bg transition-colors duration-150 focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-ink active:bg-ink active:text-bg data-disabled:opacity-40 data-disabled:cursor-not-allowed"
+            className="flex h-10 items-center gap-2 border border-accent bg-accent px-5 text-[11px] tracking-[1.5px] uppercase text-bg outline-0 select-none hover:border-accent-strong hover:bg-accent-strong transition-colors duration-150 focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-accent-strong active:border-accent-strong active:bg-accent-strong data-disabled:opacity-40 data-disabled:cursor-not-allowed"
             disabled={!token || loading}
             focusableWhenDisabled
           >

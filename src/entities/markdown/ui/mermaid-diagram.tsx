@@ -30,10 +30,10 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
         const mermaidModule: MermaidModule = await import('mermaid');
         const mermaid = mermaidModule.default;
 
-        // mermaid 초기화 (다크 테마 고정, strict 보안 레벨)
+        // mermaid 초기화 (neutral 테마, strict 보안 레벨)
         mermaid.initialize({
           startOnLoad: false,
-          theme: 'dark',
+          theme: 'neutral',
           securityLevel: 'strict',
         });
 
@@ -72,10 +72,10 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
   // 렌더링: 로딩 상태
   if (isLoading) {
     return (
-      <div className="mb-6 flex min-h-[200px] items-center justify-center rounded-lg bg-gray-900 p-8">
+      <div className="mb-6 flex min-h-[200px] items-center justify-center rounded-md border border-rule bg-bg2 p-8">
         <div className="flex items-center gap-3">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-500 border-t-gray-300" />
-          <span className="font-mono text-sm text-gray-400">Loading diagram...</span>
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-rule border-t-accent" />
+          <span className="font-mono text-sm text-ink3">Loading diagram...</span>
         </div>
       </div>
     );
@@ -84,17 +84,17 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
   // 렌더링: 에러 상태
   if (error) {
     return (
-      <div className="mb-6 overflow-hidden rounded-lg bg-gray-900">
-        <div className="border-b border-red-700 bg-red-900/20 px-4 py-2">
-          <span className="font-mono text-sm font-medium text-red-400">Mermaid Error</span>
+      <div className="mb-6 overflow-hidden rounded-md border border-accent bg-accent-soft">
+        <div className="border-b border-accent px-4 py-2">
+          <span className="font-mono text-sm font-medium text-accent-strong">Mermaid Error</span>
         </div>
         <div className="p-4">
-          <p className="mb-4 font-mono text-sm text-red-400">{error}</p>
+          <p className="mb-4 font-mono text-sm text-ink2">{error}</p>
           <details className="group">
-            <summary className="mb-2 cursor-pointer font-mono text-sm text-gray-400 transition-colors hover:text-gray-300">
+            <summary className="mb-2 cursor-pointer font-mono text-sm text-ink3 transition-colors hover:text-ink">
               Show source code
             </summary>
-            <pre className="overflow-x-auto rounded bg-gray-800 p-4 font-mono text-sm text-gray-300">
+            <pre className="overflow-x-auto rounded-md border border-rule bg-bg p-4 font-mono text-sm text-ink2">
               {code}
             </pre>
           </details>
@@ -107,7 +107,7 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
   return (
     <div
       data-testid="mermaid-svg"
-      className="mb-6 overflow-x-auto rounded-lg bg-gray-900 p-8"
+      className="mb-6 overflow-x-auto rounded-md border border-rule bg-bg2 p-8"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

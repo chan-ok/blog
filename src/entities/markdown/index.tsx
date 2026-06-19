@@ -56,14 +56,12 @@ export default function MDComponent({
   // 렌더링: 에러 상태
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-200 bg-red-50 p-8 text-center dark:border-red-800 dark:bg-red-900/20">
-        <AlertCircle size={48} className="text-red-600 dark:text-red-400" aria-hidden="true" />
-        <p className="text-lg font-medium text-red-900 dark:text-red-100">
-          {t('markdown.loadError')}
-        </p>
+      <div className="flex flex-col items-center justify-center gap-4 rounded-md border border-accent bg-accent-soft p-8 text-center">
+        <AlertCircle size={48} className="text-accent-strong" aria-hidden="true" />
+        <p className="text-lg font-medium text-ink">{t('markdown.loadError')}</p>
         <button
           onClick={() => refetch()}
-          className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 dark:bg-red-500 dark:hover:bg-red-600"
+          className="flex items-center gap-2 rounded-md border border-accent bg-accent px-4 py-2 text-sm font-medium text-bg transition-colors hover:border-accent-strong hover:bg-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
           aria-label={t('markdown.retry')}
         >
           <RotateCcw size={16} aria-hidden="true" />
@@ -76,8 +74,8 @@ export default function MDComponent({
   // 렌더링: 로딩 상태
   if (isLoading || !data) {
     return (
-      <div className="flex items-center justify-center gap-2 p-8 text-gray-600 dark:text-gray-400">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-600 dark:border-t-gray-400" />
+      <div className="flex items-center justify-center gap-2 p-8 text-ink3">
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-rule border-t-accent" />
         <span>{t('markdown.loading')}</span>
       </div>
     );

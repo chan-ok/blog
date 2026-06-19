@@ -34,5 +34,9 @@ function AboutPage() {
   const path = `README.${locale}.md`;
   const baseUrl = 'https://raw.githubusercontent.com/chan-ok/chan-ok/main';
 
-  return <MDComponent path={path} baseUrl={baseUrl} components={aboutImageComponents} />;
+  return (
+    <div className="mx-auto max-w-[620px] pb-16">
+      <MDComponent path={path} baseUrl={baseUrl} components={aboutImageComponents} />
+    </div>
+  );
 }

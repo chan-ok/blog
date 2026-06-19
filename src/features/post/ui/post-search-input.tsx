@@ -73,14 +73,14 @@ export default function PostSearchInput({
         value={value}
         onChange={handleChange}
         placeholder={t('post.searchPlaceholder')}
-        className="w-full h-9 pl-8 pr-8 border border-rule bg-bg text-ink text-[13px] placeholder:text-ink3 focus:outline-2 focus:-outline-offset-1 focus:outline-ink"
+        className="w-full h-9 rounded-md border border-rule bg-bg pl-8 pr-8 text-[13px] text-ink placeholder:text-ink3 transition-colors focus:border-accent focus:outline-2 focus:-outline-offset-1 focus:outline-accent-strong"
         aria-label={t('post.searchPlaceholder')}
       />
       {value && (
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-ink3 hover:text-ink"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-ink3 transition-colors hover:text-ink"
           aria-label="검색어 지우기"
         >
           <X size={14} aria-hidden="true" />

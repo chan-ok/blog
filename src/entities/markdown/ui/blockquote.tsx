@@ -131,7 +131,7 @@ export default function Blockquote({ children }: BlockquoteProps) {
     return (
       <div
         role="note"
-        className={`my-6 rounded-lg border p-4 ${config.bgColor} ${config.borderColor}`}
+        className={`my-6 rounded-md border p-4 ${config.bgColor} ${config.borderColor}`}
       >
         <div className="mb-2 flex items-center gap-2">
           <Icon size={20} className={config.iconColor} aria-hidden="true" />

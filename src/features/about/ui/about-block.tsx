@@ -9,7 +9,7 @@ export default function AboutBlock() {
       <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-6">소개</p>
 
       {/* 큰 소개 문구 */}
-      <h1 className="text-[28px] sm:text-[34px] font-bold leading-[1.3] text-ink mb-5 tracking-[-0.3px]">
+      <h1 className="text-[34px] font-bold leading-[1.3] text-ink mb-5 tracking-normal">
         {t('about.greeting')}
       </h1>
 

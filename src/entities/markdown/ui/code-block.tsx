@@ -38,14 +38,14 @@ export default function CodeBlock({ children }: CodeBlockProps) {
 
   // 렌더링
   return (
-    <div className="flex overflow-x-auto relative my-6 rounded border border-rule">
+    <div className="flex overflow-x-auto relative my-6 rounded-md border border-rule bg-code-bg">
       {/* 코드 내용 */}
-      <pre ref={preRef} className="flex-1 p-4">
+      <pre ref={preRef} className="flex-1 p-4 text-[14px] leading-[1.65] text-code-ink">
         {children}
       </pre>
       <button
         onClick={handleCopy}
-        className="absolute top-6 right-6 flex items-center gap-1.5 rounded px-2 py-1 text-sm text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+        className="absolute top-6 right-6 flex items-center gap-1.5 rounded-md border border-rule bg-bg px-2 py-1 text-sm text-ink3 transition-colors hover:border-accent hover:bg-accent-soft hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
         aria-label={copied ? 'Copied' : 'Copy code'}
         type="button"
       >

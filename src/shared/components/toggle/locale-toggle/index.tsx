@@ -37,7 +37,7 @@ export default function LocaleToggle() {
 
   const popupClass = clsx(
     'py-1 min-w-[88px]',
-    'bg-bg border border-rule shadow-md',
+    'bg-bg border border-rule',
     'origin-[var(--transform-origin)]',
     'transition-[transform,opacity] duration-150',
     'data-[starting-style]:opacity-0 data-[starting-style]:scale-95',

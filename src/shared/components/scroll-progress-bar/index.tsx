@@ -5,10 +5,10 @@ export default function ScrollProgressBar() {
   const progress = useScrollProgress();
 
   return (
-    <div className="fixed left-0 top-0 z-50 h-1 w-full bg-transparent">
+    <div className="fixed left-0 top-0 z-50 h-[3px] w-full bg-transparent">
       {/* width는 동적 퍼센트 값이므로 인라인 style 예외 허용 */}
       <div
-        className="h-full bg-blue-500 transition-[width] duration-100 ease-out"
+        className="h-full bg-accent transition-[width] duration-100 ease-out"
         style={{ width: `${progress}%` }}
       />
     </div>

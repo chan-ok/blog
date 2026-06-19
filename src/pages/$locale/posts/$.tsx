@@ -148,15 +148,14 @@ function PostDetailPage() {
   }, [mdxStatus, locale]);
 
   return (
-    <div>
+    <div className="mx-auto max-w-[620px] pb-16">
       {/* 스크롤 진행 바: 페이지 최상단 fixed */}
       <ScrollProgressBar />
-      {/* 메인 콘텐츠: max-w-4xl 중앙 정렬 (부모 레이아웃에서 상속) */}
       <div>
         {/* 메타 헤더: 제목, 날짜, 태그 */}
         {frontmatter && (
           <div className="mb-8 border-b-2 border-ink pb-6">
-            <h1 className="mb-4 text-[28px] font-bold leading-tight text-ink">
+            <h1 className="mb-4 text-[32px] font-bold leading-[1.25] text-ink">
               {frontmatter.title}
             </h1>
             {frontmatter.createdAt && (

@@ -43,13 +43,11 @@ export default function ImageBlock({ src, alt, baseUrl }: ImageBlockProps) {
       <figure
         role="img"
         aria-label={alt || '이미지를 불러올 수 없습니다'}
-        className="my-6 flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-8 dark:border-gray-700 dark:bg-gray-800"
+        className="my-6 flex flex-col items-center justify-center rounded-md border border-rule bg-bg2 p-8"
       >
-        <ImageOff className="h-12 w-12 text-gray-400 dark:text-gray-500" aria-hidden="true" />
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">이미지를 불러올 수 없습니다</p>
-        {alt && (
-          <figcaption className="mt-2 text-xs text-gray-400 dark:text-gray-500">{alt}</figcaption>
-        )}
+        <ImageOff className="h-12 w-12 text-ink3" aria-hidden="true" />
+        <p className="mt-2 text-sm text-ink3">이미지를 불러올 수 없습니다</p>
+        {alt && <figcaption className="mt-2 text-xs text-ink3">{alt}</figcaption>}
       </figure>
     );
   }
@@ -61,13 +59,9 @@ export default function ImageBlock({ src, alt, baseUrl }: ImageBlockProps) {
         alt={alt || ''}
         loading="lazy"
         onError={handleError}
-        className="max-w-full h-auto rounded-lg border border-gray-200 dark:border-gray-700"
+        className="max-w-full h-auto rounded-md border border-rule"
       />
-      {alt && (
-        <figcaption className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          {alt}
-        </figcaption>
-      )}
+      {alt && <figcaption className="mt-2 text-center text-sm text-ink3">{alt}</figcaption>}
     </figure>
   );
 }

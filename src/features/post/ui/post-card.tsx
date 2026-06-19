@@ -24,7 +24,7 @@ export default function PostCard({ title, path, createdAt, tags, locale, index }
     <li className="flex items-baseline gap-3 py-4 border-b border-rule">
       <span className="text-[9px] text-ink3 min-w-[18px] shrink-0">{num}</span>
       <Link href={href} className="flex-1 group">
-        <span className="block text-[15px] sm:text-base font-semibold text-ink leading-[1.35] mb-1 group-hover:underline underline-offset-2">
+        <span className="block text-[16px] font-semibold text-ink leading-[1.45] mb-1 group-hover:underline underline-offset-2">
           {title}
         </span>
         {tags && tags.length > 0 && (

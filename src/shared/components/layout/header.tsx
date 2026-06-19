@@ -15,7 +15,7 @@ export default function Header() {
 
   const navLinkClass = (path: string) =>
     [
-      'text-[11px] tracking-[1.5px] uppercase px-5 py-2.5',
+      'text-[11px] tracking-[1.5px] uppercase px-3 py-2.5 sm:px-5',
       'border-r border-rule transition-colors duration-150',
       'hover:bg-ink hover:text-bg',
       isActive(path) ? 'bg-ink text-bg' : 'text-ink2',
@@ -34,7 +34,7 @@ export default function Header() {
         <Link
           href="/"
           aria-label="Home"
-          className="text-[28px] sm:text-[32px] font-bold tracking-[8px] uppercase text-ink no-underline"
+          className="text-[32px] font-bold tracking-[8px] uppercase text-ink no-underline"
         >
           Chanho.dev
         </Link>
@@ -43,7 +43,7 @@ export default function Header() {
 
       {/* nav 바 */}
       <nav className="border-t border-rule" aria-label="주요 네비게이션">
-        <div className="max-w-4xl mx-auto flex items-center">
+        <div className="mx-auto flex max-w-[960px] items-center">
           {/* 좌측 경계선 */}
           <span className="border-l border-rule self-stretch" />
 

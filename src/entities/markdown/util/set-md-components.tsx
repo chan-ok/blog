@@ -19,10 +19,10 @@ export default function setMdxComponents(
     h4: Typography.h4,
     h5: Typography.h5,
     h6: Typography.h6,
-    p: ({ children }) => <p className="mb-6 leading-[1.9] indent-4">{children}</p>,
-    ul: ({ children }) => <ul className="mdx-ul mb-6 pl-2 space-y-2">{children}</ul>,
-    ol: ({ children }) => <ol className="mdx-ol mb-6 pl-2 space-y-2">{children}</ol>,
-    li: ({ children }) => <li className="leading-[1.85] text-[15px]">{children}</li>,
+    p: ({ children }) => <p className="mb-6 text-[16px] leading-[2.0] text-ink2">{children}</p>,
+    ul: ({ children }) => <ul className="mdx-ul mb-6 pl-2 space-y-2 text-ink2">{children}</ul>,
+    ol: ({ children }) => <ol className="mdx-ol mb-6 pl-2 space-y-2 text-ink2">{children}</ol>,
+    li: ({ children }) => <li className="text-[16px] leading-[1.9]">{children}</li>,
     a: ({ href, children, className, ...rest }) => {
       // 앵커 링크 (rehype-autolink-headings가 생성)
       if (typeof className === 'string' && className.includes('anchor')) {
@@ -40,7 +40,7 @@ export default function setMdxComponents(
       return (
         <a
           href={href}
-          className="text-ink underline underline-offset-2 decoration-ink3 transition-colors hover:decoration-ink"
+          className="text-accent-strong underline underline-offset-2 decoration-accent transition-colors hover:text-ink hover:decoration-ink"
         >
           {children}
         </a>
@@ -71,7 +71,7 @@ export default function setMdxComponents(
       }
       // 인라인 코드
       return (
-        <code className="rounded bg-bg2 px-1.5 py-0.5 font-mono text-sm text-ink border border-rule">
+        <code className="rounded-md bg-bg2 px-1.5 py-0.5 font-mono text-sm text-ink border border-rule">
           {children}
         </code>
       );

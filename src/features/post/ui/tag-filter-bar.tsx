@@ -26,15 +26,15 @@ export default function TagFilterBar({ locale, availableTags, selectedTags }: Ta
 
   return (
     <nav
-      className="mb-6 flex flex-wrap items-center gap-2 border-b border-gray-200 pb-4 dark:border-gray-700"
+      className="mb-6 flex flex-wrap items-center gap-2 border-b border-rule pb-4"
       aria-label={t('post.tags')}
     >
       <Link
         href={`/${locale}/posts`}
-        className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
+        className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
           selectedTags.length === 0
-            ? 'bg-zinc-200 dark:bg-zinc-600 text-zinc-800 dark:text-zinc-200 font-medium'
-            : 'bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-600'
+            ? 'border-accent bg-accent-soft text-ink font-medium'
+            : 'border-rule bg-bg text-ink3 hover:border-accent hover:bg-accent-soft hover:text-ink'
         }`}
         aria-current={selectedTags.length === 0 ? 'true' : undefined}
       >
@@ -46,10 +46,10 @@ export default function TagFilterBar({ locale, availableTags, selectedTags }: Ta
           <Link
             key={tag}
             href={buildTagHref(tag)}
-            className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
+            className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
               isSelected
-                ? 'bg-zinc-200 dark:bg-zinc-600 text-zinc-800 dark:text-zinc-200 font-medium'
-                : 'bg-zinc-100 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-600'
+                ? 'border-accent bg-accent-soft text-ink font-medium'
+                : 'border-rule bg-bg text-ink3 hover:border-accent hover:bg-accent-soft hover:text-ink'
             }`}
             aria-current={isSelected ? 'true' : undefined}
             aria-label={`태그: ${tag}`}

@@ -36,7 +36,7 @@ function HomePage() {
   const { postsPromise } = Route.useLoaderData();
 
   return (
-    <div className="py-16 max-w-2xl">
+    <div className="mx-auto max-w-[680px] py-16">
       <AboutBlock />
       <Suspense fallback={<RecentPostBlockSkeleton />}>
         <RecentPostBlock locale={parseLocale(locale)} postsPromise={postsPromise} />

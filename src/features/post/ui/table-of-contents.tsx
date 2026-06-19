@@ -234,7 +234,7 @@ export default function TableOfContents({
       </div>
 
       {/* 데스크탑: fixed 사이드바 */}
-      <aside className="fixed top-44 hidden max-h-[calc(100vh-12rem)] overflow-y-auto xl:block xl:w-40 xl:left-[calc(50%+28rem+1rem)] 2xl:w-60 2xl:left-[calc(50%+28rem+2.25rem)]">
+      <aside className="fixed top-44 hidden max-h-[calc(100vh-12rem)] overflow-y-auto xl:block xl:w-44 xl:left-[calc(50%+21rem)] 2xl:w-60 2xl:left-[calc(50%+22rem)]">
         <div className="p-4 border-l border-rule">{fullContent}</div>
       </aside>
     </>
