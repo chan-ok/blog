@@ -1,4 +1,5 @@
 interface Window {
+  Buffer: typeof import('buffer').Buffer; // Buffer polyfill
   global: typeof globalThis; // global polyfill
 }
 

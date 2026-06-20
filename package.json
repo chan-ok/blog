@@ -19,6 +19,7 @@
     "@base-ui/react": "^1.6.0",
     "@tanstack/react-router": "^1.170.16",
     "axios": "^1.18.0",
+    "buffer": "^6.0.3",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "dompurify": "^3.4.11",

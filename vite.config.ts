@@ -35,9 +35,15 @@ export default defineConfig(({ mode }) => {
     resolve: {
       // tsconfig의 paths (@/* 등)를 Vite 8 네이티브 기능으로 해석
       tsconfigPaths: true,
+      alias: {
+        buffer: 'buffer',
+      },
     },
     define: {
       global: 'globalThis',
+    },
+    optimizeDeps: {
+      include: ['buffer'],
     },
     build: {
       rolldownOptions: {
