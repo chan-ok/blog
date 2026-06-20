@@ -28,7 +28,7 @@ function parseInternalLink(
     : undefined;
 
   // locale 추출 (예: /ko/about -> locale: ko, path: /about)
-  const localeMatch = pathWithLocale.match(/^\/(ko|en|ja)(\/.*)?$/);
+  const localeMatch = pathWithLocale.match(/^\/(ko|ja)(\/.*)?$/);
   const detectedLocale = localeMatch?.[1] || locale;
   const path = localeMatch
     ? localeMatch[2] || '/'

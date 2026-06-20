@@ -23,7 +23,7 @@ export default function LocaleToggle() {
   const router = useRouter();
 
   function changeLocale(newLocale: LocaleType) {
-    const newPath = pathname.replace(/^\/(ko|en|ja)/, `/${newLocale}`);
+    const newPath = pathname.replace(/^\/(ko|ja)/, `/${newLocale}`);
     setLocale(newLocale);
     router.navigate({ to: newPath });
   }
