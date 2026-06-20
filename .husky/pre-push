@@ -1,6 +1,7 @@
 set -e
 
-echo "▶ [1/4] typecheck"; pnpm typecheck
-echo "▶ [2/4] test";      pnpm test:once
-echo "▶ [3/4] audit";     pnpm audit --prod --audit-level=critical
-echo "▶ [4/4] build";     pnpm build
+echo "▶ [1/5] typecheck"; pnpm typecheck
+echo "▶ [2/5] lint";      pnpm lint:error
+echo "▶ [3/5] test";      pnpm test:once
+echo "▶ [4/5] audit";     pnpm audit --prod --audit-level=critical
+echo "▶ [5/5] build";     pnpm build
