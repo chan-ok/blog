@@ -1,10 +1,11 @@
-import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Suspense, useEffect, useRef, useState } from 'react';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
 import MDComponent from '@/entities/markdown';
-import getMarkdown from '@/entities/markdown/util/get-markdown';
 import TableOfContents from '@/features/post/ui/table-of-contents';
+
+import { getMarkdown } from '@/entities/markdown/util/get-markdown';
 import { buildMeta, buildCanonicalLink } from '@/shared/util/build-meta';
 
 interface Heading {

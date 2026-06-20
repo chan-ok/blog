@@ -28,7 +28,7 @@ interface HastParent extends HastNode {
  * });
  * ```
  */
-export default function rehypeUnwrapImages() {
+export function rehypeUnwrapImages() {
   return (tree: HastNode) => {
     visit(tree, 'element', (node: HastNode, index, parent) => {
       const element = node as HastElement;

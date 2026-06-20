@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   createFileRoute,
   ErrorComponentProps,
@@ -6,21 +7,18 @@ import {
   useRouter,
   useRouterState,
 } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import { z } from 'zod';
 
-import { ErrorPage } from '@/shared/components/error-page';
 import { LocaleProvider } from '@/shared/locale/provider';
-import { parseLocale } from '@/shared/types/common.schema';
-import Footer from '@/shared/components/layout/footer';
+import { ErrorPage } from '@/shared/components/error-page';
 import Header from '@/shared/components/layout/header';
+import Footer from '@/shared/components/layout/footer';
 
-const localeSchema = z.enum(['ko', 'ja']);
+import { LocaleSchema, parseLocale } from '@/shared/locale/schema';
 
 export const Route = createFileRoute('/$locale')({
   validateSearch: (search) => search,
   beforeLoad: ({ params }) => {
-    const result = localeSchema.safeParse(params.locale);
+    const result = LocaleSchema.safeParse(params.locale);
     if (!result.success) {
       throw notFound();
     }

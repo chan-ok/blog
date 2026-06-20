@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 
 import AboutBlock from '@/features/post/ui/about-block';
+
 import { buildMeta, buildCanonicalLink, getHomeDescription } from '@/shared/util/build-meta';
 
 export const Route = createFileRoute('/$locale/')({

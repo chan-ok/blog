@@ -7,7 +7,6 @@ import {
 } from '@tanstack/react-router';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
-
 import { ErrorPage } from '@/shared/components/error-page';
 
 export const Route = createRootRoute({

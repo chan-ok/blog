@@ -8,10 +8,9 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import matter from 'gray-matter';
 
 import { api } from '@/shared/config/api';
-
-import { FrontmatterSchema, Frontmatter } from '../model/markdown.schema';
-import remarkObsidianImage from './remark-obsidian-image';
-import rehypeUnwrapImages from './rehype-unwrap-images';
+import { FrontmatterSchema, Frontmatter } from '../model/model.schema';
+import { remarkObsidianImage } from './remark-obsidian-image';
+import { rehypeUnwrapImages } from './rehype-unwrap-images';
 
 // partial(): about 페이지(README)처럼 frontmatter 일부 필드가 없는 파일도 지원
 export type MarkdownFrontmatter = Partial<Frontmatter>;
@@ -24,10 +23,7 @@ export interface MarkdownElement {
   MDXContent: React.ComponentType<{ components?: any }>;
 }
 
-export default async function getMarkdown(
-  path: string,
-  baseUrl?: string
-): Promise<MarkdownElement> {
+export async function getMarkdown(path: string, baseUrl?: string): Promise<MarkdownElement> {
   // Vite 환경 변수 사용
   const baseURL = baseUrl || import.meta.env.VITE_GIT_RAW_URL;
   // 언더바를 공백으로 변환

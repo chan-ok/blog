@@ -1,8 +1,9 @@
 import { format, isValid } from 'date-fns';
 
 import Link from '@/shared/components/ui/link';
-import type { Frontmatter } from '@/entities/markdown/model/markdown.schema';
-import type { LocaleType } from '@/shared/types/common.schema';
+import { LocaleType } from '@/shared/locale/types';
+
+import type { Frontmatter } from '@/entities/markdown/model/model.schema';
 
 interface PostCardProps extends Frontmatter {
   locale: LocaleType;

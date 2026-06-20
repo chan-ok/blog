@@ -2,7 +2,7 @@ import matter from 'gray-matter';
 
 import { api } from '@/shared/config/api';
 
-import { FrontmatterSchema, Frontmatter } from '../model/markdown.schema';
+import { FrontmatterSchema, Frontmatter } from '../model/model.schema';
 
 // partial(): frontmatter 일부 필드가 없는 파일도 지원
 export type PartialFrontmatter = Partial<Frontmatter>;

@@ -1,5 +1,6 @@
-import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.schema';
-import type { LocaleType } from '@/shared/types/common.schema';
+import { Frontmatter as PostInfo } from '@/entities/markdown/model/model.schema';
+
+import { LocaleType } from '@/shared/locale/types';
 
 export interface GetPostsProps {
   locale: LocaleType;
