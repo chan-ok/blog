@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
 import { tanstackRouter } from '@tanstack/router-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
@@ -19,6 +20,7 @@ export default defineConfig(({ mode }) => {
         autoCodeSplitting: mode !== 'test',
       }),
       react(),
+      babel({ presets: [reactCompilerPreset({ target: '19' })] }),
       ViteImageOptimizer({
         png: { quality: 80 },
         jpeg: { quality: 85 },
