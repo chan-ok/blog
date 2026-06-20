@@ -7,10 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tsc": "tsc -b",
+    "tsc": "npx tsgo -p . --noEmit",
     "fmt": "oxfmt src",
-    "fmt:check": "oxfmt --check src",
-    "fmt:fix": "oxfmt --fix src",
     "lint": "oxlint src",
     "lint:error": "oxlint --quiet src",
     "lint:fix": "oxlint --fix src",
@@ -18,12 +16,6 @@
     "test:once": "vitest run",
     "test:coverage": "vitest run --coverage",
     "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "oxfmt --write",
-      "oxlint --fix"
-    ]
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -81,5 +73,11 @@
     "vite": "^8.0.16",
     "vite-plugin-image-optimizer": "^2.0.3",
     "vitest": "^4.1.9"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "oxfmt --write",
+      "oxlint --fix"
+    ]
   }
 }
