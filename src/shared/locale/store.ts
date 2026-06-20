@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { LocaleType } from '@/shared/types/common.schema';
+import { LocaleType } from './types';
 
 interface LocaleState {
   locale: LocaleType;

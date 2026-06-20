@@ -2,9 +2,8 @@ import { useRouterState, useRouter } from '@tanstack/react-router';
 import { Menu } from '@base-ui/react';
 import clsx from 'clsx';
 
-import type { LocaleType } from '@/shared/types/common.schema';
-
 import { useLocaleStore } from './store';
+import { LocaleType } from './types';
 
 const LOCALE_LABELS: Record<LocaleType, string> = {
   ko: 'KO',

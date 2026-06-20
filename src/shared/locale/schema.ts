@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export const LocaleSchema = z.enum(['ko', 'ja']);
+
 export const TranslationResourceSchema = z.object({
   nav: z.object({
     about: z.string().min(1),
@@ -60,4 +62,12 @@ export const TranslationResourceSchema = z.object({
   }),
 });
 
-export type TranslationResourceFromSchema = z.infer<typeof TranslationResourceSchema>;
+/**
+ * locale 문자열을 안전하게 LocaleType으로 변환
+ * @param locale - 변환할 locale 문자열
+ * @returns "ja" | "ko" (검증 실패 시 기본값 'ko' 반환)
+ */
+export function parseLocale(locale: unknown) {
+  const result = LocaleSchema.safeParse(locale);
+  return result.success ? result.data : 'ko';
+}

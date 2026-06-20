@@ -9,13 +9,13 @@ import { visit } from 'unist-util-visit';
  *
  * @example
  * ```ts
- * import remarkObsidianImage from './remark-obsidian-image';
+ * import { remarkObsidianImage } from './remark-obsidian-image';
  * evaluate(content, {
  *   remarkPlugins: [remarkObsidianImage, remarkGfm],
  * });
  * ```
  */
-const remarkObsidianImage = () => {
+export function remarkObsidianImage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (tree: any) => {
     visit(
@@ -89,6 +89,4 @@ const remarkObsidianImage = () => {
       }
     );
   };
-};
-
-export default remarkObsidianImage;
+}

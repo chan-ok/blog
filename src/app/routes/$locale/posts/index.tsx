@@ -1,10 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
 
 import PostCardList, { PostCardListSkeleton } from '@/features/post/ui/post-card-list';
-import { getPosts } from '@/features/post/util/get-posts';
-import { parseLocale } from '@/shared/types/common.schema';
+
+import { parseLocale } from '@/shared/locale/schema';
 import { buildMeta, buildCanonicalLink, getPostsDescription } from '@/shared/util/build-meta';
+import { getPosts } from '@/features/post/util/get-posts';
 
 export const Route = createFileRoute('/$locale/posts/')({
   loader: ({ params }) => {

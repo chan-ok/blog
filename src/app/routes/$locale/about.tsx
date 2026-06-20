@@ -1,8 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
 
 import MDComponent from '@/entities/markdown';
-import getMarkdown from '@/entities/markdown/util/get-markdown';
+
+import { getMarkdown } from '@/entities/markdown/util/get-markdown';
 import { buildMeta, buildCanonicalLink, getAboutDescription } from '@/shared/util/build-meta';
 
 const ABOUT_BASE_URL = 'https://raw.githubusercontent.com/chan-ok/chan-ok/main';

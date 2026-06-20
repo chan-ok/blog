@@ -1,7 +1,7 @@
-import { api } from '@/shared/config/api';
+import { api } from '@/shared/api';
 import { compareDesc } from 'date-fns';
 
-import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.schema';
+import { Frontmatter as PostInfo } from '@/entities/markdown/model/model.schema';
 import { GetPostsProps, PagingPosts } from '../model/post.schema';
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {

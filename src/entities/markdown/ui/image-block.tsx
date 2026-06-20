@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
+
 import { ImageOff } from 'lucide-react';
 
 interface ImageBlockProps {
@@ -19,7 +20,7 @@ export default function ImageBlock({ src, alt, baseUrl }: ImageBlockProps) {
   const [hasError, setHasError] = useState(false);
 
   // 상대 경로 → 절대 경로 변환
-  const resolvedSrc = React.useMemo(() => {
+  const resolvedSrc = useMemo(() => {
     // 이미 절대 경로(http/https)면 그대로 사용
     if (src.startsWith('http')) {
       return src;

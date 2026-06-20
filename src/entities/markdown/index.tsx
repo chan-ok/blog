@@ -1,11 +1,9 @@
-import { use, useMemo } from 'react';
+import { use } from 'react';
+
+import { setMdxComponents } from './util/set-md-components';
 
 import type { MDXComponents } from 'mdx/types';
-
 import type { MarkdownElement } from './util/get-markdown';
-import setMdxComponents from './util/set-md-components';
-
-export type { MarkdownElement, MarkdownFrontmatter } from './util/get-markdown';
 
 interface MDComponentProps {
   dataPromise: Promise<MarkdownElement>;
@@ -20,10 +18,9 @@ export default function MDComponent({
 }: MDComponentProps) {
   const data = use(dataPromise);
 
-  const components = useMemo(
-    () => setMdxComponents(customComponents, baseUrl),
-    [customComponents, baseUrl]
-  );
+  const components = setMdxComponents(customComponents, baseUrl);
 
   return <data.MDXContent components={components} />;
 }
+
+export type { MarkdownElement, MarkdownFrontmatter } from './util/get-markdown';

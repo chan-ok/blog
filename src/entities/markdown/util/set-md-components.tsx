@@ -1,10 +1,11 @@
 import React from 'react';
-import { AlertOctagon, AlertTriangle, CheckCircle, Info, type LucideIcon } from 'lucide-react';
-import type { MDXComponents } from 'mdx/types';
 
+import { AlertOctagon, AlertTriangle, CheckCircle, Info, type LucideIcon } from 'lucide-react';
 import CodeBlock from '../ui/code-block';
 import ImageBlock from '../ui/image-block';
 import MermaidDiagram from '../ui/mermaid-diagram';
+
+import type { MDXComponents } from 'mdx/types';
 
 interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
   children: React.ReactNode;
@@ -249,10 +250,7 @@ function Blockquote({ children }: BlockquoteProps) {
   );
 }
 
-export default function setMdxComponents(
-  components?: MDXComponents,
-  baseUrl?: string
-): MDXComponents {
+export function setMdxComponents(components?: MDXComponents, baseUrl?: string): MDXComponents {
   return {
     h1: Heading1,
     h2: Heading2,

@@ -1,8 +1,9 @@
 import { use } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { LocaleType } from '@/shared/types/common.schema';
 import PostCard from '@/features/post/ui/post-card';
+import { LocaleType } from '@/shared/locale/types';
+
 import type { PagingPosts } from '../model/post.schema';
 
 interface PostCardListProps {

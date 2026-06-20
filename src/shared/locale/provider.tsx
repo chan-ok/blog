@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import type { i18n } from 'i18next';
-import type { LocaleType } from '@/shared/types/common.schema';
 
 import { i18next } from './config';
 import { useLocaleStore } from './store';
+import { LocaleType } from './types';
 
 interface LocaleProviderProps {
   locale: LocaleType;
@@ -19,5 +18,5 @@ export function LocaleProvider({ locale, children }: LocaleProviderProps) {
     i18next.changeLanguage(locale);
   }, [locale, setLocale]);
 
-  return <I18nextProvider i18n={i18next as unknown as i18n}>{children}</I18nextProvider>;
+  return <I18nextProvider i18n={i18next}>{children}</I18nextProvider>;
 }
