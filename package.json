@@ -19,6 +19,12 @@
     "test:coverage": "vitest run --coverage",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "oxfmt --write",
+      "oxlint --fix"
+    ]
+  },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@tanstack/react-router": "^1.170.16",
