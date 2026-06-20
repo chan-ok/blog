@@ -53,9 +53,6 @@ export default function Header() {
           <Link href="/posts" aria-label="Posts" className={navLinkClass('/posts')}>
             Posts
           </Link>
-          <Link href="/contact" aria-label="Contact" className={navLinkClass('/contact')}>
-            Contact
-          </Link>
 
           {/* 토글 영역 */}
           <span className="ml-auto flex items-stretch border-l border-rule">

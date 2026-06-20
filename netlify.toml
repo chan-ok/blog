@@ -3,16 +3,10 @@
   command = "pnpm dev"
   port = 8888
   targetPort = 5173
-  functions = "netlify/functions"
   
 [build]
   command = "pnpm build"
   publish = "dist"
-
-[[redirects]]
-  from   = "/api/*"
-  to     = "/.netlify/functions/:splat"
-  status = 200
 
 [[redirects]]
   from = "/*"

@@ -10,7 +10,7 @@ interface LinkProps extends Omit<RouterLinkProps, 'to' | 'params'> {
 }
 
 type RouteConfig = {
-  to: '/$locale' | '/$locale/about' | '/$locale/contact' | '/$locale/posts' | '/$locale/posts/$';
+  to: '/$locale' | '/$locale/about' | '/$locale/posts' | '/$locale/posts/$';
   params: { locale: string; _splat?: string };
 };
 
@@ -48,14 +48,6 @@ function parseInternalLink(
   if (path === '/about') {
     return {
       to: '/$locale/about',
-      params: { locale: detectedLocale },
-      ...(searchParams && { search: searchParams }),
-    };
-  }
-
-  if (path === '/contact') {
-    return {
-      to: '/$locale/contact',
       params: { locale: detectedLocale },
       ...(searchParams && { search: searchParams }),
     };

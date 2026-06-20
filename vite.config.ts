@@ -1,12 +1,11 @@
 /// <reference types="vitest/config" />
-import { loadEnv, defineConfig } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { tanstackRouter } from '@tanstack/router-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
   return {
     plugins: [
       tailwindcss(),
@@ -40,9 +39,6 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       global: 'globalThis',
-      'import.meta.env.VITE_TURNSTILE_SITE_KEY': JSON.stringify(
-        env.VITE_TURNSTILE_SITE_KEY || env.TURNSTILE_SITE_KEY || ''
-      ),
     },
     optimizeDeps: {
       include: ['buffer'],
