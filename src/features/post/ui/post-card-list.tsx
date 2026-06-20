@@ -7,16 +7,14 @@ import { getPosts } from '../util/get-posts';
 
 interface PostCardListProps {
   locale: LocaleType;
-  tags?: string[];
-  query?: string;
 }
 
-export default function PostCardList({ locale, tags = [], query = '' }: PostCardListProps) {
+export default function PostCardList({ locale }: PostCardListProps) {
   const { t } = useTranslation();
 
   const { data: pagingPosts } = useSuspenseQuery({
-    queryKey: ['posts', locale, tags, query],
-    queryFn: () => getPosts({ locale, tags, query }),
+    queryKey: ['posts', locale],
+    queryFn: () => getPosts({ locale }),
     retry: 3,
     staleTime: 1000 * 60 * 5,
   });
@@ -24,11 +22,7 @@ export default function PostCardList({ locale, tags = [], query = '' }: PostCard
   const posts = pagingPosts.posts;
 
   if (!posts || posts.length === 0) {
-    return (
-      <p className="text-ink3 text-sm py-8 text-center">
-        {query ? t('post.noSearchResults') : t('post.noPosts')}
-      </p>
-    );
+    return <p className="text-ink3 text-sm py-8 text-center">{t('post.noPosts')}</p>;
   }
 
   return (
