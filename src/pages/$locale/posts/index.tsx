@@ -2,10 +2,19 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
 
 import PostCardList, { PostCardListSkeleton } from '@/features/post/ui/post-card-list';
+import { getPosts } from '@/features/post/util/get-posts';
 import { parseLocale } from '@/shared/types/common.schema';
 import { buildMeta, buildCanonicalLink, getPostsDescription } from '@/shared/util/build-meta';
 
 export const Route = createFileRoute('/$locale/posts/')({
+  loader: ({ params }) => {
+    const locale = parseLocale(params.locale);
+
+    return {
+      locale,
+      postsPromise: getPosts({ locale }),
+    };
+  },
   component: PostsPageWithSuspense,
   // 포스트 목록 페이지 메타태그
   head: ({ params }) => {
@@ -32,8 +41,7 @@ function PostsPageWithSuspense() {
 }
 
 function PostsPage() {
-  const { locale } = Route.useParams();
-  const parsedLocale = parseLocale(locale);
+  const { locale, postsPromise } = Route.useLoaderData();
 
   return (
     <div className="mx-auto max-w-[760px] pb-16">
@@ -42,7 +50,7 @@ function PostsPage() {
         <p className="text-[9px] tracking-[4px] uppercase text-ink3">All Posts</p>
       </div>
       <Suspense fallback={<PostCardListSkeleton />}>
-        <PostCardList locale={parsedLocale} />
+        <PostCardList locale={locale} postsPromise={postsPromise} />
       </Suspense>
     </div>
   );
