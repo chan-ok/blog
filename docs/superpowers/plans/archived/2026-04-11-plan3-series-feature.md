@@ -163,8 +163,7 @@ Expected: FAIL (파일 없음)
 ```ts
 import { seriesSchema, type Series } from '../model/series.schema';
 
-const BASE_URL =
-  'https://raw.githubusercontent.com/chan-ok/blog-content/main';
+const BASE_URL = 'https://raw.githubusercontent.com/chan-ok/blog-content/main';
 
 /**
  * blog-content 리포지터리에서 전체 시리즈 목록을 fetch한다.
@@ -240,11 +239,7 @@ interface SeriesListProps {
  */
 export default function SeriesList({ seriesList, locale }: SeriesListProps) {
   if (seriesList.length === 0) {
-    return (
-      <p className="text-ink3 text-sm py-8 text-center">
-        아직 발행된 시리즈가 없습니다.
-      </p>
-    );
+    return <p className="text-ink3 text-sm py-8 text-center">아직 발행된 시리즈가 없습니다.</p>;
   }
 
   return (
@@ -260,9 +255,7 @@ export default function SeriesList({ seriesList, locale }: SeriesListProps) {
             key={series.slug}
             className="flex items-baseline gap-3 py-4 border-b border-rule first:border-t"
           >
-            <span className="text-[9px] text-rule min-w-[18px] shrink-0">
-              {num}
-            </span>
+            <span className="text-[9px] text-rule min-w-[18px] shrink-0">{num}</span>
             <Link href={href} className="flex-1 group">
               <span className="block text-[15px] font-semibold text-ink leading-[1.35] mb-1 group-hover:underline underline-offset-2">
                 {series.title}
@@ -335,16 +328,10 @@ export default function SeriesDetail({ series, locale }: SeriesDetailProps) {
     <div>
       {/* 시리즈 헤더 */}
       <div className="mb-10">
-        <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-4">
-          Series
-        </p>
-        <h1 className="text-[28px] font-bold leading-tight text-ink mb-3">
-          {series.title}
-        </h1>
+        <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-4">Series</p>
+        <h1 className="text-[28px] font-bold leading-tight text-ink mb-3">{series.title}</h1>
         {series.description && (
-          <p className="text-[15px] leading-[1.9] text-ink2">
-            {series.description}
-          </p>
+          <p className="text-[15px] leading-[1.9] text-ink2">{series.description}</p>
         )}
       </div>
 
@@ -362,20 +349,13 @@ export default function SeriesDetail({ series, locale }: SeriesDetailProps) {
                 key={item.path}
                 className="flex items-start gap-3 py-4 border-b border-rule first:border-t"
               >
-                <span className="text-[9px] text-rule min-w-[18px] shrink-0 mt-1">
-                  {num}
-                </span>
+                <span className="text-[9px] text-rule min-w-[18px] shrink-0 mt-1">{num}</span>
                 <BookOpen size={13} className="text-ink3 mt-[3px] shrink-0" />
-                <Link
-                  href={`/${locale}/posts/${item.path}`}
-                  className="flex-1 group"
-                >
+                <Link href={`/${locale}/posts/${item.path}`} className="flex-1 group">
                   <span className="text-[15px] font-semibold text-ink group-hover:underline underline-offset-2">
                     {item.title}
                   </span>
-                  <span className="ml-2 text-[9px] tracking-[1px] uppercase text-ink3">
-                    내 글
-                  </span>
+                  <span className="ml-2 text-[9px] tracking-[1px] uppercase text-ink3">내 글</span>
                 </Link>
               </li>
             );
@@ -387,9 +367,7 @@ export default function SeriesDetail({ series, locale }: SeriesDetailProps) {
               key={item.url}
               className="flex items-start gap-3 py-4 border-b border-rule first:border-t"
             >
-              <span className="text-[9px] text-rule min-w-[18px] shrink-0 mt-1">
-                {num}
-              </span>
+              <span className="text-[9px] text-rule min-w-[18px] shrink-0 mt-1">{num}</span>
               <ExternalLink size={13} className="text-ink3 mt-[3px] shrink-0" />
               <div className="flex-1">
                 <a
@@ -400,13 +378,9 @@ export default function SeriesDetail({ series, locale }: SeriesDetailProps) {
                 >
                   {item.title}
                 </a>
-                <span className="ml-2 text-[9px] tracking-[1px] uppercase text-ink3">
-                  스크랩
-                </span>
+                <span className="ml-2 text-[9px] tracking-[1px] uppercase text-ink3">스크랩</span>
                 {item.comment && (
-                  <p className="mt-1 text-[12px] text-ink3 leading-[1.6] italic">
-                    {item.comment}
-                  </p>
+                  <p className="mt-1 text-[12px] text-ink3 leading-[1.6] italic">{item.comment}</p>
                 )}
               </div>
             </li>
@@ -441,9 +415,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Suspense } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
-import SeriesList, {
-  SeriesListSkeleton,
-} from '@/2-features/series/ui/series-list';
+import SeriesList, { SeriesListSkeleton } from '@/2-features/series/ui/series-list';
 import { getSeries } from '@/2-features/series/util/get-series';
 import { buildMeta, buildCanonicalLink } from '@/5-shared/util/build-meta';
 

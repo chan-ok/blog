@@ -556,7 +556,10 @@ export const Route = createFileRoute('/$locale/posts/')({
 // src/2-features/post/ui/post-card-list.tsx
 const search = useSearch({ from: Route.fullPath });
 const tags = search.tags
-  ? search.tags.split(',').map((tag) => tag.trim()).filter(Boolean)
+  ? search.tags
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean)
   : [];
 
 const { data: pagingPosts } = useSuspenseQuery({
@@ -574,10 +577,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
 
   let filteredPosts = response.data
     .filter((post) => post.published)
-    .filter(
-      (post) =>
-        tags.length === 0 || tags.some((tag) => post.tags.includes(tag))
-    );
+    .filter((post) => tags.length === 0 || tags.some((tag) => post.tags.includes(tag)));
 
   // 클라이언트 검색어 필터 (title + tags + summary)
   if (query.trim()) {
@@ -785,9 +785,9 @@ calcReadingTime(text: string, locale: LocaleType): string
 ```typescript
 interface TableOfContentsProps {
   headings: Heading[];
-  series?: string;      // 시리즈 식별자
+  series?: string; // 시리즈 식별자
   currentPath?: string; // 현재 포스트 경로 (강조용)
-  locale?: string;      // 시리즈 데이터 fetch용
+  locale?: string; // 시리즈 데이터 fetch용
 }
 ```
 

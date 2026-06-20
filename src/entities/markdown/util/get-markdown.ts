@@ -16,7 +16,7 @@ import rehypeUnwrapImages from './rehype-unwrap-images';
 // partial(): about 페이지(README)처럼 frontmatter 일부 필드가 없는 파일도 지원
 export type MarkdownFrontmatter = Partial<Frontmatter>;
 
-interface MarkdownElement {
+export interface MarkdownElement {
   frontmatter: MarkdownFrontmatter;
   content: string;
   source: string;

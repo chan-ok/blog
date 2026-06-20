@@ -1,27 +1,36 @@
 @import 'tailwindcss';
 @import 'highlight.js/styles/github-dark.css';
 
-/* ── 다크모드 variant ── */
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ── 색상 토큰 (라이트) ── */
 :root {
-  --bg: #f7f8fa;
-  --bg2: #f0f1f4;
-  --ink: #0f1117;
-  --ink2: #3a3d47;
-  --ink3: #60657a;
-  --rule: #d8dae2;
+  --bg: #fafafa;
+  --bg2: #f2f2f2;
+  --ink: #111111;
+  --ink2: #3d3d3d;
+  --ink3: #6f6f6f;
+  --rule: #d8d8d8;
+  --accent: #2f2f2f;
+  --accent-strong: #111111;
+  --accent-soft: #e8e8e8;
+  --code-bg: #1f1f1f;
+  --code-ink: #f5f5f5;
 }
 
 /* ── 색상 토큰 (다크) ── */
-.dark {
-  --bg: #12141a;
-  --bg2: #1c1f28;
-  --ink: #e8eaf0;
-  --ink2: #a8acba;
-  --ink3: #9095aa;
-  --rule: #2a2e3a;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111111;
+    --bg2: #1f1f1f;
+    --ink: #f5f5f5;
+    --ink2: #d4d4d4;
+    --ink3: #a3a3a3;
+    --rule: #3a3a3a;
+    --accent: #e5e5e5;
+    --accent-strong: #ffffff;
+    --accent-soft: #2a2a2a;
+    --code-bg: #0f0f0f;
+    --code-ink: #f5f5f5;
+  }
 }
 
 /* ── Tailwind v4 토큰 등록 ── */
@@ -32,8 +41,14 @@
   --color-ink2: var(--ink2);
   --color-ink3: var(--ink3);
   --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-code-bg: var(--code-bg);
+  --color-code-ink: var(--code-ink);
   /* 세리프 폰트 스택을 font-sans 유틸리티로 노출 */
   --font-sans: 'Noto Serif KR', 'Noto Serif JP', 'Noto Serif', serif;
+  --font-mono: JetBrains Mono, 'SFMono-Regular', Consolas, ui-monospace, monospace;
 }
 
 /* ── 기본 폰트 (KR/JP/EN 세리프 통일) ── */
@@ -51,6 +66,17 @@ html {
 /* ── 마크다운 헤딩 앵커 아이콘 숨김 ── */
 .anchor-icon {
   display: none;
+}
+
+/* ── 코드 블록: highlight.js dark theme의 강한 검정 배경 완화 ── */
+.mdx-content pre,
+.mdx-content .hljs,
+.mdx-content pre code.hljs {
+  background: transparent;
+}
+
+.mdx-content pre code.hljs {
+  color: var(--code-ink);
 }
 
 /* ── MDX 점 리스트 (·) ── */

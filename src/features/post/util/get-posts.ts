@@ -4,22 +4,8 @@ import { compareDesc } from 'date-fns';
 import { Frontmatter as PostInfo } from '@/entities/markdown/model/markdown.schema';
 import { GetPostsProps, PagingPosts } from '../model/post.schema';
 
-/** 개발 환경에서만 노출하는 태그 (로컬에서 test/draft 포스트 확인용, 프로덕션에서는 숨김) */
-export const DEV_ONLY_TAGS = ['test', 'draft'] as const;
-
-/** 프로덕션일 때 true. Vite: import.meta.env.DEV === false */
-export function isProduction(): boolean {
-  return !import.meta.env.DEV;
-}
-
-/** 포스트가 dev-only 태그를 하나라도 가지면 true */
-export function hasDevOnlyTag(tags: string[] | undefined): boolean {
-  if (!tags?.length) return false;
-  return tags.some((tag) => (DEV_ONLY_TAGS as readonly string[]).includes(tag));
-}
-
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
-  const { locale, page = 0, size = 10, tags = [], query = '' } = props;
+  const { locale, page = 0, size = 10 } = props;
 
   // Vite 환경 변수 사용
   const baseURL = import.meta.env.VITE_GIT_RAW_URL;
@@ -65,26 +51,6 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       }))
       .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))
       .filter((post) => post.published);
-
-    // 프로덕션에서는 test/draft 태그가 있는 포스트는 노출하지 않음
-    if (isProduction()) {
-      filteredPosts = filteredPosts.filter((post) => !hasDevOnlyTag(post.tags ?? []));
-    }
-
-    filteredPosts = filteredPosts.filter(
-      (post) => tags.length === 0 || tags.some((tag) => (post.tags ?? []).includes(tag))
-    );
-
-    // query 필터: title, tags, summary에서 대소문자 무관 검색
-    if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      filteredPosts = filteredPosts.filter(
-        (post) =>
-          post.title?.toLowerCase().includes(q) ||
-          (post.tags ?? []).some((tag) => tag.toLowerCase().includes(q)) ||
-          post.summary?.toLowerCase().includes(q)
-      );
-    }
 
     const startIndex = page * size;
     const endIndex = Math.min(startIndex + size, filteredPosts.length);

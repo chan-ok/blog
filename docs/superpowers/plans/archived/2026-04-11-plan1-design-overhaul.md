@@ -220,16 +220,11 @@ export default function Header() {
         >
           Chanho.dev
         </Link>
-        <p className="text-[10px] tracking-[2.5px] text-ink3 mt-1 mb-3">
-          개발 · 사유 · 기록
-        </p>
+        <p className="text-[10px] tracking-[2.5px] text-ink3 mt-1 mb-3">개발 · 사유 · 기록</p>
       </div>
 
       {/* nav 바 */}
-      <nav
-        className="flex items-center border-t border-rule"
-        aria-label="주요 네비게이션"
-      >
+      <nav className="flex items-center border-t border-rule" aria-label="주요 네비게이션">
         {/* 좌측 경계선 */}
         <span className="border-l border-rule self-stretch" />
 
@@ -324,9 +319,7 @@ export default function AboutBlock() {
   return (
     <div className="mb-10">
       {/* 소개 레이블 */}
-      <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-6">
-        소개
-      </p>
+      <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-6">소개</p>
 
       {/* 큰 소개 문구 */}
       <h1 className="text-[28px] sm:text-[34px] font-bold leading-[1.3] text-ink mb-5 tracking-[-0.3px]">
@@ -358,10 +351,7 @@ interface RecentPostBlockProps {
   postsPromise: Promise<PagingPosts>;
 }
 
-export default function RecentPostBlock({
-  locale,
-  postsPromise,
-}: RecentPostBlockProps) {
+export default function RecentPostBlock({ locale, postsPromise }: RecentPostBlockProps) {
   const { t } = useTranslation();
   const pagingPosts = use(postsPromise);
   const posts = pagingPosts.posts;
@@ -383,17 +373,13 @@ export default function RecentPostBlock({
       <hr className="border-t border-rule mb-8" />
 
       {/* 레이블 */}
-      <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-5">
-        {t('post.recentPosts')}
-      </p>
+      <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-5">{t('post.recentPosts')}</p>
 
       {/* 목차형 목록 */}
       <ol>
         {posts.map((post, idx) => {
           const date =
-            post.createdAt instanceof Date
-              ? post.createdAt
-              : new Date(post.createdAt as string);
+            post.createdAt instanceof Date ? post.createdAt : new Date(post.createdAt as string);
           const formattedDate = isValid(date) ? format(date, 'yyyy.MM') : '—';
           const href = `/${locale}/posts/${post.path.join('/')}`;
           const num = String(idx + 1).padStart(2, '0');
@@ -403,22 +389,16 @@ export default function RecentPostBlock({
               key={post.path.join('/')}
               className="flex items-baseline gap-3 py-4 border-b border-rule first:border-t"
             >
-              <span className="text-[9px] text-rule min-w-[18px] shrink-0">
-                {num}
-              </span>
+              <span className="text-[9px] text-rule min-w-[18px] shrink-0">{num}</span>
               <Link href={href} className="flex-1 group">
                 <span className="block text-[15px] font-semibold text-ink leading-[1.35] mb-1 group-hover:underline underline-offset-2">
                   {post.title}
                 </span>
                 {post.tags && post.tags.length > 0 && (
-                  <span className="text-[10px] text-ink3">
-                    {post.tags.join(' · ')}
-                  </span>
+                  <span className="text-[10px] text-ink3">{post.tags.join(' · ')}</span>
                 )}
               </Link>
-              <span className="text-[10px] text-ink3 shrink-0 tabular-nums">
-                {formattedDate}
-              </span>
+              <span className="text-[10px] text-ink3 shrink-0 tabular-nums">{formattedDate}</span>
             </li>
           );
         })}
@@ -467,10 +447,7 @@ function HomePage() {
     <div className="py-16 max-w-2xl">
       <AboutBlock />
       <Suspense fallback={<RecentPostBlockSkeleton />}>
-        <RecentPostBlock
-          locale={parseLocale(locale)}
-          postsPromise={postsPromise}
-        />
+        <RecentPostBlock locale={parseLocale(locale)} postsPromise={postsPromise} />
       </Suspense>
     </div>
   );
@@ -516,8 +493,18 @@ import { render, screen } from '@testing-library/react';
 import { renderWithRouter } from '@/5-shared/test-utils/render-with-router';
 
 vi.mock('@/5-shared/components/ui/link', () => ({
-  default: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
-    <a href={href} className={className}>{children}</a>
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
   ),
 }));
 
@@ -582,16 +569,8 @@ interface PostCardProps extends Frontmatter {
  * TOC(목차) 형태의 포스트 행 컴포넌트.
  * 번호 · 제목+태그 · 날짜를 한 행에 표시한다.
  */
-export default function PostCard({
-  title,
-  path,
-  createdAt,
-  tags,
-  locale,
-  index,
-}: PostCardProps) {
-  const date =
-    createdAt instanceof Date ? createdAt : new Date(createdAt as string);
+export default function PostCard({ title, path, createdAt, tags, locale, index }: PostCardProps) {
+  const date = createdAt instanceof Date ? createdAt : new Date(createdAt as string);
   const formattedDate = isValid(date) ? format(date, 'yyyy.MM') : '—';
   const href = `/${locale}/posts/${path.join('/')}`;
   const num = String(index).padStart(2, '0');
@@ -607,9 +586,7 @@ export default function PostCard({
           <span className="text-[10px] text-ink3">{tags.join(' · ')}</span>
         )}
       </Link>
-      <span className="text-[10px] text-ink3 shrink-0 tabular-nums">
-        {formattedDate}
-      </span>
+      <span className="text-[10px] text-ink3 shrink-0 tabular-nums">{formattedDate}</span>
     </li>
   );
 }
@@ -653,20 +630,13 @@ export default function PostCardList({ locale, tags = [] }: PostCardListProps) {
   const posts = pagingPosts.posts;
 
   if (!posts || posts.length === 0) {
-    return (
-      <p className="text-ink3 text-sm py-8 text-center">{t('post.noPosts')}</p>
-    );
+    return <p className="text-ink3 text-sm py-8 text-center">{t('post.noPosts')}</p>;
   }
 
   return (
     <ol>
       {posts.map((post, idx) => (
-        <PostCard
-          key={post.path.join('/')}
-          index={idx + 1}
-          locale={locale}
-          {...post}
-        />
+        <PostCard key={post.path.join('/')} index={idx + 1} locale={locale} {...post} />
       ))}
     </ol>
   );
@@ -693,9 +663,7 @@ PostCard mock에서 `variant` prop 대신 `index` prop을 확인하도록 수정
 
 ```tsx
 vi.mock('@/2-features/post/ui/post-card', () => ({
-  default: ({ title }: { title: string }) => (
-    <li data-testid="post-card">{title}</li>
-  ),
+  default: ({ title }: { title: string }) => <li data-testid="post-card">{title}</li>,
 }));
 ```
 
@@ -716,11 +684,7 @@ function PostsPage() {
       <div className="flex items-baseline justify-between mb-6 pb-3 border-b border-rule">
         <p className="text-[9px] tracking-[4px] uppercase text-ink3">All Posts</p>
       </div>
-      <TagFilterBar
-        locale={locale}
-        availableTags={availableTags}
-        selectedTags={tags}
-      />
+      <TagFilterBar locale={locale} availableTags={availableTags} selectedTags={tags} />
       <Suspense fallback={<PostCardListSkeleton />}>
         <PostCardList locale={parsedLocale} tags={tags} />
       </Suspense>
