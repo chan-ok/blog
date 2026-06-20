@@ -129,8 +129,7 @@ export default defineConfig(({ mode }) => {
           test: {
             name: 'unit',
             include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
-            environment: 'jsdom',
-            setupFiles: ['./vitest.setup.ts'],
+            environment: 'node',
             typecheck: { enabled: true },
             pool: 'threads',
           },
