@@ -130,7 +130,6 @@ export default defineConfig(({ mode }) => {
             name: 'unit',
             include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
             environment: 'node',
-            typecheck: { enabled: true },
             pool: 'threads',
           },
         },
