@@ -1,9 +1,9 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { useState, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
 
-import MDComponent, { MarkdownFrontmatter } from '@/entities/markdown';
-import { getFrontmatter } from '@/entities/markdown/util/get-frontmatter';
+import MDComponent from '@/entities/markdown';
+import getMarkdown from '@/entities/markdown/util/get-markdown';
 import TableOfContents from '@/features/post/ui/table-of-contents';
 import { buildMeta, buildCanonicalLink } from '@/shared/util/build-meta';
 
@@ -16,8 +16,6 @@ interface Heading {
 const BASE_URL = 'https://raw.githubusercontent.com/chan-ok/blog-content/main';
 
 export const Route = createFileRoute('/$locale/posts/$')({
-  // loader: SEO 메타태그 생성을 위해 frontmatter를 미리 로드한다.
-  // MDX 컴파일은 컴포넌트 내부에서 별도로 수행한다.
   loader: async ({ params }) => {
     const { locale, _splat } = params;
 
@@ -26,14 +24,13 @@ export const Route = createFileRoute('/$locale/posts/$')({
     }
 
     const path = `${locale}/${_splat}.mdx`;
+    const markdown = await getMarkdown(path, BASE_URL);
 
-    try {
-      const frontmatter = await getFrontmatter(path, BASE_URL);
-      return { frontmatter };
-    } catch {
-      // frontmatter 로드 실패 시 빈 객체 반환 (컴포넌트에서 재시도)
-      return { frontmatter: {} };
-    }
+    return {
+      frontmatter: markdown.frontmatter,
+      markdownPromise: Promise.resolve(markdown),
+      path,
+    };
   },
   // 포스트 상세 페이지 메타태그: loader에서 받은 frontmatter를 활용
   head: ({ params, loaderData }) => {
@@ -78,20 +75,7 @@ export const Route = createFileRoute('/$locale/posts/$')({
 });
 
 function PostDetailPage() {
-  const { locale, _splat } = Route.useParams();
-
-  // _splat이 비어있으면 404
-  if (!_splat || _splat.trim() === '') {
-    throw notFound();
-  }
-
-  // 경로 생성: ko/posts/example.mdx
-  const path = `${locale}/${_splat}.mdx`;
-
-  // MDX 파싱 상태
-  const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  // Frontmatter 상태 (partial: README 등 일부 필드 없는 파일 지원)
-  const [frontmatter, setFrontmatter] = useState<MarkdownFrontmatter | null>(null);
+  const { frontmatter, markdownPromise, path } = Route.useLoaderData();
 
   // DOM에서 h1, h2, h3 추출
   const contentRef = useRef<HTMLDivElement>(null);
@@ -137,7 +121,7 @@ function PostDetailPage() {
     <div className="mx-auto max-w-[620px] pb-16">
       <div>
         {/* 메타 헤더: 제목, 날짜 */}
-        {frontmatter && (
+        {frontmatter.title && (
           <div className="mb-8 border-b-2 border-ink pb-6">
             <h1 className="mb-4 text-[32px] font-bold leading-[1.25] text-ink">
               {frontmatter.title}
@@ -150,16 +134,24 @@ function PostDetailPage() {
           </div>
         )}
         {/* TOC: 모바일에서는 본문 위에 표시, 데스크탑에서는 fixed 사이드바 */}
-        {mdxStatus === 'success' && <TableOfContents headings={headings} />}
+        <TableOfContents headings={headings} />
         <div ref={contentRef} className="mdx-content">
-          <MDComponent
-            path={path}
-            baseUrl={BASE_URL}
-            onParseStatus={setMdxStatus}
-            onFrontmatterLoaded={setFrontmatter}
-          />
+          <Suspense fallback={<MarkdownSkeleton />}>
+            <MDComponent dataPromise={markdownPromise} baseUrl={BASE_URL} />
+          </Suspense>
         </div>
       </div>
+    </div>
+  );
+}
+
+function MarkdownSkeleton() {
+  return (
+    <div className="flex items-center justify-center p-8 text-ink3">
+      <div
+        className="h-5 w-5 animate-spin rounded-full border-2 border-rule border-t-accent"
+        aria-label="Loading post"
+      />
     </div>
   );
 }

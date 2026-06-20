@@ -1,9 +1,21 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { Suspense } from 'react';
 
 import MDComponent from '@/entities/markdown';
+import getMarkdown from '@/entities/markdown/util/get-markdown';
 import { buildMeta, buildCanonicalLink, getAboutDescription } from '@/shared/util/build-meta';
 
+const ABOUT_BASE_URL = 'https://raw.githubusercontent.com/chan-ok/chan-ok/main';
+
 export const Route = createFileRoute('/$locale/about')({
+  loader: async ({ params }) => {
+    const path = `README.${params.locale}.md`;
+    const markdown = await getMarkdown(path, ABOUT_BASE_URL);
+
+    return {
+      markdownPromise: Promise.resolve(markdown),
+    };
+  },
   // 소개 페이지 메타태그
   head: ({ params }) => {
     const locale = params.locale;
@@ -29,14 +41,28 @@ const aboutImageComponents = {
 };
 
 function AboutPage() {
-  const { locale } = Route.useParams();
-
-  const path = `README.${locale}.md`;
-  const baseUrl = 'https://raw.githubusercontent.com/chan-ok/chan-ok/main';
+  const { markdownPromise } = Route.useLoaderData();
 
   return (
     <div className="mx-auto max-w-[620px] pb-16">
-      <MDComponent path={path} baseUrl={baseUrl} components={aboutImageComponents} />
+      <Suspense fallback={<MarkdownSkeleton />}>
+        <MDComponent
+          dataPromise={markdownPromise}
+          baseUrl={ABOUT_BASE_URL}
+          components={aboutImageComponents}
+        />
+      </Suspense>
+    </div>
+  );
+}
+
+function MarkdownSkeleton() {
+  return (
+    <div className="flex items-center justify-center p-8 text-ink3">
+      <div
+        className="h-5 w-5 animate-spin rounded-full border-2 border-rule border-t-accent"
+        aria-label="Loading about"
+      />
     </div>
   );
 }
