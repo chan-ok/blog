@@ -1,3 +1,4 @@
 set -e
 
-echo "▶ lint-staged"; pnpm exec lint-staged
+echo "▶ [1/2] lint-staged"; pnpm exec lint-staged
+echo "▶ [2/2] git diff --check"; git diff --cached --check
