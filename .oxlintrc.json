@@ -20,6 +20,6 @@
     "out",
     "build",
     "dist",
-    "src/shared/config/route/routeTree.gen.ts"
+    "src/app/routeTree.gen.ts"
   ]
 }

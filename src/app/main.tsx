@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
-import { routeTree } from '@/shared/config/route/routeTree.gen';
+import { routeTree } from '@/app/routeTree.gen';
 import './globals.css';
 
 // TanStack Router 인스턴스 생성
