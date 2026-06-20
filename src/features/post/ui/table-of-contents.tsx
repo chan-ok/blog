@@ -1,10 +1,5 @@
-import { useEffect, useRef, useState, Suspense } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Link } from '@tanstack/react-router';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
-
-import { getSeriesPosts } from '../util/get-series-posts';
 
 interface Heading {
   id: string;
@@ -14,88 +9,9 @@ interface Heading {
 
 interface TableOfContentsProps {
   headings: Heading[];
-  /** 시리즈 식별자 — 있으면 시리즈 섹션을 TOC 위에 표시 */
-  series?: string;
-  /** 현재 포스트 경로 (시리즈 강조 표시용) */
-  currentPath?: string;
-  /** 현재 locale */
-  locale?: string;
 }
 
-/** 시리즈 포스트 목록 (useSuspenseQuery 사용 — Suspense 래핑 필요) */
-function SeriesSection({
-  series,
-  currentPath,
-  locale,
-}: {
-  series: string;
-  currentPath: string;
-  locale: string;
-}) {
-  const { data: seriesPosts } = useSuspenseQuery({
-    queryKey: ['series-posts', locale, series],
-    queryFn: () => getSeriesPosts({ locale, series }),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  if (!seriesPosts || seriesPosts.length <= 1) return null;
-
-  return (
-    <div className="mb-4 pb-4 border-b border-rule">
-      <p className="mb-2 text-[9px] tracking-[3px] uppercase text-ink3">{series}</p>
-      <ol className="flex flex-col gap-2">
-        {seriesPosts.map((post, index) => {
-          const postPath = post.path.join('/');
-          const isCurrent = postPath === currentPath;
-          const num = String(index + 1).padStart(2, '0');
-
-          return (
-            <li key={postPath} className="flex items-start gap-2">
-              <span className="text-[9px] text-ink3 shrink-0 mt-0.5">{num}</span>
-              {isCurrent ? (
-                <span className="text-[11px] font-bold text-ink leading-normal">{post.title}</span>
-              ) : (
-                <Link
-                  to="/$locale/posts/$"
-                  params={{ locale, _splat: postPath }}
-                  className="text-[11px] text-ink2 hover:text-ink leading-normal"
-                >
-                  {post.title}
-                  {post.createdAt && (
-                    <span className="ml-1.5 text-[10px] text-ink3 tabular-nums">
-                      {format(new Date(post.createdAt), 'yyyy.MM')}
-                    </span>
-                  )}
-                </Link>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-    </div>
-  );
-}
-
-function SeriesSkeleton() {
-  return (
-    <div className="mb-4 pb-4 border-b border-rule">
-      <div className="mb-1 h-2 w-12 animate-pulse rounded bg-bg2" />
-      <div className="mb-3 h-3 w-28 animate-pulse rounded bg-bg2" />
-      <div className="flex flex-col gap-1.5">
-        <div className="h-3 w-full animate-pulse rounded bg-bg2" />
-        <div className="h-3 w-5/6 animate-pulse rounded bg-bg2" />
-        <div className="h-3 w-4/6 animate-pulse rounded bg-bg2" />
-      </div>
-    </div>
-  );
-}
-
-export default function TableOfContents({
-  headings,
-  series,
-  currentPath,
-  locale,
-}: TableOfContentsProps) {
+export default function TableOfContents({ headings }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
   const [isOpen, setIsOpen] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -155,17 +71,14 @@ export default function TableOfContents({
     }
   };
 
-  const hasSeries = Boolean(series && currentPath && locale);
   const hasHeadings = headings.length > 0;
 
-  // 시리즈도 없고 헤딩도 없으면 렌더링 안 함
-  if (!hasSeries && !hasHeadings) return null;
+  if (!hasHeadings) return null;
 
-  const mobileLabel = hasSeries ? 'Series · Contents' : 'Contents';
+  const mobileLabel = 'Contents';
 
-  const tocList = hasHeadings ? (
+  const tocList = (
     <nav role="navigation" aria-label="Table of contents">
-      {hasSeries && <p className="mb-2 text-[9px] tracking-[3px] uppercase text-ink3">Contents</p>}
       <ul className="space-y-1">
         {headings.map(({ id, text, level }, index) => {
           const isActive = activeId === id;
@@ -197,17 +110,6 @@ export default function TableOfContents({
         })}
       </ul>
     </nav>
-  ) : null;
-
-  const fullContent = (
-    <>
-      {hasSeries && (
-        <Suspense fallback={<SeriesSkeleton />}>
-          <SeriesSection series={series!} currentPath={currentPath!} locale={locale!} />
-        </Suspense>
-      )}
-      {hasHeadings && tocList}
-    </>
   );
 
   return (
@@ -230,12 +132,12 @@ export default function TableOfContents({
           )}
         </button>
 
-        {isOpen && <div className="border border-t-0 border-rule bg-bg p-4">{fullContent}</div>}
+        {isOpen && <div className="border border-t-0 border-rule bg-bg p-4">{tocList}</div>}
       </div>
 
       {/* 데스크탑: fixed 사이드바 */}
       <aside className="fixed top-44 hidden max-h-[calc(100vh-12rem)] overflow-y-auto xl:block xl:w-44 xl:left-[calc(50%+21rem)] 2xl:w-60 2xl:left-[calc(50%+22rem)]">
-        <div className="p-4 border-l border-rule">{fullContent}</div>
+        <div className="p-4 border-l border-rule">{tocList}</div>
       </aside>
     </>
   );

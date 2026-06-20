@@ -1,15 +1,10 @@
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 
 import MDComponent, { MarkdownFrontmatter } from '@/entities/markdown';
 import { getFrontmatter } from '@/entities/markdown/util/get-frontmatter';
-import PostNavigation, { PostNavigationSkeleton } from '@/features/post/ui/post-navigation';
 import TableOfContents from '@/features/post/ui/table-of-contents';
-import TagChip from '@/features/post/ui/tag-chip';
-import { calcReadingTime } from '@/features/post/util/calc-reading-time';
-import ScrollProgressBar from '@/shared/components/scroll-progress-bar';
-import { parseLocale } from '@/shared/types/common.schema';
 import { buildMeta, buildCanonicalLink } from '@/shared/util/build-meta';
 
 interface Heading {
@@ -97,8 +92,6 @@ function PostDetailPage() {
   const [mdxStatus, setMdxStatus] = useState<'loading' | 'success' | 'error'>('loading');
   // Frontmatter 상태 (partial: README 등 일부 필드 없는 파일 지원)
   const [frontmatter, setFrontmatter] = useState<MarkdownFrontmatter | null>(null);
-  // 읽기 예상 시간: MDX 로드 완료 후 DOM 텍스트 기반으로 계산
-  const [readingTime, setReadingTime] = useState<string | null>(null);
 
   // DOM에서 h1, h2, h3 추출
   const contentRef = useRef<HTMLDivElement>(null);
@@ -140,19 +133,10 @@ function PostDetailPage() {
     };
   }, [path]);
 
-  // MDX 로드 완료 후 읽기 예상 시간 계산
-  useEffect(() => {
-    if (mdxStatus !== 'success' || !contentRef.current) return;
-    const text = contentRef.current.textContent ?? '';
-    setReadingTime(calcReadingTime(text, parseLocale(locale)));
-  }, [mdxStatus, locale]);
-
   return (
     <div className="mx-auto max-w-[620px] pb-16">
-      {/* 스크롤 진행 바: 페이지 최상단 fixed */}
-      <ScrollProgressBar />
       <div>
-        {/* 메타 헤더: 제목, 날짜, 태그 */}
+        {/* 메타 헤더: 제목, 날짜 */}
         {frontmatter && (
           <div className="mb-8 border-b-2 border-ink pb-6">
             <h1 className="mb-4 text-[32px] font-bold leading-[1.25] text-ink">
@@ -161,32 +145,12 @@ function PostDetailPage() {
             {frontmatter.createdAt && (
               <div className="mb-4 flex items-center gap-3 text-[11px] tracking-[1px] text-ink3 tabular-nums">
                 <span>{format(frontmatter.createdAt, 'yyyy.MM.dd')}</span>
-                {readingTime && (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <span>{readingTime}</span>
-                  </>
-                )}
-              </div>
-            )}
-            {frontmatter.tags && frontmatter.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {frontmatter.tags.map((tag) => (
-                  <TagChip key={tag} tag={tag} locale={locale} />
-                ))}
               </div>
             )}
           </div>
         )}
-        {/* TOC (+ 시리즈): 모바일에서는 본문 위에 표시, 데스크탑에서는 fixed 사이드바 */}
-        {mdxStatus === 'success' && (
-          <TableOfContents
-            headings={headings}
-            series={frontmatter?.series}
-            currentPath={_splat}
-            locale={locale}
-          />
-        )}
+        {/* TOC: 모바일에서는 본문 위에 표시, 데스크탑에서는 fixed 사이드바 */}
+        {mdxStatus === 'success' && <TableOfContents headings={headings} />}
         <div ref={contentRef} className="mdx-content">
           <MDComponent
             path={path}
@@ -195,12 +159,6 @@ function PostDetailPage() {
             onFrontmatterLoaded={setFrontmatter}
           />
         </div>
-        {/* 이전/다음 포스트 네비게이션 */}
-        {mdxStatus === 'success' && (
-          <Suspense fallback={<PostNavigationSkeleton />}>
-            <PostNavigation currentPath={_splat} locale={parseLocale(locale)} />
-          </Suspense>
-        )}
       </div>
     </div>
   );

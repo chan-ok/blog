@@ -1,15 +1,11 @@
 import { useRouterState } from '@tanstack/react-router';
-import clsx from 'clsx';
 
 import Link from '@/shared/components/ui/link';
 import LocaleToggle from '@/shared/components/toggle/locale-toggle';
-import ThemeToggle from '@/shared/components/toggle/theme-toggle';
-import { useImmersiveReader } from '@/shared/hooks/use-immersive-reader';
 
 export default function Header() {
   const { location } = useRouterState();
   const pathname = location.pathname;
-  const isHidden = useImmersiveReader();
 
   const isActive = (path: string) => pathname.includes(path);
 
@@ -22,13 +18,7 @@ export default function Header() {
     ].join(' ');
 
   return (
-    <header
-      className={clsx(
-        'sticky top-0 z-50 border-b-2 border-ink bg-bg',
-        'transition-transform duration-300 ease-in-out',
-        isHidden ? '-translate-y-full' : 'translate-y-0'
-      )}
-    >
+    <header className="sticky top-0 z-50 border-b-2 border-ink bg-bg">
       {/* 마스트헤드 영역 */}
       <div className="flex flex-col items-center pt-6 pb-0">
         <Link
@@ -56,7 +46,6 @@ export default function Header() {
 
           {/* 토글 영역 */}
           <span className="ml-auto flex items-stretch border-l border-rule">
-            <ThemeToggle />
             <LocaleToggle />
           </span>
 

@@ -11,7 +11,6 @@ import { z } from 'zod';
 
 import { ErrorPage } from '@/shared/components/error-page';
 import { LocaleProvider } from '@/shared/providers/locale-provider';
-import { ThemeProvider } from '@/shared/providers/theme-provider';
 import { parseLocale } from '@/shared/types/common.schema';
 import Footer from '@/shared/components/layout/footer';
 import Header from '@/shared/components/layout/header';
@@ -53,11 +52,9 @@ function ErrorComponent({ reset }: ErrorComponentProps) {
   };
 
   return (
-    <ThemeProvider>
-      <LocaleProvider locale={locale}>
-        <ErrorPage statusCode={500} onRetry={reset} onGoHome={handleGoHome} />
-      </LocaleProvider>
-    </ThemeProvider>
+    <LocaleProvider locale={locale}>
+      <ErrorPage statusCode={500} onRetry={reset} onGoHome={handleGoHome} />
+    </LocaleProvider>
   );
 }
 
@@ -74,11 +71,9 @@ function NotFoundComponent() {
   };
 
   return (
-    <ThemeProvider>
-      <LocaleProvider locale={locale}>
-        <ErrorPage statusCode={404} onGoHome={handleGoHome} />
-      </LocaleProvider>
-    </ThemeProvider>
+    <LocaleProvider locale={locale}>
+      <ErrorPage statusCode={404} onGoHome={handleGoHome} />
+    </LocaleProvider>
   );
 }
 
@@ -91,18 +86,16 @@ function LocaleLayout() {
   }, [locale]);
 
   return (
-    <ThemeProvider>
-      <LocaleProvider locale={parseLocale(locale)}>
-        <div className="flex flex-col min-h-screen bg-bg text-ink transition-colors duration-200">
-          <Header />
-          <main className="flex-1">
-            <div className="mx-auto max-w-[960px] px-5 pt-10 sm:px-8">
-              <Outlet />
-            </div>
-          </main>
-          <Footer />
-        </div>
-      </LocaleProvider>
-    </ThemeProvider>
+    <LocaleProvider locale={parseLocale(locale)}>
+      <div className="flex flex-col min-h-screen bg-bg text-ink transition-colors duration-200">
+        <Header />
+        <main className="flex-1">
+          <div className="mx-auto max-w-[960px] px-5 pt-10 sm:px-8">
+            <Outlet />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    </LocaleProvider>
   );
 }
