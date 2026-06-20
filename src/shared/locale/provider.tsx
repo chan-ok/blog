@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import i18n from '@/shared/config/i18n';
-import { useLocaleStore } from '@/shared/stores/locale-store';
 import type { LocaleType } from '@/shared/types/common.schema';
+
+import i18n from './config';
+import { useLocaleStore } from './store';
 
 interface LocaleProviderProps {
   locale: LocaleType;

@@ -1,7 +1,7 @@
 import { useRouterState } from '@tanstack/react-router';
 
 import Link from '@/shared/components/ui/link';
-import LocaleToggle from '@/shared/components/toggle/locale-toggle';
+import LocaleToggle from '@/shared/locale/toggle';
 
 export default function Header() {
   const { location } = useRouterState();

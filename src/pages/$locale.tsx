@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { z } from 'zod';
 
 import { ErrorPage } from '@/shared/components/error-page';
-import { LocaleProvider } from '@/shared/providers/locale-provider';
+import { LocaleProvider } from '@/shared/locale/provider';
 import { parseLocale } from '@/shared/types/common.schema';
 import Footer from '@/shared/components/layout/footer';
 import Header from '@/shared/components/layout/header';

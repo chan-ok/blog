@@ -1,7 +1,7 @@
 import { Link as RouterLink } from '@tanstack/react-router';
 import type { LinkProps as RouterLinkProps } from '@tanstack/react-router';
 
-import { useLocaleStore } from '@/shared/stores/locale-store';
+import { useLocaleStore } from '@/shared/locale/store';
 
 interface LinkProps extends Omit<RouterLinkProps, 'to' | 'params'> {
   href: string;
