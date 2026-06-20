@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react';
-import DOMPurify from 'isomorphic-dompurify';
+import { sanitize } from 'isomorphic-dompurify';
 
 interface MermaidDiagramProps {
   code: string;
@@ -45,7 +45,7 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
         if (cancelled) return;
 
         // SVG 출력을 DOMPurify로 sanitize (XSS 방지)
-        const sanitizedSvg = DOMPurify.sanitize(renderedSvg, {
+        const sanitizedSvg = sanitize(renderedSvg, {
           USE_PROFILES: { svg: true, svgFilters: true },
         });
 

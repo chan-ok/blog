@@ -2,6 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from '@/app/routeTree.gen';
+
+// oxlint-disable-next-line import/no-unassigned-import
 import './globals.css';
 
 // TanStack Router 인스턴스 생성

@@ -1,5 +1,6 @@
 // api.ts
-import axios, {
+import {
+  create as createAxiosInstance,
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
@@ -44,7 +45,7 @@ class ApiClient {
   private instance: AxiosInstance;
 
   constructor() {
-    this.instance = axios.create({
+    this.instance = createAxiosInstance({
       baseURL: resolveBaseURL(),
       timeout: 5000,
       headers: {

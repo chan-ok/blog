@@ -3,20 +3,20 @@ import { useRouterState } from '@tanstack/react-router';
 import Link from '@/shared/components/ui/link';
 import LocaleToggle from '@/shared/locale/toggle';
 
+const navLinkClass = (active: boolean) =>
+  [
+    'text-[11px] tracking-[1.5px] uppercase px-3 py-2.5 sm:px-5',
+    'border-r border-rule transition-colors duration-150',
+    'hover:bg-ink hover:text-bg',
+    active ? 'bg-ink text-bg' : 'text-ink2',
+  ].join(' ');
+
 export default function Header() {
   const { location } = useRouterState();
   const pathname = location.pathname;
 
   const isHome = /^\/(ko|ja)\/?$/.test(pathname);
   const isActive = (path: string) => pathname.includes(path);
-
-  const navLinkClass = (active: boolean) =>
-    [
-      'text-[11px] tracking-[1.5px] uppercase px-3 py-2.5 sm:px-5',
-      'border-r border-rule transition-colors duration-150',
-      'hover:bg-ink hover:text-bg',
-      active ? 'bg-ink text-bg' : 'text-ink2',
-    ].join(' ');
 
   return (
     <header className="sticky top-0 z-50 border-b-2 border-ink bg-bg">
