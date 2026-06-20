@@ -1,17 +1,13 @@
-declare global {
-  interface Window {
-    global: typeof globalThis; // global polyfill
-  }
+interface Window {
+  global: typeof globalThis; // global polyfill
 }
 
 // Vite 환경 변수 타입 정의
-export interface ImportMetaEnv {
+interface ImportMetaEnv {
   readonly VITE_GIT_RAW_URL: string;
   readonly VITE_API_BASE_URL?: string;
 }
 
-export interface ImportMeta {
+interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
-
-export {};
