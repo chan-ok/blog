@@ -26,13 +26,6 @@ const defaultMessages = {
   },
 } as const;
 
-// 상태 코드별 색상 매핑
-const statusCodeColors = {
-  404: 'text-amber-500',
-  403: 'text-red-500',
-  500: 'text-rose-500',
-} as const;
-
 export function ErrorPage({ statusCode, title, description, onRetry, onGoHome }: ErrorPageProps) {
   const { t } = useTranslation();
 
@@ -65,19 +58,19 @@ export function ErrorPage({ statusCode, title, description, onRetry, onGoHome }:
     >
       {/* 상태 코드 */}
       <h1
-        className={`text-8xl font-bold ${statusCodeColors[statusCode]} transition-colors duration-200`}
+        className="text-8xl font-bold text-accent-strong transition-colors duration-200"
         aria-hidden="true"
       >
         {statusCode}
       </h1>
 
       {/* 제목 */}
-      <h2 className="text-2xl font-semibold text-gray-900 transition-colors duration-200 dark:text-gray-100">
+      <h2 className="text-2xl font-semibold text-ink transition-colors duration-200">
         {displayTitle}
       </h2>
 
       {/* 설명 */}
-      <p className="max-w-md text-center text-gray-600 transition-colors duration-200 dark:text-gray-400">
+      <p className="max-w-md text-center text-ink2 transition-colors duration-200">
         {displayDescription}
       </p>
 

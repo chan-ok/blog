@@ -1,25 +1,35 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript"],
+  "plugins": [
+    "eslint",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "promise",
+    "react",
+    "react-perf",
+    "import",
+    "promise",
+    "vitest"
+  ],
   "categories": {
     "correctness": "error",
     "suspicious": "warn"
   },
   "rules": {
-    "typescript/no-explicit-any": "error",
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "warn",
     "react/react-in-jsx-scope": "off"
   },
   "ignorePatterns": [
+    "dist",
+    "public",
     "node_modules",
+    ".cache",
     ".husky",
-    ".netlify",
+    ".tanstack",
     ".pnpm-store",
     ".vscode",
-    "out",
-    "build",
-    "dist",
-    "src/shared/config/route/routeTree.gen.ts"
+    "src/app/routeTree.gen.ts"
   ]
 }

@@ -1,7 +1,7 @@
 import { Link as RouterLink } from '@tanstack/react-router';
 import type { LinkProps as RouterLinkProps } from '@tanstack/react-router';
 
-import { useLocaleStore } from '@/shared/stores/locale-store';
+import { useLocaleStore } from '@/shared/locale/store';
 
 interface LinkProps extends Omit<RouterLinkProps, 'to' | 'params'> {
   href: string;
@@ -10,7 +10,7 @@ interface LinkProps extends Omit<RouterLinkProps, 'to' | 'params'> {
 }
 
 type RouteConfig = {
-  to: '/$locale' | '/$locale/about' | '/$locale/contact' | '/$locale/posts' | '/$locale/posts/$';
+  to: '/$locale' | '/$locale/about' | '/$locale/posts' | '/$locale/posts/$';
   params: { locale: string; _splat?: string };
 };
 
@@ -28,7 +28,7 @@ function parseInternalLink(
     : undefined;
 
   // locale 추출 (예: /ko/about -> locale: ko, path: /about)
-  const localeMatch = pathWithLocale.match(/^\/(ko|en|ja)(\/.*)?$/);
+  const localeMatch = pathWithLocale.match(/^\/(ko|ja)(\/.*)?$/);
   const detectedLocale = localeMatch?.[1] || locale;
   const path = localeMatch
     ? localeMatch[2] || '/'
@@ -48,14 +48,6 @@ function parseInternalLink(
   if (path === '/about') {
     return {
       to: '/$locale/about',
-      params: { locale: detectedLocale },
-      ...(searchParams && { search: searchParams }),
-    };
-  }
-
-  if (path === '/contact') {
-    return {
-      to: '/$locale/contact',
       params: { locale: detectedLocale },
       ...(searchParams && { search: searchParams }),
     };

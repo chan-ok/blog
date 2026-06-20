@@ -1,34 +1,23 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { use } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { LocaleType } from '@/shared/types/common.schema';
 import PostCard from '@/features/post/ui/post-card';
-import { getPosts } from '../util/get-posts';
+import type { PagingPosts } from '../model/post.schema';
 
 interface PostCardListProps {
   locale: LocaleType;
-  tags?: string[];
-  query?: string;
+  postsPromise: Promise<PagingPosts>;
 }
 
-export default function PostCardList({ locale, tags = [], query = '' }: PostCardListProps) {
+export default function PostCardList({ locale, postsPromise }: PostCardListProps) {
   const { t } = useTranslation();
 
-  const { data: pagingPosts } = useSuspenseQuery({
-    queryKey: ['posts', locale, tags, query],
-    queryFn: () => getPosts({ locale, tags, query }),
-    retry: 3,
-    staleTime: 1000 * 60 * 5,
-  });
-
+  const pagingPosts = use(postsPromise);
   const posts = pagingPosts.posts;
 
   if (!posts || posts.length === 0) {
-    return (
-      <p className="text-ink3 text-sm py-8 text-center">
-        {query ? t('post.noSearchResults') : t('post.noPosts')}
-      </p>
-    );
+    return <p className="text-ink3 text-sm py-8 text-center">{t('post.noPosts')}</p>;
   }
 
   return (

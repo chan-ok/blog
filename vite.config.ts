@@ -1,18 +1,18 @@
 /// <reference types="vitest/config" />
-import { loadEnv, defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
 import { tanstackRouter } from '@tanstack/router-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
   return {
     plugins: [
       tailwindcss(),
       tanstackRouter({
-        routesDirectory: './src/pages',
-        generatedRouteTree: './src/shared/config/route/routeTree.gen.ts',
+        routesDirectory: './src/app/routes',
+        generatedRouteTree: './src/app/routeTree.gen.ts',
         routeFileIgnorePattern: '\\.test\\.tsx?$',
         // 테스트 환경에서는 코드 스플리팅 비활성화:
         // autoCodeSplitting이 활성화되면 Route.options.component가 lazy 래퍼로 변환되어
@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
         autoCodeSplitting: mode !== 'test',
       }),
       react(),
+      babel({ presets: [reactCompilerPreset({ target: '19' })] }),
       ViteImageOptimizer({
         png: { quality: 80 },
         jpeg: { quality: 85 },
@@ -40,9 +41,6 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       global: 'globalThis',
-      'import.meta.env.VITE_TURNSTILE_SITE_KEY': JSON.stringify(
-        env.VITE_TURNSTILE_SITE_KEY || env.TURNSTILE_SITE_KEY || ''
-      ),
     },
     optimizeDeps: {
       include: ['buffer'],
@@ -131,8 +129,7 @@ export default defineConfig(({ mode }) => {
           test: {
             name: 'unit',
             include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
-            environment: 'jsdom',
-            setupFiles: ['./vitest.setup.ts'],
+            environment: 'node',
             typecheck: { enabled: true },
             pool: 'threads',
           },

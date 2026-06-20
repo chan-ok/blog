@@ -174,13 +174,14 @@ import PostShareButtons from '@/2-features/post/ui/post-share-buttons';
 
 ```tsx
 // 제거할 렌더링 코드 (mdxStatus === 'success' && frontmatter && 블록)
-{/* 공유 버튼: MDX 로딩 완료 후 댓글 위에 표시 */}
-{mdxStatus === 'success' && frontmatter && (
-  <PostShareButtons
-    title={frontmatter.title ?? ''}
-    url={window.location.href}
-  />
-)}
+{
+  /* 공유 버튼: MDX 로딩 완료 후 댓글 위에 표시 */
+}
+{
+  mdxStatus === 'success' && frontmatter && (
+    <PostShareButtons title={frontmatter.title ?? ''} url={window.location.href} />
+  );
+}
 ```
 
 - [ ] **Step 3: 타입 체크 실행**
@@ -354,9 +355,7 @@ const MailBodySchema = z.object({
   turnstileToken: z.string().min(1, 'Turnstile token is required'),
 });
 
-export const handler = async (
-  event: NetlifyEvent
-): Promise<NetlifyResponse> => {
+export const handler = async (event: NetlifyEvent): Promise<NetlifyResponse> => {
   try {
     if (event.httpMethod.toUpperCase() !== 'POST') {
       return { statusCode: 405, body: 'Method Not Allowed' };
@@ -398,17 +397,14 @@ export const handler = async (
       };
     }
 
-    const verifyRes = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          secret: secretKey,
-          response: turnstileToken,
-        }),
-      }
-    );
+    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        secret: secretKey,
+        response: turnstileToken,
+      }),
+    });
 
     const verifyJson = await verifyRes.json();
 
@@ -569,15 +565,9 @@ export default function ContactForm() {
   );
 
   return (
-    <Form
-      action={formAction}
-      errors={state.serverErrors}
-      className="flex flex-col space-y-4"
-    >
+    <Form action={formAction} errors={state.serverErrors} className="flex flex-col space-y-4">
       <Field.Root name="from" className="flex flex-col items-start gap-1">
-        <Field.Label className="text-sm font-medium text-ink">
-          {t('contact.from')}
-        </Field.Label>
+        <Field.Label className="text-sm font-medium text-ink">{t('contact.from')}</Field.Label>
         <Field.Control
           type="email"
           required
@@ -772,11 +762,7 @@ export default function SeriesList({ seriesList, locale }: SeriesListProps) {
   const { t } = useTranslation();
 
   if (seriesList.length === 0) {
-    return (
-      <p className="text-ink3 text-sm py-8 text-center">
-        {t('series.empty')}
-      </p>
-    );
+    return <p className="text-ink3 text-sm py-8 text-center">{t('series.empty')}</p>;
   }
 
   return (
@@ -792,17 +778,13 @@ export default function SeriesList({ seriesList, locale }: SeriesListProps) {
             key={series.slug}
             className="flex items-baseline gap-3 py-4 border-b border-rule first:border-t"
           >
-            <span className="text-[9px] text-ink3 min-w-[18px] shrink-0">
-              {num}
-            </span>
+            <span className="text-[9px] text-ink3 min-w-[18px] shrink-0">{num}</span>
             <Link href={href} className="flex-1 group">
               <span className="block text-[15px] font-semibold text-ink leading-[1.35] mb-1 group-hover:underline underline-offset-2">
                 {series.title}
               </span>
               {series.description && (
-                <span className="text-[10px] text-ink3">
-                  {series.description}
-                </span>
+                <span className="text-[10px] text-ink3">{series.description}</span>
               )}
             </Link>
             <span className="text-[10px] text-ink3 shrink-0 tabular-nums">
@@ -819,10 +801,7 @@ export function SeriesListSkeleton() {
   return (
     <ol>
       {[...Array(3)].map((_, i) => (
-        <li
-          key={i}
-          className="flex gap-3 py-4 border-b border-rule first:border-t"
-        >
+        <li key={i} className="flex gap-3 py-4 border-b border-rule first:border-t">
           <div className="w-4 h-3 bg-bg2 rounded animate-pulse" />
           <div className="flex-1 h-4 bg-bg2 rounded animate-pulse" />
           <div className="w-16 h-3 bg-bg2 rounded animate-pulse" />
@@ -1107,8 +1086,7 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   // ...기존 fetch 로직...
 
   filteredPosts = filteredPosts.filter(
-    (post) =>
-      tags.length === 0 || tags.some((tag) => (post.tags ?? []).includes(tag))
+    (post) => tags.length === 0 || tags.some((tag) => (post.tags ?? []).includes(tag))
   );
 
   // query 필터: title, tags, summary에서 대소문자 무관 검색
@@ -1275,12 +1253,7 @@ export default function PostCardList({ locale, tags = [], query = '' }: PostCard
   return (
     <ol>
       {posts.map((post, idx) => (
-        <PostCard
-          key={post.path.join('/')}
-          index={idx + 1}
-          locale={locale}
-          {...post}
-        />
+        <PostCard key={post.path.join('/')} index={idx + 1} locale={locale} {...post} />
       ))}
     </ol>
   );
@@ -1310,18 +1283,12 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { z } from 'zod';
 
-import PostCardList, {
-  PostCardListSkeleton,
-} from '@/2-features/post/ui/post-card-list';
+import PostCardList, { PostCardListSkeleton } from '@/2-features/post/ui/post-card-list';
 import PostSearchInput from '@/2-features/post/ui/post-search-input';
 import TagFilterBar from '@/2-features/post/ui/tag-filter-bar';
 import { getAvailableTags } from '@/2-features/post/util/get-available-tags';
 import { parseLocale } from '@/5-shared/types/common.schema';
-import {
-  buildMeta,
-  buildCanonicalLink,
-  getPostsDescription,
-} from '@/5-shared/util/build-meta';
+import { buildMeta, buildCanonicalLink, getPostsDescription } from '@/5-shared/util/build-meta';
 
 const searchSchema = z.object({
   tags: z.string().optional(),
@@ -1376,20 +1343,10 @@ function PostsPage() {
     <>
       {/* 페이지 헤더 */}
       <div className="flex items-baseline justify-between mb-6 pb-3 border-b border-rule">
-        <p className="text-[9px] tracking-[4px] uppercase text-ink3">
-          All Posts
-        </p>
+        <p className="text-[9px] tracking-[4px] uppercase text-ink3">All Posts</p>
       </div>
-      <PostSearchInput
-        locale={locale}
-        initialValue={query}
-        selectedTags={tags}
-      />
-      <TagFilterBar
-        locale={locale}
-        availableTags={availableTags}
-        selectedTags={tags}
-      />
+      <PostSearchInput locale={locale} initialValue={query} selectedTags={tags} />
+      <TagFilterBar locale={locale} availableTags={availableTags} selectedTags={tags} />
       <Suspense fallback={<PostCardListSkeleton />}>
         <PostCardList locale={parsedLocale} tags={tags} query={query} />
       </Suspense>
@@ -1515,10 +1472,7 @@ interface PostNavigationProps {
  * 포스트 상세 하단 이전/다음 포스트 네비게이션.
  * 전체 포스트 날짜 내림차순 기준으로 prev(오래된)/next(최신)를 표시한다.
  */
-export default function PostNavigation({
-  currentPath,
-  locale,
-}: PostNavigationProps) {
+export default function PostNavigation({ currentPath, locale }: PostNavigationProps) {
   const { t } = useTranslation();
 
   const { data: allPosts } = useSuspenseQuery({
@@ -1527,9 +1481,7 @@ export default function PostNavigation({
     staleTime: 1000 * 60 * 5,
   });
 
-  const currentIndex = allPosts.findIndex(
-    (post) => post.path.join('/') === currentPath
-  );
+  const currentIndex = allPosts.findIndex((post) => post.path.join('/') === currentPath);
 
   if (currentIndex === -1) return null;
 
@@ -1604,24 +1556,25 @@ export function PostNavigationSkeleton() {
 `src/4-pages/$locale/posts/$.tsx`에서 import 추가:
 
 ```tsx
-import PostNavigation, {
-  PostNavigationSkeleton,
-} from '@/2-features/post/ui/post-navigation';
+import PostNavigation, { PostNavigationSkeleton } from '@/2-features/post/ui/post-navigation';
 ```
 
 Reply 컴포넌트 바로 위에 PostNavigation 추가:
 
 ```tsx
-{/* 이전/다음 포스트 네비게이션 */}
-{mdxStatus === 'success' && (
-  <Suspense fallback={<PostNavigationSkeleton />}>
-    <PostNavigation
-      currentPath={_splat}
-      locale={parseLocale(locale)}
-    />
-  </Suspense>
-)}
-{mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />}
+{
+  /* 이전/다음 포스트 네비게이션 */
+}
+{
+  mdxStatus === 'success' && (
+    <Suspense fallback={<PostNavigationSkeleton />}>
+      <PostNavigation currentPath={_splat} locale={parseLocale(locale)} />
+    </Suspense>
+  );
+}
+{
+  mdxStatus === 'success' && <Reply locale={parseLocale(locale)} />;
+}
 ```
 
 - [ ] **Step 5: 타입 체크 실행**
@@ -1774,9 +1727,7 @@ export function calcReadingTime(text: string, locale: LocaleType): string {
   const trimmed = text.trim();
 
   const count =
-    config.countMethod === 'chars'
-      ? trimmed.length
-      : trimmed.split(/\s+/).filter(Boolean).length;
+    config.countMethod === 'chars' ? trimmed.length : trimmed.split(/\s+/).filter(Boolean).length;
 
   const exactMinutes = count / config.rate;
 
@@ -1837,17 +1788,19 @@ const extractHeadings = () => {
 날짜 표시 부분 수정 (읽기 시간을 날짜 옆에 추가):
 
 ```tsx
-{frontmatter.createdAt && (
-  <div className="mb-4 flex items-center gap-3 text-[11px] tracking-[1px] text-ink3 tabular-nums">
-    <span>{format(frontmatter.createdAt, 'yyyy.MM.dd')}</span>
-    {readingTime && (
-      <>
-        <span aria-hidden="true">·</span>
-        <span>{readingTime}</span>
-      </>
-    )}
-  </div>
-)}
+{
+  frontmatter.createdAt && (
+    <div className="mb-4 flex items-center gap-3 text-[11px] tracking-[1px] text-ink3 tabular-nums">
+      <span>{format(frontmatter.createdAt, 'yyyy.MM.dd')}</span>
+      {readingTime && (
+        <>
+          <span aria-hidden="true">·</span>
+          <span>{readingTime}</span>
+        </>
+      )}
+    </div>
+  );
+}
 ```
 
 - [ ] **Step 6: 타입 체크 실행**

@@ -5,13 +5,6 @@ export interface GetPostsProps {
   locale: LocaleType;
   page?: number;
   size?: number;
-  tags?: string[];
-  /** 제목·태그·summary 클라이언트 검색어 */
-  query?: string;
-}
-
-export interface GetAvailableTagsProps {
-  locale: LocaleType;
 }
 
 export interface PagingPosts {

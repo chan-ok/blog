@@ -20,7 +20,7 @@ export interface MetaOptions {
   image?: string;
   /** OG 콘텐츠 타입 */
   type?: 'website' | 'article';
-  /** 페이지 로케일 (e.g. 'ko', 'en', 'ja') */
+  /** 페이지 로케일 (e.g. 'ko', 'ja') */
   locale?: string;
   /** 포스트 발행 일시 (ISO 8601) */
   publishedTime?: string;
@@ -91,12 +91,11 @@ export function buildMeta(options: MetaOptions): React.JSX.IntrinsicElements['me
 
 /**
  * 로케일 코드를 Open Graph locale 형식으로 변환한다.
- * (예: 'ko' → 'ko_KR', 'en' → 'en_US', 'ja' → 'ja_JP')
+ * (예: 'ko' → 'ko_KR', 'ja' → 'ja_JP')
  */
 function localeToOgLocale(locale: string): string {
   const map: Record<string, string> = {
     ko: 'ko_KR',
-    en: 'en_US',
     ja: 'ja_JP',
   };
   return map[locale] ?? locale;
@@ -116,7 +115,6 @@ export function buildCanonicalLink(path: string): React.JSX.IntrinsicElements['l
 export function getHomeDescription(locale: string): string {
   const descriptions: Record<string, string> = {
     ko: '개발, 기술, 일상에 대한 생각을 기록하는 블로그입니다.',
-    en: 'A blog recording thoughts on development, technology, and everyday life.',
     ja: '開発、技術、日常についての考えを記録するブログです。',
   };
   return descriptions[locale] ?? descriptions['ko']!;
@@ -128,7 +126,6 @@ export function getHomeDescription(locale: string): string {
 export function getAboutDescription(locale: string): string {
   const descriptions: Record<string, string> = {
     ko: 'chan-ok.com 블로그 운영자 소개 페이지입니다.',
-    en: 'About the author of chan-ok.com.',
     ja: 'chan-ok.com のブログ運営者の紹介ページです。',
   };
   return descriptions[locale] ?? descriptions['ko']!;
@@ -140,7 +137,6 @@ export function getAboutDescription(locale: string): string {
 export function getPostsDescription(locale: string): string {
   const descriptions: Record<string, string> = {
     ko: '개발, 기술, 일상에 관한 포스트 목록입니다.',
-    en: 'A list of posts about development, technology, and everyday life.',
     ja: '開発、技術、日常に関する投稿一覧です。',
   };
   return descriptions[locale] ?? descriptions['ko']!;

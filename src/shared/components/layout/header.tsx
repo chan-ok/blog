@@ -1,65 +1,43 @@
 import { useRouterState } from '@tanstack/react-router';
-import clsx from 'clsx';
 
 import Link from '@/shared/components/ui/link';
-import LocaleToggle from '@/shared/components/toggle/locale-toggle';
-import ThemeToggle from '@/shared/components/toggle/theme-toggle';
-import { useImmersiveReader } from '@/shared/hooks/use-immersive-reader';
+import LocaleToggle from '@/shared/locale/toggle';
+
+const navLinkClass = (active: boolean) =>
+  [
+    'text-[11px] tracking-[1.5px] uppercase px-3 py-2.5 sm:px-5',
+    'border-r border-rule transition-colors duration-150',
+    'hover:bg-ink hover:text-bg',
+    active ? 'bg-ink text-bg' : 'text-ink2',
+  ].join(' ');
 
 export default function Header() {
   const { location } = useRouterState();
   const pathname = location.pathname;
-  const isHidden = useImmersiveReader();
 
+  const isHome = /^\/(ko|ja)\/?$/.test(pathname);
   const isActive = (path: string) => pathname.includes(path);
 
-  const navLinkClass = (path: string) =>
-    [
-      'text-[11px] tracking-[1.5px] uppercase px-5 py-2.5',
-      'border-r border-rule transition-colors duration-150',
-      'hover:bg-ink hover:text-bg',
-      isActive(path) ? 'bg-ink text-bg' : 'text-ink2',
-    ].join(' ');
-
   return (
-    <header
-      className={clsx(
-        'sticky top-0 z-50 border-b-2 border-ink bg-bg',
-        'transition-transform duration-300 ease-in-out',
-        isHidden ? '-translate-y-full' : 'translate-y-0'
-      )}
-    >
-      {/* 마스트헤드 영역 */}
-      <div className="flex flex-col items-center pt-6 pb-0">
-        <Link
-          href="/"
-          aria-label="Home"
-          className="text-[28px] sm:text-[32px] font-bold tracking-[8px] uppercase text-ink no-underline"
-        >
-          Chanho.dev
-        </Link>
-        <p className="text-[10px] tracking-[2.5px] text-ink3 mt-1 mb-3">개발 · 사유 · 기록</p>
-      </div>
-
+    <header className="sticky top-0 z-50 border-b-2 border-ink bg-bg">
       {/* nav 바 */}
-      <nav className="border-t border-rule" aria-label="주요 네비게이션">
-        <div className="max-w-4xl mx-auto flex items-center">
+      <nav className="" aria-label="주요 네비게이션">
+        <div className="mx-auto flex max-w-240 items-center">
           {/* 좌측 경계선 */}
           <span className="border-l border-rule self-stretch" />
 
-          <Link href="/about" aria-label="About" className={navLinkClass('/about')}>
+          <Link href="/" aria-label="Home" className={navLinkClass(isHome)}>
+            Home
+          </Link>
+          <Link href="/about" aria-label="About" className={navLinkClass(isActive('/about'))}>
             About
           </Link>
-          <Link href="/posts" aria-label="Posts" className={navLinkClass('/posts')}>
+          <Link href="/posts" aria-label="Posts" className={navLinkClass(isActive('/posts'))}>
             Posts
-          </Link>
-          <Link href="/contact" aria-label="Contact" className={navLinkClass('/contact')}>
-            Contact
           </Link>
 
           {/* 토글 영역 */}
           <span className="ml-auto flex items-stretch border-l border-rule">
-            <ThemeToggle />
             <LocaleToggle />
           </span>
 
