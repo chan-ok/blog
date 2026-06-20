@@ -1,4 +1,4 @@
-import { api } from '@/shared/config/api';
+import { api } from '@/shared/api';
 import { compareDesc } from 'date-fns';
 
 import { Frontmatter as PostInfo } from '@/entities/markdown/model/model.schema';

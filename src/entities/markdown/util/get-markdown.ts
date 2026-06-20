@@ -7,7 +7,7 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import matter from 'gray-matter';
 
-import { api } from '@/shared/config/api';
+import { api } from '@/shared/api';
 import { FrontmatterSchema, Frontmatter } from '../model/model.schema';
 import { remarkObsidianImage } from './remark-obsidian-image';
 import { rehypeUnwrapImages } from './rehype-unwrap-images';

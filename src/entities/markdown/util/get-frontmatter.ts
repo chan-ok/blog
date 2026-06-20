@@ -1,6 +1,6 @@
 import matter from 'gray-matter';
 
-import { api } from '@/shared/config/api';
+import { api } from '@/shared/api';
 
 import { FrontmatterSchema, Frontmatter } from '../model/model.schema';
 
