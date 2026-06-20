@@ -8,11 +8,15 @@
     "build": "vite build",
     "preview": "vite preview",
     "tsc": "tsc -b",
+    "fmt": "oxfmt src",
+    "fmt:check": "oxfmt --check src",
+    "fmt:fix": "oxfmt --fix src",
     "lint": "oxlint src",
-    "fmt": "oxfmt .",
+    "lint:error": "oxlint --quiet src",
+    "lint:fix": "oxlint --fix src",
     "test": "vitest",
     "test:once": "vitest run",
-    "coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage",
     "prepare": "husky"
   },
   "dependencies": {

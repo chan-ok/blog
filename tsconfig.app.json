@@ -1,32 +1,27 @@
 {
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.mts",
-    "src/**/*.mdx",
-    "contents/**/*.mdx",
-    "vitest.shims.d.ts"
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", ".husky", ".netlify", ".storybook", "dist"],
   "compilerOptions": {
-    "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "target": "ES2020",
+    "types": ["vite/client", "@tanstack/react-router"],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    "target": "es2023",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
-    "types": ["vite/client", "@tanstack/react-router"],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+
+    "noEmit": true,
+    "skipLibCheck": true,
+    "composite": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+
+    "strict": true,
+    "esModuleInterop": true
   }
 }
