@@ -1,9 +1,6 @@
 @import 'tailwindcss';
 @import 'highlight.js/styles/github-dark.css';
 
-/* ── 다크모드 variant ── */
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ── 색상 토큰 (라이트) ── */
 :root {
   --bg: #fafafa;
@@ -20,18 +17,20 @@
 }
 
 /* ── 색상 토큰 (다크) ── */
-.dark {
-  --bg: #111111;
-  --bg2: #1f1f1f;
-  --ink: #f5f5f5;
-  --ink2: #d4d4d4;
-  --ink3: #a3a3a3;
-  --rule: #3a3a3a;
-  --accent: #e5e5e5;
-  --accent-strong: #ffffff;
-  --accent-soft: #2a2a2a;
-  --code-bg: #0f0f0f;
-  --code-ink: #f5f5f5;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111111;
+    --bg2: #1f1f1f;
+    --ink: #f5f5f5;
+    --ink2: #d4d4d4;
+    --ink3: #a3a3a3;
+    --rule: #3a3a3a;
+    --accent: #e5e5e5;
+    --accent-strong: #ffffff;
+    --accent-soft: #2a2a2a;
+    --code-bg: #0f0f0f;
+    --code-ink: #f5f5f5;
+  }
 }
 
 /* ── Tailwind v4 토큰 등록 ── */
