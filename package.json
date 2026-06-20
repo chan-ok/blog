@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tsc": "npx tsgo -p . --noEmit",
+    "typecheck": "npx tsgo -p . --noEmit",
     "fmt": "oxfmt src",
     "lint": "oxlint src",
     "lint:error": "oxlint --quiet src",
