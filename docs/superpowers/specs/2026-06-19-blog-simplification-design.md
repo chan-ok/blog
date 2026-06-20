@@ -15,19 +15,19 @@
 
 ## 2. 확정된 결정 사항 (범위)
 
-| 항목 | 결정 |
-| --- | --- |
-| 메뉴 | Home, About, Posts 3개만. **Contact 삭제** |
-| 태그 / 검색 | **삭제** (UI·필터·관련 유틸 전부) |
-| 다국어 | **ko / ja 유지, en 제거**. `$locale` 라우팅·언어 토글 유지 |
-| 포스트 데이터 | 외부 Git raw URL fetch **유지**(axios). **React Query 제거** → TanStack Router loader + Suspense/use()로 페칭 통일 |
-| 마크다운 | 기능 전부 유지(Mermaid·코드 하이라이트·표·인용·Obsidian 이미지 등). **컴포넌트 파일만 통합**. 현 unified/@mdx-js 파이프라인 유지 |
-| 부가 기능 | **TOC(목차)만 유지** |
-| 다크모드 | 토글 제거. `prefers-color-scheme`로 **시스템 자동 전환**(dark 토큰 유지) |
-| 홈 최근 글 | **제거** → 홈은 About 소개만 |
-| FSD | **4단계: app / entities / features / shared** (pages 레이어 제거) |
-| 푸터 | 저작권 + 이메일 `kiss.yagni.dry@gmail.com`(mailto) |
-| 의존성 | 제거 정리 후 남은 패키지를 **최신 stable로 업그레이드**(major 포함, §6-3) |
+| 항목          | 결정                                                                                                                             |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 메뉴          | Home, About, Posts 3개만. **Contact 삭제**                                                                                       |
+| 태그 / 검색   | **삭제** (UI·필터·관련 유틸 전부)                                                                                                |
+| 다국어        | **ko / ja 유지, en 제거**. `$locale` 라우팅·언어 토글 유지                                                                       |
+| 포스트 데이터 | 외부 Git raw URL fetch **유지**(axios). **React Query 제거** → TanStack Router loader + Suspense/use()로 페칭 통일               |
+| 마크다운      | 기능 전부 유지(Mermaid·코드 하이라이트·표·인용·Obsidian 이미지 등). **컴포넌트 파일만 통합**. 현 unified/@mdx-js 파이프라인 유지 |
+| 부가 기능     | **TOC(목차)만 유지**                                                                                                             |
+| 다크모드      | 토글 제거. `prefers-color-scheme`로 **시스템 자동 전환**(dark 토큰 유지)                                                         |
+| 홈 최근 글    | **제거** → 홈은 About 소개만                                                                                                     |
+| FSD           | **4단계: app / entities / features / shared** (pages 레이어 제거)                                                                |
+| 푸터          | 저작권 + 이메일 `kiss.yagni.dry@gmail.com`(mailto)                                                                               |
+| 의존성        | 제거 정리 후 남은 패키지를 **최신 stable로 업그레이드**(major 포함, §6-3)                                                        |
 
 ## 3. 최종 디렉토리 구조 (목표)
 
@@ -104,6 +104,7 @@ src/
 ## 4. 레이어별 변경
 
 ### app
+
 - `src/pages` → `src/app/routes`로 이동. vite router plugin의 `routesDirectory`(및 `generatedRouteTree` 경로)만 조정.
 - `contact` 라우트 삭제.
 - `__root.tsx`: `QueryClientProvider`/`QueryClient` 및 React Query devtools 제거. 데이터 페칭은 router loader로 통일.
@@ -111,12 +112,14 @@ src/
 - `$locale.tsx`: Header/Footer 레이아웃 유지. immersive/scroll 관련 의존 제거.
 
 ### entities/markdown (기능 유지, 통합)
+
 - 단순 컴포넌트(`blockquote`, inline `code`, `table-wrapper`, `typography`)는 `set-md-components.tsx`로 **인라인 통합**.
 - 복잡 로직(`code-block` 하이라이트, `mermaid-diagram`, `image-block`)은 파일 유지.
 - 파이프라인(remark/rehype 플러그인, MDX evaluate) 변경 없음.
 - `index.tsx`(MDComponent): `useQuery` 제거 → 라우트 loader에서 `getMarkdown` 수행, 컴포넌트는 `use()`/Suspense로 결과를 받는다(인터페이스가 path 기반 자체 fetch → 데이터/promise 주입으로 변경).
 
 ### features/post
+
 - **제거**: `post-search-input`, `tag-chip`, `tag-filter-bar`, `post-navigation`, `recent-post-block`, `util/get-available-tags`, `util/get-series-posts`, `util/calc-reading-time`(읽기 시간 표시도 함께 제거).
 - `post-card` → `post-card-list`로 통합. `table-of-contents` 유지.
 - `get-posts.ts`: `tags`/`query`/`DEV_ONLY_TAGS` 필터 제거 → `locale` + `published` + 페이징만. draft/비공개 제어는 `published` 필드로 일원화.
@@ -124,12 +127,14 @@ src/
 - **about 통합**: `features/about/ui/about-block.tsx` → `features/post/ui/about-block.tsx`로 이동, `features/about` 폴더 제거.
 
 ### shared
+
 - **locale 기능 단위 통합**: `providers/locale-provider`, `stores/locale-store`, `components/toggle/locale-toggle`, `config/i18n/*`를 `shared/locale/`로 모음.
 - **제거**: `components/toggle/theme-toggle`, `components/scroll-progress-bar`, `components/turnstile`, `hooks/use-scroll-progress`, `hooks/use-immersive-reader`, `stores/theme-store`, `providers/theme-provider`, `config/i18n/locales/en.json`.
 - 빈 폴더(`hooks/`, `providers/`, `stores/`)는 정리.
 - `globals.css`: 다크 토큰은 유지하되 `.dark` 클래스 토글 대신 `@media (prefers-color-scheme: dark)`로 적용.
 
 ### contact 전면 삭제
+
 - `features/contact/` 전체, `routes/$locale/contact.tsx`, `components/turnstile/`.
 - **Netlify function 삭제**: `netlify/functions/mail.mts`(유일 function) + `netlify/functions/tsconfig.node.json`. `netlify.toml`의 functions 관련 설정 정리.
 - 관련 의존성은 §6 참조(`resend`·`@netlify/functions` 제거 확정, `dompurify` 계열·`netlify-cli`는 조건부).
@@ -143,23 +148,23 @@ src/
 
 ### 제거 (확정)
 
-| 대상 | 근거 |
-| --- | --- |
-| `@tanstack/react-query` (+ `@tanstack/react-query-devtools`) | router loader + Suspense/use()로 대체 |
-| `resend` | contact 메일 발송 전용 |
-| `@netlify/functions` | `netlify/functions/mail.mts`(contact 메일) 전용 → function 삭제 |
-| `@testing-library/dom` · `@testing-library/react` · `@testing-library/user-event` | 테스트 파일 0개, 미사용(죽은 인프라) |
-| `jsdom` | 컴포넌트 테스트 환경 미사용 |
-| `knip` | 미사용 도구 |
-| storybook 스크립트 (`storybook`, `build-storybook`) | storybook 패키지 부재, 스크립트만 잔존 |
+| 대상                                                                              | 근거                                                            |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `@tanstack/react-query` (+ `@tanstack/react-query-devtools`)                      | router loader + Suspense/use()로 대체                           |
+| `resend`                                                                          | contact 메일 발송 전용                                          |
+| `@netlify/functions`                                                              | `netlify/functions/mail.mts`(contact 메일) 전용 → function 삭제 |
+| `@testing-library/dom` · `@testing-library/react` · `@testing-library/user-event` | 테스트 파일 0개, 미사용(죽은 인프라)                            |
+| `jsdom`                                                                           | 컴포넌트 테스트 환경 미사용                                     |
+| `knip`                                                                            | 미사용 도구                                                     |
+| storybook 스크립트 (`storybook`, `build-storybook`)                               | storybook 패키지 부재, 스크립트만 잔존                          |
 
 ### 조건부
 
-| 대상 | 판단 |
-| --- | --- |
-| `buffer` (vite `alias`·`optimizeDeps`·`global.d.ts` polyfill) | 제거 시도 → `gray-matter` 등이 Buffer를 요구하면 빌드/런타임 검증 후 유지 |
-| `dompurify` / `isomorphic-dompurify` | `shared/util/sanitize.ts` 등 마크다운 sanitize 사용처 확인 → contact/turnstile 전용이면 제거, 아니면 유지 |
-| `netlify-cli` | functions 삭제 후 `dev:server`(netlify dev)가 불필요하면 제거 |
+| 대상                                                          | 판단                                                                                                      |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `buffer` (vite `alias`·`optimizeDeps`·`global.d.ts` polyfill) | 제거 시도 → `gray-matter` 등이 Buffer를 요구하면 빌드/런타임 검증 후 유지                                 |
+| `dompurify` / `isomorphic-dompurify`                          | `shared/util/sanitize.ts` 등 마크다운 sanitize 사용처 확인 → contact/turnstile 전용이면 제거, 아니면 유지 |
+| `netlify-cli`                                                 | functions 삭제 후 `dev:server`(netlify dev)가 불필요하면 제거                                             |
 
 ### 유지
 
@@ -195,11 +200,15 @@ import babel from '@rolldown/plugin-babel';
 
 plugins: [
   tailwindcss(),
-  tanstackRouter({ /* ... */ }),
+  tanstackRouter({
+    /* ... */
+  }),
   react(),
   babel({ presets: [reactCompilerPreset({ target: '19' })] }),
-  ViteImageOptimizer({ /* ... */ }),
-]
+  ViteImageOptimizer({
+    /* ... */
+  }),
+];
 ```
 
 - peer deps: `@rolldown/plugin-babel`(신규, 0.2.x) + 그 peer인 `@babel/core`·`@babel/plugin-transform-runtime`·`@babel/runtime`, `babel-plugin-react-compiler`(유지, 1.0.0).
@@ -213,14 +222,14 @@ plugins: [
 
 ### major (개별 검토)
 
-| 패키지 | 현재 → 최신 | 주의 |
-| --- | --- | --- |
-| `oxlint` | 0.16 → 1.70 | 1.0 정식. 룰·설정 대폭 변경 → `.oxlintrc.json` 재검토, lint 에러 정리 |
-| `oxfmt` | 0.17 → 0.55 | 포매팅 규칙 변경 → 전체 재포맷 diff 확인 |
-| `lucide-react` | 0.561 → 1.21 | 1.0 정식. 사용 아이콘 export/이름 확인 |
-| `@types/node` | 25 → 26 | Node 엔진 버전과 정합 확인 |
-| `lint-staged` | 16 → 17 | config 형식 호환 확인 |
-| `netlify-cli` | 24 → 26 | §6에서 유지로 결정된 경우에만 업그레이드 |
+| 패키지         | 현재 → 최신  | 주의                                                                  |
+| -------------- | ------------ | --------------------------------------------------------------------- |
+| `oxlint`       | 0.16 → 1.70  | 1.0 정식. 룰·설정 대폭 변경 → `.oxlintrc.json` 재검토, lint 에러 정리 |
+| `oxfmt`        | 0.17 → 0.55  | 포매팅 규칙 변경 → 전체 재포맷 diff 확인                              |
+| `lucide-react` | 0.561 → 1.21 | 1.0 정식. 사용 아이콘 export/이름 확인                                |
+| `@types/node`  | 25 → 26      | Node 엔진 버전과 정합 확인                                            |
+| `lint-staged`  | 16 → 17      | config 형식 호환 확인                                                 |
+| `netlify-cli`  | 24 → 26      | §6에서 유지로 결정된 경우에만 업그레이드                              |
 
 ### minor/patch (일괄)
 

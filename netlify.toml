@@ -1,14 +1,13 @@
 [dev]
-  framework = "tanstack-router"
-  command = "pnpm dev"
-  port = 8888
-  targetPort = 5173
-  
+framework = "tanstack-router"
+command = "pnpm dev"
+port = 8888
+targetPort = 5173
 [build]
-  command = "pnpm build"
-  publish = "dist"
+command = "pnpm build"
+publish = "dist"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "/*"
+to = "/index.html"
+status = 200

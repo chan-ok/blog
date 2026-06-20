@@ -1,9 +1,5 @@
 {
-  "include": [
-    "vite.config.ts",
-    "netlify/**/*.mts",
-    "scripts/**/*.mts"
-  ],
+  "include": ["vite.config.ts", "netlify/**/*.mts", "scripts/**/*.mts"],
   "exclude": ["node_modules", ".husky", ".netlify", ".storybook", "dist"],
   "compilerOptions": {
     "composite": true,
