@@ -260,7 +260,7 @@ export default function setMdxComponents(
     h4: Heading4,
     h5: Heading5,
     h6: Heading6,
-    p: ({ children }) => <p className="mb-6 text-[16px] leading-[2.0] text-ink2">{children}</p>,
+    p: ({ children }) => <p className="mb-6 text-[16px] leading-loose text-ink2">{children}</p>,
     ul: ({ children }) => <ul className="mdx-ul mb-6 pl-2 space-y-2 text-ink2">{children}</ul>,
     ol: ({ children }) => <ol className="mdx-ol mb-6 pl-2 space-y-2 text-ink2">{children}</ol>,
     li: ({ children }) => <li className="text-[16px] leading-[1.9]">{children}</li>,
@@ -270,7 +270,7 @@ export default function setMdxComponents(
         return (
           <a
             href={href}
-            className="mr-2 no-underline text-ink3 opacity-0 transition-opacity group-hover:opacity-70 hover:!opacity-100"
+            className="mr-2 no-underline text-ink3 opacity-0 transition-opacity group-hover:opacity-70 hover:opacity-100!"
             {...rest}
           >
             {children}

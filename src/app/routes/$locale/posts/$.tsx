@@ -118,12 +118,12 @@ function PostDetailPage() {
   }, [path]);
 
   return (
-    <div className="mx-auto max-w-[620px] pb-16">
+    <div className="mx-auto max-w-155 pb-16">
       <div>
         {/* 메타 헤더: 제목, 날짜 */}
         {frontmatter.title && (
           <div className="mb-8 border-b-2 border-ink pb-6">
-            <h1 className="mb-4 text-[32px] font-bold leading-[1.25] text-ink">
+            <h1 className="mb-4 text-[32px] font-bold leading-tight text-ink">
               {frontmatter.title}
             </h1>
             {frontmatter.createdAt && (

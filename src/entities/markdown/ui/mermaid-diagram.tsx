@@ -72,7 +72,7 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
   // 렌더링: 로딩 상태
   if (isLoading) {
     return (
-      <div className="mb-6 flex min-h-[200px] items-center justify-center rounded-md border border-rule bg-bg2 p-8">
+      <div className="mb-6 flex min-h-50 items-center justify-center rounded-md border border-rule bg-bg2 p-8">
         <div className="flex items-center gap-3">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-rule border-t-accent" />
           <span className="font-mono text-sm text-ink3">Loading diagram...</span>

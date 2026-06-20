@@ -44,7 +44,7 @@ function AboutPage() {
   const { markdownPromise } = Route.useLoaderData();
 
   return (
-    <div className="mx-auto max-w-[620px] pb-16">
+    <div className="mx-auto max-w-155 pb-16">
       <Suspense fallback={<MarkdownSkeleton />}>
         <MDComponent
           dataPromise={markdownPromise}

@@ -14,7 +14,7 @@ export default function AboutBlock() {
       </h1>
 
       {/* 한 단락 본문 */}
-      <p className="text-[15px] leading-[2.0] text-ink2 max-w-lg whitespace-pre-line">
+      <p className="text-[15px] leading-loose text-ink2 max-w-lg whitespace-pre-line">
         {t('about.introduction')}
       </p>
     </div>

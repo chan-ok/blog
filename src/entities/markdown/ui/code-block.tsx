@@ -45,7 +45,7 @@ export default function CodeBlock({ children }: CodeBlockProps) {
       </pre>
       <button
         onClick={handleCopy}
-        className="absolute top-6 right-6 flex items-center gap-1.5 rounded-md border border-rule bg-bg px-2 py-1 text-sm text-ink3 transition-colors hover:border-accent hover:bg-accent-soft hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+        className="absolute top-6 right-6 flex items-center gap-1.5 rounded-md border border-rule bg-bg px-2 py-1 text-sm text-ink3 transition-colors hover:border-accent hover:bg-accent-soft hover:text-ink focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
         aria-label={copied ? 'Copied' : 'Copy code'}
         type="button"
       >

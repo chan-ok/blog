@@ -44,7 +44,7 @@ function PostsPage() {
   const { locale, postsPromise } = Route.useLoaderData();
 
   return (
-    <div className="mx-auto max-w-[760px] pb-16">
+    <div className="mx-auto max-w-190 pb-16">
       {/* 페이지 헤더 */}
       <div className="flex items-baseline justify-between mb-6 pb-3 border-b border-rule">
         <p className="text-[9px] tracking-[4px] uppercase text-ink3">All Posts</p>

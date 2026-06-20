@@ -90,7 +90,7 @@ function LocaleLayout() {
       <div className="flex flex-col min-h-screen bg-bg text-ink transition-colors duration-200">
         <Header />
         <main className="flex-1">
-          <div className="mx-auto max-w-[960px] px-5 pt-10 sm:px-8">
+          <div className="mx-auto max-w-240 px-5 pt-10 sm:px-8">
             <Outlet />
           </div>
         </main>

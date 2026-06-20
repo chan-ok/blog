@@ -23,7 +23,7 @@ export const Route = createFileRoute('/$locale/')({
 
 function HomePage() {
   return (
-    <div className="mx-auto max-w-[680px] py-16">
+    <div className="mx-auto max-w-170 py-16">
       <AboutBlock />
     </div>
   );
