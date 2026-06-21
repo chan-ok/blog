@@ -15,7 +15,9 @@
     "test": "vitest",
     "test:once": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "pioneer": "./.pi/scripts/run-pioneer.sh --approve",
+    "pioneer:update": "./.pi/scripts/update-pioneer.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
