@@ -57,3 +57,9 @@ AGENTS.md
 .mcp.json
 .pi/
 .codegraph/
+
+.pi-worker-worktrees/
+
+.pi/npm/
+
+.pi/pioneer-tool/

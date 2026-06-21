@@ -6,7 +6,7 @@ export default function AboutBlock() {
   return (
     <div className="mb-10">
       {/* 소개 레이블 */}
-      <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-6">소개</p>
+      <p className="text-[9px] tracking-[4px] uppercase text-ink3 mb-6">{t('about.label')}</p>
 
       {/* 큰 소개 문구 */}
       <h1 className="text-[34px] font-bold leading-[1.3] text-ink mb-5 tracking-normal">

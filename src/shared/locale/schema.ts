@@ -9,6 +9,7 @@ export const TranslationResourceSchema = z.object({
     contact: z.string().min(1),
   }),
   about: z.object({
+    label: z.string().min(1),
     greeting: z.string().min(1),
     introduction: z.string().min(1),
     emailLabel: z.string().min(1),
