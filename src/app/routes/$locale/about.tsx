@@ -23,7 +23,7 @@ export const Route = createFileRoute('/$locale/about')({
     const description = getAboutDescription(locale);
     return {
       meta: buildMeta({
-        title: 'About | chan-ok.com',
+        title: 'About | chanho.kim',
         description,
         locale,
         path: `/${locale}/about`,

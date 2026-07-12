@@ -1,13 +1,16 @@
 {
   "nav": {
+    "home": "ホーム",
     "about": "紹介",
     "posts": "記事",
     "contact": "お問い合わせ"
   },
   "about": {
+    "viewWork": "記事を見る",
+    "readMore": "もっと見る",
     "label": "紹介",
-    "greeting": "こんにちは！👋",
-    "introduction": "ユーザー体験に注力するフロントエンド開発者です。\n直感的なコードと明確な構造を目指しています。",
+    "greeting": "こんにちは。",
+    "introduction": "安易な正解よりも長く向き合い続ける問いを、もっともらしさよりも人に深く届く価値を選びます。",
     "emailLabel": "メールを送る",
     "githubLabel": "GitHubプロフィールを見る"
   },

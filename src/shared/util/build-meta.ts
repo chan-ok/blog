@@ -1,5 +1,5 @@
 /** 사이트 기본 정보 */
-const SITE_NAME = 'chan-ok.com';
+const SITE_NAME = 'chanho.kim';
 const SITE_URL = 'https://chan-ok.com';
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 
@@ -125,8 +125,8 @@ export function getHomeDescription(locale: string): string {
  */
 export function getAboutDescription(locale: string): string {
   const descriptions: Record<string, string> = {
-    ko: 'chan-ok.com 블로그 운영자 소개 페이지입니다.',
-    ja: 'chan-ok.com のブログ運営者の紹介ページです。',
+    ko: 'chanho.kim 블로그 운영자 소개 페이지입니다.',
+    ja: 'chanho.kim のブログ運営者の紹介ページです。',
   };
   return descriptions[locale] ?? descriptions['ko']!;
 }

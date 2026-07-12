@@ -44,13 +44,11 @@ export const Route = createFileRoute('/$locale/posts/$')({
     const { frontmatter } = loaderData;
     const path = `/${locale}/posts/${_splat}`;
 
-    const title = frontmatter.title ? `${frontmatter.title} | chan-ok.com` : 'chan-ok.com';
+    const title = frontmatter.title ? `${frontmatter.title} | chanho.kim` : 'chanho.kim';
 
     const description =
       frontmatter.summary ??
-      (frontmatter.tags?.join(', ')
-        ? `${frontmatter.tags.join(', ')} - chan-ok.com`
-        : 'chan-ok.com');
+      (frontmatter.tags?.join(', ') ? `${frontmatter.tags.join(', ')} - chanho.kim` : 'chanho.kim');
 
     const publishedTime = frontmatter.createdAt
       ? frontmatter.createdAt instanceof Date

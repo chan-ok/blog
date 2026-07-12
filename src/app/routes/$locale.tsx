@@ -28,7 +28,7 @@ export const Route = createFileRoute('/$locale')({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1.0' },
-      { property: 'og:site_name', content: 'chan-ok.com' },
+      { property: 'og:site_name', content: 'chanho.kim' },
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
   }),
@@ -86,9 +86,12 @@ function LocaleLayout() {
   return (
     <LocaleProvider locale={parseLocale(locale)}>
       <div className="flex flex-col min-h-screen bg-bg text-ink transition-colors duration-200">
+        <a href="#content-start" className="skip-link">
+          페이지 본문으로 이동
+        </a>
         <Header />
-        <main className="flex-1">
-          <div className="mx-auto max-w-240 px-5 pt-10 sm:px-8">
+        <main id="content-start" className="flex-1 pt-6 md:pt-10">
+          <div className="app-shell">
             <Outlet />
           </div>
         </main>

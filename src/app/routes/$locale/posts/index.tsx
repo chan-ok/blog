@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createFileRoute } from '@tanstack/react-router';
 
 import PostCardList, { PostCardListSkeleton } from '@/features/post/ui/post-card-list';
@@ -23,7 +24,7 @@ export const Route = createFileRoute('/$locale/posts/')({
     const description = getPostsDescription(locale);
     return {
       meta: buildMeta({
-        title: 'Posts | chan-ok.com',
+        title: 'Posts | chanho.kim',
         description,
         locale,
         path: `/${locale}/posts`,
@@ -43,12 +44,15 @@ function PostsPageWithSuspense() {
 
 function PostsPage() {
   const { locale, postsPromise } = Route.useLoaderData();
+  const { t } = useTranslation();
 
   return (
-    <div className="mx-auto max-w-190 pb-16">
-      {/* 페이지 헤더 */}
-      <div className="flex items-baseline justify-between mb-6 pb-3 border-b border-rule">
-        <p className="text-[9px] tracking-[4px] uppercase text-ink3">All Posts</p>
+    <div className="pb-16">
+      <div className="mb-8 border-b border-rule pb-4">
+        <p className="text-[11px] tracking-[0.2em] uppercase text-ink3">{t('post.recentPosts')}</p>
+        <h1 className="mt-3 text-[clamp(1.9rem,4vw,2.5rem)] font-semibold leading-tight text-ink">
+          {t('post.recentPosts')}
+        </h1>
       </div>
       <Suspense fallback={<PostCardListSkeleton />}>
         <PostCardList locale={locale} postsPromise={postsPromise} />

@@ -1,13 +1,16 @@
 {
   "nav": {
+    "home": "홈",
     "about": "소개",
     "posts": "포스트",
     "contact": "연락하기"
   },
   "about": {
+    "viewWork": "포스트 보기",
+    "readMore": "자세히 보기",
     "label": "소개",
-    "greeting": "안녕하세요! 👋",
-    "introduction": "사용자 경험에 집중하는 프론트엔드 개발자입니다.\n직관적인 코드와 명확한 구조를 지향합니다.",
+    "greeting": "안녕하세요.",
+    "introduction": "손쉬운 정답보다 오래 붙드는 질문을, 그럴듯함보다 사람에게 깊이 닿는 가치를 선택합니다.",
     "emailLabel": "이메일 보내기",
     "githubLabel": "GitHub 프로필 보기"
   },
