@@ -3,6 +3,7 @@ import { compareDesc } from 'date-fns';
 
 import { Frontmatter as PostInfo } from '@/entities/markdown/model/model.schema';
 import { GetPostsProps, PagingPosts } from '../model/post.schema';
+import { isPostVisible } from './post-visibility';
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   const { locale, page = 0, size = 10 } = props;
@@ -50,7 +51,12 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
             : post.thumbnail,
       }))
       .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))
-      .filter((post) => post.published);
+      .filter((post) =>
+        isPostVisible(post, {
+          isProduction: import.meta.env.PROD,
+          surface: 'list',
+        })
+      );
 
     const startIndex = page * size;
     const endIndex = Math.min(startIndex + size, filteredPosts.length);

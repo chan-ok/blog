@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 
 import MDComponent from '@/entities/markdown';
 import TableOfContents from '@/features/post/ui/table-of-contents';
+import { isPostVisible } from '@/features/post/util/post-visibility';
 
 import { getMarkdown } from '@/entities/markdown/util/get-markdown';
 import { buildMeta, buildCanonicalLink } from '@/shared/util/build-meta';
@@ -26,6 +27,15 @@ export const Route = createFileRoute('/$locale/posts/$')({
 
     const path = `${locale}/${_splat}.mdx`;
     const markdown = await getMarkdown(path, BASE_URL);
+
+    if (
+      !isPostVisible(markdown.frontmatter, {
+        isProduction: import.meta.env.PROD,
+        surface: 'detail',
+      })
+    ) {
+      throw notFound();
+    }
 
     return {
       frontmatter: markdown.frontmatter,
