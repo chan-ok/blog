@@ -2,212 +2,121 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/d52613d2-028c-4166-bd14-b7784176e05e/deploy-status)](https://app.netlify.com/projects/chanho-dev-blog/deploys)
 
-## 프로젝트 소개
+React 19, TanStack Router, Vite 8로 만든 한국어·일본어 개인 블로그입니다. 애플리케이션 코드는 이 리포지터리에서, 포스트는 별도 [`blog-content`](https://github.com/chan-ok/blog-content) 리포지터리에서 관리합니다.
 
-React 19와 TanStack Router 기반의 개인 개발 블로그입니다. **Feature-Sliced Design(FSD)** 아키텍처와 코드·콘텐츠를 분리하는 이중 리포지터리 구조를 채택하고 있습니다.
+## 주요 기능
 
-### 목적
+- `/ko`, `/ja` 로케일 라우팅과 언어 전환
+- 소개와 최근 포스트를 함께 보여 주는 홈
+- 원격 Markdown 포스트 목록·상세 페이지
+- GFM, 코드 하이라이팅, Mermaid, Obsidian 이미지, 목차 렌더링
+- 프로덕션 포스트 공개 정책과 상세 URL 차단
+- 반응형 레이아웃과 시스템 다크 모드
 
-- 개인 블로그 운영
-- 모던 프론트엔드 기술스택 체득
-- 기술 지식 공유 (한국어, 일본어, 영어)
+## 기술 스택
 
-### 기술 스택
-
-| 항목       | 내용                                                   |
-| ---------- | ------------------------------------------------------ |
-| 프레임워크 | React 19 + TanStack Router v1 + Vite v7 + TypeScript 5 |
-| 스타일링   | Tailwind CSS v4                                        |
-| 국제화     | i18next                                                |
-| 상태 관리  | Zustand                                                |
-| 검증       | Zod v4                                                 |
-| 콘텐츠     | MDX (gray-matter + rehype/remark)                      |
-| 테스팅     | Vitest + Playwright + Storybook 10 + fast-check        |
-| 배포       | Netlify                                                |
-
-📖 [아키텍처 가이드](./docs/architecture.md)
-
-## 아키텍처
-
-- **[blog](https://github.com/chan-ok/blog)** (현재 리포지터리) — React + TanStack Router 기반 블로그 애플리케이션
-- **[blog-content](https://github.com/chan-ok/blog-content)** — MDX 형식의 포스트 콘텐츠 저장소
-
-소스 코드는 FSD 레이어 구조를 따릅니다:
-
-```
-pages → widgets → features → entities → shared
-```
-
-```mermaid
-graph LR
-    A[blog 리포지터리] -->|main 브랜치 push| B[Netlify 자동 배포]
-    C[blog-content 리포지터리] -->|main 브랜치 push| D[GitHub Actions]
-    D -->|generate-index.ts| E[index.json 생성]
-    B -->|fetch| E
-    B -->|렌더링| F[GitHub Raw URL]
-```
-
-📖 [아키텍처 가이드](./docs/architecture.md) · [아키텍처 규칙](./docs/architecture-rules.md)
+| 영역        | 기술                                     |
+| ----------- | ---------------------------------------- |
+| UI·라우팅   | React 19, TanStack Router                |
+| 빌드·타입   | Vite 8, TypeScript, React Compiler       |
+| 스타일      | Tailwind CSS 4                           |
+| 콘텐츠      | react-markdown, remark/rehype, YAML, Zod |
+| 데이터·상태 | Fetch API, Zustand, i18next              |
+| 테스트      | Vitest, Playwright                       |
+| 품질        | oxlint, oxfmt, Husky, lint-staged        |
+| 배포        | Netlify                                  |
 
 ## 빠른 시작
 
-### 사전 요구사항
-
-| 항목    | 버전      |
-| ------- | --------- |
-| Node.js | 22.x 이상 |
-| pnpm    | 10.x 이상 |
-
-### 설치 및 실행
+지원 개발 환경은 Node.js 24 LTS와 pnpm 11.18.0입니다. `.nvmrc`, `engines`, `packageManager`가 로컬과 배포 환경의 도구 버전을 고정합니다.
 
 ```bash
+git clone https://github.com/chan-ok/blog.git
+cd blog
 pnpm install
-pnpm dev
-pnpm dev:server
 ```
 
-### 환경 변수 설정
+프로젝트 루트에 `.env.local`을 만듭니다.
 
-아래 내용을 `.env.local` 파일로 생성하세요.
+```dotenv
+VITE_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
+```
+
+`VITE_*` 값은 브라우저 번들에 포함될 수 있으므로 비밀값을 넣지 마세요.
 
 ```bash
-VITE_TURNSTILE_SITE_KEY="your_turnstile_site_key"
-VITE_GISCUS_REPO="chan-ok/blog"
-VITE_GISCUS_REPO_ID="your_repo_id"
-VITE_GISCUS_CATEGORY="General"
-VITE_GISCUS_CATEGORY_ID="your_category_id"
-VITE_GISCUS_MAPPING="pathname"
-VITE_GISCUS_REACTIONS_ENABLED="1"
-VITE_GISCUS_EMIT_METADATA="0"
-VITE_GISCUS_THEME="preferred_color_scheme"
-VITE_GISCUS_LANG="ko"
+pnpm dev
 ```
 
-> ⚠️ `.env.local`은 절대 Git에 커밋하지 마세요.
+기본 개발 주소는 `http://localhost:5173`입니다. 자세한 절차는 [개발 가이드](./docs/development.md)를 참고하세요.
 
-📖 [개발 가이드](./docs/development.md)
-
-## 주요 명령어
+## 명령어
 
 ```bash
-# 개발
-pnpm dev
-pnpm dev:server
-
-# 코드 품질
-pnpm lint
-pnpm fmt
-
-# 테스팅
-pnpm test
-pnpm test:ui
-pnpm e2e
-
-# Storybook
-pnpm storybook
-pnpm storybook:build
+pnpm dev          # 개발 서버
+pnpm build        # 프로덕션 빌드
+pnpm preview      # 빌드 결과 미리보기
+pnpm typecheck    # 타입 검사
+pnpm lint         # 린트
+pnpm fmt          # src 포맷팅
+pnpm test         # Vitest watch
+pnpm test:once    # Vitest 1회 실행
 ```
 
-📖 [명령어 레퍼런스](./docs/commands.md)
+브라우저 반응형 테스트는 별도 package script 없이 프로젝트 안의 Playwright 설정을 직접 사용합니다.
 
-## 프로젝트 구조
-
-```
-blog/
-├── src/
-│   ├── 0-app/             # 앱 진입점 (main.tsx, globals.css)
-│   ├── 1-entities/        # 비즈니스 엔티티
-│   │   └── markdown/      # 마크다운 처리 (ui, util, model)
-│   ├── 2-features/        # 비즈니스 기능
-│   │   ├── about/         # About 페이지 기능
-│   │   ├── contact/       # Contact 폼 기능
-│   │   └── post/          # 포스트 목록/상세 기능
-│   ├── 3-widgets/         # 복합 UI (header, footer)
-│   ├── 4-pages/           # TanStack Router 페이지
-│   │   ├── __root.tsx     # 루트 레이아웃
-│   │   ├── index.tsx      # 홈 페이지
-│   │   └── $locale/       # 다국어 라우팅
-│   └── 5-shared/          # 공유 리소스
-│       ├── components/    # UI 컴포넌트 (ui, toggle, turnstile, reply)
-│       ├── config/        # 설정 (i18n, 환경변수 등)
-│       ├── hooks/         # 커스텀 훅
-│       ├── providers/     # Context Provider
-│       ├── stores/        # Zustand 스토어
-│       ├── types/         # 타입 정의
-│       └── util/          # 유틸리티 함수
-├── netlify/functions/     # 서버리스 함수 (Contact 폼, RSS 피드 등)
-├── e2e/                   # Playwright E2E 테스트
-├── docs/                  # 개발 문서
-├── .opencode/             # opencode 에이전트 설정
-└── .multi-agent/          # tmux 기반 멀티 에이전트 시스템 (ma start)
+```bash
+pnpm exec playwright test --config playwright.config.ts
 ```
 
-📖 [아키텍처 가이드](./docs/architecture.md)
+전체 설명은 [명령어 레퍼런스](./docs/commands.md)에 있습니다.
 
-## 개발 가이드
+## 구조
 
-| 영역           | 핵심                                                    | 상세                                                  |
-| -------------- | ------------------------------------------------------- | ----------------------------------------------------- |
-| 코드 스타일    | Import 4단계, TypeScript strict, Tailwind 유틸리티 우선 | [code-style.md](./docs/code-style.md)                 |
-| 아키텍처 규칙  | FSD 레이어 의존성, 역방향 import 금지, `@/` 경로 별칭   | [architecture-rules.md](./docs/architecture-rules.md) |
-| 테스팅         | TDD (Red/Green/Refactor), Property-based, 커버리지 80%+ | [testing.md](./docs/testing.md)                       |
-| 보안           | 환경변수 `VITE_*`, Zod 검증, XSS 방지, 입력 sanitize    | [security.md](./docs/security.md)                     |
-| Git 워크플로우 | `main ← develop ← feature`, Worktree 병렬 작업          | [git-flow.md](./docs/git-flow.md)                     |
-| 언어/커밋 규칙 | 한국어 문서·주석·커밋, 영어 코드, Conventional Commits  | [language-rules.md](./docs/language-rules.md)         |
-| 안티패턴       | `any` 금지, FSD 위반, 테스트 하드코딩 금지              | [anti-patterns.md](./docs/anti-patterns.md)           |
+```text
+src/
+├── app/                 # 진입점, 전역 스타일, TanStack Router 라우트
+├── entities/            # Markdown 모델·파서·렌더러
+├── features/            # 포스트 목록·상세 기능
+└── shared/              # 레이아웃, UI, 로케일, 공통 유틸
+tests/
+└── browser/             # Playwright 브라우저 테스트
+docs/                    # 현재 가이드와 과거 설계 기록
+```
 
-📖 [개발 가이드](./docs/development.md)
+레이어 의존성은 `app → features → entities → shared` 방향을 따릅니다. 자세한 내용은 [아키텍처 가이드](./docs/architecture.md)와 [아키텍처 규칙](./docs/architecture-rules.md)을 참고하세요.
 
-## 기능 현황
+## 콘텐츠 흐름
 
-- **Netlify 배포** — 자동 빌드 및 배포
-- **다국어 지원** — URL 기반 (한국어, 일본어, 영어) + i18next UI 번역
-- **MDX 렌더링** — 코드 하이라이팅 포함
-- **About 페이지** — 마크다운 기반
-- **Posts 페이지** — blog-content 리포지터리 연동
-- **Contact 폼** — Zod 검증 + Cloudflare Turnstile + Resend 이메일
-- **다크 모드** — Zustand + LocalStorage 지속성
-- **언어 선택기** — URL 경로 기반 + Zustand
-- **댓글 시스템** — Giscus (GitHub Discussions 기반)
-- **포스트 페이지네이션** — 페이지 기반 포스트 목록
-- **TanStack Query 캐싱** — API 응답 캐싱 및 재검증
-- **Series 기능** — 포스트와 외부 스크랩을 시리즈로 묶어 발행
-- **몰입형 읽기 모드** — 포스트 상세 스크롤 시 헤더 자동 숨김
-- **포스트 검색** — 클라이언트 사이드 키워드 검색 (index.json 기반)
-- **포스트 네비게이션** — 상세 페이지에서 이전/다음 포스트 이동
-- **읽기 시간 표시** — MDX 렌더링 기반 예상 읽기 시간 계산
-- **스크롤 진행 바** — 포스트 상세 페이지 읽기 진행률 표시
+1. 홈과 목록은 `VITE_GIT_RAW_URL/<locale>/index.json`을 가져옵니다.
+2. 상세 페이지는 정규화한 경로의 `.mdx`를 요청하고 필요하면 `.md`로 다시 시도합니다.
+3. YAML frontmatter를 파싱·검증하고 본문은 실행하지 않는 Markdown으로 렌더링합니다.
+4. 프로덕션에서는 `published: true`이며 `test`, `draft` 태그가 없는 포스트만 노출합니다.
+
+콘텐츠를 추가하거나 수정하려면 [`blog-content`](https://github.com/chan-ok/blog-content)에서 작업하세요.
 
 ## 문서
 
-- **docs/** — 프로젝트 일반 문서 기준점
-- **.multi-agent/** — 멀티 에이전트 시스템 절대 기준 (문서·스크립트·설정)
-- **.opencode/agent/** — 직접 구축한 에이전트 프롬프트 기준점
+| 문서                                                          | 설명                                 |
+| ------------------------------------------------------------- | ------------------------------------ |
+| [architecture.md](./docs/architecture.md)                     | 현재 구조와 콘텐츠 흐름              |
+| [development.md](./docs/development.md)                       | 설치, 개발, 테스트, Git 훅           |
+| [commands.md](./docs/commands.md)                             | 실제 package script와 직접 실행 명령 |
+| [security.md](./docs/security.md)                             | 환경 변수와 원격 Markdown 보안 경계  |
+| [agents.md](./docs/agents.md)                                 | AI 에이전트 작업 기준                |
+| [architecture-rules.md](./docs/architecture-rules.md)         | 레이어 의존성 규칙                   |
+| [code-style.md](./docs/code-style.md)                         | TypeScript·React 코드 스타일         |
+| [anti-patterns.md](./docs/anti-patterns.md)                   | 피해야 할 구현 방식                  |
+| [git-flow.md](./docs/git-flow.md)                             | Git 작업 방식                        |
+| [language-rules.md](./docs/language-rules.md)                 | 문서·코드·커밋 언어 규칙             |
+| [retrospective/overview.md](./docs/retrospective/overview.md) | 과거 의사결정과 회고                 |
 
-| 문서                                                          | 설명                                     |
-| ------------------------------------------------------------- | ---------------------------------------- |
-| [doc-structure.md](./docs/doc-structure.md)                   | 문서 구조 및 기준점                      |
-| [agents.md](./docs/agents.md)                                 | AI 코딩 에이전트 가이드                  |
-| [development.md](./docs/development.md)                       | 개발 환경 설정 및 워크플로우             |
-| [architecture.md](./docs/architecture.md)                     | 프로젝트 구조 및 기술 선택 배경          |
-| [architecture-rules.md](./docs/architecture-rules.md)         | FSD 아키텍처 규칙                        |
-| [code-style.md](./docs/code-style.md)                         | 코드 스타일 가이드                       |
-| [commands.md](./docs/commands.md)                             | 명령어 레퍼런스                          |
-| [testing.md](./docs/testing.md)                               | 테스팅 가이드                            |
-| [security.md](./docs/security.md)                             | 보안 가이드                              |
-| [git-flow.md](./docs/git-flow.md)                             | Git Flow 가이드                          |
-| [language-rules.md](./docs/language-rules.md)                 | 언어 및 커밋 규칙                        |
-| [anti-patterns.md](./docs/anti-patterns.md)                   | 안티패턴 목록                            |
-| [retrospective/overview.md](./docs/retrospective/overview.md) | 프로젝트 회고 및 의사결정 로그           |
-| [.multi-agent/](./.multi-agent/)                              | tmux 멀티 에이전트 시스템 (4종 에이전트) |
+## 참고 자료
 
-## 관련 리소스
-
-- [Feature-Sliced Design](https://feature-sliced.design/) — 아키텍처 패턴
-- [TanStack Router](https://tanstack.com/router/latest) — 라우팅
-- [Vite](https://vite.dev/) — 빌드 도구
-- [Tailwind CSS v4](https://tailwindcss.com/docs) — 스타일링
-
-## License
-
-MIT
+- [React](https://react.dev/)
+- [TanStack Router](https://tanstack.com/router/latest)
+- [Vite](https://vite.dev/)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+- [react-markdown](https://github.com/remarkjs/react-markdown)
+- [Vitest](https://vitest.dev/)
+- [Playwright](https://playwright.dev/)

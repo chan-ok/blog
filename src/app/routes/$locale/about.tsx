@@ -1,10 +1,12 @@
 import { Suspense } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 import MDComponent from '@/entities/markdown';
 
 import { getMarkdown } from '@/entities/markdown/util/get-markdown';
 import { buildMeta, buildCanonicalLink, getAboutDescription } from '@/shared/util/build-meta';
+import { resolveContentUrl } from '@/shared/util/content-url';
 
 const ABOUT_BASE_URL = 'https://raw.githubusercontent.com/chan-ok/chan-ok/main';
 
@@ -36,9 +38,12 @@ export const Route = createFileRoute('/$locale/about')({
 
 // 스킬 아이콘처럼 인라인 이미지는 border 없이 자연 크기로 표시
 const aboutImageComponents = {
-  img: ({ src, alt }: { src?: string; alt?: string }) => (
-    <img src={src ?? ''} alt={alt ?? ''} className="max-w-full h-auto" loading="lazy" />
-  ),
+  img: ({ src, alt }: { src?: string; alt?: string }) => {
+    const safeSrc = src ? resolveContentUrl(src, ABOUT_BASE_URL) : undefined;
+    return safeSrc ? (
+      <img src={safeSrc} alt={alt ?? ''} className="max-w-full h-auto" loading="lazy" />
+    ) : null;
+  },
 };
 
 function AboutPage() {
@@ -58,11 +63,13 @@ function AboutPage() {
 }
 
 function MarkdownSkeleton() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-center p-8 text-ink3">
       <div
         className="h-5 w-5 animate-spin rounded-full border-2 border-rule border-t-accent"
-        aria-label="Loading about"
+        aria-label={t('about.loading')}
       />
     </div>
   );

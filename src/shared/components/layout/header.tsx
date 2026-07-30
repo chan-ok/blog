@@ -36,12 +36,12 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-rule bg-bg">
-      <nav className="app-shell" aria-label="주요 네비게이션">
+      <nav className="app-shell" aria-label={t('nav.primaryLabel')}>
         <div className="flex h-16 items-center gap-2">
           <Link
             href="/"
             className="mr-2 inline-flex h-10 items-center px-2 text-sm font-semibold text-ink"
-            aria-label="chanho.kim home"
+            aria-label={`chanho.kim - ${t('nav.home')}`}
           >
             chanho.kim
           </Link>

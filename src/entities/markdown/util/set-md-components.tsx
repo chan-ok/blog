@@ -1,18 +1,17 @@
 import React from 'react';
+import type { Components, ExtraProps } from 'react-markdown';
 
 import { AlertOctagon, AlertTriangle, CheckCircle, Info, type LucideIcon } from 'lucide-react';
 import CodeBlock from '../ui/code-block';
 import ImageBlock from '../ui/image-block';
 import MermaidDiagram from '../ui/mermaid-diagram';
 
-import type { MDXComponents } from 'mdx/types';
-
-interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
+interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement>, ExtraProps {
   children: React.ReactNode;
   id?: string;
 }
 
-function Heading1({ children, id, ...rest }: HeadingProps) {
+function Heading1({ children, id, node: _node, ...rest }: HeadingProps) {
   return (
     <h1
       id={id}
@@ -24,7 +23,7 @@ function Heading1({ children, id, ...rest }: HeadingProps) {
   );
 }
 
-function Heading2({ children, id, ...rest }: HeadingProps) {
+function Heading2({ children, id, node: _node, ...rest }: HeadingProps) {
   return (
     <h2
       id={id}
@@ -36,7 +35,7 @@ function Heading2({ children, id, ...rest }: HeadingProps) {
   );
 }
 
-function Heading3({ children, id, ...rest }: HeadingProps) {
+function Heading3({ children, id, node: _node, ...rest }: HeadingProps) {
   return (
     <h3 id={id} className="group pt-10 mb-4 text-[17px] font-bold leading-snug" {...rest}>
       {children}
@@ -44,7 +43,7 @@ function Heading3({ children, id, ...rest }: HeadingProps) {
   );
 }
 
-function Heading4({ children, id, ...rest }: HeadingProps) {
+function Heading4({ children, id, node: _node, ...rest }: HeadingProps) {
   return (
     <h4 id={id} className="group pt-7 mb-3 text-[15px] font-semibold leading-snug" {...rest}>
       {children}
@@ -52,7 +51,7 @@ function Heading4({ children, id, ...rest }: HeadingProps) {
   );
 }
 
-function Heading5({ children, id, ...rest }: HeadingProps) {
+function Heading5({ children, id, node: _node, ...rest }: HeadingProps) {
   return (
     <h5
       id={id}
@@ -64,7 +63,7 @@ function Heading5({ children, id, ...rest }: HeadingProps) {
   );
 }
 
-function Heading6({ children, id, ...rest }: HeadingProps) {
+function Heading6({ children, id, node: _node, ...rest }: HeadingProps) {
   return (
     <h6
       id={id}
@@ -250,7 +249,7 @@ function Blockquote({ children }: BlockquoteProps) {
   );
 }
 
-export function setMdxComponents(components?: MDXComponents, baseUrl?: string): MDXComponents {
+export function setMdxComponents(components?: Components, baseUrl?: string): Components {
   return {
     h1: Heading1,
     h2: Heading2,
@@ -262,7 +261,7 @@ export function setMdxComponents(components?: MDXComponents, baseUrl?: string): 
     ul: ({ children }) => <ul className="mdx-ul mb-6 pl-2 space-y-2 text-ink2">{children}</ul>,
     ol: ({ children }) => <ol className="mdx-ol mb-6 pl-2 space-y-2 text-ink2">{children}</ol>,
     li: ({ children }) => <li className="text-[16px] leading-[1.9]">{children}</li>,
-    a: ({ href, children, className, ...rest }) => {
+    a: ({ href, children, className, node: _node, ...rest }) => {
       // 앵커 링크 (rehype-autolink-headings가 생성)
       if (typeof className === 'string' && className.includes('anchor')) {
         return (
@@ -316,7 +315,9 @@ export function setMdxComponents(components?: MDXComponents, baseUrl?: string): 
       );
     },
     img: ({ src, alt }) => <ImageBlock src={src || ''} alt={alt} baseUrl={baseUrl} />,
-    table: ({ children, ...rest }) => <TableWrapper {...rest}>{children}</TableWrapper>,
+    table: ({ children, node: _node, ...rest }) => (
+      <TableWrapper {...rest}>{children}</TableWrapper>
+    ),
     blockquote: ({ children }) => <Blockquote>{children}</Blockquote>,
     ...components,
   };

@@ -1,13 +1,16 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 import MDComponent from '@/entities/markdown';
 import TableOfContents from '@/features/post/ui/table-of-contents';
 import { isPostVisible } from '@/features/post/util/post-visibility';
 
 import { getMarkdown } from '@/entities/markdown/util/get-markdown';
+import { normalizeMarkdownPath } from '@/entities/markdown/util/markdown-path';
 import { buildMeta, buildCanonicalLink } from '@/shared/util/build-meta';
+import { resolveContentUrl } from '@/shared/util/content-url';
 
 interface Heading {
   id: string;
@@ -25,7 +28,13 @@ export const Route = createFileRoute('/$locale/posts/$')({
       throw notFound();
     }
 
-    const path = `${locale}/${_splat}.mdx`;
+    let path: string;
+    try {
+      path = normalizeMarkdownPath(`${locale}/${_splat}.mdx`);
+    } catch {
+      throw notFound();
+    }
+
     const markdown = await getMarkdown(path, BASE_URL);
 
     if (
@@ -65,12 +74,15 @@ export const Route = createFileRoute('/$locale/posts/$')({
         ? frontmatter.createdAt.toISOString()
         : new Date(frontmatter.createdAt).toISOString()
       : undefined;
+    const image = frontmatter.thumbnail
+      ? resolveContentUrl(frontmatter.thumbnail, BASE_URL)
+      : undefined;
 
     return {
       meta: buildMeta({
         title,
         description,
-        image: frontmatter.thumbnail,
+        image,
         type: 'article',
         locale,
         publishedTime,
@@ -106,7 +118,7 @@ function PostDetailPage() {
       setHeadings(extracted);
     };
 
-    // MutationObserver: MDX 비동기 로딩 후 DOM 변경 감지
+    // MutationObserver: Markdown 비동기 로딩 후 DOM 변경 감지
     const observer = new MutationObserver(() => {
       extractHeadings();
     });
@@ -155,11 +167,13 @@ function PostDetailPage() {
 }
 
 function MarkdownSkeleton() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-center p-8 text-ink3">
       <div
         className="h-5 w-5 animate-spin rounded-full border-2 border-rule border-t-accent"
-        aria-label="Loading post"
+        aria-label={t('post.loading')}
       />
     </div>
   );

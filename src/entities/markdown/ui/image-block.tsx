@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 
 import { ImageOff } from 'lucide-react';
+import { resolveContentUrl } from '@/shared/util/content-url';
 
 interface ImageBlockProps {
   src: string;
@@ -9,7 +10,7 @@ interface ImageBlockProps {
 }
 
 /**
- * MDX 콘텐츠용 이미지 블록 컴포넌트
+ * Markdown 콘텐츠용 이미지 블록 컴포넌트
  * - 레이지 로딩 지원
  * - 이미지 로드 실패 시 placeholder 표시
  * - alt 텍스트 제공 시 figcaption 렌더링
@@ -19,27 +20,13 @@ interface ImageBlockProps {
 export default function ImageBlock({ src, alt, baseUrl }: ImageBlockProps) {
   const [hasError, setHasError] = useState(false);
 
-  // 상대 경로 → 절대 경로 변환
-  const resolvedSrc = useMemo(() => {
-    // 이미 절대 경로(http/https)면 그대로 사용
-    if (src.startsWith('http')) {
-      return src;
-    }
-
-    // 상대 경로면 baseUrl + src로 조합
-    if (baseUrl) {
-      return `${baseUrl}/${src}`;
-    }
-
-    // baseUrl이 없으면 src 그대로 (fallback)
-    return src;
-  }, [src, baseUrl]);
+  const resolvedSrc = useMemo(() => resolveContentUrl(src, baseUrl), [src, baseUrl]);
 
   const handleError = () => {
     setHasError(true);
   };
 
-  if (hasError) {
+  if (!resolvedSrc || hasError) {
     return (
       <figure
         role="img"

@@ -8,11 +8,12 @@ import { visit } from 'unist-util-visit';
  * - `![[images/some-image.png|alt text]]` → `![alt text](images/some-image.png)`
  *
  * @example
- * ```ts
+ * ```tsx
+ * import Markdown from 'react-markdown';
+ * import remarkGfm from 'remark-gfm';
  * import { remarkObsidianImage } from './remark-obsidian-image';
- * evaluate(content, {
- *   remarkPlugins: [remarkObsidianImage, remarkGfm],
- * });
+ *
+ * <Markdown remarkPlugins={[remarkObsidianImage, remarkGfm]}>{content}</Markdown>;
  * ```
  */
 export function remarkObsidianImage() {

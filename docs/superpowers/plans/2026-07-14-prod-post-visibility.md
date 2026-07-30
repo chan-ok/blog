@@ -1,5 +1,7 @@
 # Production Post Visibility Implementation Plan
 
+> **Archive:** This plan records the 2026-07-14 visibility implementation. It is not an active task; verify current behavior against the source and [architecture guide](../../architecture.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Keep test, draft, unpublished, and incomplete-frontmatter posts out of production lists and direct detail URLs while preserving the agreed development preview behavior.

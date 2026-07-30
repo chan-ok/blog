@@ -1,3 +1,5 @@
+import type { ReactEventHandler } from 'react';
+
 // OptimizedImage 컴포넌트
 // 로컬 이미지는 Vite Plugin이 자동 압축 (PNG 압축률 70%)
 // 외부 이미지는 직접 로드 + lazy loading
@@ -9,6 +11,8 @@ interface OptimizedImageProps {
   height?: number;
   priority?: boolean; // true: eager, false: lazy
   className?: string;
+  onLoad?: ReactEventHandler<HTMLImageElement>;
+  onError?: ReactEventHandler<HTMLImageElement>;
 }
 
 export default function OptimizedImage({
@@ -18,6 +22,8 @@ export default function OptimizedImage({
   height,
   priority = false,
   className = '',
+  onLoad,
+  onError,
 }: OptimizedImageProps) {
   // 외부 URL 감지 (GitHub Raw, CDN 등)
   const isExternal = src.startsWith('http://') || src.startsWith('https://');
@@ -33,6 +39,8 @@ export default function OptimizedImage({
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"
         className={className}
+        onLoad={onLoad}
+        onError={onError}
       />
     );
   }
@@ -48,6 +56,8 @@ export default function OptimizedImage({
       loading={priority ? 'eager' : 'lazy'}
       decoding="async"
       className={className}
+      onLoad={onLoad}
+      onError={onError}
     />
   );
 }

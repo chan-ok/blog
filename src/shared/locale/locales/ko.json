@@ -3,52 +3,24 @@
     "home": "홈",
     "about": "소개",
     "posts": "포스트",
-    "contact": "연락하기"
+    "primaryLabel": "주요 네비게이션",
+    "changeLanguage": "언어 변경"
   },
   "about": {
-    "viewWork": "포스트 보기",
-    "readMore": "자세히 보기",
     "label": "소개",
     "greeting": "안녕하세요.",
     "introduction": "손쉬운 정답보다 오래 붙드는 질문을, 그럴듯함보다 사람에게 깊이 닿는 가치를 선택합니다.",
-    "emailLabel": "이메일 보내기",
-    "githubLabel": "GitHub 프로필 보기"
-  },
-  "contact": {
-    "from": "보내는 분",
-    "fromPlaceholder": "이메일 주소를 입력해주세요...",
-    "message": "내용",
-    "placeholder": "메시지를 작성해주세요...",
-    "checkRobot": "로봇 확인",
-    "sending": "전송 중...",
-    "submit": "보내기",
-    "errors": {
-      "required": "필수 항목입니다",
-      "invalidEmail": "올바른 이메일 형식이 아닙니다"
-    }
+    "viewWork": "포스트 보기",
+    "readMore": "자세히 보기",
+    "profileAlt": "찬호 프로필 사진",
+    "loading": "소개를 불러오는 중"
   },
   "post": {
     "recentPosts": "최근 포스트",
     "noPosts": "포스트가 없습니다. 콘텐츠 저장소를 확인해주세요.",
     "readMore": "더 보기",
-    "loading": "포스트 로딩 중...",
-    "tags": "태그",
-    "filterAll": "전체",
-    "series": {
-      "otherPosts": "이 시리즈의 다른 글"
-    },
-    "searchPlaceholder": "포스트 검색...",
-    "noSearchResults": "검색 결과가 없습니다.",
-    "prev": "이전 포스트",
-    "next": "다음 포스트"
-  },
-  "series": {
-    "empty": "아직 발행된 시리즈가 없습니다."
-  },
-  "markdown": {
-    "loadError": "콘텐츠를 불러오지 못했습니다",
-    "loading": "로딩 중...",
-    "retry": "다시 시도"
+    "loading": "포스트를 불러오는 중",
+    "tableOfContents": "목차"
   },
   "error": {
     "notFound": "페이지를 찾을 수 없습니다",

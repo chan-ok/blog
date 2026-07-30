@@ -1,33 +1,13 @@
 <!doctype html>
-<html>
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- 기본 타이틀: 라우트별 동적 메타태그로 덮어씀 -->
-    <title>chan-ok.com</title>
-
-    <!-- Google Fonts (한국어, 일본어, 영어 세리프) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Cloudflare Turnstile -->
-    <script
-      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-      defer
-    ></script>
+    <title>chanho.kim</title>
   </head>
   <body class="relative isolate antialiased">
     <div id="root"></div>
-    <!-- Buffer polyfill for browser (gray-matter 호환성) -->
-    <script type="module">
-      import { Buffer } from 'buffer';
-      window.Buffer = Buffer;
-      window.global = window;
-    </script>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>
 </html>

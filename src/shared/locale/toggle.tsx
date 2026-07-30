@@ -1,6 +1,7 @@
 import { useRouterState, useRouter } from '@tanstack/react-router';
 import { Menu } from '@base-ui/react';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 import { useLocaleStore } from './store';
 import { LocaleType } from './types';
@@ -16,6 +17,7 @@ const LOCALE_NAMES: Record<LocaleType, string> = {
 };
 
 export default function LocaleToggle() {
+  const { t } = useTranslation();
   const locale = useLocaleStore((state) => state.locale);
   const setLocale = useLocaleStore((state) => state.setLocale);
   const { location } = useRouterState();
@@ -54,7 +56,7 @@ export default function LocaleToggle() {
 
   return (
     <Menu.Root>
-      <Menu.Trigger className={triggerClass} aria-label="Change language" openOnHover>
+      <Menu.Trigger className={triggerClass} aria-label={t('nav.changeLanguage')} openOnHover>
         {LOCALE_LABELS[locale]}
         <ChevronDownIcon />
       </Menu.Trigger>

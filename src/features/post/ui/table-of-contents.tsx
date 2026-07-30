@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Heading {
   id: string;
@@ -13,6 +14,7 @@ interface TableOfContentsProps {
 }
 
 export default function TableOfContents({ headings }: TableOfContentsProps) {
+  const { t } = useTranslation();
   const [activeId, setActiveId] = useState<string>('');
   const [isOpen, setIsOpen] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -76,10 +78,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
   if (!hasHeadings) return null;
 
-  const mobileLabel = 'Contents';
-
   const tocList = (
-    <nav role="navigation" aria-label="Table of contents">
+    <nav role="navigation" aria-label={t('post.tableOfContents')}>
       <ul className="space-y-1">
         {headings.map(({ id, text, level }, index) => {
           const isActive = activeId === id;
@@ -124,7 +124,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
           type="button"
         >
           <span className="text-[11px] tracking-[2px] uppercase font-medium text-ink">
-            {mobileLabel}
+            {t('post.tableOfContents')}
           </span>
           {isOpen ? (
             <ChevronUp size={16} className="text-ink3" aria-hidden="true" />

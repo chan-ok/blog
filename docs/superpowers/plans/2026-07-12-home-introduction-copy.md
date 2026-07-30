@@ -1,5 +1,7 @@
 # Home Introduction Copy Implementation Plan
 
+> **Archive:** This is the implementation record for the 2026-07-12 copy change, not a current work order. Use the current source and [development guide](../../development.md) for active work.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the home page introduction with the user-approved value statement in both supported locales.
