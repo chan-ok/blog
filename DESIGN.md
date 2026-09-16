@@ -1,8 +1,8 @@
-# Chanho.dev DESIGN.md
+# chanho.kim DESIGN.md
 
-version: 2
-name: chanho-dev-neutral-editorial-blog
-description: 무채색 canvas, 잉크 대비, 세리프 중심의 정적 에디토리얼 블로그 디자인 시스템. 색채 장식을 제거하고 현재 블로그의 책 같은 읽기 경험을 더 선명하게 유지한다.
+version: 3
+name: chanho-kim-neutral-editorial-blog
+description: 무채색 canvas, 잉크 대비, sans-first 타이포그래피를 사용하는 정적 에디토리얼 블로그 디자인 시스템. 색채 장식을 줄이고 읽기와 탐색의 흐름을 선명하게 유지한다.
 
 ## 1. Visual Theme & Atmosphere
 
@@ -12,7 +12,7 @@ description: 무채색 canvas, 잉크 대비, 세리프 중심의 정적 에디�
 
 - **Neutral editorial**: 차가운 개발자 대시보드가 아니라 무채색 표면, 잉크, 여백, 조용한 강조를 기반으로 한다.
 - **Static-first**: 과한 애니메이션, 유리 질감, floating card, gradient hero를 사용하지 않는다.
-- **Reading-first**: 포스트 상세, 목록, 태그, 목차는 장식보다 스캔성과 읽기 흐름을 우선한다.
+- **Reading-first**: 포스트 상세, 목록, 목차는 장식보다 스캔성과 읽기 흐름을 우선한다.
 - **Quiet but precise**: 색채는 절제하지만 레이아웃은 정확하고, 컴포넌트 상태는 명확해야 한다.
 
 ### Reference 해석
@@ -21,7 +21,7 @@ description: 무채색 canvas, 잉크 대비, 세리프 중심의 정적 에디�
 
 - CTA, 활성 상태, 링크 hover, 중요한 구분은 `--accent` 계열을 쓰되 모든 값은 무채색으로 유지한다.
 - canvas는 흰색, 회색, 검정 사이의 계조로만 구성한다.
-- serif display는 제목과 본문 중심으로 사용하되, 코드와 UI 보조 정보는 monospace/sans를 허용한다.
+- 제목, 본문, UI는 같은 sans 계열을 사용해 한국어·일본어·영어의 인상을 통일하고, 코드는 monospace로 구분한다.
 - dark mode도 hue가 섞이지 않은 charcoal과 off-white 텍스트로 유지한다.
 
 ## 2. Color Palette & Roles
@@ -69,30 +69,29 @@ Tailwind v4 토큰은 `src/app/globals.css`의 CSS custom properties를 기준�
 
 ## 3. Typography Rules
 
-현재 블로그의 세리프 중심 방향을 유지한다. 다국어 블로그이므로 한국어, 일본어, 영어가 모두 안정적으로 보여야 한다.
+현재 블로그의 sans-first 방향을 유지한다. 한국어, 일본어, 영어가 섞여도 글자 폭과 위계가 안정적으로 이어져야 한다.
 
 ### Font Families
 
-| Role               | Stack                                                                 |
-| ------------------ | --------------------------------------------------------------------- |
-| Serif body/display | `'Noto Serif KR', 'Noto Serif JP', 'Noto Serif', serif`               |
-| UI sans fallback   | `Inter, ui-sans-serif, system-ui, sans-serif`                         |
-| Code               | `JetBrains Mono, 'SFMono-Regular', Consolas, ui-monospace, monospace` |
+| Role            | Stack                                                                      |
+| --------------- | -------------------------------------------------------------------------- |
+| Body/display/UI | `'Noto Sans KR', 'Noto Sans JP', 'Inter', 'Aptos', 'Segoe UI', sans-serif` |
+| Code            | `JetBrains Mono, 'SFMono-Regular', Consolas, ui-monospace, monospace`      |
 
 ### Type Scale
 
-| Token        |   Size | Weight | Line Height | Use                     |
-| ------------ | -----: | -----: | ----------: | ----------------------- |
-| `display-lg` | `40px` |  `700` |      `1.18` | 홈 소개, 큰 페이지 제목 |
-| `display-md` | `32px` |  `700` |      `1.25` | 포스트 상세 제목        |
-| `title-lg`   | `24px` |  `700` |      `1.35` | 섹션 제목               |
-| `title-md`   | `20px` |  `700` |      `1.45` | MDX h2, 카드 제목       |
-| `title-sm`   | `16px` |  `600` |      `1.45` | 목록 제목, h3           |
-| `body`       | `16px` |  `400` |       `2.0` | 포스트 본문             |
-| `body-sm`    | `14px` |  `400` |       `1.7` | 보조 설명               |
-| `caption`    | `11px` |  `500` |       `1.4` | 날짜, 태그, 메타        |
-| `label`      | `10px` |  `600` |       `1.4` | uppercase section label |
-| `code`       | `14px` |  `400` |      `1.65` | inline/pre code         |
+| Token        |                     Size | Weight | Line Height | Use                     |
+| ------------ | -----------------------: | -----: | ----------: | ----------------------- |
+| `display-lg` | `clamp(35px, 4vw, 50px)` |  `600` |      `1.15` | 홈 소개 제목            |
+| `display-md` |                   `32px` |  `700` |      `1.25` | 포스트 상세 제목        |
+| `title-lg`   |                   `24px` |  `700` |      `1.35` | 섹션 제목               |
+| `title-md`   |                   `20px` |  `700` |      `1.45` | Markdown h2, 목록 제목  |
+| `title-sm`   |                   `16px` |  `600` |      `1.45` | 목록 제목, h3           |
+| `body`       |                   `16px` |  `400` |       `2.0` | 포스트 본문             |
+| `body-sm`    |                   `14px` |  `400` |       `1.7` | 보조 설명               |
+| `caption`    |                   `11px` |  `500` |       `1.4` | 날짜, 태그, 메타        |
+| `label`      |                   `10px` |  `600` |       `1.4` | uppercase section label |
+| `code`       |                   `14px` |  `400` |      `1.65` | inline/pre code         |
 
 ### Typography Rules
 
@@ -108,9 +107,9 @@ Tailwind v4 토큰은 `src/app/globals.css`의 CSS custom properties를 기준�
 
 | Area                     |          Max Width |
 | ------------------------ | -----------------: |
-| Masthead/nav inner       |            `960px` |
-| Home editorial intro     |            `680px` |
-| Post list                |            `760px` |
+| Masthead/nav inner       |           `1152px` |
+| Home editorial intro     |           `1152px` |
+| Post list                |           `1152px` |
 | Post reading column      |            `620px` |
 | Code/table overflow area | `min(100%, 760px)` |
 
@@ -130,7 +129,7 @@ Tailwind v4 토큰은 `src/app/globals.css`의 CSS custom properties를 기준�
 
 ### Layout Rules
 
-- 페이지 섹션은 full-width band 또는 단일 column layout으로 둔다.
+- 홈 소개는 반응형 2열, 최근 포스트는 그 아래 단일 column으로 둔다. 다른 페이지 섹션은 full-width band 또는 단일 column을 기본으로 한다.
 - 반복 항목만 card로 취급한다. page section을 floating card처럼 만들지 않는다.
 - 카드 안에 카드를 중첩하지 않는다.
 - mobile에서는 좌우 padding `20px-24px`, desktop에서는 `32px-80px` 범위로 둔다.
@@ -141,18 +140,24 @@ Tailwind v4 토큰은 `src/app/globals.css`의 CSS custom properties를 기준�
 ### Header / Masthead
 
 - 배경은 `--bg`, 텍스트는 `--ink`.
-- 하단 border는 기본보다 강하게 둔다. 예: `2px solid var(--ink)`.
-- 로고는 중앙 정렬, uppercase, 넓은 letter spacing을 유지한다.
-- tagline은 작은 caption으로 유지한다. 색은 `--ink3`.
+- 하단에는 `1px solid var(--rule)`을 사용한다.
+- `chanho.kim` 브랜드 링크는 왼쪽에 lowercase로 두고, nav와 언어 토글을 같은 행에 배치한다.
+- header는 sticky로 유지해 긴 글에서도 탐색 경로를 제공한다.
 - scroll blur, glassmorphism, floating shadow는 사용하지 않는다.
-- 포스트 상세의 immersive reader에서는 header hide/show만 허용한다.
 
 ### Navigation
 
-- nav item은 작은 uppercase label로 구성한다.
+- nav item은 `14px` sans label로 구성한다.
 - active 상태는 `--ink` 배경 + `--bg` 텍스트 또는 neutral `--accent` underline 중 하나만 사용한다.
 - hover는 배경 반전이나 neutral underline처럼 즉시 이해되는 효과를 사용한다.
 - 토글 버튼은 아이콘 중심으로 두고, label을 화면에 길게 노출하지 않는다.
+
+### Home Introduction
+
+- 모바일·태블릿에서는 프로필 이미지를 왼쪽, 소개 문구를 오른쪽에 둔 compact 2열을 사용한다.
+- 프로필 이미지는 정사각 비율과 명시적인 width/height를 유지해 로딩 중 layout shift를 막는다.
+- 데스크탑에서는 소개 문구를 왼쪽, 프로필 이미지를 오른쪽으로 재배치한다.
+- 최근 포스트는 소개 블록 내부에 끼우지 않고, 구분선 아래의 다음 section으로 배치한다.
 
 ### Buttons
 
@@ -181,7 +186,6 @@ Rules:
 
 ### Post Detail
 
-- title 위에는 category/tag label을 작게 배치할 수 있다.
 - title 아래 metadata는 한 줄 또는 두 줄로 정리한다.
 - 본문 시작 전 여백은 충분히 둔다. 최소 `40px`.
 - TOC는 보조 도구다. 본문보다 시각적으로 강하면 안 된다.
@@ -220,19 +224,6 @@ Rules:
 - border는 `--rule`.
 - zebra striping은 쓰지 않거나 매우 약하게 둔다.
 
-### Tags / Badges
-
-- tag chip은 작은 border 또는 `--accent-soft` 배경을 사용한다.
-- radius는 `999px`보다 `6px-8px`를 우선한다. pill은 필터 UI처럼 의미가 있을 때만 사용한다.
-- 태그 색을 여러 hue로 나누지 않는다.
-
-### Forms
-
-- input background는 `--bg`, border는 `--rule`.
-- focused 상태는 `--accent` border/ring.
-- error는 붉은 면보다 명확한 텍스트와 border로 표시한다.
-- Turnstile, 외부 위젯 주변은 여백을 충분히 둔다.
-
 ## 6. Depth & Elevation
 
 이 블로그는 그림자보다 border와 여백으로 깊이를 만든다.
@@ -246,23 +237,25 @@ Rules:
 
 ### Breakpoints
 
-| Range          | Behavior                                                    |
-| -------------- | ----------------------------------------------------------- |
-| `< 640px`      | 단일 column, nav overflow 없이 wrapping 또는 compact layout |
-| `640px-1024px` | 읽기 폭 유지, nav와 목록 간격 확장                          |
-| `> 1024px`     | post detail에서 TOC side rail 허용                          |
+| Range          | Behavior                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------- |
+| `< 640px`      | 홈 소개를 작은 정사각 이미지 왼쪽·문구 오른쪽의 compact 2열로 유지하고, 최근 포스트는 하단에 배치 |
+| `640px-1023px` | 같은 2열 구조에서 이미지와 column 간격을 넓히고, 최근 포스트는 별도 하단 section으로 유지         |
+| `>= 1024px`    | 소개 문구 왼쪽·큰 이미지 오른쪽의 `1.2fr / 0.8fr` 2열로 전환                                      |
+| `>= 1280px`    | post detail에서 TOC side rail 허용                                                                |
 
 ### Mobile Rules
 
 - 터치 타깃은 최소 `40px`, 권장 `44px`.
-- nav item text가 겹치면 item 수를 줄이지 말고 padding/font-size를 조정한다.
+- 주요 nav link는 `768px` 미만에서 숨기고 브랜드 홈 링크와 언어 토글을 유지한다.
+- 홈 프로필 이미지는 `clamp(6rem, 28vw, 12rem)`로 제한해 `width: 100%`로 과도하게 커지지 않게 한다.
+- 홈 이미지와 소개 문구는 모바일·태블릿에서도 같은 행에 두고, 최근 포스트는 소개 section 다음 흐름에 둔다.
 - 제목은 viewport width 기반으로 무작정 키우지 않는다.
 - 긴 단어, URL, code는 overflow-wrap 또는 scroll container로 처리한다.
 
 ## 8. Motion & Interaction
 
 - 기본 transition은 `150ms-220ms ease`.
-- header immersive hide/show는 `300ms ease-in-out`까지 허용한다.
 - hover 효과는 색, underline, border 변화 중심으로 제한한다.
 - scroll reveal, parallax, bouncy spring, background blob animation은 사용하지 않는다.
 - `prefers-reduced-motion`을 존중한다.
@@ -274,7 +267,7 @@ Rules:
 - 무채색 배경과 잉크색 텍스트를 우선한다.
 - neutral accent는 중요한 행동과 현재 위치를 알려줄 때만 쓴다.
 - 포스트 목록은 목차처럼 빠르게 스캔되게 만든다.
-- MDX 본문은 긴 글을 기준으로 읽기 폭과 행간을 검증한다.
+- Markdown 본문은 긴 글을 기준으로 읽기 폭과 행간을 검증한다.
 - 기존 FSD 구조와 Tailwind v4 token 방식을 따른다.
 
 ### Don't
@@ -294,11 +287,11 @@ Rules:
 2. 기존 컴포넌트 구조와 FSD 레이어 규칙을 유지한다.
 3. 새 시각 효과를 추가하기 전에 현재 목적이 읽기 경험인지, 탐색인지, 입력인지 구분한다.
 4. 색상 추가가 필요하면 먼저 무채색 `--accent`, `--accent-strong`, `--accent-soft` 안에서 해결한다.
-5. 구현 후 light/dark, mobile/desktop, 긴 제목, 긴 태그, 긴 코드 블록을 확인한다.
+5. 구현 후 light/dark, mobile/tablet/desktop, 긴 제목, 긴 코드 블록을 확인한다.
 
 ### Ready-to-use Direction
 
-> Build a neutral static editorial developer blog UI. Use achromatic canvas surfaces, dark ink text, grayscale accents, serif-first typography, precise borders, quiet navigation, and reading-first layouts. Avoid chromatic hues, gradients, glassmorphism, floating cards, neon, and marketing-style hero composition.
+> Build a neutral static editorial developer blog UI. Use achromatic canvas surfaces, dark ink text, grayscale accents, sans-first typography, precise borders, quiet navigation, and reading-first layouts. On mobile and tablet, keep the compact profile image and introduction side by side, then place recent posts below. Avoid chromatic hues, gradients, glassmorphism, floating cards, neon, and marketing-style hero composition.
 
 ## 11. Source Notes
 

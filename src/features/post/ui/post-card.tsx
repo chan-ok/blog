@@ -17,19 +17,21 @@ interface PostCardProps extends Frontmatter {
  */
 export default function PostCard({ title, path, createdAt, locale, index }: PostCardProps) {
   const date = createdAt instanceof Date ? createdAt : new Date(createdAt as string);
-  const formattedDate = isValid(date) ? format(date, 'yyyy.MM') : '—';
+  const formattedDate = isValid(date) ? format(date, 'yyyy.MM') : '-';
   const href = `/${locale}/posts/${path.join('/')}`;
   const num = String(index).padStart(2, '0');
 
   return (
-    <li className="flex items-baseline gap-3 py-4 border-b border-rule">
-      <span className="text-[9px] text-ink3 min-w-4.5 shrink-0">{num}</span>
-      <Link href={href} className="flex-1 group">
-        <span className="block text-[16px] font-semibold text-ink leading-[1.45] mb-1 group-hover:underline underline-offset-2">
-          {title}
-        </span>
-      </Link>
-      <span className="text-[10px] text-ink3 shrink-0 tabular-nums">{formattedDate}</span>
+    <li className="py-5">
+      <div className="flex items-start justify-between gap-5">
+        <span className="mt-1.5 min-w-9 shrink-0 text-[11px] text-ink3 tabular-nums">{num}</span>
+        <Link href={href} className="group block min-w-0 flex-1">
+          <span className="text-[16px] leading-[1.45] font-semibold text-ink transition-colors group-hover:text-ink2">
+            {title}
+          </span>
+        </Link>
+        <time className="text-[11px] text-ink3 shrink-0 tabular-nums">{formattedDate}</time>
+      </div>
     </li>
   );
 }

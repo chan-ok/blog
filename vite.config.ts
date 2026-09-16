@@ -35,23 +35,9 @@ export default defineConfig(({ mode }) => {
     resolve: {
       // tsconfig의 paths (@/* 등)를 Vite 8 네이티브 기능으로 해석
       tsconfigPaths: true,
-      alias: {
-        buffer: 'buffer',
-      },
-    },
-    define: {
-      global: 'globalThis',
-    },
-    optimizeDeps: {
-      include: ['buffer'],
     },
     build: {
       rolldownOptions: {
-        // gray-matter 내부의 eval 사용 경고 억제 (외부 라이브러리, 수정 불가)
-        onwarn(warning, warn) {
-          if (warning.code === 'EVAL' && warning.id?.includes('gray-matter')) return;
-          warn(warning);
-        },
         output: {
           codeSplitting: {
             groups: [
@@ -67,20 +53,15 @@ export default defineConfig(({ mode }) => {
                 priority: 25,
               },
 
-              // MDX 파이프라인: 750 kB → 청크 분리
-              {
-                test: /node_modules\/@mdx-js/,
-                name: 'mdx-compiler',
-                priority: 24,
-              },
+              // Markdown 파이프라인
               {
                 test: /node_modules\/(micromark|mdast|unist|vfile|hast)/,
-                name: 'mdx-ast',
+                name: 'markdown-ast',
                 priority: 23,
               },
               {
-                test: /node_modules\/(rehype|remark|gray-matter)/,
-                name: 'mdx-plugins',
+                test: /node_modules\/(rehype|remark)/,
+                name: 'markdown-plugins',
                 priority: 22,
               },
 
@@ -110,11 +91,7 @@ export default defineConfig(({ mode }) => {
                 name: 'utils',
                 priority: 10,
               },
-              {
-                test: /node_modules\/(axios|dompurify|isomorphic-dompurify)/,
-                name: 'vendor',
-                priority: 10,
-              },
+              { test: /node_modules\/dompurify/, name: 'vendor', priority: 10 },
             ],
           },
         },

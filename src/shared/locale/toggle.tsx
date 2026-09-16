@@ -1,6 +1,7 @@
 import { useRouterState, useRouter } from '@tanstack/react-router';
 import { Menu } from '@base-ui/react';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 import { useLocaleStore } from './store';
 import { LocaleType } from './types';
@@ -16,6 +17,7 @@ const LOCALE_NAMES: Record<LocaleType, string> = {
 };
 
 export default function LocaleToggle() {
+  const { t } = useTranslation();
   const locale = useLocaleStore((state) => state.locale);
   const setLocale = useLocaleStore((state) => state.setLocale);
   const { location } = useRouterState();
@@ -29,31 +31,32 @@ export default function LocaleToggle() {
   }
 
   const triggerClass = clsx(
-    'flex items-center gap-1 px-3 py-2.5',
-    'text-[11px] tracking-[1.5px] uppercase text-ink2 cursor-pointer',
-    'hover:bg-ink hover:text-bg transition-colors duration-150',
+    'flex items-center gap-2 px-4 py-2.5',
+    'text-[12px] font-medium tracking-[0.01em] text-ink2 cursor-pointer',
+    'hover:bg-ink hover:text-bg transition-all duration-200',
     'outline-none select-none border-l border-rule'
   );
 
   const popupClass = clsx(
-    'py-1 min-w-[88px]',
+    'py-1.5 min-w-[150px]',
     'bg-bg border border-rule',
+    'z-50 shadow-sm',
     'origin-[var(--transform-origin)]',
-    'transition-[transform,opacity] duration-150',
+    'transition-[transform,opacity] duration-200',
     'data-[starting-style]:opacity-0 data-[starting-style]:scale-95',
     'data-[ending-style]:opacity-0 data-[ending-style]:scale-95'
   );
 
   const itemClass = clsx(
-    'px-4 py-2 cursor-default select-none outline-0',
-    'text-[11px] tracking-[1.5px] uppercase text-ink2',
+    'px-4 py-2.5 cursor-default select-none outline-0',
+    'text-[12px] text-ink2',
     'flex items-center gap-2',
     'data-[highlighted]:bg-ink data-[highlighted]:text-bg'
   );
 
   return (
     <Menu.Root>
-      <Menu.Trigger className={triggerClass} aria-label="Change language" openOnHover>
+      <Menu.Trigger className={triggerClass} aria-label={t('nav.changeLanguage')} openOnHover>
         {LOCALE_LABELS[locale]}
         <ChevronDownIcon />
       </Menu.Trigger>
@@ -61,7 +64,7 @@ export default function LocaleToggle() {
         <Menu.Positioner
           side="bottom"
           align="end"
-          sideOffset={0}
+          sideOffset={6}
           alignOffset={0}
           className="outline-0"
         >

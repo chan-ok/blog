@@ -1,523 +1,139 @@
 # 개발 가이드
 
-## 📋 목차
+## 준비
 
-- [개요](#개요)
-- [대상](#대상)
-- [빠른 시작](#빠른-시작)
-- [개발 규칙](#개발-규칙)
-- [테스팅](#테스팅)
-- [보안](#보안)
-- [Git 워크플로우](#git-워크플로우)
-- [배포](#배포)
-- [문제 해결](#문제-해결)
-- [참고 문서](#참고-문서)
-
-## 개요
-
-이 문서는 프로젝트에 처음 참여하는 개발자 또는 로컬 개발 환경을 설정하려는 개발자를 위한 필수 가이드입니다. 개발 환경 설정부터 배포까지 전체 개발 프로세스를 다룹니다.
-
-## 대상
-
-### ✅ 포함 대상
-
-- 처음 프로젝트를 시작하는 개발자
-- 로컬 개발 환경 설정이 필요한 경우
-- 프로젝트 개발 규칙을 확인하고 싶은 경우
-- 배포 프로세스를 이해하고 싶은 경우
-
-### ❌ 제외 대상
-
-- AI 코딩 에이전트를 위한 상세 규칙 → [agents.md](./agents.md) 참고
-- 프로젝트 구조 상세 이해 → [architecture.md](./architecture.md) 참고
-- 프로젝트 회고 및 의사결정 로그 확인 → [retrospective/overview.md](./retrospective/overview.md) 참고
-
-## 빠른 시작
-
-### 사전 요구사항
-
-| 도구    | 버전      | 확인 명령어     |
-| ------- | --------- | --------------- |
-| Node.js | 22.x 이상 | `node -v`       |
-| pnpm    | 10.x 이상 | `pnpm -v`       |
-| Git     | 최신      | `git --version` |
-
-#### pnpm 설치
-
-```bash
-# npm으로 설치
-npm install -g pnpm
-
-# 또는 Homebrew (macOS)
-brew install pnpm
-```
-
-### 설치 및 실행
-
-#### 1. 리포지터리 클론
+지원 환경은 Node.js 24 LTS와 pnpm 11.18.0입니다. `.nvmrc`, `engines`, `packageManager`가 로컬과 배포 환경의 도구 버전을 고정합니다.
 
 ```bash
 git clone https://github.com/chan-ok/blog.git
 cd blog
-```
-
-#### 2. 의존성 설치
-
-```bash
 pnpm install
-pnpm test:prepare  # Storybook/Vitest 브라우저 테스트용 Playwright 설치
 ```
 
-#### 3. 환경 변수 설정
+`pnpm install`은 `prepare` script를 통해 프로젝트의 Husky 훅도 설정합니다. CI에서는 lockfile 변경을 막기 위해 `pnpm install --frozen-lockfile`을 사용하세요.
 
-`.env.local` 파일을 생성하고 필요한 환경 변수를 설정합니다:
+## 환경 변수
 
-```bash
-# .env.local
+프로젝트 루트의 `.env.local`에 콘텐츠 기준 URL을 설정합니다.
 
-# 콘텐츠 리포지터리 (필수)
+```dotenv
 VITE_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
-
-# Cloudflare Turnstile (Contact 폼용)
-VITE_TURNSTILE_SITE_KEY=your_site_key
-TURNSTILE_SECRET_KEY=your_secret_key
-
-# Resend (이메일 발송용)
-RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
 ```
 
-> ⚠️ `.env.local`은 절대 Git에 커밋하지 마세요!
+일반 로컬 개발에는 이 값만 필요합니다.
 
-#### 4. 개발 서버 시작
+`VITE_*` 변수는 클라이언트에 공개될 수 있습니다. 토큰, 비밀번호, 비공개 API 키를 넣거나 커밋하지 마세요.
+
+## 실행
 
 ```bash
-# Vite 개발 서버 실행 (기본, localhost:5173)
 pnpm dev
-
-# Netlify Functions와 함께 실행 (Contact 폼 테스트 시, localhost:8888)
-pnpm dev:server
 ```
 
-- Vite: http://localhost:5173
-- Netlify Dev: http://localhost:8888
-
-#### 5. 로컬 전용 포스트 (test / draft)
-
-포스트 frontmatter의 tags에 `test` 또는 `draft`가 있으면, 로컬(`pnpm dev`)에서는 목록과 태그 필터에 노출되고, 프로덕션 빌드에서는 목록·태그 메뉴에서 제외됩니다. 상세는 docs/architecture.md 태그 기능 섹션 참고.
-
-## 개발 규칙
-
-### 핵심 원칙 5가지
-
-#### 1. 재사용성
-
-새 코드를 작성하기 전에 항상 기존 코드를 확인합니다:
-
-- 이미 존재하는 유틸리티 함수, 컴포넌트가 있는지 확인
-- 프로젝트에 설치된 라이브러리로 해결 가능한지 확인
-- 가능하다면 기존 코드를 수정하여 사용
-
-#### 2. FSD 아키텍처
-
-Feature-Sliced Design 레이어 간 의존성 규칙 엄격히 준수:
-
-```
-pages → widgets → features → entities → shared
-```
-
-- **역방향 import 금지** (예: 5-shared → 2-features)
-- **features/ 간 import 금지** (예: 2-features/post → 2-features/contact)
-
-자세한 내용은 [architecture.md](./architecture.md)를 참고하세요.
-
-#### 3. TDD (Test-Driven Development)
-
-새로운 코드 작성 시 TDD 사이클 따르기:
-
-1. **Red**: 요구사항을 확인하는 테스트 코드 먼저 작성
-2. **Green**: 테스트를 통과하는 최소한의 코드 작성
-3. **Refactor**: 코드 리팩토링 후 테스트 재실행
-
-#### 4. 코드 품질
-
-커밋 전 반드시 다음을 실행:
+기본 주소는 `http://localhost:5173`입니다.
 
 ```bash
-pnpm fmt              # oxfmt 포맷팅
-pnpm lint             # oxlint 검사
-pnpm tsc --noEmit     # TypeScript 타입 체크
+pnpm build
+pnpm preview
 ```
 
-Husky pre-commit 훅이 자동으로 다음 4단계를 실행합니다:
+`preview`는 먼저 생성한 `dist`를 확인할 때 사용합니다.
 
-1. 민감 정보 스캔(Pre-Commit 스크립트, `.env`/비밀키 차단)
-2. `tsc --noEmit` (타입 체크)
-3. lint-staged (린트/포맷)
-4. `vitest related --run` (관련 테스트)
+## 개발 흐름
 
-#### 5. 보안
+1. 실제 소스와 기존 테스트를 먼저 확인합니다.
+2. 동작 변경은 실패하는 Vitest 또는 Playwright 테스트로 요구사항을 고정합니다.
+3. 최소 구현 후 관련 테스트를 통과시킵니다.
+4. `typecheck`, `lint:error`, `test:once`, `build`를 실행합니다.
+5. `git diff`와 문서·설정 변경을 검토합니다.
 
-- 환경 변수에 민감한 정보 하드코딩 금지
-- 서버 환경 변수를 클라이언트에 노출 금지
-- 사용자 입력은 Zod로 검증
-- `dangerouslySetInnerHTML` 사용 최소화
+테스트 파일은 프로젝트 안에 둡니다.
 
-### 코드 스타일
+- 단위·통합 테스트: 대상 소스 옆 `src/**/*.test.ts(x)`
+- 브라우저 테스트: `tests/browser/**/*.test.ts`
 
-상세 내용은 [agents.md](./agents.md)를 참고하세요.
+테스트 assertion은 Vitest의 `expect`를 사용합니다. 브라우저 상호작용과 viewport 검증은 Playwright의 `test`, `expect`로 작성합니다.
 
-**간단 요약**:
+## 테스트
 
-- **컴포넌트 구조**: 타입 → 훅 → 파생값 → 핸들러 → 이펙트 → 렌더
-- **명명 규칙**: PascalCase (컴포넌트), camelCase (함수/변수), kebab-case (파일)
-
-## 테스팅
-
-### 테스트 전략
-
-#### 1. 유닛 테스트 (Vitest)
-
-- **대상**: 컴포넌트 로직, 유틸 함수, 커스텀 훅
-- **커버리지 목표**: 80%+
+### Vitest
 
 ```bash
-pnpm test             # Watch 모드
-pnpm test run         # 1회 실행 (Vitest CLI 옵션)
-pnpm coverage         # 커버리지 리포트
-
-# 단일 파일 테스트
-pnpm test button.test.tsx
-
-# 이름 필터
-pnpm test -t "클릭 시 onClick 호출"
+pnpm test
+pnpm test:once
+pnpm test:once src/features/post/util/post-visibility.test.ts
+pnpm test:once -t "production"
 ```
 
-#### 2. Storybook 테스트
+현재 Vitest 프로젝트는 `src/**/*.{test,spec}.*`를 Node 환경에서 실행합니다.
 
-- **대상**: 컴포넌트 UI, 인터랙션
-- **실행**: `pnpm storybook`
+### Playwright
 
-#### 3. E2E 테스트 (Playwright)
-
-- **대상**: 핵심 사용자 플로우
-- **실행**: `pnpm e2e` 또는 `pnpm e2e:ui` (둘 다 `playwright test` 실행)
-
-### TDD 실전 예제
-
-```typescript
-// 1. 실패하는 테스트 작성
-describe('Button', () => {
-  it('클릭 시 onClick 호출', () => {
-    const handleClick = vi.fn();
-    render(<Button onClick={handleClick}>클릭</Button>);
-
-    fireEvent.click(screen.getByRole('button'));
-    expect(handleClick).toHaveBeenCalledOnce();
-  });
-});
-
-// 2. 최소 코드로 통과
-export function Button({ onClick, children }: Props) {
-  return <button onClick={onClick}>{children}</button>;
-}
-
-// 3. 리팩토링
-export function Button({ onClick, children, variant = 'primary' }: Props) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn('btn', `btn-${variant}`)}
-    >
-      {children}
-    </button>
-  );
-}
-```
-
-### Property-based 테스트
-
-다양한 입력 조합을 자동으로 테스트:
-
-```typescript
-import fc from 'fast-check';
-
-const variantArb = fc.constantFrom<ButtonVariant>('primary', 'default', 'danger', 'link');
-
-it('모든 variant에서 다크 모드 클래스 포함', () => {
-  fc.assert(
-    fc.property(variantArb, (variant) => {
-      const { unmount } = render(<Button variant={variant}>Test</Button>);
-      const button = screen.getByRole('button');
-      expect(button.className).toMatch(/dark:/);
-      unmount(); // 각 반복 후 DOM 정리 필수
-    }),
-    { numRuns: 20 }
-  );
-});
-```
-
-## 보안
-
-### 환경 변수 관리
-
-#### 클라이언트 vs 서버
-
-| 접두사        | 노출 범위         | 용도                            |
-| ------------- | ----------------- | ------------------------------- |
-| `VITE_*`      | 클라이언트 + 서버 | 공개 가능한 설정 (사이트 키 등) |
-| (접두사 없음) | 서버만            | 민감한 정보 (Secret 키 등)      |
-
-#### 예제
-
-```typescript
-// ✅ Good - Netlify Functions에서 서버 환경 변수
-const secretKey = process.env.TURNSTILE_SECRET_KEY;
-
-// ✅ Good - 클라이언트에서 VITE_ 변수
-const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
-
-// ❌ Bad - 하드코딩
-const apiKey = 're_xxxxxxxxxxxxxxxxxxxx';
-```
-
-#### 주의사항
-
-- ⚠️ `.env.local` 파일은 Git에 커밋 금지
-- ⚠️ 서버 환경 변수(`TURNSTILE_SECRET_KEY` 등)를 클라이언트에 노출 금지
-- ⚠️ 클라이언트 환경 변수는 반드시 `VITE_` 접두사 사용
-
-### 입력 검증
-
-모든 사용자 입력은 Zod로 검증:
-
-```typescript
-import { z } from 'zod';
-import { sanitizeInput } from '@/5-shared/util/sanitize';
-
-// Zod 스키마 + transform으로 sanitize
-// src/2-features/contact/model/contact-form.schema.ts
-export const ContactFormInputsSchema = z.object({
-  from: z.email('Invalid email'),
-  message: z.string().min(1, 'Message is required').transform(sanitizeInput),
-});
-
-// 사용
-const result = ContactFormInputsSchema.safeParse(formData);
-if (!result.success) {
-  throw new Error('유효하지 않은 입력');
-}
-```
-
-### 봇 방지
-
-Contact 폼에 Cloudflare Turnstile 적용:
-
-- **획득**: [Cloudflare Dashboard](https://dash.cloudflare.com/)에서 Turnstile 생성
-- **환경 변수**: `VITE_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
-- **서버 측 검증**: Netlify Functions에서 토큰 검증
-
-### XSS 방지
-
-- React 기본 이스케이프 신뢰
-- `dangerouslySetInnerHTML` 금지 (MDX 제외)
-- 사용자 입력 sanitize (`isomorphic-dompurify`)
-
-## Git 워크플로우
-
-### 커밋 메시지
-
-```
-type(scope): 한국어 제목
-
-- 한국어 본문
-- 변경 사항 설명
-```
-
-#### Type
-
-| Type       | 설명             | 예시                                  |
-| ---------- | ---------------- | ------------------------------------- |
-| `feat`     | 새 기능          | `feat(post): 태그 필터링 추가`        |
-| `fix`      | 버그 수정        | `fix(contact): 이메일 검증 오류 수정` |
-| `refactor` | 리팩토링         | `refactor(header): 네비게이션 분리`   |
-| `test`     | 테스트 추가/수정 | `test(button): 클릭 테스트 추가`      |
-| `docs`     | 문서 수정        | `docs(readme): 설치 가이드 업데이트`  |
-| `style`    | 코드 스타일      | `style: oxfmt 포맷팅 적용`            |
-| `chore`    | 빌드/설정 변경   | `chore(deps): React 19.2.3 업데이트`  |
-
-#### 예시
+최초 실행 환경에 Chromium이 없다면 한 번 설치합니다.
 
 ```bash
-# ✅ Good
-feat(button): 다크 모드 스타일 추가
-
-- primary variant 색상 적용
-- focus-visible 링 개선
-
-# ❌ Bad
-update code  # type 없음, 설명 부족
+pnpm exec playwright install chromium
 ```
 
-### 브랜치 전략
-
-```
-main ← develop ← feature/[name]-[timestamp]
-```
-
-- **feature 브랜치** → develop으로 PR
-- **develop 브랜치** → main으로 PR
-- feature에서 main으로 직접 PR 금지
-
-### 워크플로우
+반응형 홈 테스트는 별도 package script를 두지 않고 현재 설정 파일로 실행합니다.
 
 ```bash
-# 1. develop에서 feature 브랜치 생성
-git checkout develop
-git pull origin develop
-git checkout -b feature/dark-mode-20260415-120000
-
-# 2. 개발 및 커밋
-git add .
-git commit -m "feat(theme): 다크 모드 토글 추가"
-
-# 3. 푸시 및 PR 생성 (develop 대상)
-git push origin feature/dark-mode-20260415-120000
-# GitHub에서 develop으로 PR 생성
-
-# 4. 머지 후 정리
-git checkout develop
-git pull origin develop
-git branch -d feature/dark-mode-20260415-120000
+pnpm exec playwright test --config playwright.config.ts
 ```
 
-### Pre-commit Hook
+Playwright가 `127.0.0.1:4173`에서 개발 서버를 시작하고 `tests/browser`를 실행합니다.
 
-커밋 시 자동으로 4단계 검사가 실행됩니다:
+## 코드 품질
 
 ```bash
-# .husky/pre-commit
-# 1. 보안 스캔(민감 정보 탐지)
-# 2. tsc --noEmit: 타입 체크
-# 3. lint-staged: 린트/포맷
-# 4. vitest related --run: 관련 테스트
+pnpm typecheck
+pnpm lint
+pnpm lint:error
+pnpm lint:fix
+pnpm fmt
 ```
+
+- `typecheck`: TypeScript native preview(`tsgo`)로 emit 없이 검사
+- `lint`: `src` 전체 oxlint 결과 출력
+- `lint:error`: error만 출력하며 pre-push에서 사용
+- `lint:fix`: 가능한 lint 문제 자동 수정
+- `fmt`: `src`를 oxfmt로 수정
+
+명령어 전체 목록은 [commands.md](./commands.md)를 참고하세요.
+
+## Git 훅
+
+현재 훅은 다음 작업만 수행합니다.
+
+### pre-commit
+
+1. `lint-staged`: staged JS·TS 파일에 oxfmt와 oxlint fix
+2. `git diff --cached --check`: 공백 오류 검사
+
+### pre-push
+
+1. `pnpm typecheck`
+2. `pnpm lint:error`
+3. `pnpm test:once`
+4. `pnpm audit --audit-level=low`
+5. `pnpm build`
+
+pre-commit에는 비밀정보 스캐너가 없습니다. 커밋 전 `.env*`, 토큰, 개인 정보를 직접 확인해야 합니다.
 
 ## 배포
 
-### Netlify 자동 배포
-
-- **트리거**: `main` 브랜치 push 시 자동 배포
-- **빌드 명령어**: `pnpm build`
-- **출력 디렉토리**: `dist`
-
-### 환경 변수 설정
-
-Netlify Dashboard에서 설정:
-
-1. Site settings → Environment variables
-2. Add a variable
-3. 다음 변수 설정:
-   - `RESEND_API_KEY`
-   - `VITE_TURNSTILE_SITE_KEY`
-   - `TURNSTILE_SECRET_KEY`
-   - `VITE_GIT_RAW_URL`
-
-### 배포 전 체크리스트
-
-- [ ] 로컬에서 테스트 완료 (`pnpm dev`)
-- [ ] 빌드 성공 확인 (`pnpm build`)
-- [ ] Lint 통과 (`pnpm lint`)
-- [ ] 포맷팅 적용 (`pnpm fmt`)
-- [ ] 테스트 통과 (`pnpm test run`)
+Netlify 설정은 `pnpm build`를 실행하고 `dist`를 게시합니다. 모든 경로는 SPA 진입점인 `/index.html`로 fallback됩니다. 배포 전에 로컬에서 pre-push와 같은 검증을 통과시키세요.
 
 ## 문제 해결
 
-### 빌드 에러
+- 포스트가 비어 있으면 `.env.local`의 `VITE_GIT_RAW_URL`과 원격 `index.json`을 확인합니다.
+- 브라우저 테스트가 실행되지 않으면 `pnpm exec playwright install chromium` 후 다시 시도합니다.
+- 의존성 상태가 의심되면 먼저 `pnpm install --frozen-lockfile`로 lockfile과 설치 결과를 맞춥니다.
+- 다른 프로세스가 개발 포트를 사용 중이면 해당 프로세스를 확인하거나 Vite의 `--port` 옵션으로 다른 포트를 지정합니다.
 
-**증상**: `pnpm build` 실패
+## 관련 문서
 
-**해결**:
-
-```bash
-# 1. TypeScript 에러 확인
-pnpm tsc --noEmit
-
-# 2. oxlint 에러 확인
-pnpm lint
-
-# 3. 의존성 재설치
-rm -rf node_modules
-pnpm install
-
-# 4. 캐시 삭제
-rm -rf dist .cache
-pnpm install
-pnpm build
-```
-
-### 환경 변수 문제
-
-**증상**: Contact 폼이 작동하지 않음
-
-**해결**:
-
-1. `.env.local` 파일 존재 확인
-2. 환경 변수 값 확인
-3. 개발 서버 재시작 필요
-4. `pnpm dev:server`로 Netlify Functions 실행
-
-### 타입 에러
-
-**증상**: TypeScript 에러 발생
-
-**해결**:
-
-```bash
-# TypeScript 서버 재시작
-# VSCode: Cmd+Shift+P → "TypeScript: Restart TS Server"
-
-# 또는 타입 체크
-pnpm tsc --noEmit
-```
-
-### 포트 충돌
-
-**증상**: 개발 서버가 시작되지 않음
-
-**해결**:
-
-```bash
-# 포트 사용 중인 프로세스 확인
-lsof -i :5173
-
-# 프로세스 종료
-kill -9 <PID>
-```
-
-### Contact 폼 Turnstile 에러
-
-**증상**: Turnstile 위젯이 표시되지 않음
-
-**해결**:
-
-1. `VITE_TURNSTILE_SITE_KEY` 환경 변수 확인
-2. 브라우저 콘솔에서 에러 메시지 확인
-3. Cloudflare Dashboard에서 사이트 키 확인
-4. 로컬에서는 `localhost` 도메인 허용 확인
-
-### 콘텐츠 로딩 실패
-
-**증상**: 포스트가 표시되지 않음
-
-**해결**:
-
-1. `VITE_GIT_RAW_URL` 환경 변수 확인
-2. `blog-content` 리포지터리 public 설정 확인
-3. `index.json` 파일 존재 확인
-4. 브라우저 Network 탭에서 요청 확인
-
-## 참고 문서
-
-- [agents.md](./agents.md) - AI 코딩 에이전트 가이드
-- [architecture.md](./architecture.md) - 프로젝트 구조 및 아키텍처
-- [retrospective/overview.md](./retrospective/overview.md) - 프로젝트 회고 및 의사결정 로그
+- [아키텍처](./architecture.md)
+- [보안](./security.md)
+- [코드 스타일](./code-style.md)
+- [Git 흐름](./git-flow.md)

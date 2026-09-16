@@ -1,5 +1,7 @@
 # 블로그 최소화 재구성 Implementation Plan
 
+> **아카이브:** 2026-06-20 재구성 작업의 실행 계획입니다. 이미 끝난 작업의 기록이므로 현재 명령·경로·테스트 기준은 [개발 가이드](../../development.md)를 따릅니다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 >
 > **검증 방식 주의:** 이 프로젝트는 테스트 파일이 0개이고 테스트 인프라(testing-library/jsdom)를 제거한다. 따라서 TDD를 적용하지 않으며, 각 변경의 검증은 **`npm run tsc` → `npm run lint` → `npm run build` → 로컬 동작 확인**으로 한다.

@@ -64,15 +64,15 @@ type(scope): 한국어 제목
 | Type       | 설명             | 예시                                  |
 | ---------- | ---------------- | ------------------------------------- |
 | `feat`     | 새 기능          | `feat(post): 태그 필터링 추가`        |
-| `fix`      | 버그 수정        | `fix(contact): 이메일 검증 오류 수정` |
-| `refactor` | 리팩토링         | `refactor(header): 네비게이션 분리`   |
-| `test`     | 테스트 추가/수정 | `test(button): 클릭 테스트 추가`      |
+| `fix`      | 버그 수정        | `fix(about): 반응형 이미지 크기 수정` |
+| `refactor` | 리팩토링         | `refactor(markdown): 파서 경계 분리`  |
+| `test`     | 테스트 추가/수정 | `test(post): 경로 검증 추가`          |
 | `docs`     | 문서 수정        | `docs(readme): 설치 가이드 업데이트`  |
-| `style`    | 코드 스타일      | `style: Prettier 포맷팅 적용`         |
-| `chore`    | 빌드/설정 변경   | `chore(deps): React 19.2.3 업데이트`  |
+| `style`    | 코드 스타일      | `style: oxfmt 포맷팅 적용`            |
+| `chore`    | 빌드/설정 변경   | `chore(deps): 의존성 업데이트`        |
 
 ### Scope 예시
 
-- 기능/컴포넌트: `button`, `post`, `contact`, `header`
+- 기능/컴포넌트: `about`, `markdown`, `post`, `header`
 - 의존성: `deps`
-- 설정: `config`, `vitest`, `storybook`
+- 설정: `config`, `vitest`, `playwright`

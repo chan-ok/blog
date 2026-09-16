@@ -1,8 +1,11 @@
-import { api } from '@/shared/api';
 import { compareDesc } from 'date-fns';
 
-import { Frontmatter as PostInfo } from '@/entities/markdown/model/model.schema';
+import { PostIndexSchema } from '@/entities/markdown/model/model.schema';
+import { buildMarkdownUrl } from '@/entities/markdown/util/markdown-path';
+import { fetchTextWithLimit, MAX_REMOTE_CONTENT_BYTES } from '@/shared/util/fetch-limited';
 import { GetPostsProps, PagingPosts } from '../model/post.schema';
+import { resolveContentUrl } from '@/shared/util/content-url';
+import { isPostVisible } from './post-visibility';
 
 export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   const { locale, page = 0, size = 10 } = props;
@@ -21,12 +24,10 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
   }
 
   try {
-    // axios 사용 (get-markdown.ts와 일관성 유지)
-    const response = await api.get<PostInfo[]>(`/${locale}/index.json`, {
-      baseURL, // baseURL을 옵션으로 전달 (axios가 자동으로 조합)
-    });
+    const indexUrl = buildMarkdownUrl(`${locale}/index.json`, baseURL);
+    const response = await fetchTextWithLimit(indexUrl, MAX_REMOTE_CONTENT_BYTES);
 
-    if (response.axios.status !== 200) {
+    if (response.status !== 200) {
       console.error('Failed to fetch posts');
       return {
         posts: [],
@@ -36,21 +37,23 @@ export async function getPosts(props: GetPostsProps): Promise<PagingPosts> {
       };
     }
 
-    if (!response.data) {
+    if (!response.text) {
       throw new Error('Failed to fetch posts: empty response');
     }
 
-    let filteredPosts = response.data
+    const posts = PostIndexSchema.parse(JSON.parse(response.text));
+    const filteredPosts = posts
       .map((post) => ({
         ...post,
-        // 상대 경로인 thumbnail을 절대 URL로 변환
-        thumbnail:
-          post.thumbnail && !post.thumbnail.startsWith('http')
-            ? `${baseURL}/${post.thumbnail}`
-            : post.thumbnail,
+        thumbnail: post.thumbnail ? resolveContentUrl(post.thumbnail, baseURL) : undefined,
       }))
       .toSorted((a, b) => compareDesc(a.createdAt, b.createdAt))
-      .filter((post) => post.published);
+      .filter((post) =>
+        isPostVisible(post, {
+          isProduction: import.meta.env.PROD,
+          surface: 'list',
+        })
+      );
 
     const startIndex = page * size;
     const endIndex = Math.min(startIndex + size, filteredPosts.length);

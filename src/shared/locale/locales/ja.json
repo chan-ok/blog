@@ -1,51 +1,26 @@
 {
   "nav": {
+    "home": "ホーム",
     "about": "紹介",
     "posts": "記事",
-    "contact": "お問い合わせ"
+    "primaryLabel": "メインナビゲーション",
+    "changeLanguage": "言語を変更"
   },
   "about": {
     "label": "紹介",
-    "greeting": "こんにちは！👋",
-    "introduction": "ユーザー体験に注力するフロントエンド開発者です。\n直感的なコードと明確な構造を目指しています。",
-    "emailLabel": "メールを送る",
-    "githubLabel": "GitHubプロフィールを見る"
-  },
-  "contact": {
-    "from": "送信者",
-    "fromPlaceholder": "メールアドレスを入力してください...",
-    "message": "内容",
-    "placeholder": "メッセージを入力してください...",
-    "checkRobot": "ロボット確認",
-    "sending": "送信中...",
-    "submit": "送信",
-    "errors": {
-      "required": "必須項目です",
-      "invalidEmail": "メールアドレスの形式が正しくありません"
-    }
+    "greeting": "こんにちは。",
+    "introduction": "安易な正解よりも長く向き合い続ける問いを、もっともらしさよりも人に深く届く価値を選びます。",
+    "viewWork": "記事を見る",
+    "readMore": "もっと見る",
+    "profileAlt": "チャンホのプロフィール写真",
+    "loading": "紹介を読み込み中"
   },
   "post": {
     "recentPosts": "最近の投稿",
     "noPosts": "投稿が見つかりません。コンテンツリポジトリを確認してください。",
     "readMore": "続きを読む",
-    "loading": "投稿を読み込み中...",
-    "tags": "タグ",
-    "filterAll": "すべて",
-    "series": {
-      "otherPosts": "このシリーズの他の記事"
-    },
-    "searchPlaceholder": "記事を検索...",
-    "noSearchResults": "検索結果がありません。",
-    "prev": "前の記事",
-    "next": "次の記事"
-  },
-  "series": {
-    "empty": "まだシリーズが公開されていません。"
-  },
-  "markdown": {
-    "loadError": "コンテンツの読み込みに失敗しました",
-    "loading": "読み込み中...",
-    "retry": "再試行"
+    "loading": "記事を読み込み中",
+    "tableOfContents": "目次"
   },
   "error": {
     "notFound": "ページが見つかりません",

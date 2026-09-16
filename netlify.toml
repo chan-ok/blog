@@ -11,3 +11,15 @@ publish = "dist"
 from = "/*"
 to = "/index.html"
 status = 200
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+Content-Security-Policy = "default-src 'self'; base-uri 'self'; connect-src 'self' https://raw.githubusercontent.com; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: https://raw.githubusercontent.com https://skillicons.dev; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests"
+Cross-Origin-Opener-Policy = "same-origin"
+Permissions-Policy = "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Strict-Transport-Security = "max-age=31536000"
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "DENY"
