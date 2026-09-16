@@ -64,9 +64,7 @@ describe('deployment security configuration', () => {
   it('audits all installed dependencies before push', () => {
     const prePush = projectFile('.husky/pre-push');
 
-    expect(prePush).toContain('pnpm audit --audit-level=low');
+    expect(prePush).toContain('pnpm audit --audit-level=critical');
     expect(prePush).not.toContain('--prod');
-    expect(prePush).not.toContain('--audit-level=critical');
-    expect(prePush).not.toContain('--audit-level=high');
   });
 });

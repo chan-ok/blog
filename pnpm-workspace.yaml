@@ -74,7 +74,7 @@ minimumReleaseAgeExclude:
   - '@typescript/native-preview-win32-x64@7.0.0-dev.20260618.1'
   - '@typescript/native-preview@7.0.0-dev.20260618.1'
   - '@vitest/expect@4.1.9'
-  - '@vitest/mocker@4.1.9'
+  - '@vitest/mocker@4.1.9 || 4.1.11'
   - '@vitest/pretty-format@4.1.9'
   - '@vitest/runner@4.1.9'
   - '@vitest/snapshot@4.1.9'
@@ -85,17 +85,32 @@ minimumReleaseAgeExclude:
   - oxlint@1.70.0
   - playwright-core@1.61.0
   - playwright@1.61.0
-  - vitest@4.1.9
-  - undici@7.28.0
+  - vitest@4.1.9 || 4.1.11
+  - undici@7.28.0 || 7.29.0
+  - mermaid@11.16.1
+  - dompurify@3.4.13
+  - nanoid@3.3.18
+  - browserslist@4.28.7
+  - baseline-browser-mapping@2.11.0
 onlyBuiltDependencies:
   - esbuild
 
 overrides:
+  '@vitest/mocker@>=2.1.0 <4.1.11': ^4.1.11
+  baseline-browser-mapping@>=2.0.0 <2.11.0: ^2.11.0
+  browserslist@<=4.28.6: ^4.28.7
   diff@>=4.0.0 <4.0.4: '>=4.0.4'
   dompurify@<=3.4.11: ^3.4.12
+  dompurify@<=3.4.12: ^3.4.13
+  mermaid@>=11.0.0-alpha.1 <11.16.1: ^11.16.1
+  mermaid@>=11.5.0 <11.16.1: ^11.16.1
+  mermaid@>=11.6.0 <11.16.1: ^11.16.1
+  nanoid@<3.3.18: ^3.3.18
   postcss@<=8.5.17: ^8.5.18
   undici@>=7.0.0 <7.28.0: ^7.28.0
+  undici@>=7.0.0 <7.29.0: ^7.29.0
   undici@>=7.23.0 <7.28.0: ^7.28.0
   uuid@<11.1.1: ^11.1.1
   uuid@>=13.0.0 <13.0.1: ^13.0.1
+  vitest@>=2.1.0 <4.1.11: ^4.1.11
   ws@>=8.0.0 <8.20.1: ^8.20.1
