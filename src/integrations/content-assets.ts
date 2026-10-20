@@ -1,7 +1,10 @@
 import type { AstroIntegration } from 'astro';
 import { mkdir, readdir, copyFile, rm, readFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
-export const assetStagingDir = resolve(process.cwd(), 'node_modules/.cache/blog-content-assets');
+export const assetStagingDir = resolve(
+  process.env.BLOG_CACHE_DIR || resolve(process.cwd(), 'node_modules/.cache'),
+  'blog-content-assets'
+);
 export default function contentAssets(): AstroIntegration {
   return {
     name: 'blog-content-assets',

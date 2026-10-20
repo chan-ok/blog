@@ -91,7 +91,7 @@ export function sanitizeMermaidSvg(renderedSvg: string): string {
 }
 
 let sequence = 0;
-export async function mountMermaid(root: HTMLElement): Promise<() => void> {
+export async function mountMermaid(root: HTMLElement, signal?: AbortSignal): Promise<() => void> {
   let cancelled = false;
   const nodes = Array.from(root.querySelectorAll<HTMLElement>('[data-mermaid]'));
   if (!nodes.length)
@@ -99,14 +99,16 @@ export async function mountMermaid(root: HTMLElement): Promise<() => void> {
       cancelled = true;
     };
   const mermaid = (await import('mermaid')).default;
+  if (signal?.aborted) return () => {};
   mermaid.initialize(MERMAID_CONFIG);
   for (const node of nodes) {
-    if (cancelled || !node.isConnected) break;
+    if (cancelled || signal?.aborted || !node.isConnected) break;
     try {
       const { svg } = await mermaid.render(`blog-mermaid-${++sequence}`, node.textContent || '');
-      if (!cancelled && node.isConnected) node.innerHTML = sanitizeMermaidSvg(svg);
+      if (!cancelled && !signal?.aborted && node.isConnected)
+        node.innerHTML = sanitizeMermaidSvg(svg);
     } catch {
-      node.dataset.mermaidError = 'true';
+      if (!cancelled && !signal?.aborted && node.isConnected) node.dataset.mermaidError = 'true';
     }
   }
   return () => {

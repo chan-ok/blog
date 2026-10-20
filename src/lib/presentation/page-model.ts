@@ -77,14 +77,12 @@ export async function buildPageModel(
       locale: context.locale,
       tags: [],
     },
-    posts: visible
-      .slice(0, page.kind === 'home' ? 4 : 10)
-      .map((post) => ({
-        title: post.metadata.title,
-        href: pageHref(context, { kind: 'post', slug: post.slug }),
-        dateLabel: dateLabel(post.metadata.createdAt),
-        summary: post.metadata.summary,
-      })),
+    posts: visible.slice(0, page.kind === 'home' ? 4 : 10).map((post) => ({
+      title: post.metadata.title,
+      href: pageHref(context, { kind: 'post', slug: post.slug }),
+      dateLabel: dateLabel(post.metadata.createdAt),
+      summary: post.metadata.summary,
+    })),
   };
   if (page.kind === 'post') {
     const post = entries.find(
@@ -104,7 +102,9 @@ export async function buildPageModel(
         post.metadata.summary || post.metadata.tags.join(', ') || messages.about.introduction,
       publishedTime: post.metadata.createdAt,
       tags: post.metadata.tags,
-      image: post.metadata.thumbnail ? await assets.resolve(post.metadata.thumbnail) : undefined,
+      image: post.metadata.thumbnail
+        ? await assets.resolve(post.metadata.thumbnail)
+        : model.article.image,
     };
   } else if (page.kind === 'about') {
     model.article = await renderMarkdown(await getAbout(context.locale), {

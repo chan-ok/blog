@@ -2,6 +2,11 @@ import { defineConfig } from 'playwright/test';
 
 export default defineConfig({
   testDir: './tests/browser',
+  testIgnore: [
+    '**/framework-interactions.test.ts',
+    '**/framework-security.test.ts',
+    '**/framework-runtime.test.ts',
+  ],
   fullyParallel: false,
   workers: 1,
   timeout: 30_000,

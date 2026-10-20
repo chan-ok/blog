@@ -4,7 +4,7 @@ import type { PageModel } from '../lib/presentation/page-model';
 interface Props { model: PageModel }
 const { model } = Astro.props;
 const { meta, context } = model;
-const image = meta.image ? new URL(meta.image, 'https://chan-ok.com').href : 'https://chan-ok.com/og-default.png';
+const image = new URL(meta.image || '/image/git-profile.png', 'https://chan-ok.com').href;
 ---
 <!doctype html>
 <html lang={context.locale}>

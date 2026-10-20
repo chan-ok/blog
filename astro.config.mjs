@@ -8,7 +8,9 @@ import { createSharedMarkdownOptions, createSatteriOptions } from './src/lib/mar
 import contentAssets from './src/integrations/content-assets';
 export default defineConfig({
   site: 'https://chan-ok.com', output: 'static', compressHTML: 'jsx',
+  ...(process.env.BLOG_CACHE_DIR ? { cacheDir: process.env.BLOG_CACHE_DIR } : {}),
+  ...(process.env.BLOG_OUT_DIR ? { outDir: process.env.BLOG_OUT_DIR } : {}),
   integrations: [react(), vue(), svelte(), contentAssets()],
   markdown: { ...createSharedMarkdownOptions(), processor: satteri(createSatteriOptions()) },
-  vite: { plugins: [tailwindcss()] },
+  vite: { plugins: [tailwindcss()], ...(process.env.BLOG_CACHE_DIR ? { cacheDir: `${process.env.BLOG_CACHE_DIR}/vite` } : {}) },
 });

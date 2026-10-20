@@ -1,22 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import type { PageModel } from '../../lib/presentation/page-model';
 import { pageHref } from '../../lib/presentation/routes';
 import { mountMermaid } from '../../lib/browser/mermaid';
+import type { SanitizedHtml } from '../../lib/markdown/sanitize';
+
+// Keep browser-owned diagram/image DOM intact when React updates TOC or copy state.
+const MarkdownBody = memo(function MarkdownBody({ html }: { html?: SanitizedHtml }) {
+  return <div className="mdx-content" dangerouslySetInnerHTML={{ __html: html || '' }} />;
+});
 
 export default function BlogPage({ model }: { model: PageModel }) {
   const { messages: t, context, page } = model;
   const root = useRef<HTMLDivElement>(null);
   const image = useRef<HTMLImageElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   const [notice, setNotice] = useState('');
   const [active, setActive] = useState('');
   const [tocOpen, setTocOpen] = useState(false);
   useEffect(() => {
-    if (image.current?.complete) setImageLoaded(true);
+    if (image.current?.complete) {
+      setImageLoaded(true);
+      setImageFailed(image.current.naturalWidth === 0);
+    }
+    const element = root.current;
+    function failedImage(event: Event | { target: EventTarget | null }) {
+      const target = event.target;
+      if (!(target instanceof HTMLImageElement) || !target.closest('.mdx-content') || target.hidden)
+        return;
+      target.hidden = true;
+      const fallback = document.createElement('span');
+      fallback.className = 'image-error';
+      fallback.setAttribute('role', 'img');
+      fallback.setAttribute('aria-label', target.alt || t.ui.imageError);
+      fallback.textContent = t.ui.imageError;
+      target.after(fallback);
+    }
+    element?.addEventListener('error', failedImage, true);
+    element?.querySelectorAll<HTMLImageElement>('.mdx-content img').forEach((img) => {
+      if (img.complete && !img.naturalWidth) failedImage({ target: img });
+    });
     let disposed = false;
+    const diagramAbort = new AbortController();
     let cleanup = () => {};
     if (root.current)
-      void mountMermaid(root.current).then((stop) => {
+      void mountMermaid(root.current, diagramAbort.signal).then((stop) => {
         if (disposed) stop();
         else cleanup = stop;
       });
@@ -31,11 +59,13 @@ export default function BlogPage({ model }: { model: PageModel }) {
       ?.querySelectorAll('.mdx-content h1[id], .mdx-content h2[id], .mdx-content h3[id]')
       .forEach((heading) => observer.observe(heading));
     return () => {
+      element?.removeEventListener('error', failedImage, true);
       disposed = true;
+      diagramAbort.abort();
       cleanup();
       observer.disconnect();
     };
-  }, [model]);
+  }, [model, t.ui.imageError]);
   async function copy(event: React.MouseEvent) {
     const button = (event.target as HTMLElement).closest('[data-copy]');
     if (!button) return;
@@ -159,7 +189,13 @@ export default function BlogPage({ model }: { model: PageModel }) {
                       aria-hidden="true"
                     />
                   )}
+                  {imageFailed && (
+                    <span className="image-error" role="img" aria-label={t.about.profileAlt}>
+                      {t.ui.imageError}
+                    </span>
+                  )}
                   <img
+                    hidden={imageFailed}
                     ref={image}
                     src="/image/git-profile.png"
                     alt={t.about.profileAlt}
@@ -167,7 +203,10 @@ export default function BlogPage({ model }: { model: PageModel }) {
                     height="591"
                     className="relative h-full w-full rounded-lg object-cover"
                     onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageLoaded(true)}
+                    onError={() => {
+                      setImageLoaded(true);
+                      setImageFailed(true);
+                    }}
                   />
                 </div>
               </div>
@@ -212,10 +251,7 @@ export default function BlogPage({ model }: { model: PageModel }) {
                 </ol>
               </nav>
             )}
-            <div
-              className="mdx-content"
-              dangerouslySetInnerHTML={{ __html: model.article?.html || '' }}
-            />
+            <MarkdownBody html={model.article?.html} />
             <p role="status" aria-live="polite" className="copy-status">
               {notice}
             </p>

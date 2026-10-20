@@ -1,7 +1,4 @@
-import {
-  hardenMermaidSvg,
-  sanitizeMermaidSvg,
-} from '../../../src/entities/markdown/ui/mermaid-diagram';
+import { hardenMermaidSvg, sanitizeMermaidSvg } from '../../../src/lib/browser/mermaid';
 
 Object.assign(globalThis, {
   __mermaidSecurity: {

@@ -225,3 +225,4 @@ html {
 .copy-status { min-height:1.5rem; color:var(--ink3); font-size:12px; }
 [data-mermaid] { overflow-x:auto; }
 @media(min-width:1280px) { .toc { position:fixed; top:11rem; left:calc(50% + 21rem); width:11rem; max-height:65vh; overflow:auto; } .toc ol { display:block; } .toc button { cursor:default; } }
+.image-error { display:inline-flex; align-items:center; justify-content:center; max-width:100%; padding:1rem; border:1px dashed var(--rule); border-radius:.5rem; font-size:12px; color:var(--ink3); background:var(--bg2); }

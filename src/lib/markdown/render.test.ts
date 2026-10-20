@@ -22,6 +22,15 @@ describe('Sätteri 공통 렌더링', () => {
     expect(result.html).toContain('앞');
     expect(result.html).toContain('뒤');
     expect(result.html).not.toMatch(/<img\b[^>]*__astro_image_/iu);
+    expect(result.image).toBe('/content-assets/verified-image.png');
+  });
+  it('현재 언어로 코드 복사 버튼을 생성한다', async () => {
+    const result = await renderMarkdown('```ts\nconst x = 1;\n```', options);
+    expect(result.html).toContain('aria-label="코드 복사"');
+  });
+  it('raw HTML 이미지를 허용된 Markdown 이미지 경로로 우회시키지 않는다', async () => {
+    const result = await renderMarkdown('<img src="https://attacker.example/pixel">', options);
+    expect(result.html).not.toContain('<img');
   });
   it('Mermaid와 callout을 지원하고 외부 코드를 실행하지 않는다', async () => {
     const result = await renderMarkdown(

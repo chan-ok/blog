@@ -6,7 +6,7 @@ import { readVaultPosts, resolveVaultDirectory } from '../src/lib/content/vault'
 import { isVisible } from '../src/lib/content/visibility';
 import { validateHtml } from './html-validation';
 
-const dist = resolve('dist');
+const dist = resolve(process.env.BLOG_OUT_DIR || 'dist');
 async function files(directory: string): Promise<string[]> {
   return (
     await Promise.all(

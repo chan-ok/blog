@@ -1,4 +1,4 @@
-import { defineHastPlugin, type HastNode } from 'satteri';
+import { defineHastPlugin, defineMdastPlugin, type HastNode } from 'satteri';
 import type {
   SatteriMarkdownProcessorOptions,
   SatteriProcessorOptions,
@@ -14,7 +14,7 @@ export function createSharedMarkdownOptions(): Pick<
     shikiConfig: { theme: 'github-dark' },
   };
 }
-function presentationPlugin() {
+function presentationPlugin(copyLabel: string) {
   return defineHastPlugin({
     name: 'blog-presentation',
     element: {
@@ -24,20 +24,22 @@ function presentationPlugin() {
           const text = ctx.textContent(node);
           const match = /^\s*\[!(INFO|WARNING|DANGER|SUCCESS)\]\s*/u.exec(text);
           if (match) {
-            const children = structuredClone(node.children || []);
-            const first = children.find(
+            const first = node.children?.find(
               (child) => child.type === 'element' && child.tagName === 'p'
             );
             if (first?.type === 'element') {
               const child = first.children?.[0];
               if (child?.type === 'text')
-                child.value = child.value.replace(/^\[!(INFO|WARNING|DANGER|SUCCESS)\]\s*/u, '');
+                ctx.replaceNode(child, {
+                  type: 'text',
+                  value: child.value.replace(/^\[!(INFO|WARNING|DANGER|SUCCESS)\]\s*/u, ''),
+                });
             }
-            ctx.replaceNode(node, {
+            ctx.wrapNode(node, {
               type: 'element',
               tagName: 'aside',
               properties: { role: 'note', className: ['callout', match[1].toLowerCase()] },
-              children,
+              children: [],
             });
           }
         }
@@ -50,17 +52,16 @@ function presentationPlugin() {
             ctx.setProperty(node, 'data-mermaid', 'true');
             return;
           }
-          ctx.replaceNode(node, {
+          ctx.wrapNode(node, {
             type: 'element',
             tagName: 'div',
             properties: { className: ['code-block'] },
             children: [
-              node,
               {
                 type: 'element',
                 tagName: 'button',
-                properties: { type: 'button', 'data-copy': 'true', 'aria-label': 'Copy code' },
-                children: [{ type: 'text', value: 'Copy' }],
+                properties: { type: 'button', 'data-copy': 'true', 'aria-label': copyLabel },
+                children: [{ type: 'text', value: copyLabel }],
               },
             ],
           });
@@ -70,11 +71,21 @@ function presentationPlugin() {
   });
 }
 export function createSatteriOptions(
-  imageUrls?: ReadonlyMap<string, string>
+  imageUrls?: ReadonlyMap<string, string>,
+  copyLabel = 'Copy code'
 ): SatteriProcessorOptions {
   return {
     features: { gfm: true, smartPunctuation: false },
-    mdastPlugins: [obsidianPlugin(), ...(imageUrls ? [imageUrlPlugin(imageUrls)] : [])],
-    hastPlugins: [presentationPlugin()],
+    mdastPlugins: [
+      defineMdastPlugin({
+        name: 'no-raw-html',
+        html(node, ctx) {
+          ctx.removeNode(node);
+        },
+      }),
+      obsidianPlugin(),
+      ...(imageUrls ? [imageUrlPlugin(imageUrls)] : []),
+    ],
+    hastPlugins: [presentationPlugin(copyLabel)],
   };
 }

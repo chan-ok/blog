@@ -3,6 +3,7 @@ import { createSatteriOptions, createSharedMarkdownOptions } from './processor';
 import { prepareImageUrls } from './images';
 import { sanitizeMarkdownHtml, type SanitizedHtml } from './sanitize';
 import type { RouteContext } from '../presentation/types';
+import { getMessages } from '../i18n/messages';
 export interface Heading {
   id: string;
   text: string;
@@ -11,6 +12,7 @@ export interface Heading {
 export interface CompiledMarkdown {
   html: SanitizedHtml;
   headings: Heading[];
+  image?: string;
 }
 export interface MarkdownOptions {
   context: RouteContext;
@@ -23,7 +25,7 @@ export async function renderMarkdown(
   const images = await prepareImageUrls(body, options.resolveImage);
   const processor = await createSatteriMarkdownProcessor({
     ...createSharedMarkdownOptions(),
-    ...createSatteriOptions(images),
+    ...createSatteriOptions(images, getMessages(options.context.locale).ui.copy),
   });
   const result = await processor.render(body);
   let html = result.code;
@@ -36,6 +38,7 @@ export async function renderMarkdown(
     }
   );
   return {
+    image: images.values().next().value,
     html: sanitizeMarkdownHtml(html),
     headings: result.metadata.headings.map((heading) => ({
       id: heading.slug,

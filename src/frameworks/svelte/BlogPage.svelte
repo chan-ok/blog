@@ -7,20 +7,37 @@
   let { model }: { model: PageModel } = $props();
   const t = $derived(model.messages);
   const headings = $derived(model.article?.headings.filter((heading) => heading.level <= 3) || []);
-  let root: HTMLDivElement;
+  let root = $state<HTMLDivElement>();
   let image = $state<HTMLImageElement>();
   let imageLoaded = $state(false);
+  let imageFailed = $state(false);
   let notice = $state('');
   let active = $state('');
   let tocOpen = $state(false);
+
+  function failedImage(event: Event | { target: EventTarget | null }) {
+    const target = event.target;
+    if (!(target instanceof HTMLImageElement) || !target.closest('.mdx-content') || target.hidden) return;
+    target.hidden = true;
+    const fallback = document.createElement('span');
+    fallback.className = 'image-error'; fallback.setAttribute('role', 'img');
+    fallback.setAttribute('aria-label', target.alt || t.ui.imageError);
+    fallback.textContent = t.ui.imageError; target.after(fallback);
+  }
+
   onMount(() => {
-    if (image?.complete) imageLoaded = true;
+    const element = root;
+    if (!element) return;
+    element.addEventListener('error', failedImage, true);
+    element.querySelectorAll<HTMLImageElement>('.mdx-content img').forEach((img) => { if (img.complete && !img.naturalWidth) failedImage({ target: img }); });
+    if (image?.complete) { imageLoaded = true; imageFailed = !image.naturalWidth; }
     let disposed = false;
+    const diagramAbort = new AbortController();
     let cleanup = () => {};
-    void mountMermaid(root).then((stop) => { if (disposed) stop(); else cleanup = stop; });
+    void mountMermaid(element, diagramAbort.signal).then((stop) => { if (disposed) stop(); else cleanup = stop; });
     const observer = new IntersectionObserver((entries) => { const first = entries.find((entry) => entry.isIntersecting); if (first) active = first.target.id; }, { rootMargin: '0px 0px -65% 0px' });
-    root.querySelectorAll('.mdx-content h1[id], .mdx-content h2[id], .mdx-content h3[id]').forEach((heading) => observer.observe(heading));
-    return () => { disposed = true; cleanup(); observer.disconnect(); };
+    element.querySelectorAll('.mdx-content h1[id], .mdx-content h2[id], .mdx-content h3[id]').forEach((heading) => observer.observe(heading));
+    return () => { element.removeEventListener('error', failedImage, true); disposed = true; diagramAbort.abort(); cleanup(); observer.disconnect(); };
   });
   async function copy(event: MouseEvent) {
     if (!(event.target instanceof Element) || !root?.contains(event.target)) return;
@@ -43,7 +60,7 @@
       <section class="pb-10 pt-12 md:pb-14 lg:pb-18"><p class="text-[11px] tracking-[0.2em] uppercase text-ink3">{t.about.label}</p>
         <div class="mt-6 grid grid-cols-[auto_minmax(0,1fr)] items-start gap-4 sm:gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-8">
           <div class="order-2 min-w-0 space-y-6 lg:order-1"><h1 class="text-[clamp(2.2rem,4vw,3.1rem)] font-semibold leading-[1.15]">{t.about.greeting}</h1><p class="max-w-[62ch] text-[17px] leading-[1.9] text-ink2 whitespace-pre-line">{t.about.introduction}</p><div class="flex flex-wrap gap-3"><a class="inline-flex h-10 items-center px-4 text-sm bg-ink text-bg" href={pageHref(model.context, { kind: 'posts' })}>{t.about.viewWork}</a><a class="inline-flex h-10 items-center px-4 text-sm border border-rule" href={pageHref(model.context, { kind: 'about' })}>{t.about.readMore}</a></div></div>
-          <div class="relative order-1 aspect-square w-[clamp(6rem,28vw,12rem)] overflow-hidden rounded-xl border border-rule bg-bg2 p-1 lg:order-2 lg:w-full">{#if !imageLoaded}<div class="absolute inset-1 rounded-lg bg-bg2 animate-pulse" aria-hidden="true"></div>{/if}<img bind:this={image} src="/image/git-profile.png" alt={t.about.profileAlt} width="591" height="591" class="relative h-full w-full rounded-lg object-cover" onload={() => imageLoaded = true} onerror={() => imageLoaded = true} /></div>
+          <div class="relative order-1 aspect-square w-[clamp(6rem,28vw,12rem)] overflow-hidden rounded-xl border border-rule bg-bg2 p-1 lg:order-2 lg:w-full">{#if !imageLoaded}<div class="absolute inset-1 rounded-lg bg-bg2 animate-pulse" aria-hidden="true"></div>{/if}{#if imageFailed}<span class="image-error" role="img" aria-label={t.about.profileAlt}>{t.ui.imageError}</span>{/if}<img hidden={imageFailed} bind:this={image} src="/image/git-profile.png" alt={t.about.profileAlt} width="591" height="591" class="relative h-full w-full rounded-lg object-cover" onload={() => imageLoaded = true} onerror={() => { imageLoaded = true; imageFailed = true; }} /></div>
         </div>
       </section>
     {/if}
