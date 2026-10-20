@@ -1,7 +1,7 @@
 # Astro 기반 React·Vue·Svelte 블로그 전환 설계
 
 - 작성일: 2026-10-20
-- 상태: 전체 화면의 React·Vue·Svelte 구현 범위 확정, 변경된 문서 검토 대기
+- 상태: 사용자 승인 완료(2026-10-20), 구현 계획 작성
 - 대상: `chan-ok/blog`, 별도 콘텐츠 저장소 `chan-ok/blog-content`
 
 ## 목적과 합의된 제약
