@@ -1,7 +1,7 @@
-# Astro 전환 설계
+# Astro 기반 React·Vue·Svelte 블로그 전환 설계
 
 - 작성일: 2026-10-20
-- 상태: 배포 연동을 제외한 설계 범위 확정, 구현 계획 전 문서 검토 대기
+- 상태: 전체 화면의 React·Vue·Svelte 구현 범위 확정, 변경된 문서 검토 대기
 - 대상: `chan-ok/blog`, 별도 콘텐츠 저장소 `chan-ok/blog-content`
 
 ## 목적과 합의된 제약
@@ -9,6 +9,11 @@
 전환의 주목적은 Markdown 콘텐츠 작성·관리 개선이다. 사용자는 별도
 `blog-content` 저장소와 Obsidian 작성 방식을 유지하며, 최종적으로 콘텐츠 push가
 Netlify 재빌드·배포로 이어지는 흐름을 원한다.
+
+추가 요구사항은 Astro를 공통 기반으로 같은 블로그 전체를 React, Vue, Svelte로
+각각 구현하고 URL로 구현체를 선택하는 것이다. 홈·글 목록·글 상세·소개 전체가
+대상이며, 각 구현체의 헤더·푸터·언어 선택과 상호작용도 포함한다. 한 페이지에
+세 구현체를 동시에 나란히 표시하는 기능은 이번 범위에 포함하지 않는다.
 
 사용자의 추가 지시에 따라 **배포 연동은 가장 마지막에 설정**한다.
 Netlify Build Hook, GitHub Actions의 비밀값과 서비스 설정은 사용자가 나중에
@@ -22,6 +27,8 @@ Netlify Build Hook, GitHub Actions의 비밀값과 서비스 설정은 사용자
 ### 1단계: Astro 전환과 로컬 검증
 
 - `blog`를 Astro 정적 사이트로 전환한다.
+- 동일한 콘텐츠·디자인·기능을 가진 React·Vue·Svelte 전체 화면을 각각 구현한다.
+- URL이 선택한 프레임워크로 화면을 서버 렌더링하고 필요한 클라이언트 런타임을 로딩한다.
 - 개발과 로컬 프로덕션 빌드는 이미 체크아웃된 콘텐츠 디렉터리를 입력으로 받는다.
 - Obsidian에서 글·메타데이터·이미지를 수정한 뒤 push 없이 미리본다.
 - Astro에서 Markdown 수집, 메타데이터 검증, 목록·목차·상세 페이지 생성을 수행한다.
@@ -43,9 +50,20 @@ Netlify Build Hook, GitHub Actions의 비밀값과 서비스 설정은 사용자
 
 ## 애플리케이션 구조
 
-Astro 파일 기반 라우팅과 정적 HTML 생성을 사용한다. Node.js 24와 pnpm 11.18.0을
-유지하며, Astro 안정 버전과 도구 호환성은 구현 시 공식 문서와 실제 설치로 확인한다.
-전체 의존성을 무관하게 업그레이드하지 않는다.
+Astro 파일 기반 라우팅과 정적 HTML 생성을 사용하고 공식 React·Vue·Svelte
+통합을 설치한다. Node.js 24와 pnpm 11.18.0을 유지하며, Astro와 각 통합의 안정
+버전·peer 의존성 호환성은 구현 시 공식 문서와 실제 설치로 확인한다.
+React는 유지하고 Vue·Svelte를 추가한다. 전체 의존성을 무관하게 업그레이드하지 않는다.
+
+### 구현 방식
+
+화면 전체를 각 프레임워크의 페이지 컴포넌트로 구현하는 방식을 채택한다. Astro는
+라우트·HTML 문서 head·콘텐츠 로딩·페이지 props 구성을 담당한다. 각 페이지의
+헤더, 푸터, 홈, 목록, 상세, 소개와 상호작용은 선택한 프레임워크가 담당한다.
+
+대안으로 Astro 화면에 일부 프레임워크 위젯만 배치하면 중복은 줄지만 전체 화면을
+각각 구현한다는 목적에 맞지 않는다. 세 개의 독립 SPA를 구성하면 콘텐츠 처리와
+라우팅·배포도 중복되므로 채택하지 않는다.
 
 ```text
 src/
@@ -58,26 +76,69 @@ src/
       posts/
         index.astro
         [...slug].astro
+    [framework]/
+      [locale]/
+        index.astro
+        about.astro
+        posts/
+          index.astro
+          [...slug].astro
   layouts/
-    BaseLayout.astro
+    DocumentLayout.astro
   components/
-    Header.astro
-    Footer.astro
-    PostCard.astro
-    TableOfContents.astro
+    FrameworkPage.astro
+  frameworks/
+    react/         # .tsx 페이지·레이아웃·표시 컴포넌트·상호작용
+    vue/           # .vue 페이지·레이아웃·표시 컴포넌트·상호작용
+    svelte/        # .svelte 페이지·레이아웃·표시 컴포넌트·상호작용
   content.config.ts
   lib/
     content/       # 외부 디렉터리 수집, 스키마, 경로·공개 정책, 이미지 처리
     markdown/      # 비실행 Markdown 변환과 확장 문법
     i18n/          # ko/ja 사전과 URL 생성
-  scripts/         # 목차, 코드 복사, Mermaid 등 브라우저 상호작용
-  styles/
+    presentation/  # 공통 페이지 데이터 계약, 경로 생성, 메타데이터
+    browser/       # Clipboard, Mermaid 정화 등 프레임워크 독립 로직
+  styles/          # 세 구현체가 공유하는 디자인 토큰과 스타일
 ```
 
-React·TanStack Router 중심의 진입점, 상태 관리, locale provider와 React Compiler를
-Astro 템플릿, URL 기반 locale, 작은 브라우저 스크립트로 대체한다. 기존 CSS와
-번역 문구 및 검증 가능한 순수 유틸은 재사용한다. 원래 기능에 대응하는 대체 검증을
-확보한 뒤 기존 컴포넌트·테스트·의존성을 정리한다.
+TanStack Router 중심의 진입점과 locale provider를 Astro 라우트와 URL 기반 locale로
+대체한다. 각 프레임워크 내부에 별도 SPA 라우터를 추가하지 않고 일반 링크로
+페이지를 이동한다. React Compiler와 전역 상태 라이브러리는 실제 사용처를
+확인하고 필요하지 않으면 제거한다.
+
+같은 데이터를 각 구현체에서 임의로 재해석하지 않도록 직렬화 가능한 공통 페이지
+모델을 정의한다. locale, 활성 메뉴, 내비게이션 링크, 목록, 글 메타데이터, 정화된
+본문 HTML, 목차와 번역 문자열을 공통 계층에서 만든다. UI 컴포넌트·이벤트·상태와
+수명 주기는 React hooks, Vue Composition API, Svelte의 반응성으로 각각 구현한다.
+서로 다른 프레임워크의 UI 컴포넌트를 감싸서 같은 구현으로 취급하지 않는다.
+
+Markdown 변환·정화, URL 생성, 날짜 표시 규칙, 공개 정책, 번역 사전과 CSS는
+공유한다. 기존 React UI는 재사용 가능한 부분을 이관하며, Vue·Svelte 구현도
+동일한 화면·접근성 계약을 따른다. 각 구현체의 루트를 정적 HTML로 렌더링한 뒤
+hydrate하므로 JavaScript 없이도 본문과 링크를 읽을 수 있다. 선택하지 않은
+프레임워크의 클라이언트 런타임을 함께 로딩하지 않는지 빌드·브라우저에서 검증한다.
+기존 테스트를 정리할 때는 먼저 대응하는 대체 검증을 확보한다.
+
+### 프레임워크 선택 URL
+
+| 화면 | React | Vue | Svelte |
+| --- | --- | --- | --- |
+| 홈 | `/react/ko/` | `/vue/ko/` | `/svelte/ko/` |
+| 글 목록 | `/react/ko/posts/` | `/vue/ko/posts/` | `/svelte/ko/posts/` |
+| 글 상세 | `/react/ko/posts/<slug>/` | `/vue/ko/posts/<slug>/` | `/svelte/ko/posts/<slug>/` |
+| 소개 | `/react/ko/about/` | `/vue/ko/about/` | `/svelte/ko/about/` |
+
+`ja`에도 같은 경로 구성을 적용한다. UI 내 이동은 선택한 프레임워크와 locale을
+유지한다. 언어를 바꿔도 프레임워크는 유지한다. 세 프레임워크로 바꾸는 링크를
+헤더에 제공해 동일한 locale·화면·글 경로로 이동할 수 있게 한다. 변경 링크는
+JavaScript가 없어도 동작하는 실제 URL이며 프레임워크 선택을 전역 저장소에 숨기지 않는다.
+
+기존 `/ko`, `/ja`, `about`, `posts`와 상세 URL은 React 기본 화면으로 계속 제공한다.
+기존 링크를 외부 배포 redirect 설정에 의존하지 않고 Astro 정적 페이지로 보존한다.
+기존 경로에서 내부 탐색할 때도 prefix 없는 경로를 유지하고, 명시적 프레임워크
+선택 때만 prefix 경로로 전환한다. 세 구현체의 같은 콘텐츠는 기존 prefix 없는
+URL을 canonical로 사용하며, 현재 구현체의 주소는 실제 내비게이션 URL에 반영한다.
+지원하지 않는 framework 값은 404로 처리한다. 성능 비교 대시보드나 측정 기능은 추가하지 않는다.
 
 ## 콘텐츠 수집과 작성 흐름
 
@@ -118,7 +179,7 @@ Obsidian에서 같은 정보를 중복 입력하지 않는다. 썸네일 명시�
 
 GFM 표·목록, 제목 앵커, 코드 하이라이트, 코드 복사, Obsidian 이미지와 callout,
 Mermaid, 반응형 목차를 유지한다. 제목 앵커와 목차는 같은 렌더링 결과에서 생성한다.
-언어 변경은 일반 링크로 제공하고, 기존 locale 전환 경로 규칙을 유지한다.
+언어·프레임워크 변경은 일반 링크로 제공하고, 해당 URL 축만 변경하는 공통 규칙을 사용한다.
 
 글과 About의 초기 HTML에 본문·제목·canonical·OG 메타데이터가 포함되게 한다.
 About은 기존 `chan-ok/chan-ok`의 로케일 README를 빌드/개발 서버에서 읽는 방식을
@@ -131,7 +192,15 @@ About은 기존 `chan-ok/chan-ok`의 로케일 README를 빌드/개발 서버에
 허용된 외부 HTTPS 이미지는 기존 정책을 유지한다.
 
 Mermaid는 필요한 페이지에서만 로딩하고 strict 설정 및 SVG 정화를 보존한다.
+목차의 활성 항목과 펼침 상태, 코드 복사의 완료 상태 및 Mermaid의 초기화·정리는
+각 프레임워크에서 구현하며 DOM 조작·중복 초기화가 서로 충돌하지 않게 한다.
 외부 코드나 raw HTML을 신뢰하는 방식으로 렌더러를 단순화하지 않는다.
+
+본문 HTML은 공통 빌드 파이프라인이 Markdown AST를 변환하고 좁은 허용 목록으로
+정화한 결과만 전달한다. React의 HTML 삽입, Vue의 `v-html`, Svelte의 `{@html}`에
+원문 Markdown이나 미검증 외부 HTML을 넣지 않는다. 세 삽입 지점은 동일한 정화
+계약을 따르고 악성 링크·HTML·스크립트 회귀 테스트를 통과해야 한다. 각 프레임워크의
+hydration 뒤에도 렌더링 결과와 안전성이 유지되는지 확인한다.
 
 ## 오류와 보안 경계
 
@@ -146,15 +215,19 @@ Mermaid는 필요한 페이지에서만 로딩하고 strict 설정 및 SVG 정�
 
 ## 1단계 검증과 완료 기준
 
-1. Astro 파일을 포함하는 타입 검사, 관련 린트, 단위 테스트와 정적 빌드가 통과한다.
-2. 실제 `blog-content`를 읽어 한국어·일본어 홈·목록과 공개 글 HTML을 생성한다.
+1. Astro·React·Vue·Svelte 각각을 포함하는 타입 검사, 관련 린트, 단위 테스트와
+   통합 정적 빌드가 통과한다. `.vue`·`.svelte`를 검사 대상에서 누락하지 않는다.
+2. 실제 `blog-content`를 읽어 세 프레임워크 × 두 locale의 홈·목록·소개와 공개 글
+   HTML을 생성한다. 기존 prefix 없는 React 경로도 검증한다.
 3. 대표 글의 기존 URL, 한글·공백·중첩 폴더 및 중복 slug 처리를 검증한다.
 4. 운영 산출물에서 미발행·test·draft 글의 경로와 본문이 제외됨을 확인한다.
 5. 개발에서 초안 직접 접근과 외부 디렉터리의 파일 추가·수정·삭제 및 이미지 갱신을 확인한다.
    실제 작성 파일을 훼손하지 않는 임시 콘텐츠 fixture도 사용한다.
 6. Obsidian 이미지, callout, 표, 코드, Mermaid와 목차를 대표 콘텐츠로 검증한다.
 7. 초기 HTML의 본문·메타데이터와 JavaScript 없이 읽을 수 있는 기본 탐색을 확인한다.
-8. 반응형 화면, locale 링크, 코드 복사, 목차와 Mermaid의 회귀 테스트를 실행한다.
+8. 세 프레임워크에 공통으로 적용하는 브라우저 테스트로 반응형 화면, locale·framework
+   링크, 코드 복사, 목차와 Mermaid를 확인한다. 같은 입력의 콘텐츠·주요 화면이
+   일치하고 hydration 오류와 불필요한 다른 프레임워크 런타임 요청이 없는지 검증한다.
    환경 문제로 막힌 검증은 통과와 구별해 보고한다.
 9. 실제 개발·타입 검사·빌드 명령 및 콘텐츠 경로 설정을 문서화한다.
 10. `blog-content`의 기존 운영 자동화와 외부 배포 설정이 유지되었음을 확인한다.
