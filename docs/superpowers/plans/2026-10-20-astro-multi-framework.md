@@ -19,6 +19,7 @@
 - `BLOG_CONTENT_DIR`을 우선하고 기본값은 프로젝트 옆 `../blog-content`다. 서버 전용 설정이며 브라우저에 로컬 경로를 노출하지 않는다.
 - `.md`·`.mdx`는 모두 비실행 Markdown으로 처리한다. Obsidian 작성 파일을 일괄 변경하거나 새 필수 frontmatter 필드를 요구하지 않는다.
 - Markdown engine은 Astro 7 기본 Sätteri다. 기존 remark/rehype 플러그인의 직접 호환을 가정하지 않고 Sätteri mdast/hast 플러그인으로 이식한다. Sätteri 출력에도 최종 HTML 정화를 적용한다.
+- Astro와 독립 렌더러의 설정은 API별로 조립한다. 공통 feature는 `gfm: true`, `smartPunctuation: false`, Shiki 제외 언어는 `['math', 'mermaid']`다. Astro 템플릿은 `compressHTML: 'jsx'`와 Rust 컴파일러 기준으로 검증한다.
 - 운영은 `published: true`이고 `test`, `draft` 태그가 없는 글만 생성한다. 개발 목록은 `published: true`, 개발 상세는 초안을 허용한다.
 - 본문 2 MiB, frontmatter 64 KiB, YAML alias 최대 20과 mapping·중복 key 제한을 보존한다. 파일 기반 처리에서는 byte 길이도 확인한다.
 - 문서·주석·커밋 메시지는 한국어를 사용한다. 사용자 대면 문구는 ko/ja 사전으로 관리한다.
@@ -32,7 +33,7 @@
 - 한글·공백·밑줄·동일 제목·중첩 폴더 및 percent encoding: 기존 URL은 유지하고 충돌·traversal은 진단해야 한다. Task 1·2·7에서 검증한다.
 - 번역 글이 없는 상태의 locale/framework 전환: framework와 글 경로를 유지하고 없는 번역은 404여야 한다. Task 1·7에서 검증한다.
 - 외부 디렉터리의 파일 삭제·같은 이미지 경로의 내용 교체: stale entry·초안 HTML·오래된 이미지가 남지 않아야 한다. Task 2·4·7에서 검증한다.
-- Markdown에 섞인 스크립트·이벤트 속성·MDX 표현식 및 서버 경로: 세 HTML 삽입 지점과 hydration에서도 실행·유출되지 않아야 한다. Task 3·4·7에서 검증한다.
+- Markdown에 섞인 스크립트·이벤트 속성·MDX 표현식·서버 경로·내부 이미지 마커: 최종 HTML과 hydration에서도 실행·유출되지 않아야 한다. Task 3·4·7에서 검증한다.
 
 ## 파일과 책임
 
@@ -40,7 +41,7 @@
 | --- | --- | --- |
 | URL·공통 타입 | `src/lib/presentation/{types,routes}.ts` | framework·locale·페이지 구분, 링크·canonical 계약 |
 | 작성 파일 | `src/lib/content/{types,vault,metadata,visibility}.ts` | 안전한 루트와 파일 탐색, 메타데이터·공개 정책 |
-| Markdown | `src/lib/markdown/{processor,render,sanitize,obsidian}.ts` | Sätteri 공통 설정, 비실행 본문·목차·callout·이미지·코드 변환 |
+| Markdown | `src/lib/markdown/{processor,render,sanitize,obsidian,images}.ts` | API별 Sätteri 설정 조립, 비실행 본문·목차·callout·이미지·코드 변환 |
 | 이미지 | `src/lib/content/assets.ts`, `src/integrations/content-assets.ts` | 참조 이미지 검증·개발 제공·정적 출력 |
 | 컬렉션 | `src/content.config.ts`, `src/lib/content/loader.ts` | Astro Content Layer와 외부 vault 변경 감시 |
 | 화면 데이터 | `src/lib/presentation/{page-model,about}.ts` | 공통 직렬화 props, 정렬·표시·메타데이터 |
@@ -125,12 +126,13 @@ expect(isVisible({ ...published, published: false }, false, 'list')).toBe(false)
 
 ## Task 3: 프레임워크 독립 Markdown과 안전한 HTML
 
-**Files:** Create `src/lib/markdown/{processor,render,sanitize,obsidian}.ts`, `src/lib/markdown/{render,sanitize}.test.ts`, `src/lib/browser/mermaid.ts`, `src/lib/browser/mermaid.test.ts`; Port the behavior of `src/entities/markdown/util/{remark-obsidian-image,rehype-unwrap-images}.ts` to Sätteri plugins and migrate `src/entities/markdown/ui/mermaid-diagram.test.ts`; Modify `tests/browser/fixtures/mermaid-security-entry.ts` to import the new pure browser module.
+**Files:** Create `src/lib/markdown/{processor,render,sanitize,obsidian,images}.ts`, `src/lib/markdown/{processor,render,sanitize,images}.test.ts`, `src/lib/browser/mermaid.ts`, `src/lib/browser/mermaid.test.ts`; Port the behavior of `src/entities/markdown/util/{remark-obsidian-image,rehype-unwrap-images}.ts` to Sätteri plugins and migrate `src/entities/markdown/ui/mermaid-diagram.test.ts`; Modify `tests/browser/fixtures/mermaid-security-entry.ts` to import the new pure browser module.
 
 **Interfaces:**
 
 ```ts
 type SanitizedHtml = string & { readonly __sanitizedHtml: unique symbol };
+type SharedMarkdownOptions = Pick<SatteriMarkdownProcessorOptions, 'syntaxHighlight' | 'shikiConfig'>;
 interface Heading { id: string; text: string; level: number }
 interface CompiledMarkdown { html: SanitizedHtml; headings: Heading[] }
 interface MarkdownOptions {
@@ -138,6 +140,11 @@ interface MarkdownOptions {
   resolveImage(path: string): Promise<string | undefined>;
 }
 function renderMarkdown(body: string, options: MarkdownOptions): Promise<CompiledMarkdown>;
+function createSatteriOptions(imageUrls?: ReadonlyMap<string, string>): SatteriProcessorOptions;
+function createSharedMarkdownOptions(): SharedMarkdownOptions;
+function prepareImageUrls(
+  body: string, resolveImage: MarkdownOptions['resolveImage'],
+): Promise<ReadonlyMap<string, string>>;
 function sanitizeMarkdownHtml(html: string): SanitizedHtml;
 function isSafeMermaidCss(css: string): boolean;
 function hardenMermaidSvg(svg: string): string;
@@ -145,8 +152,13 @@ function sanitizeMermaidSvg(svg: string): string;
 function mountMermaid(root: HTMLElement): Promise<() => void>;
 ```
 
-`SanitizedHtml`은 정화 함수에서만 생성한다. `resolveImage`는 Task 4의 안전한 이미지 resolver를 받는다. 실행·정화 이전 원문은 framework props로 보내지 않는다.
-`processor.ts`는 공식 `SatteriMarkdownProcessorOptions`를 만드는 `createProcessorOptions(): SatteriMarkdownProcessorOptions`를 제공한다. 렌더러와 이후 Astro 통합이 같은 GFM·heading·highlight 설정 및 Sätteri 플러그인 정의를 공유한다. framework별 링크와 `resolveImage`를 통한 자산 URL 변환은 `render.ts`가 처리하고, 모든 변환 뒤 정화한다. 특정 페이지의 locale·framework를 전역 processor 상태에 저장하지 않는다.
+`SatteriProcessorOptions`와 `SatteriMarkdownProcessorOptions`는 공식 `@astrojs/markdown-satteri`의 서로 다른 타입이다. `processor.ts`는 `createSatteriOptions()`에서 플러그인·features만 반환하고, `createSharedMarkdownOptions()`에서 하이라이트 설정만 반환한다. 공통값은 `features: { gfm: true, smartPunctuation: false }`, `syntaxHighlight: { type: 'shiki', excludeLangs: ['math', 'mermaid'] }`, `shikiConfig.theme: 'github-dark'`다. deprecated `markdown.gfm`·`markdown.smartypants`를 새로 사용하지 않는다.
+
+Astro 설정은 `markdown: { ...createSharedMarkdownOptions(), processor: satteri(createSatteriOptions()) }`다. 독립 렌더러는 `createSatteriMarkdownProcessor({ ...createSharedMarkdownOptions(), ...createSatteriOptions(imageUrls) })`로 조립한다. 공통 하이라이트 설정을 `satteri()` 인수 안에 넣지 않는다. framework별 내부 링크는 `render.ts`에서 변환하며 특정 문서의 context나 이미지 맵을 전역 상태에 저장하지 않는다.
+
+`prepareImageUrls()`는 같은 Obsidian 변환을 적용한 Sätteri Markdown AST에서 이미지 참조를 수집하고 `resolveImage`를 await해 문서별 맵을 만든다. 경로·MIME·공개 여부는 Task 4의 registry가 검증하며, 참조가 있는데 안전한 URL을 만들지 못하면 해당 문서를 진단하고 실패한다. 본문의 코드·일반 텍스트를 정규식으로 이미지 치환하지 않는다. `createSatteriOptions(imageUrls)`의 mdast 이미지 visitor는 준비된 맵으로 상대 경로를 `/content-assets/...`에 바꾸며, Astro 기본 이미지 수집·마커 생성 전에 실행한다. 독립 렌더러는 외부 이미지를 Astro 원격 최적화 대상으로 추가하지 않고 검증한 HTTPS URL로 유지한다.
+
+`SanitizedHtml`은 정화 함수에서만 생성한다. 독립 렌더링 뒤 HTML parser·정화 단계가 받은 실제 속성에서 내부 `__ASTRO_IMAGE_` 마커를 대소문자 구분 없이 확인하고, 남아 있으면 조용히 지우지 않고 실패한다. 원문 전체의 문자열 검색으로 코드 블록·일반 텍스트의 같은 단어까지 차단하지 않는다. 모든 URL 변환 뒤 최종 HTML을 정화하고 마커 속성·서버 경로가 없는지 다시 확인한다. 실행·정화 이전 원문과 이미지 맵은 framework props로 보내지 않는다.
 
 - [ ] **Step 1:** 테스트에서 GFM 표, 중복 제목의 고유 앵커와 목차, INFO/WARNING/DANGER/SUCCESS callout, Obsidian 이미지, 코드 하이라이트·복사 대상, Mermaid 코드 marker를 확인한다. 원문 `<script>`, 이벤트 속성, `javascript:` 링크와 MDX import/표현식은 실행 가능한 출력이 되면 안 된다.
 
@@ -156,8 +168,19 @@ expect(result.headings.map((heading) => heading.id)).toEqual(['same', 'same-1'])
 ```
 
 본문 내 기존 블로그 내부 링크는 선택한 framework를 유지하도록 변환하고 외부 링크·이미지 경로·fragment는 구별한다. 일반 문장·링크가 섞인 Obsidian 이미지 문단의 텍스트도 보존한다.
+- [ ] **Step 1a:** `processor.test.ts`에서 `satteri(createSatteriOptions()).createRenderer(shared)`와 `createSatteriMarkdownProcessor({ ...shared, ...createSatteriOptions() })`의 출력·heading을 비교한다. 공통 GFM·문장부호 값을 확인하고 `shared.syntaxHighlight: false`라는 비기본 설정을 적용했을 때 양쪽 코드에 `astro-code` 하이라이트가 없는지 확인한다. 반환값을 `satteri()`에 통째로 넣어 옵션이 무시되는 구현은 이 테스트로 잡는다.
+- [ ] **Step 1b:** `images.test.ts`와 `render.test.ts`에 아래 assertion을 추가한다. `prepareImageUrls`에는 테스트 resolver를 넣고 Obsidian·표준 Markdown·reference-style 이미지와 한글·공백 경로를 포함한다. 연속 렌더링에서 서로 다른 이미지 맵이 섞이지 않아야 한다.
+
+```ts
+expect(imageResult.html).toContain('src="/content-assets/verified-image.png"');
+expect(imageResult.html).toContain('alt="codingless3r.png"');
+expect(imageResult.html).not.toMatch(/<img\b[^>]*\s__astro_image_\s*=/iu);
+expect(imageResult.html).not.toContain(vaultRoot);
+```
+
+안전한 URL이 없는 이미지와 실제 HTML 속성의 잔여 내부 마커는 실패해야 한다. 반대로 백틱으로 감싼 `__ASTRO_IMAGE_` 설명과 escaped HTML 예제는 정상적인 본문으로 허용한다. Mermaid 원문에 `<`·`&`가 있어도 marker의 text로 보존되어야 하고 일반 Shiki 출력으로 바뀌면 안 된다. `"hello" -- ...`는 기존 문장부호 그대로 남아야 하며 인라인 코드·코드 블록 내용도 달라지면 안 된다.
 - [ ] **Step 2:** 새 테스트를 실행해 렌더러 부재로 실패하는지 확인한다.
-- [ ] **Step 3:** 공식 Astro 7 패키지와 호환되는 `@astrojs/markdown-satteri` 및 플러그인 타입을 직접 사용하는 `satteri`를 의존성으로 선언한다. 공식 `createSatteriMarkdownProcessor()`로 문자열 렌더러를 만들고 `render()` 결과의 HTML·heading metadata를 공통 반환 타입으로 매핑한다. `.mdx` 내용도 Markdown 문자열로만 전달하며 MDX renderer·`mdxToJs`를 호출하지 않는다. Astro 기본 기능의 GFM·heading·Shiki 하이라이트를 사용하고 Obsidian·callout·이미지/링크 처리는 Sätteri mdast/hast visitor와 context API로 이식한다. 기존 unist visitor·remark/rehype 플러그인을 설정에 그대로 넣지 않는다. 서버 HTML 정화는 `sanitize-html`과 타입 선언을 직접 의존성으로 기록해 구현하며, raw HTML은 제외하고 코드 하이라이트에 필요한 좁은 속성만 허용한다. 코드·Mermaid 원문은 escape하고 모든 변환 뒤 최종 allowlist 정화를 실행한다. 플러그인 재사용을 이유로 별도의 unified Markdown 파이프라인으로 자동 fallback하지 않는다.
+- [ ] **Step 3:** 공식 Astro 7 패키지와 호환되는 `@astrojs/markdown-satteri` 및 플러그인 타입을 직접 사용하는 `satteri`를 의존성으로 선언한다. Interfaces의 두 설정 factory를 구현하고 `prepareImageUrls()`를 완료한 뒤 문서별 문자열 렌더러를 조립한다. `render()` 결과의 HTML·heading metadata를 공통 반환 타입으로 매핑한다. `.mdx` 내용도 Markdown 문자열로만 전달하며 MDX renderer·`mdxToJs`를 호출하지 않는다. GFM·heading·Shiki를 사용하고 Obsidian·callout·이미지 처리는 Sätteri mdast/hast visitor와 context API로 이식한다. 기존 unist visitor·remark/rehype 플러그인을 설정에 그대로 넣지 않는다. 서버 HTML 정화는 `sanitize-html`과 타입 선언을 직접 의존성으로 기록해 구현하며 raw HTML은 제외하고 코드 하이라이트에 필요한 좁은 속성만 허용한다. 코드·Mermaid 원문은 escape하고 내부 이미지 마커를 검사한 뒤 최종 allowlist 정화를 실행한다. 플러그인 재사용을 이유로 별도의 unified Markdown 파이프라인으로 자동 fallback하지 않는다.
 - [ ] **Step 4:** 기존 Mermaid strict 설정과 SVG/CSS/URL hardening을 `mermaid.ts`로 옮기고 기존 테스트를 새 모듈에 적용한다. 브라우저 구현은 필요한 경우에만 Mermaid를 import하고 cleanup 시 작업·listener를 정리한다. `pnpm test:once src/lib/markdown src/lib/browser` 및 기존 Mermaid 보안 브라우저 테스트를 실행한다. browser 실행 시 설치된 Chromium과 현재 인증서 제약을 보존한다.
 - [ ] **Step 5:** `feat(markdown): 세 프레임워크가 공유하는 안전한 렌더링 추가`로 커밋한다.
 
@@ -196,12 +219,12 @@ class PageNotFoundError extends Error {}
 
 - [ ] **Step 1:** 실제 vault와 임시 About fixture를 입력으로 프로덕션 HTML 검증을 작성한다. prefix 없는 React 경로와 `/react/{ko,ja}`의 네 화면에서 초기 HTML에 본문·번역·canonical이 있어야 하고 draft/test 상세 파일은 없어야 한다. missing image·vault 밖 symlink·`.mdx` 자산 요청은 거부되어야 한다. 같은 이미지 이름의 내용 교체는 digest URL을 바꿔야 한다.
 - [ ] **Step 2:** 현재 Vite 앱으로 테스트를 실행해 정적 글 HTML·Astro route가 없어서 실패함을 확인한다.
-- [ ] **Step 3:** Task 3에서 도입한 Astro에 공식 UI 통합을 설정한다. 2026-10-20 확인 기준 후보는 `astro@7.4.1`, `@astrojs/markdown-satteri@0.4.4`, `@astrojs/react@7.1.0`, `@astrojs/vue@7.1.1`, `@astrojs/svelte@9.1.0`, `vue@3.5.44`, `svelte@5.57.2`다. Svelte 통합과 checker는 TypeScript 7을 지원하지 않으므로 `typescript@6.0.3`과 호환되는 checker를 사용하고 `@typescript/native-preview` 기반 검사에 의존하지 않는다. 직접 사용하는 Vite도 Astro 통합의 `^8.3.4` 범위와 정렬한다. `markdown.processor`에는 공식 `satteri()`를 설정하고 Task 3의 공통 플러그인·옵션을 적용한다. 레지스트리 metadata·공식 문서를 다시 확인하고 실제 설치 버전을 lockfile에 기록한다. 서명·release-age·peer 오류를 무시하는 옵션은 사용하지 않는다.
-- [ ] **Step 4:** `dev/build/preview`를 Astro로 전환하고, 독립 `vitest.config.ts`로 기존 순수 테스트를 실행하게 한다. `@astrojs/check`, `vue-tsc`, `svelte-check`, `tsx`를 실제 사용하는 개발 의존성으로 선언한다. 확인된 checker 후보는 각각 `0.9.11`, `3.3.13`, `4.7.7`이며 TypeScript 6 호환성을 재확인한다. `typecheck`는 `astro check && tsc --noEmit && vue-tsc --noEmit -p tsconfig.vue.json && svelte-check --tsconfig ./tsconfig.svelte.json`으로 구성한다. React JSX는 TSX 설정에, Vue와 Svelte는 전용 tsconfig에 포함하고 빈 구현 단계를 통과시키려고 검사를 비활성화하지 않는다. 기존 실행 파일 이름을 고정하던 테스트는 실제 새 검사와 보안 계약을 확인하도록 변경한다.
-- [ ] **Step 5:** custom Content Layer loader와 이미지 integration을 구현한다. 공개 정책을 적용한 페이지가 참조하는 이미지만 MIME·경로 확인 후 digest URL로 제공·출력한다. vault 전체를 public에 복사하지 않는다. SVG를 지원할 경우 외부 로딩·스크립트를 제거하거나 안전한 raster 출력으로 바꾸고 악성 SVG 테스트를 둔다. 생성 자산은 별도 전용 출력 영역에서만 정리하며 사용자의 public 파일을 삭제하지 않는다. 개발 draft 자산을 프로덕션 출력에 재사용하지 않는다.
+- [ ] **Step 3:** Task 3에서 도입한 Astro에 공식 UI 통합을 설정한다. 2026-10-20 확인 기준 후보는 `astro@7.4.1`, `@astrojs/markdown-satteri@0.4.4`, `@astrojs/react@7.1.0`, `@astrojs/vue@7.1.1`, `@astrojs/svelte@9.1.0`, `vue@3.5.44`, `svelte@5.57.2`다. Svelte 통합과 checker는 TypeScript 7을 지원하지 않으므로 `typescript@6.0.3`과 호환되는 checker를 사용하고 `@typescript/native-preview` 기반 검사에 의존하지 않는다. 직접 사용하는 Vite도 Astro 통합의 `^8.3.4` 범위와 정렬한다. `markdown: { ...createSharedMarkdownOptions(), processor: satteri(createSatteriOptions()) }`로 설정을 조립한다. `compressHTML: 'jsx'`를 명시하고 제거된 `experimental.rustCompiler` 플래그는 추가하지 않는다. 레지스트리 metadata·공식 문서를 다시 확인하고 실제 설치 버전을 lockfile에 기록한다. 서명·release-age·peer 오류를 무시하는 옵션은 사용하지 않는다.
+- [ ] **Step 4:** `dev/build/preview`를 Astro로 전환하고, 독립 `vitest.config.ts`로 기존 순수 테스트를 실행하게 한다. `@astrojs/check`, `vue-tsc`, `svelte-check`, `tsx`, `html-validate`를 실제 사용하는 개발 의존성으로 선언한다. 확인된 checker 후보는 각각 `0.9.11`, `3.3.13`, `4.7.7`이며 TypeScript 6 호환성을 재확인한다. `typecheck`는 `astro check && tsc --noEmit && vue-tsc --noEmit -p tsconfig.vue.json && svelte-check --tsconfig ./tsconfig.svelte.json`으로 구성한다. React JSX는 TSX 설정에, Vue와 Svelte는 전용 tsconfig에 포함하고 빈 구현 단계를 통과시키려고 검사를 비활성화하지 않는다. 기존 실행 파일 이름을 고정하던 테스트는 실제 새 검사와 보안 계약을 확인하도록 변경한다.
+- [ ] **Step 5:** custom Content Layer loader와 이미지 integration을 구현한다. 공개 정책을 적용한 페이지가 참조하는 이미지만 MIME·경로 확인 후 digest 루트 URL로 제공·출력하고 Task 3의 `prepareImageUrls()`에 연결한다. 최종 프레임워크 HTML의 이미지 `src`·alt·HTTP 응답과 내부 마커 부재까지 검증한다. vault 전체를 public에 복사하지 않는다. SVG를 지원할 경우 외부 로딩·스크립트를 제거하거나 안전한 raster 출력으로 바꾸고 악성 SVG 테스트를 둔다. 생성 자산은 별도 전용 출력 영역에서만 정리하며 사용자의 public 파일을 삭제하지 않는다. 개발 draft 자산을 프로덕션 출력에 재사용하지 않는다.
 - [ ] **Step 6:** 모든 React 페이지·헤더·푸터·언어/framework 링크를 `PageModel`로 구현한다. 서버 HTML을 렌더링하고 `client:load`로 hydrate하며 `client:only`는 사용하지 않는다. 기존 Tailwind 토큰·레이아웃·번역·프로필 로딩 상태를 유지한다. 목차·복사 상태는 React hooks로 관리하고 Markdown HTML은 Task 3의 정화 결과만 삽입한다.
-- [ ] **Step 7:** prefix 없는 경로와 React prefix 경로를 생성하고 `/`와 invalid route 처리를 구현한다. `DocumentLayout`에서 SEO head를 출력하고 `FrameworkPage`에서 구체적 framework 컴포넌트를 조건부 선택한다. Vue/Svelte 페이지는 해당 Task 완료 전 route 생성 대상에 넣지 않는다. 기존 Netlify 설정은 수정하지 않는다.
-- [ ] **Step 8:** 타입 검사·React 단위/브라우저 테스트·`pnpm build`·`pnpm verify:build`를 실행한다. `verify:build`는 현재 run의 dist를 검사하는 `tsx scripts/verify-static-build.ts`이며 prefix 없는/React HTML, 비공개 산출물 부재, 안전한 자산·메타데이터를 검증한다. 클라이언트 props에 `sourcePath`, vault root, 비공개 본문이 없어야 한다.
+- [ ] **Step 7:** prefix 없는 경로와 React prefix 경로를 생성하고 `/`와 invalid route 처리를 구현한다. `DocumentLayout`에서 SEO head를 출력하고 `FrameworkPage`에서 구체적 framework 컴포넌트를 조건부 선택한다. `.astro`의 의미 있는 인라인 공백을 `{' '}` 등으로 표현하고 모든 non-void 태그를 닫는다. paragraph 안에 figure·div를 넣지 않으며 Rust 컴파일러의 자동 재배치를 기대하지 않는다. Vue/Svelte 페이지는 해당 Task 완료 전 route 생성 대상에 넣지 않는다. 기존 Netlify 설정은 수정하지 않는다.
+- [ ] **Step 8:** 타입 검사·React 단위/브라우저 테스트·`pnpm build`·`pnpm verify:build`를 실행한다. `verify:build`는 현재 run의 dist를 검사하는 `tsx scripts/verify-static-build.ts`이며 prefix 없는/React HTML, 비공개 산출물 부재, 안전한 자산·메타데이터를 검증한다. `html-validate`의 `element-permitted-content`·`close-order` 규칙으로 생성 HTML 원문의 유효한 중첩·닫힘도 검사한다. Astro island 등 공식 custom element는 허용하되 paragraph/figure 같은 HTML 규칙을 끄지 않는다. 잘못된 paragraph/figure fixture를 검증기가 거부하는지 먼저 확인한다. 브라우저가 파싱한 두 DOM만 비교해 원문의 자동 보정을 놓치지 않는다. 클라이언트 props에 `sourcePath`, vault root, 비공개 본문이 없어야 한다.
 - [ ] **Step 9:** `feat(astro): React 전체 블로그를 정적 페이지로 전환`으로 커밋한다.
 
 ## Task 5: Vue 전체 화면의 동등한 구현
@@ -232,12 +255,12 @@ class PageNotFoundError extends Error {}
 
 **Files:** Modify `src/lib/content/loader.ts`, `src/integrations/content-assets.ts`; Create `tests/integration/vault-watch.test.ts`, `tests/browser/{framework-interactions,framework-security,framework-runtime}.test.ts`, `tests/browser/fixtures/blog-fixture.ts`; Extend `scripts/verify-static-build.ts` and Playwright configuration.
 
-**Interfaces:** `createBlogLoader({ root: string }): Loader`는 Astro `LoaderContext`의 watcher·store API를 사용한다. 초기 load와 add/change/unlink는 같은 검증 함수를 통과하며, 삭제된 entry를 제거하고 중복 watch listener를 만들지 않는다. 이미지 integration은 동일한 vault root를 감시하고 변한 참조 이미지 URL을 갱신한다.
+**Interfaces:** `createBlogLoader({ root: string }): Loader`는 Astro `LoaderContext`의 watcher·store API를 사용한다. 초기 load와 add/change/unlink는 같은 검증 함수를 통과하며, 삭제된 entry를 제거하고 중복 watch listener를 만들지 않는다. 이미지 integration은 동일한 vault root를 감시하고 변한 참조 이미지 URL을 갱신한다. HMR 이벤트를 직접 보낼 때는 `server.environments.client.hot.send()`를 사용한다. `server.hot.send()`를 사용하지 않으며, `astro:build:setup`은 target별 여러 호출이 아니라 environment를 포함하는 한 호출로 처리한다. listener는 서버 종료 시 정리하고 생성 자산을 environment마다 중복 출력하지 않는다.
 
-- [ ] **Step 1:** `vault-watch.test.ts`에서 임시 vault와 전용 포트의 Astro 서버를 시작한다. 초기 글 표시 후 파일 추가·제목 수정·삭제·draft 전환 및 같은 이미지 경로의 byte 교체를 수행하고, 제한 시간 내 요청 결과와 digest가 바뀌는지 assertion한다. 테스트가 시작한 프로세스만 정리하고 실제 `blog-content`를 수정하지 않는다.
+- [ ] **Step 1:** `vault-watch.test.ts`에서 임시 vault와 전용 포트의 Astro 서버를 시작한다. 초기 글 표시 후 파일 추가·제목 수정·삭제·draft 전환 및 같은 이미지 경로의 byte 교체를 수행하고 제한 시간 내 요청 결과와 digest가 바뀌는지 assertion한다. 변경 전에 브라우저 페이지도 열고 테스트가 `page.reload()`를 호출하지 않아도 수정한 제목·이미지가 반영되는지 확인한다. Astro/Vite가 보낸 자동 full-reload는 허용하며 수동 새로고침을 필수로 만들지 않는다. 서버를 닫고 다시 열었을 때 listener·출력 파일이 중복되지 않아야 한다. 테스트가 시작한 프로세스만 정리하고 실제 `blog-content`를 수정하지 않는다.
 - [ ] **Step 2:** watcher 테스트를 실행해 자동 갱신이 없는 상태에서 실제로 실패하는지 확인한다.
 - [ ] **Step 3:** 외부 경로 watcher와 store 갱신을 구현한다. 삭제·이미지 변경·cache 무효화 처리를 포함하고 디렉터리 부재·파일 오류를 사용자에게 진단한다. change 직후 불완전한 저장 파일을 읽는 경우 짧은 안정화 후 재수집하되 오류를 무한 재시도하지 않는다.
-- [ ] **Step 4:** 세 framework × 두 locale × 네 화면의 공통 브라우저 검증을 실행한다. 날짜·텍스트·주요 레이아웃을 같은 입력으로 비교하고 hydration 오류가 없음을 확인한다. 글이 없는 ja에서 글 경로를 유지해 전환하면 404여야 한다. 의도한 framework·locale 외의 탐색 축은 바뀌지 않아야 한다.
+- [ ] **Step 4:** 세 framework × 두 locale × 네 화면의 공통 브라우저 검증을 실행한다. 날짜·텍스트·주요 레이아웃을 같은 입력으로 비교하고 hydration 오류가 없음을 확인한다. 인라인 요소 사이 공백과 `"hello" -- ...`의 실제 `textContent`가 원문과 같아야 한다. 일반 코드 하이라이트·제외된 Mermaid fence·최종 이미지 src와 alt를 비교한다. JavaScript disabled 초기 DOM과 hydration 후 DOM에서 paragraph/figure·div 중첩이 브라우저에 의해 재구성되지 않았는지 확인한다. CSS는 색상·URL의 직렬화 문자열 대신 bounding box·계산 스타일로 검사한다. 글이 없는 ja에서 글 경로를 유지해 전환하면 404여야 한다. 의도한 framework·locale 외의 탐색 축은 바뀌지 않아야 한다.
 - [ ] **Step 5:** 보안 fixture를 세 framework에 렌더링해 `window` marker 실행·새 외부 요청이 없음을 확인한다. 기존 Mermaid 보안 테스트를 유지하고 실제 Mermaid 표시·코드 복사 성공/실패·목차 활성 상태·이미지 fallback을 검증한다. Clipboard API는 성공과 거부를 각각 제어해 UI 결과를 확인한다.
 - [ ] **Step 6:** 프레임워크별 프로덕션 브라우저 요청을 dist manifest/생성 HTML에서 찾은 client entry와 대조해 선택하지 않은 두 런타임 entry가 로딩되지 않음을 검증한다. minify된 함수 이름이나 chunk basename 문자열에만 의존하지 않는다. JavaScript disabled context에서도 본문·내부 링크·언어/framework 링크가 동작해야 한다.
 - [ ] **Step 7:** 개발 draft 미리보기를 실행한 뒤 새 프로덕션 빌드를 만들어, 오래된 draft HTML·props·자산이 남지 않는지 검사한다. `pnpm typecheck`, `pnpm lint:error`, `pnpm test:once`, `pnpm build`, `pnpm verify:build`, `pnpm exec playwright test --config playwright.config.ts`를 실행한다. runner별 실제 테스트 수와 실패/skip을 기록한다.
@@ -263,3 +286,4 @@ class PageNotFoundError extends Error {}
 - Task 1·2·3이 공통 계약을 고정하고 Task 4가 실제 정적 사이트를 만든다. Task 5·6은 동일 계약을 소비하며 Task 7이 전체 결과를 검증하므로 순서대로 실행한다.
 - 공통 코드의 잘못을 세 UI에 복제하지 않도록 순수 테스트와 실제 페이지 검증을 함께 사용한다. 문서 검토·구현 방법 선택 전에는 제품 의존성 설치나 제품 코드를 변경하지 않는다.
 - 계획 자체의 self-review: URL/SEO, Obsidian/이미지, 공개 정책, 세 framework UI, 상태/cleanup, HMR, 보안, 타입 검사, 기존 자동화 보존, 배포 유예 및 재사용 환경 지침을 각 Task에 배정했다.
+- [Astro 7 문서 점검](../../reviews/2026-10-20-astro7-documentation-audit.md)의 A1·A2·B1·B2·C1·C2·C3은 Task 3의 API·설정·이미지 테스트, Task 4의 Astro 구성·유효한 HTML, Task 7의 열린 브라우저 검증으로 반영했다. 이 표기는 문서 보완 완료이며 제품 구현·런타임 검증 완료를 뜻하지 않는다.

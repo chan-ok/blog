@@ -1,6 +1,7 @@
 # Astro 7 문서 전수 점검
 
 - 점검일: 2026-10-20
+- 보완 반영일: 2026-10-20 — 아래 지적은 점검 당시 기록이며 문서 반영 상태는 마지막 절에 정리했다.
 - 저장소 기준 커밋: `f2cfc17`
 - 대상: `/workspace/blog`, `/workspace/blog-content`의 Markdown·MDX 문서 32개
 - 비교 기준: 공식 Astro 7/6 업그레이드 가이드, 현행 공식 API 문서, npm 배포본
@@ -210,11 +211,29 @@ Astro 전환을 설명하는 활성 문서는 아래 두 개다. Sätteri 기본
 않는다. 해당 문서의 과거 사실을 Astro 7 기준으로 덮어쓰지 않는다. DESIGN.md는
 디자인 정책, RTK.md는 도구 설명, 콘텐츠의 MDX 파일은 글 본문으로 구분했다.
 
-## 점검 완료와 남은 작업
+## 보완 반영 상태와 남은 작업
 
-이 보고서는 변경이 필요한 위치와 수정 기준을 제시한다. 이번 점검에서 제품 코드나
-기존 설계·계획의 본문은 수정하지 않았다. 구현 전에 A1·A2를 명확히 하고 B·C 항목을
-검증 단계에 반영하면 된다. 실행 중의 호환성·브라우저 동작은 실제 구현 후 별도 검증해야 한다.
+최초 점검 보고서 커밋 `d2379dc`에서는 지적만 기록했다. 이후 사용자의 보완 요청에
+따라 설계와 구현 계획에 아래 내용을 반영했다. 위의 위치·현재 문구는 기준 커밋
+`f2cfc17` 당시 기록으로 보존하며, 아래 표가 보완 이후 문서 상태다.
+
+| 항목 | 문서에 반영한 결정 | 계획의 검증 위치 |
+| --- | --- | --- |
+| A1 | `createSatteriOptions(): SatteriProcessorOptions`와 `createSharedMarkdownOptions(): SharedMarkdownOptions`를 분리하고 API별 조립식을 명시 | Task 3 Step 1a·3, Task 4 Step 3. 비기본 하이라이트 설정도 양쪽 API에서 적용되는지 비교 |
+| A2 | Obsidian 변환 AST에서 참조 수집 → 비동기 검증·등록 → 문서별 URL 맵 → Sätteri mdast 이미지 visitor → 공식 이미지 수집 순서를 고정 | Task 3 Step 1b·3, Task 4 Step 5, Task 7 Step 4. 최종 src·alt·응답과 실제 내부 마커 속성 부재 확인 |
+| B1 | `compressHTML: 'jsx'` 명시, 의미 있는 공백을 각 템플릿에서 표현 | Task 4 Step 3·7, Task 7 Step 4. 실제 textContent·간격 비교 |
+| B2 | Rust 컴파일러의 태그 닫기·유효한 HTML 요구와 CSS 직렬화 차이 반영 | Task 4 Step 3·7·8, Task 7 Step 4. 생성 원문 HTML의 중첩·닫힘 검사와 hydration 이후 구조·계산 스타일 검증 |
+| C1 | `features: { gfm: true, smartPunctuation: false }`로 기존 문장부호 보존 | Task 3 Step 1a·1b, Task 7 Step 4. 따옴표·하이픈·말줄임표·코드 원문 확인 |
+| C2 | 공통 `syntaxHighlight.excludeLangs: ['math', 'mermaid']` 설정 | Task 3 Step 1b·3, Task 7 Step 4·5. 일반 코드·Mermaid 원문·다이어그램 확인 |
+| C3 | LoaderContext watcher·store 우선, 직접 전송 시 `server.environments.client.hot.send()`, environment별 중복 hook 처리 금지 | Task 7 Interfaces·Step 1·3. 열린 페이지에서 수동 reload 없는 갱신과 listener·자산 중복 확인 |
+
+A2의 마커 검사는 HTML 속성을 대상으로 하며, 코드 블록이나 설명문에 같은 이름이
+등장하는 것은 허용하도록 했다. 문서별 이미지 맵과 context를 전역에 저장하지 않는
+조건도 추가해 세 프레임워크·여러 글 사이의 상태 혼입을 방지한다.
+
+7항목은 **설계·계획 반영 완료** 상태다. 제품 구현과 런타임 테스트는 아직 미실행이다.
+기존 배포 연동 유예, 콘텐츠 인덱스 자동화 유지, 수동 설정값 입력 범위는 그대로다.
+현재 제품을 설명하는 README·개발 가이드는 실제 Astro 구현과 함께 갱신한다.
 
 ## 주요 공식 자료
 

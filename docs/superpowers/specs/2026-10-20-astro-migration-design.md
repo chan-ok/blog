@@ -61,6 +61,28 @@ Markdown은 **Astro 7의 기본 processor인 Sätteri**를 사용한다. 공식
 확장한다. 기존 remark/rehype 플러그인은 그대로 호환된다고 가정하지 않고, 필요한
 Obsidian·callout·URL 변환을 Sätteri 플러그인으로 이식하고 테스트한다.
 
+Sätteri 전용 설정과 Astro 공통 Markdown 설정은 구분한다. `satteri()`에는
+`SatteriProcessorOptions`의 플러그인·features만 전달하며, 코드 하이라이트 설정은
+Astro의 `markdown.syntaxHighlight`·`markdown.shikiConfig`에 둔다. 문자열용
+`createSatteriMarkdownProcessor()`에는 두 설정을 합쳐 전달한다. 단일 설정 객체를
+두 API에 그대로 넣어 지원하지 않는 옵션이 무시되도록 하지 않는다.
+
+공통 기능은 `features: { gfm: true, smartPunctuation: false }`로 고정한다.
+따옴표·하이픈·말줄임표의 기존 표현을 보존하기 위한 선택이며, Astro의 smart
+punctuation 기본 활성 동작에 의존하지 않는다. 하이라이트는 Shiki를 사용하고
+`excludeLangs: ['math', 'mermaid']`를 양쪽 렌더러에 동일하게 적용한다.
+
+### Astro 7 템플릿 기본 동작
+
+`compressHTML: 'jsx'`를 명시하고 의미 있는 인라인 공백은 `.astro` 템플릿에서
+`{' '}` 등으로 표현한다. Astro의 옵션이 React·Vue·Svelte 자체 템플릿의 공백
+규칙까지 같게 만든다고 가정하지 않는다. 세 화면의 실제 텍스트·간격을 비교한다.
+
+Astro 템플릿은 기본이자 유일한 Rust 컴파일러로 빌드한다. 제거된
+`experimental.rustCompiler` 설정을 추가하지 않는다. non-void 태그를 닫고 유효한
+HTML 중첩을 작성하며, 컴파일러나 브라우저의 자동 구조 보정에 기대지 않는다.
+초기 HTML과 hydration 이후 DOM을 비교하고, CSS 직렬화 문자열 대신 실제 스타일을 검증한다.
+
 ### 구현 방식
 
 화면 전체를 각 프레임워크의 페이지 컴포넌트로 구현하는 방식을 채택한다. Astro는
@@ -160,7 +182,8 @@ Obsidian 설정, `.space` 등 숨김 디렉터리는 게시물로 수집하지 �
 
 파일의 확장자와 관계없이 본문 문자열을 Sätteri의 Markdown 경로로 전달한다.
 문자열용 공식 `createSatteriMarkdownProcessor()`와 Astro의 Markdown 설정이 같은
-플러그인·옵션을 사용하도록 공통화한다. MDX-to-JavaScript 컴파일·평가 경로는 사용하지 않는다.
+플러그인·기능·하이라이트 값을 각 API의 설정 위치에 맞게 사용하도록 공통화한다.
+MDX-to-JavaScript 컴파일·평가 경로는 사용하지 않는다.
 
 frontmatter의 제목·날짜·태그·공개 여부·요약·썸네일·시리즈를 검증한다. 기존 파일을
 일괄 변환하거나 새 필수 필드를 요구하지 않는다. `path`는 파일 위치에서 유도하므로
@@ -171,6 +194,12 @@ Obsidian에서 같은 정보를 중복 입력하지 않는다. 썸네일 명시�
 개발 서버는 checkout 밖 콘텐츠 디렉터리의 추가·수정·삭제를 감지해 컬렉션과
 렌더링 결과를 갱신한다. 단순 Vite 기본 감시에 기대지 않고 외부 경로 변경을 검증한다.
 초안 미리보기는 개발 모드에서만 제공한다. 로컬 프로덕션 빌드에는 운영 공개 정책을 적용한다.
+
+주된 갱신 경로는 공식 LoaderContext watcher·store API를 사용한다. 커스텀 이미지
+integration에서 HMR 전송이 필요하면 Vite Environment API의
+`server.environments.client.hot.send()`를 사용한다. `astro:build:setup` hook은
+environment를 포함하는 한 호출로 처리하고 target별 호출이라고 가정하지 않는다.
+파일 변경 후 HTTP 응답과 이미 열려 있는 브라우저 화면의 갱신을 모두 확인한다.
 
 ## URL과 공개 정책
 
@@ -201,7 +230,21 @@ About은 기존 `chan-ok/chan-ok`의 로케일 README를 빌드/개발 서버에
 노출하지 않는다. 글 원문, 초안, Git 메타데이터 및 Obsidian 설정을 복사하지 않는다.
 허용된 외부 HTTPS 이미지는 기존 정책을 유지한다.
 
+이미지 참조는 Obsidian 변환을 적용한 Markdown AST에서 먼저 수집한다. 파일·MIME·
+공개 정책 검증과 비동기 자산 등록을 끝내고, 해당 문서만의 원본 경로→공개 자산 URL
+맵을 만든다. 최종 렌더링의 Sätteri mdast 이미지 플러그인은 이 맵을 사용해 상대
+이미지를 `/content-assets/...` 같은 공개 루트 URL로 바꾼다. 이 변환은 Astro 내부
+이미지 수집·마커 생성보다 먼저 수행한다.
+
+독립 문자열 렌더러에서 외부 이미지를 Astro 원격 최적화 대상으로 추가하지 않는다.
+기존 정책에 맞는 외부 HTTPS 이미지는 검증한 URL로 유지한다. 내부 이미지 마커를
+나중에 임의 복구하는 후처리는 사용하지 않는다. 최종 정화 전후의 실제 HTML 속성에
+`__ASTRO_IMAGE_`가 남지 않았는지 검사하고, 발견되면 해당 문서를 명시해 빌드를 실패시킨다.
+코드 블록·일반 텍스트에 이 이름을 설명하는 것까지 차단하지 않는다.
+최종 HTML의 실제 `src`, alt와 이미지 응답을 검증한다.
+
 Mermaid는 필요한 페이지에서만 로딩하고 strict 설정 및 SVG 정화를 보존한다.
+Mermaid fence는 일반 Shiki 하이라이트에서 제외하고 전용 marker와 원문을 보존한다.
 목차의 활성 항목과 펼침 상태, 코드 복사의 완료 상태 및 Mermaid의 초기화·정리는
 각 프레임워크에서 구현하며 DOM 조작·중복 초기화가 서로 충돌하지 않게 한다.
 외부 코드나 raw HTML을 신뢰하는 방식으로 렌더러를 단순화하지 않는다.
@@ -242,6 +285,12 @@ Sätteri가 생성한 HTML도 자동으로 안전하다고 간주하지 않으�
    환경 문제로 막힌 검증은 통과와 구별해 보고한다.
 9. 실제 개발·타입 검사·빌드 명령 및 콘텐츠 경로 설정을 문서화한다.
 10. `blog-content`의 기존 운영 자동화와 외부 배포 설정이 유지되었음을 확인한다.
+11. Astro와 독립 Sätteri 렌더러에 같은 비기본 설정을 적용해 옵션 무시가 없는지
+    확인하고, 일반 코드 하이라이트·Mermaid·문장부호·heading 결과를 대조한다.
+12. Obsidian 이미지의 정화 이후 HTML에 유효한 공개 `src`와 alt가 있고 내부 이미지
+    마커·로컬 절대 경로가 없는지 확인한다. 실제 이미지 요청도 성공해야 한다.
+13. 인라인 공백·문장부호·유효한 paragraph/figure 중첩을 초기 HTML과 hydration 이후
+    DOM에서 검증한다. 파일 변경은 열려 있는 브라우저에서도 반영되어야 한다.
 
 ## 마지막 배포 단계의 인계 항목
 
@@ -262,3 +311,5 @@ Sätteri가 기본 Markdown processor임을 명시하며, npm의 `astro@7.4.0`�
 - [Astro Markdown processors](https://docs.astro.build/en/guides/markdown-content/#markdown-processors)
 - [공식 Sätteri processor API](https://docs.astro.build/en/reference/markdown-processors/satteri/)
 - [Sätteri 저장소](https://github.com/bruits/satteri)
+- [Astro 7 업그레이드 가이드](https://docs.astro.build/en/guides/upgrade-to/v7/)
+- [문서 점검 및 보완 이력](../../reviews/2026-10-20-astro7-documentation-audit.md)
