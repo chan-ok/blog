@@ -55,6 +55,12 @@ Astro 파일 기반 라우팅과 정적 HTML 생성을 사용하고 공식 React
 버전·peer 의존성 호환성은 구현 시 공식 문서와 실제 설치로 확인한다.
 React는 유지하고 Vue·Svelte를 추가한다. 전체 의존성을 무관하게 업그레이드하지 않는다.
 
+Markdown은 **Astro 7의 기본 processor인 Sätteri**를 사용한다. 공식
+`@astrojs/markdown-satteri` 통합을 기준으로 하며 별도의 unified 렌더러를 새로 만들지
+않는다. Sätteri는 Rust로 파싱·컴파일하고 JavaScript의 mdast/hast 플러그인으로
+확장한다. 기존 remark/rehype 플러그인은 그대로 호환된다고 가정하지 않고, 필요한
+Obsidian·callout·URL 변환을 Sätteri 플러그인으로 이식하고 테스트한다.
+
 ### 구현 방식
 
 화면 전체를 각 프레임워크의 페이지 컴포넌트로 구현하는 방식을 채택한다. Astro는
@@ -152,6 +158,10 @@ Astro Content Layer의 사용자 정의 loader가 `ko`, `ja` 아래 `.md`·`.mdx
 Astro MDX 컴파일러에 넘겨 JSX·JavaScript를 실행하지 않는다. `en`, `index.json`,
 Obsidian 설정, `.space` 등 숨김 디렉터리는 게시물로 수집하지 않는다.
 
+파일의 확장자와 관계없이 본문 문자열을 Sätteri의 Markdown 경로로 전달한다.
+문자열용 공식 `createSatteriMarkdownProcessor()`와 Astro의 Markdown 설정이 같은
+플러그인·옵션을 사용하도록 공통화한다. MDX-to-JavaScript 컴파일·평가 경로는 사용하지 않는다.
+
 frontmatter의 제목·날짜·태그·공개 여부·요약·썸네일·시리즈를 검증한다. 기존 파일을
 일괄 변환하거나 새 필수 필드를 요구하지 않는다. `path`는 파일 위치에서 유도하므로
 Obsidian에서 같은 정보를 중복 입력하지 않는다. 썸네일 명시값이 없으면 기존처럼
@@ -201,6 +211,7 @@ Mermaid는 필요한 페이지에서만 로딩하고 strict 설정 및 SVG 정�
 원문 Markdown이나 미검증 외부 HTML을 넣지 않는다. 세 삽입 지점은 동일한 정화
 계약을 따르고 악성 링크·HTML·스크립트 회귀 테스트를 통과해야 한다. 각 프레임워크의
 hydration 뒤에도 렌더링 결과와 안전성이 유지되는지 확인한다.
+Sätteri가 생성한 HTML도 자동으로 안전하다고 간주하지 않으며 최종 정화는 유지한다.
 
 ## 오류와 보안 경계
 
@@ -240,3 +251,14 @@ hydration 뒤에도 렌더링 결과와 안전성이 유지되는지 확인한�
   구체적인 secret 이름과 호출 workflow는 해당 단계에서 함께 확정한다.
 - 콘텐츠 push부터 실제 배포까지 확인한 뒤 기존 인덱스 생성 자동화를 제거한다.
 - 수동 설정값 입력 전에는 자동 배포가 연결되었다고 주장하지 않는다.
+
+## Markdown 기반 확인 근거
+
+2026-10-20 공식 문서와 배포 패키지를 확인했다. Astro 공식 문서는 Astro 7부터
+Sätteri가 기본 Markdown processor임을 명시하며, npm의 `astro@7.4.0`과
+`astro@7.4.1`은 모두 `@astrojs/markdown-satteri@0.4.4`를 의존성으로 가진다.
+이 확인은 라이브러리 선택의 근거이며 실제 프로젝트 설치·확장 호환성 검증을 뜻하지 않는다.
+
+- [Astro Markdown processors](https://docs.astro.build/en/guides/markdown-content/#markdown-processors)
+- [공식 Sätteri processor API](https://docs.astro.build/en/reference/markdown-processors/satteri/)
+- [Sätteri 저장소](https://github.com/bruits/satteri)

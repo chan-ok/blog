@@ -6,7 +6,7 @@
 
 **Architecture:** Astro가 파일 라우팅·콘텐츠 수집·Markdown 변환·페이지 데이터·정적 HTML 문서를 담당한다. 세 프레임워크는 같은 데이터 계약과 CSS를 사용하면서 전체 화면과 상호작용을 각각 구현한다. 기존 prefix 없는 URL은 React로 유지하고 외부 배포 연동은 마지막 수동 단계로 남긴다.
 
-**Tech Stack:** Node.js 24, pnpm 11.18.0, Astro 및 공식 React·Vue·Svelte 통합, React 19, Vue 3, Svelte 5, TypeScript, Tailwind CSS 4, unified/remark/rehype, Zod, YAML, Mermaid, DOMPurify, Vitest, Playwright.
+**Tech Stack:** Node.js 24, pnpm 11.18.0, Astro 및 공식 React·Vue·Svelte 통합, React 19, Vue 3, Svelte 5, TypeScript, Tailwind CSS 4, Sätteri(`@astrojs/markdown-satteri`), Zod, YAML, Mermaid, DOMPurify, 서버 HTML allowlist 정화, Vitest, Playwright.
 
 **Spec:** [승인된 설계](../specs/2026-10-20-astro-migration-design.md). 사용자가 2026-10-20 문서를 승인했다.
 
@@ -18,6 +18,7 @@
 - Markdown 수집·공개 정책·날짜·번역·URL 생성·디자인 CSS는 공통으로 둔다. UI 컴포넌트·상태·수명 주기는 각 프레임워크로 구현한다.
 - `BLOG_CONTENT_DIR`을 우선하고 기본값은 프로젝트 옆 `../blog-content`다. 서버 전용 설정이며 브라우저에 로컬 경로를 노출하지 않는다.
 - `.md`·`.mdx`는 모두 비실행 Markdown으로 처리한다. Obsidian 작성 파일을 일괄 변경하거나 새 필수 frontmatter 필드를 요구하지 않는다.
+- Markdown engine은 Astro 7 기본 Sätteri다. 기존 remark/rehype 플러그인의 직접 호환을 가정하지 않고 Sätteri mdast/hast 플러그인으로 이식한다. Sätteri 출력에도 최종 HTML 정화를 적용한다.
 - 운영은 `published: true`이고 `test`, `draft` 태그가 없는 글만 생성한다. 개발 목록은 `published: true`, 개발 상세는 초안을 허용한다.
 - 본문 2 MiB, frontmatter 64 KiB, YAML alias 최대 20과 mapping·중복 key 제한을 보존한다. 파일 기반 처리에서는 byte 길이도 확인한다.
 - 문서·주석·커밋 메시지는 한국어를 사용한다. 사용자 대면 문구는 ko/ja 사전으로 관리한다.
@@ -39,7 +40,7 @@
 | --- | --- | --- |
 | URL·공통 타입 | `src/lib/presentation/{types,routes}.ts` | framework·locale·페이지 구분, 링크·canonical 계약 |
 | 작성 파일 | `src/lib/content/{types,vault,metadata,visibility}.ts` | 안전한 루트와 파일 탐색, 메타데이터·공개 정책 |
-| Markdown | `src/lib/markdown/{render,sanitize,obsidian}.ts` | 비실행 본문·목차·callout·이미지·코드 변환 |
+| Markdown | `src/lib/markdown/{processor,render,sanitize,obsidian}.ts` | Sätteri 공통 설정, 비실행 본문·목차·callout·이미지·코드 변환 |
 | 이미지 | `src/lib/content/assets.ts`, `src/integrations/content-assets.ts` | 참조 이미지 검증·개발 제공·정적 출력 |
 | 컬렉션 | `src/content.config.ts`, `src/lib/content/loader.ts` | Astro Content Layer와 외부 vault 변경 감시 |
 | 화면 데이터 | `src/lib/presentation/{page-model,about}.ts` | 공통 직렬화 props, 정렬·표시·메타데이터 |
@@ -124,7 +125,7 @@ expect(isVisible({ ...published, published: false }, false, 'list')).toBe(false)
 
 ## Task 3: 프레임워크 독립 Markdown과 안전한 HTML
 
-**Files:** Create `src/lib/markdown/{render,sanitize,obsidian}.ts`, `src/lib/markdown/{render,sanitize}.test.ts`, `src/lib/browser/mermaid.ts`, `src/lib/browser/mermaid.test.ts`; Migrate `src/entities/markdown/util/{remark-obsidian-image,rehype-unwrap-images}.ts` and `src/entities/markdown/ui/mermaid-diagram.test.ts`; Modify `tests/browser/fixtures/mermaid-security-entry.ts` to import the new pure browser module.
+**Files:** Create `src/lib/markdown/{processor,render,sanitize,obsidian}.ts`, `src/lib/markdown/{render,sanitize}.test.ts`, `src/lib/browser/mermaid.ts`, `src/lib/browser/mermaid.test.ts`; Port the behavior of `src/entities/markdown/util/{remark-obsidian-image,rehype-unwrap-images}.ts` to Sätteri plugins and migrate `src/entities/markdown/ui/mermaid-diagram.test.ts`; Modify `tests/browser/fixtures/mermaid-security-entry.ts` to import the new pure browser module.
 
 **Interfaces:**
 
@@ -145,6 +146,7 @@ function mountMermaid(root: HTMLElement): Promise<() => void>;
 ```
 
 `SanitizedHtml`은 정화 함수에서만 생성한다. `resolveImage`는 Task 4의 안전한 이미지 resolver를 받는다. 실행·정화 이전 원문은 framework props로 보내지 않는다.
+`processor.ts`는 공식 `SatteriMarkdownProcessorOptions`를 만드는 `createProcessorOptions(): SatteriMarkdownProcessorOptions`를 제공한다. 렌더러와 이후 Astro 통합이 같은 GFM·heading·highlight 설정 및 Sätteri 플러그인 정의를 공유한다. framework별 링크와 `resolveImage`를 통한 자산 URL 변환은 `render.ts`가 처리하고, 모든 변환 뒤 정화한다. 특정 페이지의 locale·framework를 전역 processor 상태에 저장하지 않는다.
 
 - [ ] **Step 1:** 테스트에서 GFM 표, 중복 제목의 고유 앵커와 목차, INFO/WARNING/DANGER/SUCCESS callout, Obsidian 이미지, 코드 하이라이트·복사 대상, Mermaid 코드 marker를 확인한다. 원문 `<script>`, 이벤트 속성, `javascript:` 링크와 MDX import/표현식은 실행 가능한 출력이 되면 안 된다.
 
@@ -155,7 +157,7 @@ expect(result.headings.map((heading) => heading.id)).toEqual(['same', 'same-1'])
 
 본문 내 기존 블로그 내부 링크는 선택한 framework를 유지하도록 변환하고 외부 링크·이미지 경로·fragment는 구별한다. 일반 문장·링크가 섞인 Obsidian 이미지 문단의 텍스트도 보존한다.
 - [ ] **Step 2:** 새 테스트를 실행해 렌더러 부재로 실패하는지 확인한다.
-- [ ] **Step 3:** 필요한 unified·remark-parse·remark-rehype·rehype-stringify·rehype-sanitize와 사용 중인 확장 플러그인을 직접 의존성으로 기록한다. React 전용 렌더러 없이 파이프라인을 구현한다. raw HTML은 제외하고, HTML을 만드는 모든 변환 뒤 최종 allowlist 정화를 실행한다. 코드·Mermaid 원문은 escape하고 문서의 JSX를 평가하지 않는다.
+- [ ] **Step 3:** 공식 Astro 7 패키지와 호환되는 `@astrojs/markdown-satteri` 및 플러그인 타입을 직접 사용하는 `satteri`를 의존성으로 선언한다. 공식 `createSatteriMarkdownProcessor()`로 문자열 렌더러를 만들고 `render()` 결과의 HTML·heading metadata를 공통 반환 타입으로 매핑한다. `.mdx` 내용도 Markdown 문자열로만 전달하며 MDX renderer·`mdxToJs`를 호출하지 않는다. Astro 기본 기능의 GFM·heading·Shiki 하이라이트를 사용하고 Obsidian·callout·이미지/링크 처리는 Sätteri mdast/hast visitor와 context API로 이식한다. 기존 unist visitor·remark/rehype 플러그인을 설정에 그대로 넣지 않는다. 서버 HTML 정화는 `sanitize-html`과 타입 선언을 직접 의존성으로 기록해 구현하며, raw HTML은 제외하고 코드 하이라이트에 필요한 좁은 속성만 허용한다. 코드·Mermaid 원문은 escape하고 모든 변환 뒤 최종 allowlist 정화를 실행한다. 플러그인 재사용을 이유로 별도의 unified Markdown 파이프라인으로 자동 fallback하지 않는다.
 - [ ] **Step 4:** 기존 Mermaid strict 설정과 SVG/CSS/URL hardening을 `mermaid.ts`로 옮기고 기존 테스트를 새 모듈에 적용한다. 브라우저 구현은 필요한 경우에만 Mermaid를 import하고 cleanup 시 작업·listener를 정리한다. `pnpm test:once src/lib/markdown src/lib/browser` 및 기존 Mermaid 보안 브라우저 테스트를 실행한다. browser 실행 시 설치된 Chromium과 현재 인증서 제약을 보존한다.
 - [ ] **Step 5:** `feat(markdown): 세 프레임워크가 공유하는 안전한 렌더링 추가`로 커밋한다.
 
@@ -194,7 +196,7 @@ class PageNotFoundError extends Error {}
 
 - [ ] **Step 1:** 실제 vault와 임시 About fixture를 입력으로 프로덕션 HTML 검증을 작성한다. prefix 없는 React 경로와 `/react/{ko,ja}`의 네 화면에서 초기 HTML에 본문·번역·canonical이 있어야 하고 draft/test 상세 파일은 없어야 한다. missing image·vault 밖 symlink·`.mdx` 자산 요청은 거부되어야 한다. 같은 이미지 이름의 내용 교체는 digest URL을 바꿔야 한다.
 - [ ] **Step 2:** 현재 Vite 앱으로 테스트를 실행해 정적 글 HTML·Astro route가 없어서 실패함을 확인한다.
-- [ ] **Step 3:** 공식 통합과 peer 호환성을 확인해 Astro를 설정한다. 2026-10-20 확인 기준 후보는 `astro@7.4.0`, `@astrojs/react@7.1.0`, `@astrojs/vue@7.1.1`, `@astrojs/svelte@9.1.0`, `vue@3.5.44`, `svelte@5.57.2`다. Svelte 통합과 checker는 TypeScript 7을 지원하지 않으므로 `typescript@6.0.3`과 호환되는 checker를 사용하고 `@typescript/native-preview` 기반 검사에 의존하지 않는다. 직접 사용하는 Vite도 Astro 통합의 `^8.3.4` 범위와 정렬한다. 레지스트리 metadata·공식 문서를 다시 확인하고 실제 설치 버전을 lockfile에 기록한다. 서명·release-age·peer 오류를 무시하는 옵션은 사용하지 않는다.
+- [ ] **Step 3:** Task 3에서 도입한 Astro에 공식 UI 통합을 설정한다. 2026-10-20 확인 기준 후보는 `astro@7.4.1`, `@astrojs/markdown-satteri@0.4.4`, `@astrojs/react@7.1.0`, `@astrojs/vue@7.1.1`, `@astrojs/svelte@9.1.0`, `vue@3.5.44`, `svelte@5.57.2`다. Svelte 통합과 checker는 TypeScript 7을 지원하지 않으므로 `typescript@6.0.3`과 호환되는 checker를 사용하고 `@typescript/native-preview` 기반 검사에 의존하지 않는다. 직접 사용하는 Vite도 Astro 통합의 `^8.3.4` 범위와 정렬한다. `markdown.processor`에는 공식 `satteri()`를 설정하고 Task 3의 공통 플러그인·옵션을 적용한다. 레지스트리 metadata·공식 문서를 다시 확인하고 실제 설치 버전을 lockfile에 기록한다. 서명·release-age·peer 오류를 무시하는 옵션은 사용하지 않는다.
 - [ ] **Step 4:** `dev/build/preview`를 Astro로 전환하고, 독립 `vitest.config.ts`로 기존 순수 테스트를 실행하게 한다. `@astrojs/check`, `vue-tsc`, `svelte-check`, `tsx`를 실제 사용하는 개발 의존성으로 선언한다. 확인된 checker 후보는 각각 `0.9.11`, `3.3.13`, `4.7.7`이며 TypeScript 6 호환성을 재확인한다. `typecheck`는 `astro check && tsc --noEmit && vue-tsc --noEmit -p tsconfig.vue.json && svelte-check --tsconfig ./tsconfig.svelte.json`으로 구성한다. React JSX는 TSX 설정에, Vue와 Svelte는 전용 tsconfig에 포함하고 빈 구현 단계를 통과시키려고 검사를 비활성화하지 않는다. 기존 실행 파일 이름을 고정하던 테스트는 실제 새 검사와 보안 계약을 확인하도록 변경한다.
 - [ ] **Step 5:** custom Content Layer loader와 이미지 integration을 구현한다. 공개 정책을 적용한 페이지가 참조하는 이미지만 MIME·경로 확인 후 digest URL로 제공·출력한다. vault 전체를 public에 복사하지 않는다. SVG를 지원할 경우 외부 로딩·스크립트를 제거하거나 안전한 raster 출력으로 바꾸고 악성 SVG 테스트를 둔다. 생성 자산은 별도 전용 출력 영역에서만 정리하며 사용자의 public 파일을 삭제하지 않는다. 개발 draft 자산을 프로덕션 출력에 재사용하지 않는다.
 - [ ] **Step 6:** 모든 React 페이지·헤더·푸터·언어/framework 링크를 `PageModel`로 구현한다. 서버 HTML을 렌더링하고 `client:load`로 hydrate하며 `client:only`는 사용하지 않는다. 기존 Tailwind 토큰·레이아웃·번역·프로필 로딩 상태를 유지한다. 목차·복사 상태는 React hooks로 관리하고 Markdown HTML은 Task 3의 정화 결과만 삽입한다.
@@ -257,7 +259,7 @@ class PageNotFoundError extends Error {}
 
 ## 구현 참고와 최종 검토
 
-- 공식 문서: [Astro UI frameworks](https://docs.astro.build/en/guides/framework-components/), [Content Loader API](https://docs.astro.build/en/reference/content-loader-reference/), [Astro routing](https://docs.astro.build/en/guides/routing/), [Svelte TypeScript](https://svelte.dev/docs/svelte/typescript), [Vue TypeScript](https://vuejs.org/guide/typescript/overview.html).
+- 공식 문서: [Astro UI frameworks](https://docs.astro.build/en/guides/framework-components/), [Astro Markdown processors](https://docs.astro.build/en/guides/markdown-content/#markdown-processors), [Sätteri processor API](https://docs.astro.build/en/reference/markdown-processors/satteri/), [Content Loader API](https://docs.astro.build/en/reference/content-loader-reference/), [Astro routing](https://docs.astro.build/en/guides/routing/), [Svelte TypeScript](https://svelte.dev/docs/svelte/typescript), [Vue TypeScript](https://vuejs.org/guide/typescript/overview.html).
 - Task 1·2·3이 공통 계약을 고정하고 Task 4가 실제 정적 사이트를 만든다. Task 5·6은 동일 계약을 소비하며 Task 7이 전체 결과를 검증하므로 순서대로 실행한다.
 - 공통 코드의 잘못을 세 UI에 복제하지 않도록 순수 테스트와 실제 페이지 검증을 함께 사용한다. 문서 검토·구현 방법 선택 전에는 제품 의존성 설치나 제품 코드를 변경하지 않는다.
 - 계획 자체의 self-review: URL/SEO, Obsidian/이미지, 공개 정책, 세 framework UI, 상태/cleanup, HMR, 보안, 타입 검사, 기존 자동화 보존, 배포 유예 및 재사용 환경 지침을 각 Task에 배정했다.
