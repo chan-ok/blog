@@ -1,7 +1,9 @@
 ---
 import BlogPage from '../frameworks/react/BlogPage';
+import VueBlogPage from '../frameworks/vue/BlogPage.vue';
 import type { PageModel } from '../lib/presentation/page-model';
 interface Props { model: PageModel }
 const { model } = Astro.props;
 ---
-<BlogPage model={model} client:load />
+{model.context.framework === 'react' && <BlogPage model={model} client:load />}
+{model.context.framework === 'vue' && <VueBlogPage model={model} client:load />}
