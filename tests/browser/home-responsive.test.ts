@@ -28,7 +28,7 @@ async function getVisibleBox(locator: Locator, message: string): Promise<Box> {
   return box as Box;
 }
 
-for (const framework of ['react', 'vue'])
+for (const framework of ['react', 'vue', 'svelte'])
   test.describe(`${framework} responsive home introduction`, () => {
     test.describe.configure({ mode: 'serial' });
 

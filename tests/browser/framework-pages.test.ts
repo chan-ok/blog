@@ -1,6 +1,6 @@
 import { expect, test } from 'playwright/test';
 
-for (const framework of ['react', 'vue']) {
+for (const framework of ['react', 'vue', 'svelte']) {
   for (const locale of ['ko', 'ja']) {
     test(`${framework}/${locale}: 전체 페이지와 탐색 축을 유지한다`, async ({ page }) => {
       const errors: string[] = [];
