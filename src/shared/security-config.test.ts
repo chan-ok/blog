@@ -11,7 +11,14 @@ describe('deployment security configuration', () => {
       scripts: Record<string, string>;
     };
 
-    expect(packageJson.scripts.typecheck).toBe('tsgo -p . --noEmit');
+    expect(packageJson.scripts.typecheck).toBe(
+      'astro check && tsc --noEmit && vue-tsc --noEmit -p tsconfig.vue.json && svelte-check --tsconfig ./tsconfig.svelte.json'
+    );
+    const dependencies = (
+      JSON.parse(projectFile('package.json')) as { devDependencies: Record<string, string> }
+    ).devDependencies;
+    for (const name of ['@astrojs/check', 'typescript', 'vue-tsc', 'svelte-check'])
+      expect(dependencies).toHaveProperty(name);
     expect(packageJson.scripts).not.toHaveProperty('test:coverage');
     expect(packageJson.scripts).not.toHaveProperty('test:responsive');
     expect(packageJson.scripts).not.toHaveProperty('pioneer');

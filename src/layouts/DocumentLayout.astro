@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+import type { PageModel } from '../lib/presentation/page-model';
+interface Props { model: PageModel }
+const { model } = Astro.props;
+const { meta, context } = model;
+const image = meta.image ? new URL(meta.image, 'https://chan-ok.com').href : 'https://chan-ok.com/og-default.png';
+---
+<!doctype html>
+<html lang={context.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <link rel="canonical" href={meta.canonical} />
+    <meta property="og:site_name" content="chanho.kim" />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:type" content={meta.type} />
+    <meta property="og:url" content={meta.canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:locale" content={context.locale === 'ko' ? 'ko_KR' : 'ja_JP'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.title} />
+    <meta name="twitter:description" content={meta.description} />
+    <meta name="twitter:image" content={image} />
+    {meta.publishedTime && <meta property="article:published_time" content={meta.publishedTime} />}
+    {meta.tags.map((tag) => <meta property="article:tag" content={tag} />)}
+  </head>
+  <body><slot /></body>
+</html>

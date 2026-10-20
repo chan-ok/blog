@@ -1,0 +1,1 @@
+{ "extends": "./tsconfig.json", "include": [".astro/types.d.ts", "src/frameworks/vue/**/*.vue", "src/lib/**/*.ts"], "compilerOptions": { "jsx": "preserve" } }

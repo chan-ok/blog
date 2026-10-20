@@ -8,6 +8,7 @@ package-lock.json
 
 # vite
 /dist
+/.astro/
 
 # production
 /build

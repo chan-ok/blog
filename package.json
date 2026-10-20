@@ -8,20 +8,24 @@
     "node": ">=24 <25"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "typecheck": "tsgo -p . --noEmit",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check && tsc --noEmit && vue-tsc --noEmit -p tsconfig.vue.json && svelte-check --tsconfig ./tsconfig.svelte.json",
     "fmt": "oxfmt src",
     "lint": "oxlint src",
     "lint:error": "oxlint --quiet src",
     "lint:fix": "oxlint --fix src",
     "test": "vitest",
     "test:once": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "verify:build": "tsx scripts/verify-static-build.ts"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "0.4.4",
+    "@astrojs/react": "^7.1.0",
+    "@astrojs/svelte": "^9.1.0",
+    "@astrojs/vue": "^7.1.0",
     "@base-ui/react": "^1.6.0",
     "@tanstack/react-router": "^1.170.16",
     "astro": "7.4.0",
@@ -42,12 +46,15 @@
     "remark-gfm": "^4.0.1",
     "sanitize-html": "^2.18.1",
     "satteri": "0.10.5",
+    "svelte": "^5.57.2",
     "unist-util-visit": "^5.1.0",
+    "vue": "^3.5.44",
     "yaml": "2.9.0",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@babel/core": "^8.0.1",
     "@babel/plugin-transform-runtime": "^8.0.1",
     "@babel/runtime": "^8.0.0",
@@ -59,19 +66,24 @@
     "@types/node": "^25.9.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/sanitize-html": "2.16.2",
     "@typescript/native-preview": "7.0.0-dev.20260618.1",
     "@vitejs/plugin-react": "^6.0.2",
     "babel-plugin-react-compiler": "1.0.0",
+    "html-validate": "11.16.4",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0",
     "playwright": "^1.61.0",
+    "svelte-check": "^4.7.7",
     "tailwindcss": "^4.3.1",
-    "typescript": "^7.0.2",
+    "tsx": "4.23.15",
+    "typescript": "^6.0.3",
     "vite": "^8.0.16",
     "vite-plugin-image-optimizer": "^2.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.9",
+    "vue-tsc": "^3.3.13"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

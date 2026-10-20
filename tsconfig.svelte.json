@@ -1,0 +1,1 @@
+{ "extends": "./tsconfig.json", "include": [".astro/types.d.ts", "src/frameworks/svelte/**/*.svelte", "src/lib/**/*.ts"] }

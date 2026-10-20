@@ -1,6 +1,7 @@
-import { defineMdastPlugin, type MdastContent } from 'satteri';
-export function obsidianParts(value: string): MdastContent[] | undefined {
-  const children: MdastContent[] = [];
+import { defineMdastPlugin } from 'satteri';
+type ObsidianPart = { type: 'text'; value: string } | { type: 'image'; url: string; alt: string };
+export function obsidianParts(value: string): ObsidianPart[] | undefined {
+  const children: ObsidianPart[] = [];
   let start = 0;
   for (const match of value.matchAll(/!\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/gu)) {
     const index = match.index!;

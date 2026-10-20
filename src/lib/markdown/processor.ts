@@ -1,4 +1,4 @@
-import { defineHastPlugin, type HastContent, type HastNode } from 'satteri';
+import { defineHastPlugin, type HastNode } from 'satteri';
 import type {
   SatteriMarkdownProcessorOptions,
   SatteriProcessorOptions,
@@ -24,7 +24,7 @@ function presentationPlugin() {
           const text = ctx.textContent(node);
           const match = /^\s*\[!(INFO|WARNING|DANGER|SUCCESS)\]\s*/u.exec(text);
           if (match) {
-            const children = structuredClone(node.children || []) as HastContent[];
+            const children = structuredClone(node.children || []);
             const first = children.find(
               (child) => child.type === 'element' && child.tagName === 'p'
             );

@@ -19,6 +19,12 @@ async function vault() {
 const source =
   '---\ntitle: 글 제목\ncreatedAt: 2026-01-31T21:45:00Z\nupdatedAt: null\npublished: true\ntags: [blog]\n---\n# 본문';
 describe('Obsidian 콘텐츠 수집', () => {
+  it('제목 frontmatter가 없는 기존 글은 파일명을 제목으로 사용한다', async () => {
+    const root = await vault();
+    await writeFile(join(root, 'ko', '기존 글.mdx'), source.replace('title: 글 제목\n', ''));
+    const [post] = await readVaultPosts(root);
+    expect(post.metadata.title).toBe('기존 글');
+  });
   it('중첩 경로와 날짜를 보존하고 숨김·인덱스를 무시한다', async () => {
     const root = await vault();
     await writeFile(join(root, 'ko', 'nested', '글 제목.mdx'), source);

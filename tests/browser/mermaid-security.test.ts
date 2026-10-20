@@ -32,7 +32,7 @@ test.beforeAll(async () => {
 
   const outputs = Array.isArray(result) ? result : [result];
   const entryChunk = outputs
-    .flatMap((output) => output.output)
+    .flatMap((output) => ('output' in output ? output.output : []))
     .find((item) => item.type === 'chunk' && item.isEntry);
   if (!entryChunk || entryChunk.type !== 'chunk') {
     throw new Error('Failed to build the Mermaid security browser fixture');

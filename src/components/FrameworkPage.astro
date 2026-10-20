@@ -1,0 +1,7 @@
+---
+import BlogPage from '../frameworks/react/BlogPage';
+import type { PageModel } from '../lib/presentation/page-model';
+interface Props { model: PageModel }
+const { model } = Astro.props;
+---
+<BlogPage model={model} client:load />

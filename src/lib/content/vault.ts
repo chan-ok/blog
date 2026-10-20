@@ -1,5 +1,5 @@
 import { readFile, readdir, realpath, stat } from 'node:fs/promises';
-import { extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { basename, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { parseMarkdownSource } from '../../entities/markdown/util/parse-markdown';
 import { LOCALES } from '../presentation/types';
 import { validateSegments } from '../presentation/routes';
@@ -62,7 +62,10 @@ export async function readVaultPosts(directory: string): Promise<VaultPost[]> {
           id,
           locale,
           slug: parts,
-          metadata: PostMetadataSchema.parse(parsed.data),
+          metadata: PostMetadataSchema.parse({
+            title: basename(file, extname(file)),
+            ...parsed.data,
+          }),
           body: parsed.content,
           sourcePath: file,
         });
