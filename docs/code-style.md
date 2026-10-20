@@ -1,6 +1,6 @@
 # 코드 스타일
 
-현재 자동 도구는 `src`의 TypeScript·JavaScript를 oxfmt와 oxlint로 처리합니다. Import 순서나 Tailwind class 정렬이 자동으로 강제된다고 가정하지 말고 기존 파일의 패턴을 따르세요.
+TypeScript·JSON·CSS는 oxfmt, Astro·Vue·Svelte 템플릿은 Prettier 플러그인으로 포맷합니다. oxlint와 각 프레임워크의 공식 checker를 함께 실행합니다. Import 순서나 Tailwind class 정렬이 자동으로 강제된다고 가정하지 말고 기존 파일의 패턴을 따르세요.
 
 ## TypeScript
 
@@ -32,9 +32,9 @@ function parseLocale(value: unknown): Locale {
 | 테스트              | `*.test.ts(x)`   | `about-block.test.tsx`        |
 | 스키마              | `*.schema.ts`    | `model.schema.ts`             |
 
-TanStack Router의 파일명(`$locale`, `$`, `__root`)은 라우터 규칙을 따릅니다.
+Astro 라우트는 `[locale]`, `[framework]`, `[...slug]`와 `index.astro` 파일 규칙을 따릅니다.
 
-## React 컴포넌트
+## 프레임워크 컴포넌트
 
 - props 타입을 컴포넌트 가까이에 둡니다.
 - 파생 가능한 값은 중복 state로 저장하지 않습니다.
@@ -47,8 +47,8 @@ TanStack Router의 파일명(`$locale`, `$`, `__root`)은 라우터 규칙을 �
 
 ## Import
 
-- 레이어를 넘는 import는 `@/` 별칭을 사용합니다.
-- 같은 slice 내부의 가까운 파일은 상대 import를 사용할 수 있습니다.
+- 공통 계약은 `lib`에서 import하고 세 프레임워크 UI 사이의 import는 만들지 않습니다.
+- 가까운 모듈은 상대 import를 사용할 수 있습니다.
 - side-effect import에는 이유가 드러나게 주석이나 lint 예외를 좁게 둡니다.
 - 사용하지 않는 import와 재-export 전용 barrel의 과도한 확장을 피합니다.
 

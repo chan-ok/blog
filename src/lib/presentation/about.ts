@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fetchTextWithLimit, MAX_REMOTE_CONTENT_BYTES } from '../../shared/util/fetch-limited';
-import { parseMarkdownSource } from '../../entities/markdown/util/parse-markdown';
+import { parseMarkdownSource } from '../content/frontmatter';
 import type { Locale } from './types';
 const cache = new Map<string, Promise<string>>();
 export const ABOUT_ROOT = 'https://raw.githubusercontent.com/chan-ok/chan-ok/main';

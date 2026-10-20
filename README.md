@@ -1,122 +1,55 @@
 # Chanho's Dev Blog
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/d52613d2-028c-4166-bd14-b7784176e05e/deploy-status)](https://app.netlify.com/projects/chanho-dev-blog/deploys)
+Astro 7과 Sätteri를 기반으로 한국어·일본어 블로그를 React 19, Vue 3, Svelte 5로 각각 구현합니다. 콘텐츠는 별도 [blog-content](https://github.com/chan-ok/blog-content) 저장소에서 Obsidian으로 작성합니다.
 
-React 19, TanStack Router, Vite 8로 만든 한국어·일본어 개인 블로그입니다. 애플리케이션 코드는 이 리포지터리에서, 포스트는 별도 [`blog-content`](https://github.com/chan-ok/blog-content) 리포지터리에서 관리합니다.
+## 시작하기
 
-## 주요 기능
-
-- `/ko`, `/ja` 로케일 라우팅과 언어 전환
-- 소개와 최근 포스트를 함께 보여 주는 홈
-- 원격 Markdown 포스트 목록·상세 페이지
-- GFM, 코드 하이라이팅, Mermaid, Obsidian 이미지, 목차 렌더링
-- 프로덕션 포스트 공개 정책과 상세 URL 차단
-- 반응형 레이아웃과 시스템 다크 모드
-
-## 기술 스택
-
-| 영역        | 기술                                     |
-| ----------- | ---------------------------------------- |
-| UI·라우팅   | React 19, TanStack Router                |
-| 빌드·타입   | Vite 8, TypeScript, React Compiler       |
-| 스타일      | Tailwind CSS 4                           |
-| 콘텐츠      | react-markdown, remark/rehype, YAML, Zod |
-| 데이터·상태 | Fetch API, Zustand, i18next              |
-| 테스트      | Vitest, Playwright                       |
-| 품질        | oxlint, oxfmt, Husky, lint-staged        |
-| 배포        | Netlify                                  |
-
-## 빠른 시작
-
-지원 개발 환경은 Node.js 24 LTS와 pnpm 11.18.0입니다. `.nvmrc`, `engines`, `packageManager`가 로컬과 배포 환경의 도구 버전을 고정합니다.
+Node.js 24와 pnpm 11.18.0을 사용합니다. 두 저장소를 나란히 둡니다.
 
 ```bash
 git clone https://github.com/chan-ok/blog.git
+git clone https://github.com/chan-ok/blog-content.git
 cd blog
-pnpm install
+pnpm install --frozen-lockfile
+pnpm dev --host 127.0.0.1 --port 4321
 ```
 
-프로젝트 루트에 `.env.local`을 만듭니다.
+다른 콘텐츠 위치는 `BLOG_CONTENT_DIR=/absolute/path/to/vault pnpm dev`로 지정합니다. `VITE_GIT_RAW_URL`과 인덱스 생성은 필요하지 않습니다.
 
-```dotenv
-VITE_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
-```
+| 화면 | React | Vue | Svelte |
+| --- | --- | --- | --- |
+| 홈 | `/react/ko/` | `/vue/ko/` | `/svelte/ko/` |
+| 글 목록 | `/react/ko/posts/` | `/vue/ko/posts/` | `/svelte/ko/posts/` |
+| 글 상세 | `/react/ko/posts/<slug>/` | `/vue/ko/posts/<slug>/` | `/svelte/ko/posts/<slug>/` |
+| 소개 | `/react/ko/about/` | `/vue/ko/about/` | `/svelte/ko/about/` |
 
-`VITE_*` 값은 브라우저 번들에 포함될 수 있으므로 비밀값을 넣지 마세요.
+`ja`도 같은 구조입니다. 기존 `/ko`, `/ja` 경로는 React 별칭으로 유지하며 모든 구현의 canonical은 기존 주소를 사용합니다. 프레임워크와 언어 링크는 현재 글 경로를 유지합니다. 번역이 없는 글은 404입니다.
+
+## 콘텐츠와 미리보기
+
+- `blog-content/ko`, `ja`의 `.md`, `.mdx`를 읽습니다. MDX JavaScript·JSX와 raw HTML은 실행하지 않습니다.
+- YAML frontmatter, GFM, Shiki 코드 하이라이트·복사, Obsidian 이미지, callout, Mermaid와 목차를 지원합니다.
+- 개발에서는 미발행 상세도 확인할 수 있습니다. 목록에는 `published: true`인 글을 표시합니다.
+- 프로덕션에서는 `published: true`이고 정확히 `test`, `draft` 태그가 없는 글만 생성합니다.
+- Obsidian의 추가·수정·삭제와 이미지 교체가 열린 개발 화면에 자동 반영됩니다.
+- 참조 이미지만 MIME·경로를 검증해 `/content-assets/<digest>.<ext>`로 출력합니다. 전체 vault를 공개하지 않습니다.
+
+## 검증
 
 ```bash
-pnpm dev
-```
-
-기본 개발 주소는 `http://localhost:5173`입니다. 자세한 절차는 [개발 가이드](./docs/development.md)를 참고하세요.
-
-## 명령어
-
-```bash
-pnpm dev          # 개발 서버
-pnpm build        # 프로덕션 빌드
-pnpm preview      # 빌드 결과 미리보기
-pnpm typecheck    # 타입 검사
-pnpm lint         # 린트
-pnpm fmt          # src 포맷팅
-pnpm test         # Vitest watch
-pnpm test:once    # Vitest 1회 실행
-```
-
-브라우저 반응형 테스트는 별도 package script 없이 프로젝트 안의 Playwright 설정을 직접 사용합니다.
-
-```bash
+pnpm typecheck
+pnpm lint:error
+pnpm test:once
+pnpm build
+pnpm verify:build
 pnpm exec playwright test --config playwright.config.ts
+pnpm exec playwright test --config playwright.fixture.config.ts
 ```
 
-전체 설명은 [명령어 레퍼런스](./docs/commands.md)에 있습니다.
+브라우저는 `pnpm exec playwright install chromium`으로 준비하거나 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`로 설치된 Chromium을 지정합니다. 개발 서버·빌드·타입 검사는 공유 Astro 캐시를 변경하므로 순서대로 실행합니다.
 
-## 구조
+## 문서와 배포 상태
 
-```text
-src/
-├── app/                 # 진입점, 전역 스타일, TanStack Router 라우트
-├── entities/            # Markdown 모델·파서·렌더러
-├── features/            # 포스트 목록·상세 기능
-└── shared/              # 레이아웃, UI, 로케일, 공통 유틸
-tests/
-└── browser/             # Playwright 브라우저 테스트
-docs/                    # 현재 가이드와 과거 설계 기록
-```
+[개발](docs/development.md) · [구조](docs/architecture.md) · [명령어](docs/commands.md) · [보안](docs/security.md) · [검증 대응표](docs/reviews/2026-10-20-astro-implementation-validation.md)
 
-레이어 의존성은 `app → features → entities → shared` 방향을 따릅니다. 자세한 내용은 [아키텍처 가이드](./docs/architecture.md)와 [아키텍처 규칙](./docs/architecture-rules.md)을 참고하세요.
-
-## 콘텐츠 흐름
-
-1. 홈과 목록은 `VITE_GIT_RAW_URL/<locale>/index.json`을 가져옵니다.
-2. 상세 페이지는 정규화한 경로의 `.mdx`를 요청하고 필요하면 `.md`로 다시 시도합니다.
-3. YAML frontmatter를 파싱·검증하고 본문은 실행하지 않는 Markdown으로 렌더링합니다.
-4. 프로덕션에서는 `published: true`이며 `test`, `draft` 태그가 없는 포스트만 노출합니다.
-
-콘텐츠를 추가하거나 수정하려면 [`blog-content`](https://github.com/chan-ok/blog-content)에서 작업하세요.
-
-## 문서
-
-| 문서                                                          | 설명                                 |
-| ------------------------------------------------------------- | ------------------------------------ |
-| [architecture.md](./docs/architecture.md)                     | 현재 구조와 콘텐츠 흐름              |
-| [development.md](./docs/development.md)                       | 설치, 개발, 테스트, Git 훅           |
-| [commands.md](./docs/commands.md)                             | 실제 package script와 직접 실행 명령 |
-| [security.md](./docs/security.md)                             | 환경 변수와 원격 Markdown 보안 경계  |
-| [agents.md](./docs/agents.md)                                 | AI 에이전트 작업 기준                |
-| [architecture-rules.md](./docs/architecture-rules.md)         | 레이어 의존성 규칙                   |
-| [code-style.md](./docs/code-style.md)                         | TypeScript·React 코드 스타일         |
-| [anti-patterns.md](./docs/anti-patterns.md)                   | 피해야 할 구현 방식                  |
-| [git-flow.md](./docs/git-flow.md)                             | Git 작업 방식                        |
-| [language-rules.md](./docs/language-rules.md)                 | 문서·코드·커밋 언어 규칙             |
-| [retrospective/overview.md](./docs/retrospective/overview.md) | 과거 의사결정과 회고                 |
-
-## 참고 자료
-
-- [React](https://react.dev/)
-- [TanStack Router](https://tanstack.com/router/latest)
-- [Vite](https://vite.dev/)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [react-markdown](https://github.com/remarkjs/react-markdown)
-- [Vitest](https://vitest.dev/)
-- [Playwright](https://playwright.dev/)
+배포 연결은 보류했습니다. 기존 `netlify.toml`, 콘텐츠 push Actions와 Build Hook을 변경하지 않았습니다. 마지막 배포 단계에서 콘텐츠 커밋 고정·checkout, SPA fallback 제거, Astro 인라인 부트스트랩에 맞는 CSP와 수동 설정값을 함께 적용해야 합니다. 현재 설정으로 바로 운영 배포하지 않습니다.

@@ -4,7 +4,7 @@ import { pageHref } from '../../lib/presentation/routes';
 import { mountMermaid } from '../../lib/browser/mermaid';
 import type { SanitizedHtml } from '../../lib/markdown/sanitize';
 
-// Keep browser-owned diagram/image DOM intact when React updates TOC or copy state.
+// 목차·복사 상태가 바뀌어도 브라우저가 만든 다이어그램·이미지 DOM을 보존합니다.
 const MarkdownBody = memo(function MarkdownBody({ html }: { html?: SanitizedHtml }) {
   return <div className="mdx-content" dangerouslySetInnerHTML={{ __html: html || '' }} />;
 });

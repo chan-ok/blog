@@ -1,6 +1,22 @@
 import { describe, expect, it } from 'vitest';
 
-import { isPostVisible } from './post-visibility';
+import { isVisible } from './visibility';
+function isPostVisible(
+  input: { published?: boolean; tags?: string[] },
+  options: { isProduction: boolean; surface: 'list' | 'detail' }
+) {
+  return isVisible(
+    {
+      title: 'Fixture',
+      createdAt: '2026-01-01',
+      published: false,
+      ...input,
+      tags: input.tags || [],
+    },
+    options.isProduction,
+    options.surface
+  );
+}
 
 describe('isPostVisible', () => {
   describe.each(['list', 'detail'] as const)('in production on %s', (surface) => {
@@ -26,7 +42,7 @@ describe('isPostVisible', () => {
       [{ published: true, tags: ['test'] }, 'a test post'],
       [{ published: true, tags: ['draft'] }, 'a draft post'],
       [{ published: true, tags: ['react', 'test'] }, 'a post with a test tag among other tags'],
-    ])('hides %s', (frontmatter) => {
+    ])('hides %s', (frontmatter, _description) => {
       expect(isPostVisible(frontmatter, { isProduction: true, surface })).toBe(false);
     });
   });

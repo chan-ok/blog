@@ -6,6 +6,15 @@ const projectFile = (path: string) =>
   readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
 describe('deployment security configuration', () => {
+  it('uses Astro commands and declares only the active rendering stacks', () => {
+    const manifest = JSON.parse(projectFile('package.json'));
+    expect(manifest.scripts.dev).toBe('astro dev');
+    expect(manifest.scripts.build).toBe('astro build');
+    for (const removed of ['@tanstack/react-router', 'react-markdown', 'react-i18next', 'zustand'])
+      expect(manifest.dependencies).not.toHaveProperty(removed);
+    for (const formatter of ['prettier', 'prettier-plugin-astro', 'prettier-plugin-svelte'])
+      expect(manifest.devDependencies).toHaveProperty(formatter);
+  });
   it('uses only installed test and typecheck executables', () => {
     const packageJson = JSON.parse(projectFile('package.json')) as {
       scripts: Record<string, string>;
@@ -37,7 +46,7 @@ describe('deployment security configuration', () => {
   });
 
   it('does not load obsolete third-party or polyfill scripts', () => {
-    const html = projectFile('index.html');
+    const html = projectFile('src/layouts/DocumentLayout.astro');
 
     expect(html).not.toContain('challenges.cloudflare.com');
     expect(html).not.toContain("from 'buffer'");
@@ -60,7 +69,7 @@ describe('deployment security configuration', () => {
   });
 
   it('does not suppress eval warnings or install the removed Buffer polyfill', () => {
-    const viteConfig = projectFile('vite.config.ts');
+    const viteConfig = projectFile('astro.config.mjs');
 
     expect(viteConfig).not.toContain('gray-matter');
     expect(viteConfig).not.toContain('alias: {\n        buffer');

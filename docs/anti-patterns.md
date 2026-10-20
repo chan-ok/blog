@@ -2,16 +2,16 @@
 
 ## 존재하지 않는 구조를 전제로 하기
 
-현재 프로젝트에는 `pages`, `widgets`, 숫자 접두사 레이어, Contact 폼, Storybook script가 없습니다. 과거 문서를 복사해 경로나 명령을 만들지 말고 실제 tree와 `package.json`을 확인합니다.
+현재 페이지는 `src/pages`의 Astro 파일입니다. 이전 `app/features/entities` SPA 레이어·widgets·숫자 접두사 레이어·Contact 폼·Storybook script는 없습니다. 과거 문서를 복사해 경로나 명령을 만들지 말고 실제 tree와 `package.json`을 확인합니다.
 
 ## 레이어 역방향 import
 
 ```typescript
-// 잘못된 예: shared가 feature를 앎
-import PostCard from '@/features/post/ui/post-card';
+// 잘못된 예: React 화면이 Vue 화면을 재사용함
+import VueBlogPage from '../vue/BlogPage.vue';
 ```
 
-`shared`는 상위 레이어를 import하지 않습니다. 전체 규칙은 [architecture-rules.md](./architecture-rules.md)를 따릅니다.
+공통 `lib`는 UI를 import하지 않으며 세 프레임워크 UI는 서로 import하지 않습니다. 전체 규칙은 [architecture-rules.md](./architecture-rules.md)를 따릅니다.
 
 ## 검증 없는 외부 데이터
 
@@ -20,7 +20,7 @@ import PostCard from '@/features/post/ui/post-card';
 - YAML 값을 타입 단언만으로 신뢰하기
 - frontmatter 크기와 형식을 제한하지 않기
 
-외부 Markdown은 `markdown-path.ts`, `parse-markdown.ts`, Zod 스키마를 거쳐야 합니다.
+콘텐츠는 `lib/content/vault.ts`, `frontmatter.ts`, Zod 스키마로 검증합니다. 이미지와 링크도 각 경계에서 검증합니다.
 
 ## 실행 가능한 원격 콘텐츠
 
@@ -28,11 +28,11 @@ import PostCard from '@/features/post/ui/post-card';
 - `rehype-raw`를 검토 없이 추가하기
 - 정화하지 않은 HTML·SVG를 `dangerouslySetInnerHTML`에 넣기
 
-현재 콘텐츠는 `react-markdown`과 `skipHtml`로 렌더링합니다. Mermaid SVG만 strict 모드와 DOMPurify를 거쳐 삽입합니다.
+현재 콘텐츠는 Sätteri Markdown API로 렌더링하고 raw HTML AST를 제거한 뒤 서버 allowlist로 정화합니다. 세 UI의 HTML 삽입 지점에는 이 결과만 전달합니다. Mermaid SVG는 strict 모드와 DOMPurify·CSS/URL hardening을 거칩니다.
 
 ## 공개성 정책 복제
 
-목록과 상세에서 서로 다른 조건을 직접 작성하면 초안이 한쪽에 노출될 수 있습니다. `isPostVisible`을 사용하고 환경과 surface를 명시합니다. 이 정책을 인증·비밀 보관 수단으로 오해하지 않습니다.
+목록과 상세에서 서로 다른 조건을 직접 작성하면 초안이 한쪽에 노출될 수 있습니다. `isVisible`을 사용하고 환경과 surface를 명시합니다. 이 정책을 인증·비밀 보관 수단으로 오해하지 않습니다.
 
 ## 무의미한 테스트
 

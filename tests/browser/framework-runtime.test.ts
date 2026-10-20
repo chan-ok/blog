@@ -24,7 +24,7 @@ test('새 프로덕션 빌드에 비공개 자료가 없으며 선택한 프레�
   blog,
 }) => {
   test.setTimeout(90_000);
-  // Preview a draft first, so the build must also purge its staged image.
+  // 먼저 초안을 미리 보고 새 빌드가 초안 이미지 staging도 정리하는지 확인합니다.
   const draft = await fetch(`${blog.url}/react/ko/posts/draft/`);
   expect(draft.status).toBe(200);
   await blog.stop();
@@ -58,7 +58,7 @@ test('새 프로덕션 빌드에 비공개 자료가 없으며 선택한 프레�
       component: /component-url="([^"]+)"/u.exec(html)![1],
     });
   }
-  // Derive dependencies from emitted module imports, rather than chunk names or minified symbols.
+  // 출력된 모듈 import로 의존성을 계산해 chunk 이름·축약 심볼에 의존하지 않습니다.
   async function graph(entry: string, found = new Set<string>()): Promise<Set<string>> {
     if (found.has(entry)) return found;
     found.add(entry);

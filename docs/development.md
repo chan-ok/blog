@@ -1,139 +1,51 @@
 # 개발 가이드
 
-## 준비
+## 설치와 실행
 
-지원 환경은 Node.js 24 LTS와 pnpm 11.18.0입니다. `.nvmrc`, `engines`, `packageManager`가 로컬과 배포 환경의 도구 버전을 고정합니다.
-
-```bash
-git clone https://github.com/chan-ok/blog.git
-cd blog
-pnpm install
-```
-
-`pnpm install`은 `prepare` script를 통해 프로젝트의 Husky 훅도 설정합니다. CI에서는 lockfile 변경을 막기 위해 `pnpm install --frozen-lockfile`을 사용하세요.
-
-## 환경 변수
-
-프로젝트 루트의 `.env.local`에 콘텐츠 기준 URL을 설정합니다.
-
-```dotenv
-VITE_GIT_RAW_URL=https://raw.githubusercontent.com/chan-ok/blog-content/main
-```
-
-일반 로컬 개발에는 이 값만 필요합니다.
-
-`VITE_*` 변수는 클라이언트에 공개될 수 있습니다. 토큰, 비밀번호, 비공개 API 키를 넣거나 커밋하지 마세요.
-
-## 실행
+Node.js 24, pnpm 11.18.0을 사용합니다. `blog`와 `blog-content`를 같은 부모 디렉터리에 checkout하고 `blog`에서 `pnpm install --frozen-lockfile`을 실행합니다. 콘텐츠 생성 스크립트는 Astro 개발·빌드에 필요하지 않습니다.
 
 ```bash
-pnpm dev
-```
-
-기본 주소는 `http://localhost:5173`입니다.
-
-```bash
+pnpm dev --host 127.0.0.1 --port 4321
 pnpm build
-pnpm preview
+pnpm preview --host 127.0.0.1 --port 4322
 ```
 
-`preview`는 먼저 생성한 `dist`를 확인할 때 사용합니다.
+Astro 7은 에이전트 환경을 감지하면 개발 서버를 백그라운드로 실행할 수 있습니다. `pnpm exec astro dev status`, `logs`, `stop`으로 관리합니다. 독립 테스트 프로세스는 `--ignore-lock`으로 foreground에서 실행하고 자신이 시작한 프로세스만 정리합니다.
 
-## 개발 흐름
+## Obsidian 작성
 
-1. 실제 소스와 기존 테스트를 먼저 확인합니다.
-2. 동작 변경은 실패하는 Vitest 또는 Playwright 테스트로 요구사항을 고정합니다.
-3. 최소 구현 후 관련 테스트를 통과시킵니다.
-4. `typecheck`, `lint:error`, `test:once`, `build`를 실행합니다.
-5. `git diff`와 문서·설정 변경을 검토합니다.
+`blog-content/ko` 또는 `ja` 아래에 글을 만듭니다. `.md`와 `.mdx`는 모두 실행하지 않는 Markdown입니다.
 
-테스트 파일은 프로젝트 안에 둡니다.
-
-- 단위·통합 테스트: 대상 소스 옆 `src/**/*.test.ts(x)`
-- 브라우저 테스트: `tests/browser/**/*.test.ts`
-
-테스트 assertion은 Vitest의 `expect`를 사용합니다. 브라우저 상호작용과 viewport 검증은 Playwright의 `test`, `expect`로 작성합니다.
-
-## 테스트
-
-### Vitest
-
-```bash
-pnpm test
-pnpm test:once
-pnpm test:once src/features/post/util/post-visibility.test.ts
-pnpm test:once -t "production"
+```yaml
+---
+title: 글 제목
+createdAt: 2026-01-01
+published: false
+tags: [astro]
+---
 ```
 
-현재 Vitest 프로젝트는 `src/**/*.{test,spec}.*`를 Node 환경에서 실행합니다.
+제목이 없으면 기존처럼 파일명을 사용합니다. `updatedAt`, `summary`, `thumbnail`, `series`는 선택 사항입니다. 썸네일이 없으면 본문 첫 이미지를 사용합니다. 본문 이미지 경로는 vault 루트 기준입니다. 예: `![[images/example.png|설명]]`, `![설명](images/example.png)`.
 
-### Playwright
+폴더를 URL에 보존하고 파일명 공백만 `_`로 바꿉니다. `ko/분류/글 제목.md`는 `/ko/posts/분류/글_제목/`입니다. URL 충돌·잘못된 YAML/메타데이터·없는 이미지·vault 외부 symlink는 파일명을 확인해 수정해야 합니다.
 
-최초 실행 환경에 Chromium이 없다면 한 번 설치합니다.
+개발 목록은 발행 글을, 개발 상세는 초안까지 표시합니다. 운영 빌드는 발행 글 중 정확한 `test`, `draft` 태그가 있는 글을 제외합니다. 없는 번역으로 언어를 바꾸면 같은 글 경로의 404를 표시합니다. 파일 추가·수정·삭제와 이미지 교체는 열린 화면에 자동 반영됩니다.
 
-```bash
-pnpm exec playwright install chromium
-```
+## 환경 설정
 
-반응형 홈 테스트는 별도 package script를 두지 않고 현재 설정 파일로 실행합니다.
+| 값 | 용도 |
+| --- | --- |
+| `BLOG_CONTENT_DIR` | 기본 `../blog-content` 대신 읽을 vault 경로 |
+| `BLOG_ABOUT_DIR` | 선택 사항: `README.ko.md`, `README.ja.md`가 있는 로컬 소개 fixture 경로 |
+| `BLOG_CACHE_DIR`, `BLOG_OUT_DIR` | 독립 테스트용 캐시·출력 경로; 출력은 프로젝트와 같은 파일시스템에 둡니다 |
+| `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` | 선택 사항: 설치된 Chromium 실행 파일 |
 
-```bash
-pnpm exec playwright test --config playwright.config.ts
-```
+기본 소개는 서버가 `chan-ok/chan-ok`의 locale README를 HTTPS로 읽습니다. 실패를 빈 페이지로 숨기지 않습니다. `VITE_GIT_RAW_URL`은 사용하지 않습니다.
 
-Playwright가 `127.0.0.1:4173`에서 개발 서버를 시작하고 `tests/browser`를 실행합니다.
+클라우드에서는 `scripts/cloud-install.sh`의 writable XDG 경로와 Node 24의 `NODE_USE_ENV_PROXY=1`, `NODE_USE_SYSTEM_CA=1` 설정을 사용합니다. TLS 검증을 끄거나 브라우저 trust store를 바꾸지 않습니다. 외부 소개 문서 fetch는 Node에서 수행하고 테스트 fixture 성공과 실제 외부 통신 성공을 구별합니다.
 
-## 코드 품질
+## 검증과 변경 범위
 
-```bash
-pnpm typecheck
-pnpm lint
-pnpm lint:error
-pnpm lint:fix
-pnpm fmt
-```
+[명령어](commands.md) 순서로 타입·린트·테스트·빌드·산출물·브라우저를 검사합니다. formatter는 TypeScript/JSON/CSS에 oxfmt, Astro/Vue/Svelte에 Prettier 공식 플러그인을 사용합니다. Astro checker·vue-tsc·svelte-check는 각 템플릿과 타입을 검사하며 oxlint는 지원하는 script 부분을 검사합니다.
 
-- `typecheck`: TypeScript native preview(`tsgo`)로 emit 없이 검사
-- `lint`: `src` 전체 oxlint 결과 출력
-- `lint:error`: error만 출력하며 pre-push에서 사용
-- `lint:fix`: 가능한 lint 문제 자동 수정
-- `fmt`: `src`를 oxfmt로 수정
-
-명령어 전체 목록은 [commands.md](./commands.md)를 참고하세요.
-
-## Git 훅
-
-현재 훅은 다음 작업만 수행합니다.
-
-### pre-commit
-
-1. `lint-staged`: staged JS·TS 파일에 oxfmt와 oxlint fix
-2. `git diff --cached --check`: 공백 오류 검사
-
-### pre-push
-
-1. `pnpm typecheck`
-2. `pnpm lint:error`
-3. `pnpm test:once`
-4. `pnpm audit --audit-level=low`
-5. `pnpm build`
-
-pre-commit에는 비밀정보 스캐너가 없습니다. 커밋 전 `.env*`, 토큰, 개인 정보를 직접 확인해야 합니다.
-
-## 배포
-
-Netlify 설정은 `pnpm build`를 실행하고 `dist`를 게시합니다. 모든 경로는 SPA 진입점인 `/index.html`로 fallback됩니다. 배포 전에 로컬에서 pre-push와 같은 검증을 통과시키세요.
-
-## 문제 해결
-
-- 포스트가 비어 있으면 `.env.local`의 `VITE_GIT_RAW_URL`과 원격 `index.json`을 확인합니다.
-- 브라우저 테스트가 실행되지 않으면 `pnpm exec playwright install chromium` 후 다시 시도합니다.
-- 의존성 상태가 의심되면 먼저 `pnpm install --frozen-lockfile`로 lockfile과 설치 결과를 맞춥니다.
-- 다른 프로세스가 개발 포트를 사용 중이면 해당 프로세스를 확인하거나 Vite의 `--port` 옵션으로 다른 포트를 지정합니다.
-
-## 관련 문서
-
-- [아키텍처](./architecture.md)
-- [보안](./security.md)
-- [코드 스타일](./code-style.md)
-- [Git 흐름](./git-flow.md)
+현재 Netlify 설정은 이전 SPA용입니다. 배포 시 콘텐츠 커밋 checkout, fallback/CSP, Build Hook과 Actions의 수동 값 입력을 마지막에 연결해야 합니다. 이 구현 작업은 해당 설정을 변경하거나 배포하지 않습니다.

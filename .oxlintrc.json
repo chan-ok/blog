@@ -9,7 +9,6 @@
     "react",
     "react-perf",
     "import",
-    "promise",
     "vitest"
   ],
   "categories": {
@@ -29,7 +28,6 @@
     ".husky",
     ".tanstack",
     ".pnpm-store",
-    ".vscode",
-    "src/app/routeTree.gen.ts"
+    ".vscode"
   ]
 }

@@ -1,9 +1,17 @@
 ---
 import Layout from '../../../../layouts/DocumentLayout.astro';
 import FrameworkPage from '../../../../components/FrameworkPage.astro';
-import { routePaths, buildPageModel } from '../../../../lib/presentation/page-model';
-export async function getStaticPaths() { return routePaths('post', true); }
+import {
+  routePaths,
+  buildPageModel,
+} from '../../../../lib/presentation/page-model';
+export async function getStaticPaths() {
+  return routePaths('post', true);
+}
 const { context, page } = Astro.props;
 const model = await buildPageModel(context, page, import.meta.env.PROD);
 ---
-<Layout model={model}><FrameworkPage model={model} /></Layout>
+
+<Layout model={model}>
+  <FrameworkPage model={model} />
+</Layout>

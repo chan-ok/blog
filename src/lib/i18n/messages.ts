@@ -1,5 +1,5 @@
-import ko from '../../shared/locale/locales/ko.json';
-import ja from '../../shared/locale/locales/ja.json';
+import ko from './locales/ko.json';
+import ja from './locales/ja.json';
 import type { Locale } from '../presentation/types';
 
 const additions = {

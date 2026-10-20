@@ -1,6 +1,30 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "src/**/*", "tests/**/*.ts", "scripts/**/*.ts", "astro.config.mjs", "vitest.config.ts", "playwright.config.ts"],
-  "exclude": ["dist", "node_modules", "src/app", "src/entities", "src/features", "src/shared/components", "src/shared/locale/provider.tsx", "src/shared/locale/toggle.tsx", "src/shared/locale/store.ts"],
-  "compilerOptions": { "target": "ES2023", "jsx": "react-jsx", "jsxImportSource": "react", "resolveJsonModule": true, "skipLibCheck": true, "paths": { "@/*": ["./src/*"] } }
+  "include": [
+    ".astro/types.d.ts",
+    "src/**/*",
+    "tests/**/*.ts",
+    "scripts/**/*.ts",
+    "astro.config.mjs",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "playwright.fixture.config.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    ".cache"
+  ],
+  "compilerOptions": {
+    "target": "ES2023",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  }
 }

@@ -21,7 +21,7 @@ const message = "copy me";
 \`\`\`
 
 \`\`\`mermaid
-graph TD; A-->B
+graph TD; A["$$x^2$$"]-->B
 \`\`\`
 
 ## Second heading
@@ -55,7 +55,7 @@ export async function createBlogFixture(
   port = 4174,
   browserName = 'chromium'
 ): Promise<BlogFixture> {
-  // Astro moves prerender assets with rename(), so output must share its filesystem.
+  // Astro가 rename()으로 자산을 옮기므로 출력과 프로젝트는 같은 파일시스템을 사용합니다.
   const cache = resolve('.cache/browser-fixtures');
   await mkdir(cache, { recursive: true });
   const directory = await mkdtemp(join(cache, `astro-blog-${browserName}-fixture-`));
@@ -130,7 +130,7 @@ export async function createBlogFixture(
         try {
           if ((await fetch(`${url}/react/ko/`)).ok) return;
         } catch {
-          /* startup */
+          /* 서버 준비 중 */
         }
         await delay(150);
       }

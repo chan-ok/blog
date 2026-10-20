@@ -7,7 +7,7 @@ const validator = new HtmlValidate({
       'astro-island': { flow: true, phrasing: true },
       'astro-slot': { flow: true, phrasing: true },
       'astro-static-slot': { flow: true, phrasing: true },
-      // Astro emits its island display rule next to the island in <body>.
+      // Astro는 island 표시용 스타일을 <body>의 island 옆에 출력합니다.
       style: { inherit: 'style', flow: true },
     },
   ],

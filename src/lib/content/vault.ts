@@ -1,6 +1,6 @@
 import { readFile, readdir, realpath, stat } from 'node:fs/promises';
 import { basename, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { parseMarkdownSource } from '../../entities/markdown/util/parse-markdown';
+import { parseMarkdownSource } from './frontmatter';
 import { LOCALES } from '../presentation/types';
 import { validateSegments } from '../presentation/routes';
 import { PostMetadataSchema } from './metadata';
