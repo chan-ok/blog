@@ -8,7 +8,7 @@ export const fixtureBody = `## First heading
 
 before **bold** after and "hello" -- ...
 
-![[images/sample.png|Sample image]]
+![Sample image](images/sample%20image.png)
 
 > [!WARNING] Callout text
 
@@ -65,7 +65,7 @@ export async function createBlogFixture(
     ['ko', 'ja', 'images'].map((name) => mkdir(join(vault, name), { recursive: true }))
   );
   await mkdir(about);
-  await copyFile(resolve('public/image/git-profile.png'), join(vault, 'images/sample.png'));
+  await copyFile(resolve('public/image/git-profile.png'), join(vault, 'images/sample image.png'));
   await writeFile(
     join(vault, 'images/private.png'),
     Buffer.concat([
@@ -126,7 +126,8 @@ export async function createBlogFixture(
       });
       const deadline = Date.now() + 45000;
       while (Date.now() < deadline) {
-        if (child.exitCode !== null) throw new Error(`Fixture server exited: ${output}`);
+        if (child.exitCode !== null || child.signalCode !== null)
+          throw new Error(`Fixture server exited: ${output}`);
         try {
           if ((await fetch(`${url}/react/ko/`)).ok) return;
         } catch {
@@ -137,15 +138,23 @@ export async function createBlogFixture(
       throw new Error(`Fixture server did not start: ${output}`);
     },
     async stop() {
-      if (!child || child.exitCode !== null) return;
-      const stopped = new Promise<void>((done) => child?.once('exit', () => done()));
-      child.kill('SIGTERM');
-      await Promise.race([
-        stopped,
-        delay(5000).then(() => {
-          if (child?.exitCode === null) child.kill('SIGKILL');
-        }),
-      ]);
+      const stopping = child;
+      if (!stopping || stopping.exitCode !== null || stopping.signalCode !== null) return;
+      const timeout = new AbortController();
+      const stopped = new Promise<void>((done) => stopping.once('exit', () => done()));
+      stopping.kill('SIGTERM');
+      try {
+        await Promise.race([
+          stopped,
+          delay(5000, undefined, { signal: timeout.signal }).then(() => {
+            if (stopping.exitCode === null && stopping.signalCode === null)
+              stopping.kill('SIGKILL');
+            return stopped;
+          }),
+        ]);
+      } finally {
+        timeout.abort();
+      }
     },
   };
 }

@@ -24,4 +24,4 @@ Astro 7.4.1, Vue integration 7.1.1, Astro checker 0.9.11은 구현 시점 releas
 
 배포 연결과 새 환경 snapshot 게시·새 task 복원 검증은 이 구현 검증에 포함되지 않습니다.
 
-최종 정리 단계에서 단위/HTML validator 99개와 브라우저 37개를 실행합니다. 이전 컴파일러 선택 의존성을 없애기 위해 manifest를 기준으로 lockfile을 다시 계산했으며 frozen install과 peers check가 통과했습니다. 감사에서 발견한 Tinypool·KaTeX 3개 advisory는 패치된 overrides로 해소했습니다. KaTeX는 잘못된 breaking release로 deprecated된 0.18.11을 피하고 0.18.2로 고정했습니다. Mermaid fixture에는 수식 레이블도 포함합니다.
+SPA 정리 시점에는 단위/HTML validator 99개와 브라우저 37개를 실행했습니다. 독립 검토 후 이미지 인코딩과 fixture 프로세스 수명 주기 회귀 검증을 더해 최종 단위 테스트는 108개입니다. 브라우저 37개도 수정 후 통과했으며 자세한 결과와 경미한 후속 항목은 [최종 검토 기록](2026-10-21-astro-final-review.md)에 있습니다. 이전 컴파일러 선택 의존성을 없애기 위해 manifest를 기준으로 lockfile을 다시 계산했으며 frozen install과 peers check가 통과했습니다. 감사에서 발견한 Tinypool·KaTeX 3개 advisory는 패치된 overrides로 해소했습니다. KaTeX는 잘못된 breaking release로 deprecated된 0.18.11을 피하고 0.18.2로 고정했습니다. Mermaid fixture에는 수식 레이블도 포함합니다.

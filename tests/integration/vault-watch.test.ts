@@ -24,7 +24,7 @@ test('열린 브라우저에 파일 추가·수정·삭제·공개 상태·이�
   const image = page.locator('.mdx-content img');
   const before = await image.getAttribute('src');
   await writeFile(
-    join(blog.vault, 'images/sample.png'),
+    join(blog.vault, 'images/sample image.png'),
     await readFile(join(blog.vault, 'images/private.png'))
   );
   await expect(image).not.toHaveAttribute('src', before!);

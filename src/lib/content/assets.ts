@@ -29,17 +29,25 @@ export function createAssetRegistry(vaultRoot: string): AssetRegistry {
           ? url.href
           : undefined;
       }
+      let localPath: string;
+      try {
+        // 경로 구분자는 디코딩으로 새로 만들지 않고, 파일명의 인코딩만 한 번 해석합니다.
+        if (/%(?:2f|5c)/iu.test(source)) throw new Error('Encoded path separator');
+        localPath = decodeURIComponent(source);
+      } catch (cause) {
+        throw new Error(`Invalid image path: ${source}`, { cause });
+      }
       if (
-        !source ||
-        source.startsWith('/') ||
-        source.includes('\\') ||
-        hasAsciiControlCharacter(source) ||
-        /[%?#:]/u.test(source) ||
-        source.split('/').some((part) => part === '..' || part === '.')
+        !localPath ||
+        localPath.startsWith('/') ||
+        localPath.includes('\\') ||
+        hasAsciiControlCharacter(localPath) ||
+        /[?#:]/u.test(localPath) ||
+        localPath.split('/').some((part) => part === '..' || part === '.')
       )
         throw new Error(`Invalid image path: ${source}`);
       const root = await realpath(vaultRoot);
-      const path = await realpath(resolve(root, source));
+      const path = await realpath(resolve(root, localPath));
       if (!isInside(root, path)) throw new Error('Image outside content root');
       const buffer = await readFile(path);
       if (buffer.length > 10 * 1024 * 1024) throw new Error('Image size limit');
